@@ -82,3 +82,12 @@ Past contents of rmate bash version into file
 sudo wget -O /usr/bin/subl https://raw.githubusercontent.com/aurora/rmate/master/rmate
 chmod 775 /usr/bin/subl
 ```
+
+## Install clean Python version
+```bash
+sudo yum update # update yum
+sudo yum install centos-release-scl # install SCL
+sudo yum install python27 # install Python 2.7
+scl enable python27 bash # Activate
+```
+
