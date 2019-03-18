@@ -1,0 +1,55 @@
+{
+    // http://www.sublimetext.com/docs/3/color_schemes.html
+    "variables": {
+        // "green": "#FF0000",
+    },
+    "globals": {
+        // "foreground": "var(green)",
+    },
+    "rules": [
+        {
+            // "scope": "string",
+            // "foreground": "#00FF00",
+        },
+        {
+            "name": "markup h1",
+            "scope": "markup.heading.1 punctuation.definition.heading",
+            "foreground": "var(red)"
+        },
+        {
+            "name": "markup h2",
+            "scope": "markup.heading.2 punctuation.definition.heading",
+            "foreground": "var(red2)"
+        },
+        {
+            "name": "markup h3",
+            "scope": "markup.heading.3 punctuation.definition.heading",
+            "foreground": "var(orange)"
+        },
+        {
+            "name": "markup h4",
+            "scope": "markup.heading.4 punctuation.definition.heading",
+            "foreground": "var(orange2)"
+        },
+        {
+            "name": "markup h5",
+            "scope": "markup.heading.5 punctuation.definition.heading",
+            "foreground": "var(orange3)"
+        },
+        {
+            "name": "markup h6",
+            "scope": "markup.heading.6 punctuation.definition.heading",
+            "foreground": "var(orange)"
+        },
+        {
+            "name": "markup todo incomplete",
+            "scope": "markup.list.todo.incomplete",
+            "foreground": "var(red)"
+        },
+        {
+            "name": "markup todo complete",
+            "scope": "markup.list.todo.complete",
+            "foreground": "var(blue)"
+        },
+    ],
+}
