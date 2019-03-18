@@ -193,22 +193,20 @@ contexts:
           pop: true
         - include: list-paragraph
     - match: '^([ ]{0,3})(\[ \]|\[\])(?=\s)'
-      scope: markup.list.todo.incomplete.markdown
       captures:
-        1: markup.list.todo.incomplete.markdown
-        2: markup.list.unnumbered.markdown
-        3: markup.list.unnumbered.bullet.markdown punctuation.definition.list_item.markdown
+        1: markup.list.unnumbered.markdown
+        2: markup.list.todo.incomplete.markdown
       push:
         - meta_content_scope: markup.list.todo.incomplete.markdown
         - match: ^(?=\S)
           pop: true
+        - match: \n
+          pop: true
         - include: list-paragraph
     - match: '^([ ]{0,3})(\[X\])(?=\s)'
-      scope: markup.list.todo.complete.markdown
       captures:
-        1: markup.list.todo.complete.markdown
-        2: markup.list.unnumbered.markdown
-        3: markup.list.unnumbered.bullet.markdown punctuation.definition.list_item.markdown
+        1: markup.list.unnumbered.markdown
+        2: markup.list.todo.complete.markdown
       push:
         - meta_content_scope: markup.list.todo.complete.markdown
         - match: ^(?=\S)
@@ -323,6 +321,9 @@ contexts:
         Markdown will convert this for us. We match it so that the
                         HTML grammar will not mark it up as invalid.
       scope: meta.other.valid-ampersand.markdown
+  timestamp:
+    - match: \b(-?(?:[1-9][0-9]*)?[0-9]{4})-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9])\b
+      scope: markup.timestamp.markdown
   block-quote:
     - match: '[ ]{,3}(>)[ ]?'
       comment: |
@@ -680,6 +681,7 @@ contexts:
   inline:
     - include: escape
     - include: ampersand
+    - include: timestamp
     - include: bracket
     - include: raw
     - include: image-inline
@@ -931,21 +933,21 @@ contexts:
         - match: ^\s*$
           pop: true
         - match: '([ ]*)(\[ \]|\[\])(?=\s)'
-          scope: markup.list.todo.incomplete.markdown
+          # scope: markup.list.todo.incomplete.markdown
           captures:
-            1: markup.list.todo.incomplete.markdown
-            2: markup.list.unnumbered.markdown
-            3: markup.list.unnumbered.bullet.markdown punctuation.definition.list_item.markdown
+            1: markup.list.unnumbered.markdown
+            2: markup.list.todo.incomplete.markdown
+          #   3: markup.list.unnumbered.bullet.markdown punctuation.definition.list_item.markdown
           push:
             - clear_scopes: 1
             - meta_content_scope: markup.list.todo.incomplete.markdown markup.list.unnumbered.markdown meta.paragraph.list.markdown
             - include: list-content
         - match: '([ ]*)(\[X\])(?=\s)'
-          scope: markup.list.todo.complete.markdown
+          # scope: markup.list.todo.complete.markdown
           captures:
-            1: markup.list.todo.complete.markdown
-            2: markup.list.unnumbered.markdown
-            3: markup.list.unnumbered.bullet.markdown punctuation.definition.list_item.markdown
+            1: markup.list.unnumbered.markdown
+            2: markup.list.todo.complete.markdown
+          #   3: markup.list.unnumbered.bullet.markdown punctuation.definition.list_item.markdown
           push:
             - clear_scopes: 1
             - meta_content_scope: markup.list.todo.complete.markdown markup.list.unnumbered.markdown meta.paragraph.list.markdown

@@ -12,6 +12,11 @@
             // "foreground": "#00FF00",
         },
         {
+            "name": "markup timestamp",
+            "scope": "markup.timestamp",
+            "foreground": "var(red)"
+        },
+        {
             "name": "markup h1",
             "scope": "markup.heading.1 punctuation.definition.heading",
             "foreground": "var(red)"
