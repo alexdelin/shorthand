@@ -2,6 +2,9 @@
     // http://www.sublimetext.com/docs/3/color_schemes.html
     "variables": {
         // "green": "#FF0000",
+        "yellow": "hsl(56, 100%, 45%)",
+        "yellow2": "hsl(56, 50%, 70%)",
+        "brown": "hsl(23, 85%, 37%)"
     },
     "globals": {
         // "foreground": "var(green)",
@@ -12,9 +15,45 @@
             // "foreground": "#00FF00",
         },
         {
+            "name": "unnumbered list",
+            "scope": "markup.list.unnumbered",
+            "foreground": "var(white3)"
+        },
+        {
+            "name": "numbered list",
+            "scope": "markup.list.numbered",
+            "foreground": "var(white3)"
+        },
+        {
+            "name": "todo items",
+            "scope": "markup.list.todo",
+            "foreground": "var(yellow2)"
+        },
+        {
+            "name": "strikethrough",
+            "scope": "markup.strikethrough",
+            "foreground": "var(brown)"
+        },
+        {
+            "name": "strikethrough begin",
+            "scope": "punctuation.definition.strikethrough.begin",
+            "foreground": "var(brown)"
+        },
+        {
+            "name": "strikethrough end",
+            "scope": "punctuation.definition.strikethrough.end",
+            "foreground": "var(brown)"
+        },
+        {
             "name": "markup timestamp",
             "scope": "markup.timestamp",
-            "foreground": "var(red)"
+            "foreground": "var(blue5)"
+        },
+        // Brighter section titles
+        {
+            "name": "section title",
+            "scope": "entity.name.section",
+            "foreground": "var(white)"
         },
         {
             "name": "markup h1",
@@ -29,12 +68,12 @@
         {
             "name": "markup h3",
             "scope": "markup.heading.3 punctuation.definition.heading",
-            "foreground": "var(orange)"
+            "foreground": "var(orange2)"
         },
         {
             "name": "markup h4",
             "scope": "markup.heading.4 punctuation.definition.heading",
-            "foreground": "var(orange2)"
+            "foreground": "var(orange)"
         },
         {
             "name": "markup h5",
@@ -44,7 +83,7 @@
         {
             "name": "markup h6",
             "scope": "markup.heading.6 punctuation.definition.heading",
-            "foreground": "var(orange)"
+            "foreground": "var(yellow)"
         },
         {
             "name": "markup todo incomplete",
