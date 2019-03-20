@@ -4,7 +4,9 @@
         // "green": "#FF0000",
         "yellow": "hsl(56, 100%, 45%)",
         "yellow2": "hsl(56, 50%, 70%)",
-        "brown": "hsl(23, 85%, 37%)"
+        "brown": "hsl(23, 85%, 37%)",
+        "pink2": "hsl(330, 87%, 68%)",
+        "grey2": "hsl(0, 0%, 60%)",
     },
     "globals": {
         // "foreground": "var(green)",
@@ -13,6 +15,26 @@
         {
             // "scope": "string",
             // "foreground": "#00FF00",
+        },
+        {
+            "name": "Question Start",
+            "scope": "markup.list.question.start",
+            "foreground": "var(yellow)"
+        },
+        {
+            "name": "Question Content",
+            "scope": "markup.list.question.content",
+            "foreground": "var(pink)"
+        },
+        {
+            "name": "Answer Start",
+            "scope": "markup.list.answer.start",
+            "foreground": "var(blue5)"
+        },
+        {
+            "name": "Answer Content",
+            "scope": "markup.list.answer.content",
+            "foreground": "var(green)"
         },
         {
             "name": "unnumbered list",
@@ -84,6 +106,11 @@
             "name": "markup h6",
             "scope": "markup.heading.6 punctuation.definition.heading",
             "foreground": "var(yellow)"
+        },
+        {
+            "name": "markup todo skipped",
+            "scope": "markup.list.todo.skipped",
+            "foreground": "var(grey2)"
         },
         {
             "name": "markup todo incomplete",

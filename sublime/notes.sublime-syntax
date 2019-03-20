@@ -203,12 +203,43 @@ contexts:
         - match: \n
           pop: true
         - include: list-paragraph
+    - match: '^([ ]{0,3})(\?)(?=\s)'
+      captures:
+        1: markup.list.unnumbered.markdown
+        2: markup.list.question.start.markdown
+      push:
+        - meta_content_scope: markup.list.question.content.markdown
+        - match: ^(?=\S)
+          pop: true
+        - match: \n
+          pop: true
+        - include: list-paragraph
+    - match: '^([ ]{0,3})(@)(?=\s)'
+      captures:
+        1: markup.list.unnumbered.markdown
+        2: markup.list.answer.start.markdown
+      push:
+        - meta_content_scope: markup.list.answer.content.markdown
+        - match: ^(?=\S)
+          pop: true
+        - match: \n
+          pop: true
+        - include: list-paragraph
     - match: '^([ ]{0,3})(\[X\])(?=\s)'
       captures:
         1: markup.list.unnumbered.markdown
         2: markup.list.todo.complete.markdown
       push:
         - meta_content_scope: markup.list.todo.markdown
+        - match: ^(?=\S)
+          pop: true
+        - include: list-paragraph
+    - match: '^([ ]{0,3})(\[S\])(?=\s)'
+      captures:
+        1: markup.list.unnumbered.markdown
+        2: markup.list.todo.skipped.markdown
+      push:
+        - meta_content_scope: markup.list.todo.skipped.markdown
         - match: ^(?=\S)
           pop: true
         - include: list-paragraph
@@ -932,6 +963,22 @@ contexts:
       push:
         - match: ^\s*$
           pop: true
+        - match: '([ ]*)(\?)(?=\s)'
+          captures:
+            1: markup.list.unnumbered.markdown
+            2: markup.list.question.start.markdown
+          push:
+            - clear_scopes: 1
+            - meta_content_scope: markup.list.question.content.markdown
+            - include: list-content
+        - match: '([ ]*)(@)(?=\s)'
+          captures:
+            1: markup.list.unnumbered.markdown
+            2: markup.list.answer.start.markdown
+          push:
+            - clear_scopes: 1
+            - meta_content_scope: markup.list.answer.content.markdown
+            - include: list-content
         - match: '([ ]*)(\[ \]|\[\])(?=\s)'
           captures:
             1: markup.list.unnumbered.markdown
@@ -947,6 +994,14 @@ contexts:
           push:
             - clear_scopes: 1
             - meta_content_scope: markup.list.todo.markdown
+            - include: list-content
+        - match: '([ ]*)(\[S\])(?=\s)'
+          captures:
+            1: markup.list.unnumbered.markdown
+            2: markup.list.todo.skipped.markdown
+          push:
+            - clear_scopes: 1
+            - meta_content_scope: markup.list.todo.skipped.markdown
             - include: list-content
         - match: '([ ]*)([*+-])(?=\s)'
           captures:
