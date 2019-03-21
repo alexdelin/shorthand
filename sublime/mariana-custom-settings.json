@@ -5,8 +5,9 @@
         "yellow": "hsl(56, 100%, 45%)",
         "yellow2": "hsl(56, 50%, 70%)",
         "brown": "hsl(23, 85%, 37%)",
-        "pink2": "hsl(330, 87%, 68%)",
+        "pink2": "hsl(330, 65%, 68%)",
         "grey2": "hsl(0, 0%, 60%)",
+        "green2": "hsl(114, 51%, 68%)",
     },
     "globals": {
         // "foreground": "var(green)",
@@ -24,7 +25,7 @@
         {
             "name": "Question Content",
             "scope": "markup.list.question.content",
-            "foreground": "var(pink)"
+            "foreground": "var(pink2)"
         },
         {
             "name": "Answer Start",
@@ -34,7 +35,7 @@
         {
             "name": "Answer Content",
             "scope": "markup.list.answer.content",
-            "foreground": "var(green)"
+            "foreground": "var(green2)"
         },
         {
             "name": "unnumbered list",
