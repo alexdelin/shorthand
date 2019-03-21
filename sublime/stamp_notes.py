@@ -21,13 +21,13 @@ matched_filenames = list(set(matched_filenames))
 
 
 # Compile regexes for replacing lines
-unfinished_unstamped_pattern = r'(\s*)(\[ \]|\[\]) (?!\([1-2]\d{3}\-\d{2}\-\d{2}\))'
+unfinished_unstamped_pattern = r'(^\s*)(\[ \]|\[\]) (?!\([1-2]\d{3}\-\d{2}\-\d{2}\))'
 unfinished_unstamped_regex = re.compile(unfinished_unstamped_pattern)
 
-finished_start_stamped_pattern = r'(\s*)(\[)([XS])(\] )(\()([1-2]\d{3}\-\d{2}\-\d{2})(\)) '
+finished_start_stamped_pattern = r'(^\s*)(\[)([XS])(\] )(\()([1-2]\d{3}\-\d{2}\-\d{2})(\)) '
 finished_start_stamped_regex = re.compile(finished_start_stamped_pattern)
 
-finished_unstamped_pattern = r'(\s*)(\[)([XS])(\] )(?!(\([1-2]\d{3}\-\d{2}\-\d{2}\)|\([1-2]\d{3}\-\d{2}\-\d{2} -> [1-2]\d{3}\-\d{2}\-\d{2}\)))'
+finished_unstamped_pattern = r'(^\s*)(\[)([XS])(\] )(?!(\([1-2]\d{3}\-\d{2}\-\d{2}\)|\([1-2]\d{3}\-\d{2}\-\d{2} -> [1-2]\d{3}\-\d{2}\-\d{2}\)))'
 finished_unstamped_regex = re.compile(finished_unstamped_pattern)
 
 for filename in matched_filenames:
