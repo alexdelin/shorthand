@@ -2,8 +2,6 @@
 
 '''
 Note Parser Web API
-This is a flask app that manages and hosts server-side text classifiers
-that can be consumed as a web service
 '''
 
 import json

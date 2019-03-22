@@ -1,7 +1,12 @@
 import re
+from datetime import datetime
 from subprocess import Popen, PIPE
+
 from note_parser.utils.patterns import INCOMPLETE_PREFIX_GREP, \
-                    COMPLETE_PREFIX_GREP, SKIPPED_PREFIX_GREP
+    COMPLETE_PREFIX_GREP, SKIPPED_PREFIX_GREP, CATCH_ALL_PATTERN, \
+    VALID_INCOMPLETE_PATTERN, VALID_COMPLETE_PATTERN, \
+    UNFINISHED_UNSTAMPED_PATTERN, FINISHED_START_STAMPED_PATTERN, \
+    FINISHED_UNSTAMPED_PATTERN
 
 # Set up Regexes to use for finding files to process with `grep`
 PATTERN_MAPPING = {
@@ -9,6 +14,74 @@ PATTERN_MAPPING = {
     'complete': COMPLETE_PREFIX_GREP,
     'skipped': SKIPPED_PREFIX_GREP
 }
+
+
+def stamp_notes(notes_directory):
+
+    proc = Popen(
+        'grep -r {pattern} {directory} | '
+        'grep -v {filter_1} | '
+        'grep -v {filter_2}'.format(
+            pattern=CATCH_ALL_PATTERN,
+            directory=notes_directory,
+            filter_1=VALID_INCOMPLETE_PATTERN,
+            filter_2=VALID_COMPLETE_PATTERN),
+        stdout=PIPE, stderr=PIPE,
+        shell=True)
+    output, err = proc.communicate()
+
+    output_lines = output.split('\n')
+    matched_filenames = [line.split(':')[0] for line in output_lines if line.strip()]
+    matched_filenames = list(set(matched_filenames))
+
+    # Compile regexes for replacing lines
+    unfinished_unstamped_regex = re.compile(UNFINISHED_UNSTAMPED_PATTERN)
+    finished_start_stamped_regex = re.compile(FINISHED_START_STAMPED_PATTERN)
+    finished_unstamped_regex = re.compile(FINISHED_UNSTAMPED_PATTERN)
+
+    for filename in matched_filenames:
+        print(filename)
+        with open(filename, 'r') as file_object:
+
+            stamped_content = []
+
+            for line in file_object:
+
+                if unfinished_unstamped_regex.match(line):
+                    # unfinished unstamped
+                    print(line.rstrip())
+                    line = unfinished_unstamped_regex.sub(
+                        '\\g<1>[ ] ({timestamp}) '.format(
+                            timestamp=datetime.now().isoformat()[:10]),
+                        line)
+                    print(line.rstrip())
+                    stamped_content.append(line)
+                elif finished_start_stamped_regex.match(line):
+                    # finished with start stamped
+                    print(line.rstrip())
+                    line = finished_start_stamped_regex.sub(
+                        '\\g<1>[\\g<3>] (\\g<6> -> {timestamp_2}) '.format(
+                            timestamp_2=datetime.now().isoformat()[:10]),
+                        line)
+                    print(line.rstrip())
+                    stamped_content.append(line)
+                elif finished_unstamped_regex.match(line):
+                    # finished unstamped
+                    print(line.rstrip())
+                    line = finished_unstamped_regex.sub(
+                        '\\g<1>[\\g<3>] ({timestamp} -> {timestamp}) '.format(
+                            timestamp=datetime.now().isoformat()[:10]),
+                        line)
+                    print(line.rstrip())
+                    stamped_content.append(line)
+                else:
+                    # no to-dos -or- correctly formatted already
+                    stamped_content.append(line)
+
+        with open(filename, 'w') as write_file_object:
+            write_file_object.write(''.join(stamped_content))
+
+    return 'Done!'
 
 
 def get_todos(notes_directory, todo_status='incomplete'):
@@ -82,6 +155,3 @@ def mark_todo(filename, line_number, status):
         file_object.write('\n'.join(split_content))
 
     return line_content
-
-
-# mark_todo('test.note', 36, 'skipped')
