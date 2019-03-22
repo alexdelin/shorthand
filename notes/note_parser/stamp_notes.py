@@ -1,17 +1,17 @@
 import re
 from datetime import datetime
 from subprocess import Popen, PIPE
+from note_parser.utils.patterns import CATCH_ALL_PATTERN, \
+        VALID_INCOMPLETE_PATTERN, VALID_COMPLETE_PATTERN, \
+        UNFINISHED_UNSTAMPED_PATTERN, FINISHED_START_STAMPED_PATTERN, \
+        FINISHED_UNSTAMPED_PATTERN
 
-# Set up Regexes to use for finding files to process with `grep`
-catch_all_pattern = r'"\(^\\s*\)\(\[ \]\|\[\]\|\[X\]\|\[S\]\)"'
-valid_incomplete_pattern = r'"\[ \] ([1-2]\\d\{3\}-\\d\{2\}-\\d\{2\})"'
-valid_complete_pattern = r'"\[[XS]\] ([1-2]\\d\{3\}-\\d\{2\}-\\d\{2\} -> [1-2]\\d\{3\}-\\d\{2\}-\\d\{2\})"'
 
 proc = Popen(
     'grep -r {pattern} . | grep -v {filter_1} | grep -v {filter_2}'.format(
-        pattern=catch_all_pattern,
-        filter_1=valid_incomplete_pattern,
-        filter_2=valid_complete_pattern),
+        pattern=CATCH_ALL_PATTERN,
+        filter_1=VALID_INCOMPLETE_PATTERN,
+        filter_2=VALID_COMPLETE_PATTERN),
     stdout=PIPE, stderr=PIPE,
     shell=True)
 output, err = proc.communicate()
@@ -21,14 +21,9 @@ matched_filenames = list(set(matched_filenames))
 
 
 # Compile regexes for replacing lines
-unfinished_unstamped_pattern = r'(^\s*)(\[ \]|\[\]) (?!\([1-2]\d{3}\-\d{2}\-\d{2}\))'
-unfinished_unstamped_regex = re.compile(unfinished_unstamped_pattern)
-
-finished_start_stamped_pattern = r'(^\s*)(\[)([XS])(\] )(\()([1-2]\d{3}\-\d{2}\-\d{2})(\)) '
-finished_start_stamped_regex = re.compile(finished_start_stamped_pattern)
-
-finished_unstamped_pattern = r'(^\s*)(\[)([XS])(\] )(?!(\([1-2]\d{3}\-\d{2}\-\d{2}\)|\([1-2]\d{3}\-\d{2}\-\d{2} -> [1-2]\d{3}\-\d{2}\-\d{2}\)))'
-finished_unstamped_regex = re.compile(finished_unstamped_pattern)
+unfinished_unstamped_regex = re.compile(UNFINISHED_UNSTAMPED_PATTERN)
+finished_start_stamped_regex = re.compile(FINISHED_START_STAMPED_PATTERN)
+finished_unstamped_regex = re.compile(FINISHED_UNSTAMPED_PATTERN)
 
 for filename in matched_filenames:
     print(filename)

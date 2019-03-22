@@ -1,12 +1,13 @@
 import re
 from subprocess import Popen, PIPE
-
+from note_parser.utils.patterns import INCOMPLETE_PREFIX_GREP, \
+                    COMPLETE_PREFIX_GREP, SKIPPED_PREFIX_GREP
 
 # Set up Regexes to use for finding files to process with `grep`
 PATTERN_MAPPING = {
-    'incomplete': r'"\(^\\s*\)\(\[ \]\|\[\]\)"',
-    'complete': r'"\(^\\s*\)\(\[X\]\)"',
-    'skipped': r'"\(^\\s*\)\(\[S\]\)"'
+    'incomplete': INCOMPLETE_PREFIX_GREP,
+    'complete': COMPLETE_PREFIX_GREP,
+    'skipped': SKIPPED_PREFIX_GREP
 }
 
 
