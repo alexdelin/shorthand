@@ -11,7 +11,7 @@ PATTERN_MAPPING = {
 }
 
 
-def get_todos(todo_status='incomplete'):
+def get_todos(notes_directory, todo_status='incomplete'):
 
     if todo_status not in PATTERN_MAPPING.keys():
         raise ValueError('Invalid todo type ' + todo_status)
@@ -19,8 +19,9 @@ def get_todos(todo_status='incomplete'):
     todo_items = []
 
     proc = Popen(
-        'grep -rn {pattern} .'.format(
-            pattern=PATTERN_MAPPING[todo_status]),
+        'grep -rn {pattern} {dir}'.format(
+            pattern=PATTERN_MAPPING[todo_status],
+            dir=notes_directory),
         stdout=PIPE, stderr=PIPE,
         shell=True)
     output, err = proc.communicate()
@@ -83,4 +84,4 @@ def mark_todo(filename, line_number, status):
     return line_content
 
 
-mark_todo('test.note', 36, 'skipped')
+# mark_todo('test.note', 36, 'skipped')
