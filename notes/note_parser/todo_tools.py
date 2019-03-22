@@ -18,14 +18,15 @@ PATTERN_MAPPING = {
 
 def stamp_notes(notes_directory):
 
-    proc = Popen(
-        'grep -r {pattern} {directory} | '
-        'grep -v {filter_1} | '
-        'grep -v {filter_2}'.format(
-            pattern=CATCH_ALL_PATTERN,
-            directory=notes_directory,
-            filter_1=VALID_INCOMPLETE_PATTERN,
-            filter_2=VALID_COMPLETE_PATTERN),
+    grep_command = 'grep -r {pattern} {directory} | '\
+                   'grep -v {filter_1} | '\
+                   'grep -v {filter_2}'.format(
+                        pattern=CATCH_ALL_PATTERN,
+                        directory=notes_directory,
+                        filter_1=VALID_INCOMPLETE_PATTERN,
+                        filter_2=VALID_COMPLETE_PATTERN)
+
+    proc = Popen(grep_command,
         stdout=PIPE, stderr=PIPE,
         shell=True)
     output, err = proc.communicate()
