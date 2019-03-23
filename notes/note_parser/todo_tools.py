@@ -27,8 +27,8 @@ def stamp_notes(notes_directory):
                         filter_2=VALID_COMPLETE_PATTERN)
 
     proc = Popen(grep_command,
-        stdout=PIPE, stderr=PIPE,
-        shell=True)
+                 stdout=PIPE, stderr=PIPE,
+                 shell=True)
     output, err = proc.communicate()
 
     output_lines = output.split('\n')
