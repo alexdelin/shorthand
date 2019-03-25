@@ -1,0 +1,33 @@
+#ml-logo {
+    display: inline;
+}
+
+#ml-title {
+    display: inline;
+    vertical-align: middle;
+    padding-left: 10px;
+}
+
+.title-bar {
+    background-color: #999;
+    color: white;
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+.gutter {
+}
+
+.pagewrapper {
+    background-color: white;
+}
+
+.fullwrapper {
+    background-color: #999;
+}
+
+#page-name {
+    float: right;
+    display: inline;
+    vertical-align: middle;
+}

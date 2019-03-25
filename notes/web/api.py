@@ -6,7 +6,7 @@ Note Parser Web API
 
 import json
 
-from flask import Flask, request  # , render_template, send_from_directory
+from flask import Flask, request, render_template, send_from_directory
 
 from note_parser.todo_tools import get_todos  # , mark_todo
 from note_parser.search_tools import search_notes, get_context
@@ -17,13 +17,30 @@ app = Flask(__name__)
 NOTES_CONFIG = get_notes_config()
 
 
-@app.route('/get_todos/<path:path>', methods=['GET'])
-def get_current_todos(path):
+@app.route('/', methods=['GET'])
+def show_ui():
+    return send_from_directory('static', 'index.html')
+
+
+@app.route('/js/<path:path>', methods=['GET', 'POST'])
+def send_js(path):
+    return send_from_directory('js', path)
+
+
+@app.route('/css/<path:path>', methods=['GET', 'POST'])
+def send_css(path):
+    return send_from_directory('css', path)
+
+
+@app.route('/get_todos', methods=['GET'])
+def get_current_todos():
     """Main Route that displays the documentation"""
+
+    status = request.args.get('status')
 
     return json.dumps(get_todos(
                 notes_directory=NOTES_CONFIG['notes_directory'],
-                todo_status=path))
+                todo_status=status))
 
 
 @app.route('/search', methods=['GET'])
