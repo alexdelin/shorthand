@@ -26,52 +26,75 @@
         </div>
 
         <div class="row">
-            <div class="col-md-12">
-                <ul class="nav nav-pills">
-                  <li class="nav-item">
-                    <a class="nav-link active" href="#">To-Dos</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="#">Questions</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="#">Search All</a>
-                  </li>
-                </ul>
-            </div>
-        </div>
 
-        <div class="row">
-            <div class="col-md-12">
-                <ul class="nav nav-pills">
-                  <li class="nav-item">
-                    <a class="nav-link active" href="#">Incomplete</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="#">Complete</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="#">Skipped</a>
-                  </li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="row">
             <div class="col-md-6">
-                <button id="refreshContent" class="btn btn-primary" type="submit">Refresh</button>
+                <div class="row">
+                    <div class="col-md-12">
+                        To-Dos
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <ul class="nav nav-pills">
+                          <li class="nav-item">
+                            <a class="nav-link active" href="#">Incomplete</a>
+                          </li>
+                          <li class="nav-item">
+                            <a class="nav-link" href="#">Complete</a>
+                          </li>
+                          <li class="nav-item">
+                            <a class="nav-link" href="#">Skipped</a>
+                          </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <button id="refreshContent" class="btn btn-primary" type="submit">Refresh</button>
+                    </div>
+                </div>
             </div>
+
+            <div class="col-md-6">
+                <div class="row">
+                    <div class="col-md-12">
+                        Search
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group form-inline">
+                            <input id="searchQuery" type="text" class="form-control" placeholder="foo">
+                            <button id="searchSubmit" type="submit" class="btn btn-default">Search</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
-        <div class="row">
+        <div id="resultWrapper" class="row">
             <div class="col-md-12">
-                <table class="table table-striped">
+                <table id="todoContent" class="table table-striped">
                   <thead>
                     <tr>
                       <th scope="col">ToDo</th>
                       <th scope="col">File Path</th>
                       <th scope="col">Start Date</th>
                       <th scope="col">End Date</th>
+                      <th scope="col">Line Number</th>
+                    </tr>
+                  </thead>
+                  <tbody id="todoList">
+                    <!-- Search Results go here -->
+                  </tbody>
+                </table>
+
+                <table id="searchContent" class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th scope="col">ToDo</th>
+                      <th scope="col">File Path</th>
                       <th scope="col">Line Number</th>
                     </tr>
                   </thead>
