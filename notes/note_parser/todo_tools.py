@@ -6,7 +6,8 @@ from note_parser.utils.patterns import INCOMPLETE_PREFIX_GREP, \
     COMPLETE_PREFIX_GREP, SKIPPED_PREFIX_GREP, CATCH_ALL_PATTERN, \
     VALID_INCOMPLETE_PATTERN, VALID_COMPLETE_PATTERN, \
     UNFINISHED_UNSTAMPED_PATTERN, FINISHED_START_STAMPED_PATTERN, \
-    FINISHED_UNSTAMPED_PATTERN
+    FINISHED_UNSTAMPED_PATTERN, START_STAMP_ONLY_PATTERN, \
+    START_END_STAMP_ONLY_PATTERN
 
 # Set up Regexes to use for finding files to process with `grep`
 PATTERN_MAPPING = {
@@ -112,12 +113,39 @@ def get_todos(notes_directory, todo_status='incomplete'):
         match_content = split_line[2].strip()
 
         # remove the leading `[]`, `[ ]`, `[X]`, or `[S]`
-        match_content = match_content.split(']', 1)[1]
+        match_content = match_content.split(']', 1)[1].strip()
+
+        # Return all paths as relative paths within the notes dir
+        print(notes_directory)
+        print(file_path)
+        if notes_directory in file_path:
+            file_path = file_path[len(notes_directory):]
+
+        # Pull out and structure out date info if included
+        start_stamp_regex = re.compile(START_STAMP_ONLY_PATTERN)
+        start_end_stamp_regex = re.compile(START_END_STAMP_ONLY_PATTERN)
+
+        start_stamp_match = start_stamp_regex.match(match_content)
+        start_end_stamp_match = start_end_stamp_regex.match(match_content)
+        if start_stamp_match:
+            start_date = start_stamp_match.groups()[1]
+            end_date = None
+            todo_text = start_stamp_match.groups()[4]
+        elif start_end_stamp_match:
+            start_date = start_end_stamp_match.groups()[1]
+            end_date = start_end_stamp_match.groups()[3]
+            todo_text = start_end_stamp_match.groups()[6]
+        else:
+            start_date = None
+            end_date = None
+            todo_text = match_content
 
         processed_todo = {
             'file_path': file_path,
             'line_number': line_number,
-            'match_content': match_content,
+            'todo_text': todo_text,
+            'start_date': start_date,
+            'end_date': end_date,
             'status': todo_status
         }
 

@@ -8,10 +8,12 @@ $("#refreshContent").click(function() {
             var loadedData = JSON.parse(todoData)
             var todoListElement = ''
             _.each(loadedData, function(todoResult) {
-                var text = todoResult['match_content']
+                var text = todoResult['todo_text']
                 var file = todoResult['file_path']
+                var startDate = todoResult['start_date']
+                var endDate = todoResult['end_date']
                 var line = todoResult['line_number']
-                var newRowElement = '<tr><td>' + text + '</td><td>' + file + '</td><td>' + line + '</td></tr>'
+                var newRowElement = '<tr><td>' + text + '</td><td>' + file + '</td><td>' + startDate + '</td><td>' + endDate + '</td><td>' + line + '</td></tr>'
                 todoListElement = todoListElement + newRowElement
             })
             $('#searchResults').append(todoListElement)
