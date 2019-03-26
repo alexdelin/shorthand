@@ -111,6 +111,13 @@ $("#fetchSkipped").click(function() {
     fetchTodos('skipped')
 });
 
+$("#stampNotes").click(function() {
+    console.log( "Handler for stamp notes called." );
+    $.get('stamp', {},
+        function(responseData){
+            alert('Stamped Notes!')
+    });
+});
 
 $("#searchSubmit").click(function() {
 

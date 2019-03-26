@@ -8,7 +8,7 @@ import json
 
 from flask import Flask, request, render_template, send_from_directory
 
-from note_parser.todo_tools import get_todos, mark_todo
+from note_parser.todo_tools import get_todos, mark_todo, stamp_notes
 from note_parser.search_tools import search_notes, get_context
 from note_parser.utils.config import get_notes_config
 
@@ -70,7 +70,7 @@ def get_line_context():
 
 
 @app.route('/mark_todo', methods=['GET'])
-def function():
+def mark_todo_status():
 
     filename = request.args.get('filename')
     line_number = int(request.args.get('line_number'))
@@ -81,6 +81,12 @@ def function():
         filename = NOTES_CONFIG['notes_directory'] + filename
 
     return mark_todo(filename, line_number, status)
+
+
+@app.route('/stamp', methods=['GET'])
+def stamp():
+
+    return stamp_notes(NOTES_CONFIG['notes_directory'])
 
 
 if __name__ == "__main__":
