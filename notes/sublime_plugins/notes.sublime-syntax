@@ -765,7 +765,7 @@ contexts:
         - include: bold-italic-trailing
     - match: '[*_]+'
   strikethrough:
-    - match: '(~+)(?=\S)(?!~)'
+    - match: '(~+)(?![\s\d])(?!~)'
       scope: punctuation.definition.strikethrough.begin.markdown
       push:
         - meta_scope: markup.strikethrough.markdown-gfm
