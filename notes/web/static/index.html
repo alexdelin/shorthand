@@ -35,22 +35,9 @@
                 </div>
                 <div class="row">
                     <div class="col-md-12">
-                        <ul class="nav nav-pills">
-                          <li class="nav-item">
-                            <a class="nav-link active" href="#">Incomplete</a>
-                          </li>
-                          <li class="nav-item">
-                            <a class="nav-link" href="#">Complete</a>
-                          </li>
-                          <li class="nav-item">
-                            <a class="nav-link" href="#">Skipped</a>
-                          </li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <button id="refreshContent" class="btn btn-primary" type="submit">Refresh</button>
+                        <a id="fetchIncomplete" class="btn btn-primary" href="#">Incomplete</a>
+                        <a id="fetchComplete" class="btn btn-default" href="#">Complete</a>
+                        <a id="fetchSkipped" class="btn btn-default" href="#">Skipped</a>
                     </div>
                 </div>
             </div>
@@ -83,6 +70,7 @@
                       <th scope="col">Start Date</th>
                       <th scope="col">End Date</th>
                       <th scope="col">Line Number</th>
+                      <th scope="col">Actions</th>
                     </tr>
                   </thead>
                   <tbody id="todoList">
@@ -90,7 +78,7 @@
                   </tbody>
                 </table>
 
-                <table id="searchContent" class="table table-striped">
+                <table id="searchContent" class="table table-striped" style="display: none">
                   <thead>
                     <tr>
                       <th scope="col">ToDo</th>

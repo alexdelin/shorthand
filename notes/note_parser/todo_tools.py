@@ -116,8 +116,6 @@ def get_todos(notes_directory, todo_status='incomplete'):
         match_content = match_content.split(']', 1)[1].strip()
 
         # Return all paths as relative paths within the notes dir
-        print(notes_directory)
-        print(file_path)
         if notes_directory in file_path:
             file_path = file_path[len(notes_directory):]
 

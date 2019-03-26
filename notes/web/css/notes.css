@@ -31,3 +31,11 @@
     display: inline;
     vertical-align: middle;
 }
+
+#todoList {
+    font-size: 20px;
+}
+
+.actionButtons {
+    font-size: 32px;
+}
