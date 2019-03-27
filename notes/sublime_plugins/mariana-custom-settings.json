@@ -6,7 +6,8 @@
         "yellow2": "hsl(56, 50%, 70%)",
         "brown": "hsl(23, 85%, 37%)",
         "pink2": "hsl(330, 65%, 68%)",
-        "grey2": "hsl(0, 0%, 60%)",
+        "grey2": "hsl(0, 0%, 70%)",
+        "grey3": "hsl(0, 0%, 50%)",
         "green2": "hsl(114, 51%, 68%)",
     },
     "globals": {
@@ -51,6 +52,36 @@
             "name": "todo items",
             "scope": "markup.list.todo",
             "foreground": "var(yellow2)"
+        },
+        {
+            "name": "markup todo skipped start",
+            "scope": "markup.list.todo.skipped.start",
+            "foreground": "var(grey2)"
+        },
+        {
+            "name": "markup todo skipped content",
+            "scope": "markup.list.todo.skipped.content",
+            "foreground": "var(grey3)"
+        },
+        {
+            "name": "markup todo incomplete start",
+            "scope": "markup.list.todo.incomplete.start",
+            "foreground": "var(red)"
+        },
+        {
+            "name": "todo incomplete content",
+            "scope": "markup.list.todo.incomplete.content",
+            "foreground": "var(yellow2)"
+        },
+        {
+            "name": "markup todo complete start",
+            "scope": "markup.list.todo.complete.start",
+            "foreground": "var(blue)"
+        },
+        {
+            "name": "todo complete content",
+            "scope": "markup.list.todo.complete.content",
+            "foreground": "var(blue4)"
         },
         {
             "name": "strikethrough",
@@ -107,21 +138,6 @@
             "name": "markup h6",
             "scope": "markup.heading.6 punctuation.definition.heading",
             "foreground": "var(yellow)"
-        },
-        {
-            "name": "markup todo skipped",
-            "scope": "markup.list.todo.skipped",
-            "foreground": "var(grey2)"
-        },
-        {
-            "name": "markup todo incomplete",
-            "scope": "markup.list.todo.incomplete",
-            "foreground": "var(red)"
-        },
-        {
-            "name": "markup todo complete",
-            "scope": "markup.list.todo.complete",
-            "foreground": "var(blue)"
         },
     ],
 }

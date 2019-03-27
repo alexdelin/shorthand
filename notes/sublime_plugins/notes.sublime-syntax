@@ -195,9 +195,9 @@ contexts:
     - match: '^([ ]{0,3})(\[ \]|\[\])(?=\s)'
       captures:
         1: markup.list.unnumbered.markdown
-        2: markup.list.todo.incomplete.markdown
+        2: markup.list.todo.incomplete.start.markdown
       push:
-        - meta_content_scope: markup.list.todo.markdown
+        - meta_content_scope: markup.list.todo.incomplete.content.markdown
         - match: ^(?=\S)
           pop: true
         - match: \n
@@ -228,18 +228,18 @@ contexts:
     - match: '^([ ]{0,3})(\[X\])(?=\s)'
       captures:
         1: markup.list.unnumbered.markdown
-        2: markup.list.todo.complete.markdown
+        2: markup.list.todo.complete.start.markdown
       push:
-        - meta_content_scope: markup.list.todo.markdown
+        - meta_content_scope: markup.list.todo.complete.content.markdown
         - match: ^(?=\S)
           pop: true
         - include: list-paragraph
     - match: '^([ ]{0,3})(\[S\])(?=\s)'
       captures:
         1: markup.list.unnumbered.markdown
-        2: markup.list.todo.skipped.markdown
+        2: markup.list.todo.skipped.start.markdown
       push:
-        - meta_content_scope: markup.list.todo.skipped.markdown
+        - meta_content_scope: markup.list.todo.skipped.content.markdown
         - match: ^(?=\S)
           pop: true
         - include: list-paragraph
@@ -982,26 +982,26 @@ contexts:
         - match: '([ ]*)(\[ \]|\[\])(?=\s)'
           captures:
             1: markup.list.unnumbered.markdown
-            2: markup.list.todo.incomplete.markdown
+            2: markup.list.todo.incomplete.start.markdown
           push:
             - clear_scopes: 1
-            - meta_content_scope: markup.list.todo.markdown
+            - meta_content_scope: markup.list.todo.incomplete.content.markdown
             - include: list-content
         - match: '([ ]*)(\[X\])(?=\s)'
           captures:
             1: markup.list.unnumbered.markdown
-            2: markup.list.todo.complete.markdown
+            2: markup.list.todo.complete.start.markdown
           push:
             - clear_scopes: 1
-            - meta_content_scope: markup.list.todo.markdown
+            - meta_content_scope: markup.list.todo.complete.content.markdown
             - include: list-content
         - match: '([ ]*)(\[S\])(?=\s)'
           captures:
             1: markup.list.unnumbered.markdown
-            2: markup.list.todo.skipped.markdown
+            2: markup.list.todo.skipped.start.markdown
           push:
             - clear_scopes: 1
-            - meta_content_scope: markup.list.todo.skipped.markdown
+            - meta_content_scope: markup.list.todo.skipped.content.markdown
             - include: list-content
         - match: '([ ]*)([*+-])(?=\s)'
           captures:
