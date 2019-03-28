@@ -56,6 +56,11 @@
                         <div class="form-group form-inline">
                             <input id="searchQuery" type="text" class="form-control" placeholder="foo">
                             <button id="searchSubmit" type="submit" class="btn btn-default">Search</button>
+                            <select id="directoryFilter" class="form-control">
+                              {% for sub_directory in all_directories %}
+                                <option>{{ sub_directory }}</option>
+                              {% endfor %}
+                            </select>
                         </div>
                     </div>
                 </div>

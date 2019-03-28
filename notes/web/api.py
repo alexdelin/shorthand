@@ -4,6 +4,7 @@
 Note Parser Web API
 '''
 
+import os
 import json
 
 from flask import Flask, request, render_template, send_from_directory
@@ -19,7 +20,10 @@ NOTES_CONFIG = get_notes_config()
 
 @app.route('/', methods=['GET'])
 def show_ui():
-    return send_from_directory('static', 'index.html')
+
+    all_directories = ['ALL'] + [subdir for subdir in os.listdir(NOTES_CONFIG['notes_directory']) if os.path.isdir(NOTES_CONFIG['notes_directory'] + '/' + subdir)]
+
+    return render_template('index.j2', all_directories=all_directories)
 
 
 @app.route('/js/<path:path>', methods=['GET', 'POST'])
@@ -37,10 +41,16 @@ def get_current_todos():
     """Main Route that displays the documentation"""
 
     status = request.args.get('status')
+    directory_filter = request.args.get('directory_filter')
+    print(directory_filter)
+    if directory_filter == 'ALL':
+        directory_filter = None
+
+    print(directory_filter)
 
     return json.dumps(get_todos(
                 notes_directory=NOTES_CONFIG['notes_directory'],
-                todo_status=status))
+                todo_status=status, directory_filter=directory_filter))
 
 
 @app.route('/search', methods=['GET'])

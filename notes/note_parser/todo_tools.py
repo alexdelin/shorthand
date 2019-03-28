@@ -86,17 +86,25 @@ def stamp_notes(notes_directory):
     return 'Done!'
 
 
-def get_todos(notes_directory, todo_status='incomplete'):
+def get_todos(notes_directory, todo_status='incomplete', directory_filter=None):
 
     if todo_status not in PATTERN_MAPPING.keys():
         raise ValueError('Invalid todo type ' + todo_status)
 
     todo_items = []
 
+    search_directory = notes_directory
+    if directory_filter:
+        if search_directory[-1] != '/':
+            search_directory += '/'
+        search_directory += directory_filter
+
+    print(search_directory)
+
     proc = Popen(
         'grep -rn {pattern} {dir}'.format(
             pattern=PATTERN_MAPPING[todo_status],
-            dir=notes_directory),
+            dir=search_directory),
         stdout=PIPE, stderr=PIPE,
         shell=True)
     output, err = proc.communicate()

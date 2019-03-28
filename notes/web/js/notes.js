@@ -81,7 +81,9 @@ function setResultActions() {
 function fetchTodos(status) {
     console.log( "Handler for refresh content called." );
     $('#todoList')[0].innerHTML = ''
-    $.get('get_todos', {status: status},
+    var directoryFilter = $('#directoryFilter')[0].value
+    console.log(directoryFilter)
+    $.get('get_todos', {status: status, directory_filter: directoryFilter},
         function(todoData){
             var loadedData = JSON.parse(todoData)
             var todoListElement = ''
