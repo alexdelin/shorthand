@@ -13,6 +13,9 @@ COMPLETE_PREFIX_GREP = r'"\(^\\s*\)\(\[X\]\)"'
 START_STAMP_ONLY_PATTERN = r'(\()([1-2]\d{3}\-\d{2}\-\d{2})(\))( )(.*)'
 START_END_STAMP_ONLY_PATTERN = r'(\()([1-2]\d{3}\-\d{2}\-\d{2})( -> )([1-2]\d{3}\-\d{2}\-\d{2})(\))( )(.*)'
 
+ALL_QUESTIONS_GREP = r'"\(^\\s*\)\(\?\)"'
+ANSWER_PATTERN = r'(^\s*)(@ )(.*)'
+
 
 def escape_for_grep(input_pattern):
     pass
