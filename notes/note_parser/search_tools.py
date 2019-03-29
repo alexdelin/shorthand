@@ -61,6 +61,10 @@ def search_notes(notes_directory, query_string,
         line_number = split_line[1].strip()
         match_content = split_line[2].strip()
 
+        # Return all paths as relative paths within the notes dir
+        if notes_directory in file_path:
+            file_path = file_path[len(notes_directory):]
+
         processed_line = {
             'file_path': file_path,
             'line_number': line_number,

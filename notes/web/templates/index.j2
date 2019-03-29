@@ -27,15 +27,13 @@
 
         <div class="row">
 
-            <div class="col-md-6">
-                <div class="row">
-                    <div class="col-md-12">
-                        <h3>To-Dos</h3>
+            <div class="col-md-8">
+                <div class="row padded-top">
+                    <div class="col-md-2">
+                        <h4>To-Dos</h4>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-8">
-                        <a id="fetchIncomplete" class="btn btn-primary" href="#">Incomplete</a>
+                    <div class="col-md-6">
+                        <a id="fetchIncomplete" class="btn btn-default" href="#">Incomplete</a>
                         <a id="fetchComplete" class="btn btn-default" href="#">Complete</a>
                         <a id="fetchSkipped" class="btn btn-default" href="#">Skipped</a>
                     </div>
@@ -43,9 +41,19 @@
                         <a id="stampNotes" class="btn btn-danger" href="#">Stamp Dates</a>
                     </div>
                 </div>
+                <div class="row padded-top">
+                    <div class="col-md-2">
+                        <h4>Questions</h4>
+                    </div>
+                    <div class="col-md-6">
+                        <a id="fetchAll" class="btn btn-default" href="#">All</a>
+                        <a id="fetchAnswered" class="btn btn-default" href="#">Answered</a>
+                        <a id="fetchUnanswered" class="btn btn-default" href="#">Unanswered</a>
+                    </div>
+                </div>
             </div>
 
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div class="row">
                     <div class="col-md-12">
                         <h3>Search</h3>
@@ -82,16 +90,32 @@
                     </tr>
                   </thead>
                   <tbody id="todoList">
-                    <!-- Search Results go here -->
+                    <!-- ToDo Results go here -->
+                  </tbody>
+                </table>
+
+                <table id="questionContent" class="table table-striped" style="display: none">
+                  <thead>
+                    <tr>
+                      <th scope="col">Question</th>
+                      <th scope="col">File Path</th>
+                      <th scope="col">Line Number</th>
+                      <th scope="col">Answer</th>
+                      <th scope="col">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="questionList">
+                    <!-- Question Results go here -->
                   </tbody>
                 </table>
 
                 <table id="searchContent" class="table table-striped" style="display: none">
                   <thead>
                     <tr>
-                      <th scope="col">ToDo</th>
+                      <th scope="col">Matching Line</th>
                       <th scope="col">File Path</th>
                       <th scope="col">Line Number</th>
+                      <th scope="col">Actions</th>
                     </tr>
                   </thead>
                   <tbody id="searchResults">

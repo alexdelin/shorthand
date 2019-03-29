@@ -36,6 +36,18 @@
     font-size: 20px;
 }
 
+#searchResults {
+    font-size: 20px;
+}
+
+#questionList {
+    font-size: 20px;
+}
+
 .actionButtons {
     font-size: 32px;
+}
+
+.padded-top {
+    padding-top: 10px;
 }

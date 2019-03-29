@@ -71,10 +71,14 @@ def get_questions(notes_directory, question_status='all', directory_filter=None)
             line_number = split_line[1].strip()
             question_text = split_line[2].strip()[2:]
 
+            # Return all paths as relative paths within the notes dir
+            if notes_directory in file_path:
+                file_path = file_path[len(notes_directory):]
+
             parsed_question = {
                 'file_path': file_path,
                 'line_number': line_number,
-                'todo_text': question_text,
+                'question': question_text,
                 'answer': None
             }
 
