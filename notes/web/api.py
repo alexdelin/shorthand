@@ -8,7 +8,6 @@ import os
 import json
 
 from flask import Flask, request, render_template, send_from_directory
-import markdown2
 
 from note_parser.todo_tools import get_todos, mark_todo, stamp_notes
 from note_parser.search_tools import search_notes, get_context
