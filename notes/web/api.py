@@ -8,11 +8,13 @@ import os
 import json
 
 from flask import Flask, request, render_template, send_from_directory
+import markdown2
 
 from note_parser.todo_tools import get_todos, mark_todo, stamp_notes
 from note_parser.search_tools import search_notes, get_context
 from note_parser.question_tools import get_questions
 from note_parser.utils.config import get_notes_config
+from note_parser.utils.render import get_rendered_markdown
 
 app = Flask(__name__)
 
@@ -87,6 +89,13 @@ def get_line_context():
         filename = NOTES_CONFIG['notes_directory'] + filename
 
     return json.dumps(get_context(filename, line_number, width))
+
+
+@app.route('/render', methods=['GET'])
+def send_rendered_note():
+
+    file_path = NOTES_CONFIG['notes_directory'] + request.args.get('path')
+    return get_rendered_markdown(file_path)
 
 
 @app.route('/mark_todo', methods=['GET'])
