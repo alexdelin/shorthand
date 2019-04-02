@@ -14,6 +14,7 @@ from note_parser.search_tools import search_notes, get_context
 from note_parser.question_tools import get_questions
 from note_parser.utils.config import get_notes_config
 from note_parser.utils.render import get_rendered_markdown
+from note_parser.utils.typeahead import get_typeahead_suggestions
 
 app = Flask(__name__)
 
@@ -109,6 +110,16 @@ def mark_todo_status():
         filename = NOTES_CONFIG['notes_directory'] + filename
 
     return mark_todo(filename, line_number, status)
+
+
+@app.route('/typeahead', methods=['GET'])
+def get_typeahead():
+
+    query_string = request.args.get('query')
+
+    return json.dumps(get_typeahead_suggestions(
+        NOTES_CONFIG['ngram_db_directory'],
+        query_string))
 
 
 @app.route('/stamp', methods=['GET'])
