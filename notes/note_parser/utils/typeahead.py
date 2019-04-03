@@ -1,5 +1,4 @@
 from subprocess import Popen, PIPE
-import re
 from collections import OrderedDict
 import json
 import codecs
@@ -177,7 +176,7 @@ def update_ngram_database(notes_directory, ngram_db_dir):
     unigrams_text_file_path = ngram_db_dir + '/unigrams.txt'
     with open(unigrams_json_file_path, 'w') as unigrams_json_file_object:
         json.dump(tokens['unigrams'], unigrams_json_file_object)
-    with open(unigrams_text_file_path, 'w') as unigrams_text_file_object:
+    with codecs.open(unigrams_text_file_path, mode="w", encoding="utf-8") as unigrams_text_file_object:
         for unigram, frequency in tokens['unigrams'].iteritems():
             unigrams_text_file_object.write(unigram + '\n')
 
@@ -186,7 +185,7 @@ def update_ngram_database(notes_directory, ngram_db_dir):
     bigrams_text_file_path = ngram_db_dir + '/bigrams.txt'
     with open(bigrams_json_file_path, 'w') as bigrams_json_file_object:
         json.dump(tokens['bigrams'], bigrams_json_file_object)
-    with open(bigrams_text_file_path, 'w') as bigrams_text_file_object:
+    with codecs.open(bigrams_text_file_path, mode="w", encoding="utf-8") as bigrams_text_file_object:
         for bigram, frequency in tokens['bigrams'].iteritems():
             bigrams_text_file_object.write(bigram + '\n')
 
@@ -195,7 +194,7 @@ def update_ngram_database(notes_directory, ngram_db_dir):
     trigrams_text_file_path = ngram_db_dir + '/trigrams.txt'
     with open(trigrams_json_file_path, 'w') as trigrams_json_file_object:
         json.dump(tokens['trigrams'], trigrams_json_file_object)
-    with open(trigrams_text_file_path, 'w') as trigrams_text_file_object:
+    with codecs.open(trigrams_text_file_path, mode="w", encoding="utf-8") as trigrams_text_file_object:
         for trigram, frequency in tokens['trigrams'].iteritems():
             trigrams_text_file_object.write(trigram + '\n')
 

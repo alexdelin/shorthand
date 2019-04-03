@@ -207,3 +207,20 @@ $("#fetchAnswered").click(function() {
 $("#fetchUnanswered").click(function() {
     fetchQuestions('unanswered')
 });
+
+// Set up Typeahead
+var searchNotes = new Bloodhound({
+  datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
+  queryTokenizer: Bloodhound.tokenizers.whitespace,
+  // prefetch: '/typeahead/films/post_1960.json',
+  remote: {
+    url: '/typeahead?query=%QUERY',
+    wildcard: '%QUERY'
+  }
+});
+
+$('.typeahead').typeahead(null, {
+  name: 'search-notes',
+  // display: 'value',
+  source: searchNotes
+});
