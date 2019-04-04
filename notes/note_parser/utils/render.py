@@ -10,3 +10,11 @@ def get_rendered_markdown(file_path):
 
     html_content = markdown.markdown(markdown_content, extensions=['fenced_code'])
     return html_content
+
+
+def get_file_content(file_path):
+
+    with codecs.open(file_path, mode='r', encoding="utf-8") as file_object:
+        file_content = file_object.read()
+
+    return file_content

@@ -13,7 +13,7 @@ from note_parser.todo_tools import get_todos, mark_todo, stamp_notes
 from note_parser.search_tools import search_notes, get_context
 from note_parser.question_tools import get_questions
 from note_parser.utils.config import get_notes_config
-from note_parser.utils.render import get_rendered_markdown
+from note_parser.utils.render import get_file_content, get_rendered_markdown
 from note_parser.utils.typeahead import get_typeahead_suggestions
 
 app = Flask(__name__)
@@ -95,7 +95,8 @@ def get_line_context():
 def send_rendered_note():
 
     file_path = NOTES_CONFIG['notes_directory'] + request.args.get('path')
-    return get_rendered_markdown(file_path)
+    file_content = get_file_content(file_path)
+    return render_template('viewer.j2', file_content=file_content)
 
 
 @app.route('/mark_todo', methods=['GET'])

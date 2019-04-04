@@ -19,7 +19,7 @@ function setResultActions(resultType) {
         rowElement = ev.currentTarget.parentElement.parentElement
         filePath = $(rowElement).find('.filePath')[0].innerText
         lineNumber = $(rowElement).find('.lineNumber')[0].innerText
-        var contextElement = '<pre>'
+        var contextElement = '<pre><code class="markdown">'
         $.get('get_context', {filename: filePath, line_number: lineNumber}, function(contextResponse) {
             var loadedContext = JSON.parse(contextResponse)
             console.log(loadedContext)
@@ -30,7 +30,7 @@ function setResultActions(resultType) {
             _.each(loadedContext['after'], function (afterLine) {
                 contextElement += afterLine + '\n'
             });
-            contextElement += '</pre>'
+            contextElement += '</code></pre>'
             console.log(contextElement)
             if (resultType == 'todo') {
                 $(rowElement).find('.todoText')[0].innerHTML = contextElement
