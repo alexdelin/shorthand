@@ -17,6 +17,10 @@ def search_notes(notes_directory, query_string,
 
     query_components = shlex.split(query_string)
 
+    # Early exit for empty query
+    if not query_components:
+        return []
+
     # Add safe handling of quoted phrases
     safe_components = []
     for component in query_components:

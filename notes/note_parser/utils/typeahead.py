@@ -34,17 +34,24 @@ def get_typeahead_suggestions(ngram_db_dir, query_string, limit=10):
         if num_words_in_term > 3:
             return []
         elif num_words_in_term == 3:
-            return search_ngram_db(ngram_db_dir + '/trigrams.txt', current_term, limit)
+            matches = search_ngram_db(ngram_db_dir + '/trigrams.txt', current_term, limit)
+            return [previous_query + '"' + match + '"' for match in matches]
         elif num_words_in_term == 2:
-            return search_ngram_db(ngram_db_dir + '/bigrams.txt', current_term, limit)
+            matches = search_ngram_db(ngram_db_dir + '/bigrams.txt', current_term, limit)
+            return [previous_query + '"' + match + '"' for match in matches]
         elif num_words_in_term == 1:
-            return search_ngram_db(ngram_db_dir + '/unigrams.txt', current_term, limit)
+            matches = search_ngram_db(ngram_db_dir + '/unigrams.txt', current_term, limit)
+            return [previous_query + '"' + match + '"' for match in matches]
 
     else:
         # Only provide suggestions for the current word
         # This can be improved eventually
-        current_term = query_string.split(' ')[-1]
-        return search_ngram_db(ngram_db_dir + '/unigrams.txt', current_term, limit)
+        split_terms = query_string.split(' ')
+        current_term = split_terms[-1]
+        previous_query = ' '.join(split_terms[:-1])
+
+        matches = search_ngram_db(ngram_db_dir + '/unigrams.txt', current_term, limit)
+        return [previous_query + ' ' + match for match in matches]
 
 
 def search_ngram_db(database_file, search_string, limit):
