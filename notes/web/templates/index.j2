@@ -79,6 +79,42 @@
 
         </div>
 
+        <!-- Single Search bar -->
+        <div>
+          <form class="form-inline">
+            <div class="form-group">
+              <label class="sr-only" for="exampleInputAmount">Amount (in dollars)</label>
+              <div class="input-group">
+                <div class="input-group-btn">
+                  <!-- Filter Result Types -->
+                  <select id="resultType" class="form-control">
+                    <option>Everything</option>
+                    <option>To-Dos</option>
+                    <option>Questions</option>
+                  </select>
+
+                  <!-- To-Do-Specific Filters -->
+                  <select id="todoType" class="form-control" style="display: none;">
+                    <option>All</option>
+                    <option>Complete</option>
+                    <option>Incomplete</option>
+                    <option>Skipped</option>
+                  </select>
+
+                  <!-- Question-Specific Filters -->
+                  <select id="questionType" class="form-control" style="display: none;">
+                    <option>All</option>
+                    <option>Answered</option>
+                    <option>Unanswered</option>
+                  </select>
+
+                <input type="text" class="form-control" id="exampleInputAmount" placeholder="Amount">
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Search</button>
+          </form>
+        </div>
+
         <div id="resultWrapper" class="row">
             <div class="col-md-12">
                 <table id="todoContent" class="table table-striped">
