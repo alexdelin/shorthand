@@ -224,3 +224,8 @@ $('.typeahead').typeahead(null, {
   // display: 'value',
   source: searchNotes
 });
+
+function setDropdownViz(menu) {
+    console.log('Hello!')
+    debugger;
+}

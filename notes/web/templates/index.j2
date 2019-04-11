@@ -86,15 +86,16 @@
               <label class="sr-only" for="exampleInputAmount">Amount (in dollars)</label>
               <div class="input-group">
                 <div class="input-group-btn">
+
                   <!-- Filter Result Types -->
-                  <select id="resultType" class="form-control">
+                  <select id="resultType" class="form-control" onchange="setDropdownViz('resultType')">
                     <option>Everything</option>
                     <option>To-Dos</option>
                     <option>Questions</option>
                   </select>
 
                   <!-- To-Do-Specific Filters -->
-                  <select id="todoType" class="form-control" style="display: none;">
+                  <select id="todoType" class="form-control" style="display: none;" onchange="setDropdownViz('todoType')">
                     <option>All</option>
                     <option>Complete</option>
                     <option>Incomplete</option>
@@ -102,7 +103,7 @@
                   </select>
 
                   <!-- Question-Specific Filters -->
-                  <select id="questionType" class="form-control" style="display: none;">
+                  <select id="questionType" class="form-control" style="display: none;" onchange="setDropdownViz('questionType')">
                     <option>All</option>
                     <option>Answered</option>
                     <option>Unanswered</option>
