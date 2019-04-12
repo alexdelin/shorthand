@@ -217,6 +217,7 @@ function renderSearchResults(searchData) {
     setResultActions('search')
 }
 
+/*
 function fetchQuestions(status) {
     console.log( "Handler for search submit called." );
     $('#searchContent')[0].style.display = 'none'
@@ -260,6 +261,35 @@ $("#fetchAnswered").click(function() {
 $("#fetchUnanswered").click(function() {
     fetchQuestions('unanswered')
 });
+*/
+
+function renderQuestionResults(questionData) {
+    // Set visibility of results containers
+    $('#questionList')[0].innerHTML = ''
+    $('#searchContent')[0].style.display = 'none'
+    $('#todoContent')[0].style.display = 'none'
+    $('#questionContent')[0].style.display = 'block'
+
+    // Render new results
+    var loadedData = JSON.parse(questionData)
+    var questionResultElement = ''
+    _.each(loadedData, function(questionResult) {
+        var text = questionResult['question']
+        var file = questionResult['file_path']
+        var line = questionResult['line_number']
+        var answer = questionResult['answer']
+        var newRowElement = '<tr><td class="questionText">' + text +
+                            '</td><td class="filePath">' + file +
+                            '</td><td class="lineNumber">' + line +
+                            '</td><td>' + answer +
+                            '</td><td class="actionButtons">' +
+                                '<span class="getContext">🔎</span> ' +
+                            '</td></tr>'
+        questionResultElement = questionResultElement + newRowElement
+    })
+    $('#questionList').append(questionResultElement)
+    setResultActions('question')
+}
 
 // Set up Typeahead
 var searchNotes = new Bloodhound({
@@ -315,17 +345,21 @@ $("#masterSearch").click(function() {
         $.get('search', {query_string: searchFilter},
             function(searchData){
                 renderSearchResults(searchData)
-            });
+        });
     } else if (resultFilter === 'To-Dos') {
         // Search To-Dos
         console.log('searching To-Dos');
         $.get('get_todos', {status: todoFilter, directory_filter: directoryFilter},
             function(todoData){
                 renderTodoResults(todoData)
-            });
+        });
     } else if (resultFilter === 'Questions') {
         // Search Questions
         console.log('searching Questions');
+        $.get('get_questions', {status: questionFilter, directory_filter: directoryFilter},
+            function(questionData){
+                renderQuestionResults(questionData)
+        });
     } else {
         // Should never get here
         alert('Something went wrong!');

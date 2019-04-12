@@ -35,6 +35,8 @@ def is_answer_line(line_content):
 
 def get_questions(notes_directory, question_status='all', directory_filter=None):
 
+    question_status = question_status.lower()
+
     if question_status not in ['all', 'answered', 'unanswered']:
         raise ValueError('Invalid question status ' + question_status)
 
