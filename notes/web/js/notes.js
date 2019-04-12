@@ -48,7 +48,7 @@ function setResultActions(resultType) {
             console.log('Marking Complete')
             rowElement = ev.currentTarget.parentElement.parentElement
             todoFile = $(rowElement).find('.filePath')[0].innerText
-            todoLine = $(rowElement).find('.todoLine')[0].innerText
+            todoLine = $(rowElement).find('.lineNumber')[0].innerText
             $.get(
                 'mark_todo',
                 {
@@ -66,7 +66,7 @@ function setResultActions(resultType) {
             console.log('Marking Skipped')
             rowElement = ev.currentTarget.parentElement.parentElement
             todoFile = $(rowElement).find('.filePath')[0].innerText
-            todoLine = $(rowElement).find('.todoLine')[0].innerText
+            todoLine = $(rowElement).find('.lineNumber')[0].innerText
             $.get(
                 'mark_todo',
                 {

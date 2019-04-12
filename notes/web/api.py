@@ -25,10 +25,14 @@ NOTES_CONFIG = get_notes_config()
 def show_ui():
 
     all_directories = ['ALL']
-    for subdir in os.listdir(NOTES_CONFIG['notes_directory']):
-        full_subdir_path = NOTES_CONFIG['notes_directory'] + '/' + subdir
-        if os.path.isdir(full_subdir_path) and subdir != '.git':
-            all_directories.append(subdir)
+    for subdir in os.walk(NOTES_CONFIG['notes_directory']):
+        subdir_path = subdir[0][len(NOTES_CONFIG['notes_directory']) + 1:]
+        if '.git' in subdir_path or not subdir_path:
+            continue
+        elif len(subdir_path.split('/')) > 2:
+            continue
+        else:
+            all_directories.append(subdir_path)
 
     return render_template('index.j2', all_directories=all_directories)
 
