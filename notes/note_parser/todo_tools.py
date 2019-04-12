@@ -1,6 +1,7 @@
 import re
 from datetime import datetime
 from subprocess import Popen, PIPE
+import shlex
 
 from note_parser.utils.patterns import INCOMPLETE_PREFIX_GREP, \
     COMPLETE_PREFIX_GREP, SKIPPED_PREFIX_GREP, CATCH_ALL_PATTERN, \
@@ -87,7 +88,8 @@ def stamp_notes(notes_directory):
     return 'Done!'
 
 
-def get_todos(notes_directory, todo_status='incomplete', directory_filter=None):
+def get_todos(notes_directory, todo_status='incomplete', directory_filter=None,
+              query_string=None, case_sensitive=False):
 
     todo_status = todo_status.lower()
 
@@ -102,12 +104,35 @@ def get_todos(notes_directory, todo_status='incomplete', directory_filter=None):
             search_directory += '/'
         search_directory += directory_filter
 
-    print(search_directory)
+    grep_command = 'grep -rn {pattern} {dir} | grep -v "\\.git"'.format(
+            pattern=PATTERN_MAPPING[todo_status],
+            dir=search_directory)
+
+    if query_string:
+        query_components = shlex.split(query_string)
+        # Add safe handling of quoted phrases
+        safe_components = []
+        for component in query_components:
+            if component[0] == '"' and component[-1] == '"':
+                safe_components.append(component[1:-1])
+            else:
+                safe_components.append(component)
+
+        if not case_sensitive:
+            grep_filter_mode = ' -i'
+        else:
+            grep_filter_mode = ''
+
+        for additional_filter in query_components:
+            new_filter = ' | grep{mode} "{pattern}"'.format(
+                            mode=grep_filter_mode,
+                            pattern=additional_filter)
+            grep_command = grep_command + new_filter
+
+    print(grep_command)
 
     proc = Popen(
-        'grep -rn {pattern} {dir} | grep -v "\\.git"'.format(
-            pattern=PATTERN_MAPPING[todo_status],
-            dir=search_directory),
+        grep_command,
         stdout=PIPE, stderr=PIPE,
         shell=True)
     output, err = proc.communicate()

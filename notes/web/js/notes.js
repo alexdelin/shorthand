@@ -229,14 +229,23 @@ $("#masterSearch").click(function() {
     } else if (resultFilter === 'To-Dos') {
         // Search To-Dos
         console.log('searching To-Dos');
-        $.get('get_todos', {status: todoFilter, directory_filter: directoryFilter},
+        $.get('get_todos',
+            {
+                status: todoFilter,
+                directory_filter: directoryFilter,
+                query_string: searchFilter
+            },
             function(todoData){
                 renderTodoResults(todoData)
         });
     } else if (resultFilter === 'Questions') {
         // Search Questions
         console.log('searching Questions');
-        $.get('get_questions', {status: questionFilter, directory_filter: directoryFilter},
+        $.get('get_questions',
+            {
+                status: questionFilter,
+                directory_filter: directoryFilter
+            },
             function(questionData){
                 renderQuestionResults(questionData)
         });

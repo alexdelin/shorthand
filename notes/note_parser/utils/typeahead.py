@@ -51,7 +51,15 @@ def get_typeahead_suggestions(ngram_db_dir, query_string, limit=10):
         previous_query = ' '.join(split_terms[:-1])
 
         matches = search_ngram_db(ngram_db_dir + '/unigrams.txt', current_term, limit)
-        return [previous_query + ' ' + match for match in matches]
+        clean = []
+        for match in matches:
+            try:
+                clean.append(unicode(previous_query + ' ' + match.decode('utf-8')))
+            except:
+                print(previous_query)
+                print(match)
+                raise
+        return [unicode(previous_query + ' ' + match.decode('utf-8')) for match in matches]
 
 
 def search_ngram_db(database_file, search_string, limit):
@@ -65,6 +73,8 @@ def search_ngram_db(database_file, search_string, limit):
                         pattern=grep_pattern,
                         file=database_file,
                         limit=limit)
+
+    print(grep_command)
 
     proc = Popen(grep_command,
                  stdout=PIPE, stderr=PIPE,
@@ -144,9 +154,6 @@ def update_ngram_database(notes_directory, ngram_db_dir):
                 tokens['bigrams'].extend(bigrams(sentence_safe_split))
                 tokens['trigrams'].extend(trigrams(sentence_safe_split))
 
-        # Only process the first file for now
-        # break
-
     '''
     Squash the list of tokens into a dict that tracks
     the number of occurences of each token. Will look like:
@@ -205,4 +212,4 @@ def update_ngram_database(notes_directory, ngram_db_dir):
         for trigram, frequency in tokens['trigrams'].iteritems():
             trigrams_text_file_object.write(trigram + '\n')
 
-update_ngram_database('/Users/alexdelin/notes', '/Users/alexdelin/Desktop/ngram_db')
+# update_ngram_database('/Users/alexdelin/notes', '/Users/alexdelin/Desktop/ngram_db')

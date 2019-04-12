@@ -52,12 +52,14 @@ def get_current_todos():
 
     status = request.args.get('status')
     directory_filter = request.args.get('directory_filter')
+    query_string = request.args.get('query_string')
     if directory_filter == 'ALL':
         directory_filter = None
 
     return json.dumps(get_todos(
                 notes_directory=NOTES_CONFIG['notes_directory'],
-                todo_status=status, directory_filter=directory_filter))
+                todo_status=status, directory_filter=directory_filter,
+                query_string=query_string))
 
 
 @app.route('/get_questions', methods=['GET'])
