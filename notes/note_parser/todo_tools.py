@@ -88,6 +88,8 @@ def stamp_notes(notes_directory):
 
 def get_todos(notes_directory, todo_status='incomplete', directory_filter=None):
 
+    todo_status = todo_status.lower()
+
     if todo_status not in PATTERN_MAPPING.keys():
         raise ValueError('Invalid todo type ' + todo_status)
 

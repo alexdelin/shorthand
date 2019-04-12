@@ -86,6 +86,7 @@ function setResultActions(resultType) {
     }
 }
 
+/*
 function fetchTodos(status) {
     console.log( "Handler for refresh content called." );
     $('#searchContent')[0].style.display = 'none'
@@ -124,6 +125,30 @@ $("#fetchComplete").click(function() {
 $("#fetchSkipped").click(function() {
     fetchTodos('skipped')
 });
+*/
+
+function renderTodoResults(todoData) {
+    // Set visibility of results containers
+    $('#todoList')[0].innerHTML = ''
+    $('#searchContent')[0].style.display = 'none'
+    $('#todoContent')[0].style.display = 'block'
+    $('#questionContent')[0].style.display = 'none'
+
+    // Render new results
+    var loadedData = JSON.parse(todoData)
+    var todoListElement = ''
+    _.each(loadedData, function(todoResult) {
+        var text = todoResult['todo_text']
+        var file = todoResult['file_path']
+        var startDate = todoResult['start_date']
+        var endDate = todoResult['end_date']
+        var line = todoResult['line_number']
+        var newRowElement = getTodoElement(text, file, startDate, endDate, line)
+        todoListElement = todoListElement + newRowElement
+    })
+    $('#todoList').append(todoListElement)
+    setResultActions('todo')
+}
 
 $("#stampNotes").click(function() {
     console.log( "Handler for stamp notes called." );
@@ -174,7 +199,6 @@ function renderSearchResults(searchData) {
     $('#questionContent')[0].style.display = 'none'
 
     // Render new results
-    console.log(searchData)
     var loadedData = JSON.parse(searchData)
     var searchResultElement = ''
     _.each(loadedData, function(searchResult) {
@@ -295,6 +319,10 @@ $("#masterSearch").click(function() {
     } else if (resultFilter === 'To-Dos') {
         // Search To-Dos
         console.log('searching To-Dos');
+        $.get('get_todos', {status: todoFilter, directory_filter: directoryFilter},
+            function(todoData){
+                renderTodoResults(todoData)
+            });
     } else if (resultFilter === 'Questions') {
         // Search Questions
         console.log('searching Questions');
