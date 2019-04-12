@@ -35,7 +35,7 @@ def search_notes(notes_directory, query_string,
         grep_mode += 'i'
         grep_filter_mode += ' -i'
 
-    grep_command = 'grep {mode} "{pattern}" {dir}'.format(
+    grep_command = 'grep {mode} "{pattern}" {dir} | grep -v "\\.git"'.format(
                         mode=grep_mode,
                         pattern=query_components[0],
                         dir=notes_directory)
@@ -61,6 +61,7 @@ def search_notes(notes_directory, query_string,
             continue
 
         split_line = line.split(':', 2)
+        print(split_line)
         file_path = split_line[0].strip()
         line_number = split_line[1].strip()
         match_content = split_line[2].strip()

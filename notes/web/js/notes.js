@@ -133,6 +133,7 @@ $("#stampNotes").click(function() {
     });
 });
 
+/*
 $("#searchSubmit").click(function() {
 
     console.log( "Handler for search submit called." );
@@ -163,6 +164,34 @@ $("#searchSubmit").click(function() {
             setResultActions('search')
     });
 });
+*/
+
+function renderSearchResults(searchData) {
+    // Set visibility of results containers
+    $('#searchResults')[0].innerHTML = ''
+    $('#searchContent')[0].style.display = 'block'
+    $('#todoContent')[0].style.display = 'none'
+    $('#questionContent')[0].style.display = 'none'
+
+    // Render new results
+    console.log(searchData)
+    var loadedData = JSON.parse(searchData)
+    var searchResultElement = ''
+    _.each(loadedData, function(searchResult) {
+        var text = searchResult['match_content']
+        var file = searchResult['file_path']
+        var line = searchResult['line_number']
+        var newRowElement = '<tr><td class="searchResult">' + text +
+                            '</td><td class="filePath">' + file +
+                            '</td><td class="lineNumber">' + line +
+                            '</td><td class="actionButtons">' +
+                                '<span class="getContext">🔎</span> ' +
+                            '</td></tr>'
+        searchResultElement = searchResultElement + newRowElement
+    })
+    $('#searchResults').append(searchResultElement)
+    setResultActions('search')
+}
 
 function fetchQuestions(status) {
     console.log( "Handler for search submit called." );
@@ -212,7 +241,6 @@ $("#fetchUnanswered").click(function() {
 var searchNotes = new Bloodhound({
   datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
   queryTokenizer: Bloodhound.tokenizers.whitespace,
-  // prefetch: '/typeahead/films/post_1960.json',
   remote: {
     url: '/typeahead?query=%QUERY',
     wildcard: '%QUERY'
@@ -221,11 +249,60 @@ var searchNotes = new Bloodhound({
 
 $('.typeahead').typeahead(null, {
   name: 'search-notes',
-  // display: 'value',
   source: searchNotes
 });
 
 function setDropdownViz(menu) {
-    console.log('Hello!')
-    debugger;
+
+    var newValue = $('#' + menu)[0].value;
+    var todoFilter = $('#todoType')[0];
+    var questionFilter = $('#questionType')[0];
+
+    if (menu === 'resultType') {
+        if (newValue === 'To-Dos') {
+            // Show options for ToDos
+            questionFilter.style.display = "none";
+            todoFilter.style.display = "block";
+        } else if (newValue === 'Questions') {
+            // Show options for Questions
+            questionFilter.style.display = "block";
+            todoFilter.style.display = "none";
+        } else if (newValue === 'Everything') {
+            // Show options for Everything
+            questionFilter.style.display = "none";
+            todoFilter.style.display = "none";
+        }
+    }
 }
+
+$("#masterSearch").click(function() {
+    console.log('Master Search clicked!')
+
+    // Dropdown filter elements
+    var resultFilter = $('#resultType')[0].value;
+    var todoFilter = $('#todoType')[0].value;
+    var questionFilter = $('#questionType')[0].value;
+    var directoryFilter = $('#directoryFilter')[0].value;
+    var searchFilter = $('#searchFilter')[0].value
+
+    if (resultFilter === 'Everything') {
+        // Do a full-text search
+        console.log('searching Everything');
+        $.get('search', {query_string: searchFilter},
+            function(searchData){
+                renderSearchResults(searchData)
+            });
+    } else if (resultFilter === 'To-Dos') {
+        // Search To-Dos
+        console.log('searching To-Dos');
+    } else if (resultFilter === 'Questions') {
+        // Search Questions
+        console.log('searching Questions');
+    } else {
+        // Should never get here
+        alert('Something went wrong!');
+    }
+
+});
+
+
