@@ -20,6 +20,7 @@ PATTERN_MAPPING = {
 def stamp_notes(notes_directory):
 
     grep_command = 'grep -r {pattern} {directory} | '\
+                   'grep -v "\\.git" | '\
                    'grep -v {filter_1} | '\
                    'grep -v {filter_2}'.format(
                         pattern=CATCH_ALL_PATTERN,
@@ -104,7 +105,7 @@ def get_todos(notes_directory, todo_status='incomplete', directory_filter=None):
     print(search_directory)
 
     proc = Popen(
-        'grep -rn {pattern} {dir}'.format(
+        'grep -rn {pattern} {dir} | grep -v "\\.git"'.format(
             pattern=PATTERN_MAPPING[todo_status],
             dir=search_directory),
         stdout=PIPE, stderr=PIPE,
