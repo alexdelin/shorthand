@@ -29,7 +29,7 @@
         </div>
 
         <!-- Single Search bar -->
-        <div class="row">
+        <div class="row padded-top">
           <div class="col-md-12">
             <form class="form-inline">
               <div class="form-group">
@@ -58,6 +58,7 @@
                       <option>Unanswered</option>
                     </select>
 
+                  <!-- Search Bar -->
                   <input type="text" class="form-control typeahead" id="searchFilter" placeholder="Amount">
 
                   <!-- Directory Filter -->
@@ -68,12 +69,13 @@
                   </select>
                 </div>
               </div>
+              <!-- Search Button -->
               <button id="masterSearch" type="submit" class="btn btn-primary">Search</button>
             </form>
           </div>
         </div>
 
-        <div id="resultWrapper" class="row">
+        <div id="resultWrapper" class="row padded-top">
             <div class="col-md-12">
                 <table id="todoContent" class="table table-striped">
                   <thead>
