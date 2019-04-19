@@ -8,6 +8,7 @@ The origin of many of the elements added here are practices that are common with
 3. Note format notes are explicitly designed to **not** be rendered into a web page or other display format. The need to render files written in other markup languages into display formats creates a number of unnecessary elements and increases the complexity of the format in a way that does more damage than good.
 4. The syntax should be based on how to best accurately capture and retrieve information at a later date, not just blindly implement fancy new features.
 5. The language should be as minimal as possible. Markup languages have defined lots of different ways of doing the same few things, with most markup languages supporting multiple options for each. Note format adopts the C-style idea that a language should provide one way and **only one way** to do everything.
+6. Lines should be broken as infrequently as possible. Breaking lines at arbitrary lengths makes parsing markup files artificially difficult and causes more problems than it is worth. A large single element should be put on a single line wherever possible to make parsing and later retrieval easier.
 
 ## Syntax Definition
 
@@ -50,14 +51,69 @@ Heading 1
 
 ### Lists
 #### Itemized Lists
+The format for itemized (unordered lists) is exactly the same as markdown.
+```notes
+- A bullet point
+- Another point
+    + A sub-element
+    + Something else at the second level
+        * Something even deeper
+```
+
 #### Enumerated lists
+The format for enumerated lists is an expansion of the basic form used by most most markup languages.
+```notes
+1. A standard markdown list element
+2) Some other styling options
+C. Letters as well
+    a. Upper and lower case supported
+        1) can nest arbitrarily deeply
+```
+Becaues all letters are valid leading characters, roman numerals can also be used for other sytling options
+```notes
+I) The first thing
+II) The second thing
+III) Third
+    i. A sub point
+    ii. another one
+IV) Number four
+```
 
 ### Quotes
+The quote syntax in markdown is used unchanged
+
+```notes
+Some regular text
+
+> A quote from a very reliable source
+```
 
 ### Code Samples
 
-### Questions
+### Questions + Answers
+Recording answered and unanswered questions are a natural part of any note-taking, and an important feature that most who take notes with a pen and paper will have a special process (colored tabs, etc.) for. Question and answer pairs are a good abstraction for individual bits of new information that should be cataloged for later retrieval, as well as current unknown which have to be figured out and addressed in the future
+
+The simplest form of a question is any string of text following a question mark and a space (`? foo`).
+Because questions and their answers are intrinsically tied together, answers must be stored in predictable locations. The easiest place to put an answer is on the following line, indicated by an at-sign followed by a space then the text of the answer. Questions that are followed by **any other line** are considered to have no answer tied to them and be in an "unanswered" state.
+The indentation of the answer is for readability purposes only and does not have any functional impact.
+```notes
+? What is the meaning of life
+    @ 23
+```
+Unanswered and Answered questions side-by-side
+```notes
+? Does P = NP
+? Another question
+    @ with an answer
+```
 
 ### ToDos
 
-### Tags
+### Metadata
+#### Tags
+#### Timestamps
+
+## Unsupported Elements
+### Fancy Links
+### Comments
+### Images
