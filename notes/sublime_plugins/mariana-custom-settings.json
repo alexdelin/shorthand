@@ -19,6 +19,11 @@
             // "foreground": "#00FF00",
         },
         {
+            "name": "Quote",
+            "scope": "markup.quote",
+            "foreground": "var(grey2)"
+        },
+        {
             "name": "Question Start",
             "scope": "markup.list.question.start",
             "foreground": "var(yellow)"

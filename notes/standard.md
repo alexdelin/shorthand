@@ -43,11 +43,24 @@ Heading 1
 ```
 
 ### Text Emphasis
+While text emphasis is not strictly necessary, it is one of the basic tools that help people convey information more effectively in digital formats, and is a major convenience tool to have available.
+The markdown syntax for text emphasis is by far the most common, but org mode has the most options and appears to be the best designed.
 
 #### Bold
+```notes
+
+```
 #### Italics
+```notes
+
+```
 #### Underline
+Not supported
+
 #### Strikethrough
+```notes
+
+```
 
 ### Lists
 #### Itemized Lists
