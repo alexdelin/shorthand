@@ -8,7 +8,7 @@ from note_parser.utils.patterns import INCOMPLETE_PREFIX_GREP, \
     VALID_INCOMPLETE_PATTERN, VALID_COMPLETE_PATTERN, \
     UNFINISHED_UNSTAMPED_PATTERN, FINISHED_START_STAMPED_PATTERN, \
     FINISHED_UNSTAMPED_PATTERN, START_STAMP_ONLY_PATTERN, \
-    START_END_STAMP_ONLY_PATTERN
+    START_END_STAMP_ONLY_PATTERN, TODAY_GREP
 
 # Set up Regexes to use for finding files to process with `grep`
 PATTERN_MAPPING = {
@@ -20,6 +20,7 @@ PATTERN_MAPPING = {
 
 def stamp_notes(notes_directory):
 
+    """
     grep_command = 'grep -r {pattern} {directory} | '\
                    'grep -v "\\.git" | '\
                    'grep -v {filter_1} | '\
@@ -84,6 +85,22 @@ def stamp_notes(notes_directory):
 
         with open(filename, 'w') as write_file_object:
             write_file_object.write(''.join(stamped_content))
+
+    """
+    today_grep_command = 'grep -r {pattern} {directory} | '\
+                   'grep -v "\\.git"'.format(
+                        pattern=TODAY_GREP,
+                        directory=notes_directory)
+
+    today_proc = Popen(today_grep_command,
+                 stdout=PIPE, stderr=PIPE,
+                 shell=True)
+    today_output, err = today_proc.communicate()
+
+    today_output_lines = today_output.split('\n')
+    today_matched_filenames = [line.split(':')[0] for line in today_output_lines if line.strip()]
+    today_matched_filenames = list(set(today_matched_filenames))
+    print(today_matched_filenames)
 
     return 'Done!'
 

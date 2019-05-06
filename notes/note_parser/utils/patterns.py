@@ -16,6 +16,7 @@ START_END_STAMP_ONLY_PATTERN = r'(\()([1-2]\d{3}\-\d{2}\-\d{2})( -> )([1-2]\d{3}
 ALL_QUESTIONS_GREP = r'"\(^\\s*\)\(\?\)"'
 ANSWER_PATTERN = r'(^\s*)(@ )(.*)'
 
+TODAY_GREP = r'"\\\today"'
 
 def escape_for_grep(input_pattern):
     pass
