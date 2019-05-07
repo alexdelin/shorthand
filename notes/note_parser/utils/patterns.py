@@ -17,6 +17,9 @@ ALL_QUESTIONS_GREP = r'"\(^\\s*\)\(\?\)"'
 ANSWER_PATTERN = r'(^\s*)(@ )(.*)'
 
 TODAY_GREP = r'"\\\today"'
+TODAY_LINE_PATTERN = r'(.*)(\\today)(.*)'
+
+TAG_PATTERN = r':\w*:'
 
 def escape_for_grep(input_pattern):
     pass
