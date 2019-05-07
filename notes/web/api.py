@@ -12,6 +12,7 @@ from flask import Flask, request, render_template, send_from_directory
 from note_parser.todo_tools import get_todos, mark_todo, stamp_notes
 from note_parser.search_tools import search_notes, get_context
 from note_parser.question_tools import get_questions
+from note_parser.tag_tools import get_tags
 from note_parser.utils.config import get_notes_config
 from note_parser.utils.render import get_file_content, get_rendered_markdown
 from note_parser.utils.typeahead import get_typeahead_suggestions
@@ -73,6 +74,18 @@ def fetch_questions():
     return json.dumps(get_questions(
                 notes_directory=NOTES_CONFIG['notes_directory'],
                 question_status=status, directory_filter=directory_filter))
+
+
+@app.route('/get_tags', methods=['GET'])
+def fetch_tags():
+
+    directory_filter = request.args.get('directory_filter')
+    if directory_filter == 'ALL':
+        directory_filter = None
+
+    return json.dumps(get_tags(
+                notes_directory=NOTES_CONFIG['notes_directory'],
+                directory_filter=directory_filter))
 
 
 @app.route('/search', methods=['GET'])
