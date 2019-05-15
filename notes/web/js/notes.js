@@ -86,6 +86,10 @@ function setResultActions(resultType) {
     }
 }
 
+function setCount(count) {
+    $('#resultCount')[0].innerHTML = count
+}
+
 function renderTodoResults(todoData) {
     // Set visibility of results containers
     $('#todoList')[0].innerHTML = ''
@@ -96,7 +100,7 @@ function renderTodoResults(todoData) {
     // Render new results
     var loadedData = JSON.parse(todoData)
     var todoListElement = ''
-    _.each(loadedData, function(todoResult) {
+    _.each(loadedData['items'], function(todoResult) {
         var text = todoResult['todo_text']
         var file = todoResult['file_path']
         var startDate = todoResult['start_date']
@@ -106,6 +110,7 @@ function renderTodoResults(todoData) {
         todoListElement = todoListElement + newRowElement
     })
     $('#todoList').append(todoListElement)
+    setCount(loadedData['count'])
     setResultActions('todo')
 }
 
@@ -127,7 +132,7 @@ function renderSearchResults(searchData) {
     // Render new results
     var loadedData = JSON.parse(searchData)
     var searchResultElement = ''
-    _.each(loadedData, function(searchResult) {
+    _.each(loadedData['items'], function(searchResult) {
         var text = searchResult['match_content']
         var file = searchResult['file_path']
         var line = searchResult['line_number']
@@ -140,6 +145,7 @@ function renderSearchResults(searchData) {
         searchResultElement = searchResultElement + newRowElement
     })
     $('#searchResults').append(searchResultElement)
+    setCount(loadedData['count'])
     setResultActions('search')
 }
 
@@ -153,7 +159,7 @@ function renderQuestionResults(questionData) {
     // Render new results
     var loadedData = JSON.parse(questionData)
     var questionResultElement = ''
-    _.each(loadedData, function(questionResult) {
+    _.each(loadedData['items'], function(questionResult) {
         var text = questionResult['question']
         var file = questionResult['file_path']
         var line = questionResult['line_number']
@@ -168,6 +174,7 @@ function renderQuestionResults(questionData) {
         questionResultElement = questionResultElement + newRowElement
     })
     $('#questionList').append(questionResultElement)
+    setCount(loadedData['count'])
     setResultActions('question')
 }
 

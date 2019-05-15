@@ -236,7 +236,10 @@ def get_todos(notes_directory, todo_status='incomplete', directory_filter=None,
             print('Invalid sort field {}'.format(sort_by))
         todo_items = sorted(todo_items, key=lambda k: k[sort_by], reverse=True)
 
-    return todo_items
+    return {
+        "items": todo_items,
+        "count": len(todo_items)
+    }
 
 
 def mark_todo(filename, line_number, status):
