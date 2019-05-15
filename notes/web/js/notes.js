@@ -240,7 +240,8 @@ $("#masterSearch").click(function() {
             {
                 status: todoFilter,
                 directory_filter: directoryFilter,
-                query_string: searchFilter
+                query_string: searchFilter,
+                sort_by: 'start_date'
             },
             function(todoData){
                 renderTodoResults(todoData)
