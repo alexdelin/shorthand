@@ -38,6 +38,17 @@ def show_ui():
     return render_template('index.j2', all_directories=all_directories)
 
 
+@app.route('/swagger', methods=['GET'])
+def show_swagger():
+
+    return render_template('swagger.j2', foo=None)
+
+
+@app.route('/api_spec.json', methods=['GET'])
+def send_api_spec():
+    return send_from_directory('api_spec', 'noteparser_api_spec.json')
+
+
 @app.route('/js/<path:path>', methods=['GET', 'POST'])
 def send_js(path):
     return send_from_directory('js', path)
@@ -46,6 +57,11 @@ def send_js(path):
 @app.route('/css/<path:path>', methods=['GET', 'POST'])
 def send_css(path):
     return send_from_directory('css', path)
+
+
+@app.route('/img/<path:path>', methods=['GET', 'POST'])
+def send_img(path):
+    return send_from_directory('img', path)
 
 
 @app.route('/get_todos', methods=['GET'])
