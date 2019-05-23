@@ -19,7 +19,22 @@
             // "foreground": "#00FF00",
         },
         {
-            "name": "Quote",
+            "name": "Definition Term",
+            "scope": "noteparser.definition.term",
+            "foreground": "var(green)"
+        },
+        {
+            "name": "Definition text",
+            "scope": "noteparser.definition.definition",
+            "foreground": "var(orange)"
+        },
+        {
+            "name": "Metadata Tag",
+            "scope": "noteparser.metadata-tag",
+            "foreground": "var(red)"
+        },
+        {
+            "name": "Quote Content",
             "scope": "markup.quote",
             "foreground": "var(grey2)"
         },

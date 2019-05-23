@@ -203,6 +203,17 @@ contexts:
         - match: \n
           pop: true
         - include: list-paragraph
+    - match: '^([ ]{0,3})(\{.*\})(?=\s)'
+      captures:
+        1: markup.list.unnumbered.markdown
+        2: noteparser.definition.term
+      push:
+        - meta_content_scope: noteparser.definition.definition
+        - match: ^(?=\S)
+          pop: true
+        - match: \n
+          pop: true
+        - include: list-paragraph
     - match: '^([ ]{0,3})(\?)(?=\s)'
       captures:
         1: markup.list.unnumbered.markdown
@@ -728,6 +739,7 @@ contexts:
     - include: bold
     - include: italic
     - include: strikethrough
+    - include: metadata-tag
   inline-bold-italic-linebreak:
     - include: inline-bold-italic
     - include: hard-line-break
@@ -771,6 +783,18 @@ contexts:
         - meta_scope: markup.strikethrough.markdown-gfm
         - match: ~+
           scope: punctuation.definition.strikethrough.end.markdown
+          pop: true
+        - include: inline
+        - include: bold
+        - include: italic
+        - include: bold-italic-trailing
+  metadata-tag:
+    - match: '(:+)(?![\s\d])(?!:)'
+      scope: noteparser.metadata-tag.begin
+      push:
+        - meta_scope: noteparser.metadata-tag
+        - match: ':+'
+          scope: noteparser.metadata-tag.end
           pop: true
         - include: inline
         - include: bold
@@ -1002,6 +1026,14 @@ contexts:
           push:
             - clear_scopes: 1
             - meta_content_scope: markup.list.todo.skipped.content.markdown
+            - include: list-content
+        - match: '([ ]*)(\{.*\})(?=\s)'
+          captures:
+            1: markup.list.unnumbered.markdown
+            2: noteparser.definition.term
+          push:
+            - clear_scopes: 1
+            - meta_content_scope: noteparser.definition.definition
             - include: list-content
         - match: '([ ]*)([*+-])(?=\s)'
           captures:
