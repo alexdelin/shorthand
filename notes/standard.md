@@ -93,7 +93,7 @@ IV) Number four
 ```
 
 ### Quotes
-The quote syntax in markdown is used unchanged
+The quote syntax in markdown is used unchanged. Quotes are lines which lead with a `>` character
 
 ```notes
 Some regular text
@@ -102,6 +102,14 @@ Some regular text
 ```
 
 ### Code Samples
+Code samples are unchanged from markdown, but **only** fenced code blocks are allowed. Code blocks can be fenced with 3 of either tildes or backticks
+~~~notes
+```format
+# code goes here
+def something():
+    return True
+```
+~~~
 
 ### Questions + Answers
 Recording answered and unanswered questions are a natural part of any note-taking, and an important feature that most who take notes with a pen and paper will have a special process (colored tabs, etc.) for. Question and answer pairs are a good abstraction for individual bits of new information that should be cataloged for later retrieval, as well as current unknown which have to be figured out and addressed in the future
@@ -121,12 +129,48 @@ Unanswered and Answered questions side-by-side
 ```
 
 ### ToDos
+```notes
+# Unstamped
+[] An incomplete to-do item
+[ ] Another incomplete thing
+[S] An item which is no longer needed and has been skipped
+[X] An item which has been completed
+```
 
-### Metadata
-#### Tags
-#### Timestamps
+#### Metadata
+Metadata can be added to todos to make tracking them easier and more useful
+
+##### Timestamps
+```notes
+# Stamped
+[ ] (2019-05-14) An open todo which lists the date that it was created
+[S] (2019-05-15 -> 2019-05-17) A skipped todo that lists the date it was created and the date that it was marked skipped
+[X] (2019-05-16 -> 2019-05-20) A completed todo that lists the date it was created and the date it was marked completed
+```
+
+##### Priority
+```notes
+[ ] (2019-05-14) {1} An extremely important thing to do
+[ ] (2019-05-15) {5} Something _significantly_ less important, but which also has to be done
+```
+
+### Tags
+Tags are meteadata fields that can be applied to any item for easier retireval later on
+```notes
+Somethings that I want to find in the future :topic:
+```
+The element above will be tagged with the tag `topic`
+
+### Definitions
+```notes
+{Term} Definition
+```
 
 ## Unsupported Elements
 ### Fancy Links
+Lots of other markup formats provide nice ways to format notes, which are useful for when you render notes into other formats for presentation
+```notes
+[Link Title](https://www.link-target.com/page.html)
+```
 ### Comments
 ### Images
