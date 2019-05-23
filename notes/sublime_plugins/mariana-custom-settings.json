@@ -21,7 +21,7 @@
         {
             "name": "Definition Term",
             "scope": "noteparser.definition.term",
-            "foreground": "var(green)"
+            "foreground": "var(yellow)"
         },
         {
             "name": "Definition text",
