@@ -141,6 +141,9 @@ Unanswered and Answered questions side-by-side
 Metadata can be added to todos to make tracking them easier and more useful
 
 ##### Timestamps
+ToDo items can include a start timestamp and an end timestamp.
+Generally these timestamps are placed in parentheses right after the opening `[ ]` and are of the format `(start -> end)`
+The start timestamp indicates the
 ```notes
 # Stamped
 [ ] (2019-05-14) An open todo which lists the date that it was created
@@ -149,6 +152,8 @@ Metadata can be added to todos to make tracking them easier and more useful
 ```
 
 ##### Priority
+Priority of a ToDo is indicated in braces `{priority}` right after the timestamp block and before the text of the todo item.
+Priority is represented by a single digit number `1-9` with `1` being the highest priority and `9` being the lowest priority. Any ToDos with no priority listed have an implicit priority level of `5`
 ```notes
 [ ] (2019-05-14) {1} An extremely important thing to do
 [ ] (2019-05-15) {5} Something _significantly_ less important, but which also has to be done
