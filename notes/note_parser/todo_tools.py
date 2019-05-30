@@ -135,7 +135,8 @@ def stamp_notes(notes_directory, stamp_todos=True, stamp_today=True):
 
 
 def get_todos(notes_directory, todo_status='incomplete', directory_filter=None,
-              query_string=None, case_sensitive=False, sort_by=None):
+              query_string=None, case_sensitive=False, sort_by=None,
+              suppress_future=True):
 
     todo_status = todo_status.lower()
 
@@ -229,13 +230,21 @@ def get_todos(notes_directory, todo_status='incomplete', directory_filter=None,
             'status': todo_status
         }
 
-        todo_items.append(processed_todo)
+        is_future_todo = False
+        current_date_stamp = datetime.now().isoformat()[:10]
+        if start_date > current_date_stamp:
+            is_future_todo = True
 
+        if not suppress_future or not is_future_todo:
+            todo_items.append(processed_todo)
+
+    # Sort Results
     if sort_by:
         if sort_by not in SUPPORTED_SORT_FIELDS:
             print('Invalid sort field {}'.format(sort_by))
         todo_items = sorted(todo_items, key=lambda k: k[sort_by], reverse=True)
 
+    # Wrap Results
     return {
         "items": todo_items,
         "count": len(todo_items)

@@ -61,7 +61,7 @@ def get_current_todos():
     return json.dumps(get_todos(
                 notes_directory=NOTES_CONFIG['notes_directory'],
                 todo_status=status, directory_filter=directory_filter,
-                query_string=query_string, sort_by=sort_by))
+                query_string=query_string, sort_by=sort_by, suppress_future=True))
 
 
 @app.route('/get_questions', methods=['GET'])
