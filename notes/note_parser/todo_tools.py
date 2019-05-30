@@ -17,6 +17,8 @@ PATTERN_MAPPING = {
     'skipped': SKIPPED_PREFIX_GREP
 }
 
+SUPPORTED_SORT_FIELDS = ['start_date']
+
 
 def stamp_notes(notes_directory, stamp_todos=True, stamp_today=True):
 
@@ -133,7 +135,7 @@ def stamp_notes(notes_directory, stamp_todos=True, stamp_today=True):
 
 
 def get_todos(notes_directory, todo_status='incomplete', directory_filter=None,
-              query_string=None, case_sensitive=False):
+              query_string=None, case_sensitive=False, sort_by=None):
 
     todo_status = todo_status.lower()
 
@@ -229,7 +231,15 @@ def get_todos(notes_directory, todo_status='incomplete', directory_filter=None,
 
         todo_items.append(processed_todo)
 
-    return todo_items
+    if sort_by:
+        if sort_by not in SUPPORTED_SORT_FIELDS:
+            print('Invalid sort field {}'.format(sort_by))
+        todo_items = sorted(todo_items, key=lambda k: k[sort_by], reverse=True)
+
+    return {
+        "items": todo_items,
+        "count": len(todo_items)
+    }
 
 
 def mark_todo(filename, line_number, status):

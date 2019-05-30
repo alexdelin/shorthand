@@ -78,7 +78,10 @@ def search_notes(notes_directory, query_string,
 
         search_results.append(processed_line)
 
-    return search_results
+    return {
+        "items": search_results,
+        "count": len(search_results)
+    }
 
 
 def get_context(filename, line_number, width):
