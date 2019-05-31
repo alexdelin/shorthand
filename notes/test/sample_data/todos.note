@@ -4,7 +4,7 @@ Every possible type of todo is included here
 ## Incomplete
 ### Standalone
 [] Something to do
-[ ] With a space in the brackets
+[ ] With a space in the brackets already
     [] Indented :topic:
 
 ### In a List
@@ -16,5 +16,27 @@ Every possible type of todo is included here
     3. A third element
 
 ## Skipped
+### Standalone
+[S] Something that I could have done but didn't
+    [S] (2019-05-30 -> 2019-06-03) Indented :pointless:
+
+### In a List
+- Some items
+[S] (2019-05-30) A follow up item which seemed like a good idea
+    a) A sub-task
+    b) Second element
+        [S] A more specific todo :nested:
+    c) A third element
 
 ## Completed
+### Standalone
+[X] Something that got completed
+    [X] (2019-05-27 -> 2019-06-04) Indented and with both start and end stamped :topic:
+
+### In a List
+- Some items
+[X] (2019-05-30) A follow up item which seemed like a good idea
+    a) A sub-task
+    b) Second element
+        [X] A more specific todo :nested:
+    c) A third element

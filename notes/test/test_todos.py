@@ -3,7 +3,8 @@ import os
 from note_parser.todo_tools import get_todos, mark_todo, stamp_notes
 
 from utils import setup_environment
-from results import ALL_INCOMPLETE_TODOS
+from results_unstamped import ALL_INCOMPLETE_TODOS, ALL_SKIPPED_TODOS, \
+                              ALL_COMPLETE_TODOS
 
 
 CONFIG = setup_environment()
@@ -27,11 +28,27 @@ class TestTodos(object):
                 suppress_future=False)
         assert all_incomplete_todos == ALL_INCOMPLETE_TODOS
 
+        # Test Directory filter
+        # Test Query String
+        # Test Sort Order
+        # Test Suppress Future
+        # Test Tag Filter
+
     def test_skipped_todos(self):
-        pass
+        all_skipped_todos = get_todos(
+                notes_directory=CONFIG['notes_directory'],
+                todo_status='skipped', directory_filter=None,
+                query_string=None, sort_by='start_date',
+                suppress_future=False)
+        assert all_skipped_todos == ALL_SKIPPED_TODOS
 
     def test_get_complete_todos(self):
-        pass
+        all_complete_todos = get_todos(
+                notes_directory=CONFIG['notes_directory'],
+                todo_status='complete', directory_filter=None,
+                query_string=None, sort_by='start_date',
+                suppress_future=False)
+        assert all_complete_todos == ALL_COMPLETE_TODOS
 
     def test_invalid_todo_request(self):
         pass
