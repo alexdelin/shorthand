@@ -55,7 +55,9 @@ def extract_tags(text):
         return tags, text
     else:
         raw_tags = tag_regex.findall(text)
+        # Only keep a unique set of tags with no wrapping colons
         tags = [item.strip(':') for item in list(set(raw_tags))]
+        # Only keep tags with at least one letter
         tags = [item for item in tags if any(char.isalpha() for char in item)]
-        clean_text = re.sub(tag_regex, '', text)
+        clean_text = re.sub(tag_regex, '', text).strip()
         return tags, clean_text
