@@ -1,5 +1,13 @@
-function getTodoElement(text, file, startDate, endDate, line) {
-    return '<tr><td class="todoText">' + text +
+function getTagsElements(tags) {
+    var tagElement = ' '
+    _.each(tags, function (tag) {
+        tagElement = tagElement + '<span class="badge">' + tag + '</span>';
+    });
+    return tagElement
+}
+
+function getTodoElement(text, file, startDate, endDate, line, tags) {
+    return '<tr><td class="todoText">' + text + getTagsElements(tags) +
            '</td><td class="filePath">' + file +
            '</td><td>' + startDate +
            '</td><td>' + endDate +
@@ -106,7 +114,8 @@ function renderTodoResults(todoData) {
         var startDate = todoResult['start_date']
         var endDate = todoResult['end_date']
         var line = todoResult['line_number']
-        var newRowElement = getTodoElement(text, file, startDate, endDate, line)
+        var tags = todoResult['tags']
+        var newRowElement = getTodoElement(text, file, startDate, endDate, line, tags)
         todoListElement = todoListElement + newRowElement
     })
     $('#todoList').append(todoListElement)
