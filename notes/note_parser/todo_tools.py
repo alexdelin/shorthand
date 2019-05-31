@@ -3,6 +3,7 @@ from datetime import datetime
 from subprocess import Popen, PIPE
 import shlex
 
+from note_parser.tag_tools import extract_tags
 from note_parser.utils.patterns import INCOMPLETE_PREFIX_GREP, \
     COMPLETE_PREFIX_GREP, SKIPPED_PREFIX_GREP, CATCH_ALL_PATTERN, \
     VALID_INCOMPLETE_PATTERN, VALID_COMPLETE_PATTERN, \
@@ -221,13 +222,18 @@ def get_todos(notes_directory, todo_status='incomplete', directory_filter=None,
             end_date = None
             todo_text = match_content
 
+        tags, clean_text = extract_tags(todo_text)
+        if tags:
+            todo_text = clean_text
+
         processed_todo = {
             'file_path': file_path,
             'line_number': line_number,
             'todo_text': todo_text,
             'start_date': start_date,
             'end_date': end_date,
-            'status': todo_status
+            'status': todo_status,
+            'tags': tags
         }
 
         is_future_todo = False

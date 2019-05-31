@@ -45,3 +45,17 @@ def get_tags(notes_directory, directory_filter=None):
     # Only keep tags with at least one letter
     tag_items = [item for item in tag_items if any(char.isalpha() for char in item)]
     return tag_items
+
+
+def extract_tags(text):
+
+    tags = []
+
+    if ':' not in text:
+        return tags, text
+    else:
+        raw_tags = tag_regex.findall(text)
+        tags = [item.strip(':') for item in list(set(raw_tags))]
+        tags = [item for item in tags if any(char.isalpha() for char in item)]
+        clean_text = re.sub(tag_regex, '', text)
+        return tags, clean_text
