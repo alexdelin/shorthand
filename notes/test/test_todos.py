@@ -73,9 +73,12 @@ class TestTodoStamping(object):
             todo_status='incomplete', directory_filter=None,
             query_string=None, sort_by='start_date',
             suppress_future=False)
-
         assert all([1 if todo['start_date'] else 0 for todo in stamped_incomplete_todos['items']])
+
         # Check that every Skipped todo has both a start date and end date
         # Check that every Complete todo has both a start date and end date
+
+        # Check that the text of each todo has not changed due to stamping
+        # Check that the tags of each todo have not changed due to stamping
         pass
 
