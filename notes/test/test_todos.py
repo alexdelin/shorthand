@@ -10,7 +10,7 @@ from results_unstamped import ALL_INCOMPLETE_TODOS, ALL_SKIPPED_TODOS, \
 CONFIG = setup_environment()
 
 
-class TestTodos(object):
+class TestPrestampedTodos(object):
     """Test basic search functionality of the library"""
 
     def test_setup(self):
@@ -52,3 +52,30 @@ class TestTodos(object):
 
     def test_invalid_todo_request(self):
         pass
+
+
+class TestTodoStamping(object):
+    """Test stamping functionality of the library"""
+
+    def test_stamp(self):
+        response = stamp_notes(CONFIG['notes_directory'])
+        assert response == 'Done!'
+
+    def test_today_replacement(self):
+        # Have a list of lines in specific files to check
+        # that the placeholder text has been replaced as expected
+        pass
+
+    def test_todo_date_stamping(self):
+        # Check that every Incomplete todo has a start date
+        stamped_incomplete_todos = get_todos(
+            notes_directory=CONFIG['notes_directory'],
+            todo_status='incomplete', directory_filter=None,
+            query_string=None, sort_by='start_date',
+            suppress_future=False)
+
+        assert all([1 if todo['start_date'] else 0 for todo in stamped_incomplete_todos['items']])
+        # Check that every Skipped todo has both a start date and end date
+        # Check that every Complete todo has both a start date and end date
+        pass
+
