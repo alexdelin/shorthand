@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 
 from note_parser.todo_tools import get_todos, mark_todo, stamp_notes
 
@@ -67,18 +68,55 @@ class TestTodoStamping(object):
         pass
 
     def test_todo_date_stamping(self):
-        # Check that every Incomplete todo has a start date
+        # Get todo content after stamping
         stamped_incomplete_todos = get_todos(
             notes_directory=CONFIG['notes_directory'],
             todo_status='incomplete', directory_filter=None,
             query_string=None, sort_by='start_date',
             suppress_future=False)
-        assert all([1 if todo['start_date'] else 0 for todo in stamped_incomplete_todos['items']])
+        stamped_skipped_todos = get_todos(
+            notes_directory=CONFIG['notes_directory'],
+            todo_status='skipped', directory_filter=None,
+            query_string=None, sort_by='start_date',
+            suppress_future=False)
+        stamped_complete_todos = get_todos(
+            notes_directory=CONFIG['notes_directory'],
+            todo_status='complete', directory_filter=None,
+            query_string=None, sort_by='start_date',
+            suppress_future=False)
+
+        # Check number of items returned
+        assert len(stamped_incomplete_todos['items']) == len(ALL_INCOMPLETE_TODOS['items'])
+        assert stamped_incomplete_todos['count'] == ALL_INCOMPLETE_TODOS['count']
+        assert len(stamped_skipped_todos['items']) == len(ALL_SKIPPED_TODOS['items'])
+        assert stamped_skipped_todos['count'] == ALL_SKIPPED_TODOS['count']
+        assert len(stamped_complete_todos['items']) == len(ALL_COMPLETE_TODOS['items'])
+        assert stamped_complete_todos['count'] == ALL_COMPLETE_TODOS['count']
+
+        # Check that every Incomplete todo has a start date and *not* an end date
+        for todo in stamped_incomplete_todos['items']:
+            assert todo['start_date']
+            assert not todo['end_date']
 
         # Check that every Skipped todo has both a start date and end date
-        # Check that every Complete todo has both a start date and end date
+        for todo in stamped_skipped_todos['items']:
+            assert todo['start_date']
+            assert todo['end_date']
 
-        # Check that the text of each todo has not changed due to stamping
-        # Check that the tags of each todo have not changed due to stamping
-        pass
+        # Check that every Complete todo has both a start date and end date
+        for todo in stamped_complete_todos['items']:
+            assert todo['start_date']
+            assert todo['end_date']
+
+        # Check that the contents (other than date) of each todo have
+        # not changed due to stamping
+        expected_incomplete_results = []
+        for todo in ALL_INCOMPLETE_TODOS['items']:
+            expected_result = todo
+            if not expected_result.get('start_date'):
+                expected_result['start_date'] = datetime.now().isoformat()[:10]
+            expected_incomplete_results.append(expected_result)
+        expected_incomplete_results = sorted(
+            expected_incomplete_results, key=lambda k: k['start_date'], reverse=True)
+        assert expected_incomplete_results == stamped_incomplete_todos['items']
 
