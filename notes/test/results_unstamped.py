@@ -1,5 +1,5 @@
 ALL_INCOMPLETE_TODOS = {
-    'count': 5,
+    'count': 6,
     'items': [
         {
             'end_date': None,
@@ -9,6 +9,14 @@ ALL_INCOMPLETE_TODOS = {
             'status': 'incomplete',
             'todo_text': 'A follow up item',
             'tags': []
+        }, {
+            'end_date': None,
+            'file_path': '/section/mixed.note',
+            'line_number': '23',
+            'start_date': None,
+            'status': 'incomplete',
+            'tags': ['food', 'baking'],
+            'todo_text': 'Test different cooking times for this recipe',
         }, {
             'end_date': None,
             'file_path': '/todos.note',
@@ -119,6 +127,55 @@ ALL_COMPLETE_TODOS = {
             'status': 'complete',
             'tags': ['nested'],
             'todo_text': 'A more specific todo'
+        }
+    ]
+}
+
+ALL_ANSWERED_QUESTIONS = {
+    'count': 4,
+    'items': [
+        {
+            'answer': 'Granny Smith',
+            'file_path': '/section/mixed.note',
+            'line_number': '20',
+            'question': 'Which kind of apples make the best apple pie :baking:'
+        }, {
+            'answer': '42',
+            'file_path': '/questions.note',
+            'line_number': '6',
+            'question': 'What is the meaning of life :philosophy:'
+        }, {
+            'answer': 'blue',
+            'file_path': '/questions.note',
+            'line_number': '8',
+            'question': 'What color is the sky'
+        }, {
+            'answer': 'To get to the other side',
+            'file_path': '/questions.note',
+            'line_number': '12',
+            'question': 'Why did the chicken cross the road'
+        }
+    ]
+}
+
+ALL_UNANSWERED_QUESTIONS = {
+    'count': 3,
+    'items': [
+        {
+            'answer': None,
+            'file_path': '/questions.note',
+            'line_number': '16',
+            'question': 'Is the world eternal'
+        }, {
+            'answer': None,
+            'file_path': '/questions.note',
+            'line_number': '17',
+            'question': 'What is the best kind of cereal :food:'
+        }, {
+            'answer': None,
+            'file_path': '/questions.note',
+            'line_number': '20',
+            'question': 'How do you write software with no bugs :software:'
         }
     ]
 }
