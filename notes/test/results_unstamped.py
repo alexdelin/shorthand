@@ -218,3 +218,14 @@ SEARCH_RESULTS_FOOD_SENSITIVE = {
         }
     ]
 }
+
+SEARCH_RESULTS_BALANCED_DIET = {
+    'count': 1,
+    'items': [
+        {
+            'file_path': '/questions.note',
+            'line_number': '19',
+            'match_content': 'Food is an essential part of a balanced diet'
+        }
+    ]
+}

@@ -11,6 +11,15 @@ from results_unstamped import ALL_INCOMPLETE_TODOS, ALL_SKIPPED_TODOS, \
 CONFIG = setup_environment()
 
 
+# Helper to make the tests simpler
+def get_todo_results(todo_status='incomplete', directory_filter=None, query_string=None,
+                     sort_by='start_date', suppress_future=False):
+    return get_todos(notes_directory=CONFIG['notes_directory'],
+                     todo_status=todo_status, directory_filter=directory_filter,
+                     query_string=query_string, sort_by=sort_by,
+                     suppress_future=suppress_future)
+
+
 class TestPrestampedTodos(object):
     """Test basic search functionality of the library"""
 
@@ -19,14 +28,9 @@ class TestPrestampedTodos(object):
         test_dir = CONFIG['notes_directory']
         assert os.path.exists(test_dir)
 
-    # ----- ToDos -----
     def test_get_incomplete_todos(self):
         # Test Getting all incomplete todos
-        all_incomplete_todos = get_todos(
-                notes_directory=CONFIG['notes_directory'],
-                todo_status='incomplete', directory_filter=None,
-                query_string=None, sort_by='start_date',
-                suppress_future=False)
+        all_incomplete_todos = get_todo_results('incomplete')
         assert all_incomplete_todos == ALL_INCOMPLETE_TODOS
 
         # Test Directory filter
@@ -36,19 +40,11 @@ class TestPrestampedTodos(object):
         # Test Tag Filter
 
     def test_skipped_todos(self):
-        all_skipped_todos = get_todos(
-                notes_directory=CONFIG['notes_directory'],
-                todo_status='skipped', directory_filter=None,
-                query_string=None, sort_by='start_date',
-                suppress_future=False)
+        all_skipped_todos = get_todo_results('skipped')
         assert all_skipped_todos == ALL_SKIPPED_TODOS
 
     def test_get_complete_todos(self):
-        all_complete_todos = get_todos(
-                notes_directory=CONFIG['notes_directory'],
-                todo_status='complete', directory_filter=None,
-                query_string=None, sort_by='start_date',
-                suppress_future=False)
+        all_complete_todos = get_todo_results('complete')
         assert all_complete_todos == ALL_COMPLETE_TODOS
 
     def test_invalid_todo_request(self):
@@ -69,21 +65,9 @@ class TestTodoStamping(object):
 
     def test_todo_date_stamping(self):
         # Get todo content after stamping
-        stamped_incomplete_todos = get_todos(
-            notes_directory=CONFIG['notes_directory'],
-            todo_status='incomplete', directory_filter=None,
-            query_string=None, sort_by='start_date',
-            suppress_future=False)
-        stamped_skipped_todos = get_todos(
-            notes_directory=CONFIG['notes_directory'],
-            todo_status='skipped', directory_filter=None,
-            query_string=None, sort_by='start_date',
-            suppress_future=False)
-        stamped_complete_todos = get_todos(
-            notes_directory=CONFIG['notes_directory'],
-            todo_status='complete', directory_filter=None,
-            query_string=None, sort_by='start_date',
-            suppress_future=False)
+        stamped_incomplete_todos = get_todo_results('incomplete')
+        stamped_skipped_todos = get_todo_results('skipped')
+        stamped_complete_todos = get_todo_results('complete')
 
         # Check number of items returned
         assert len(stamped_incomplete_todos['items']) == len(ALL_INCOMPLETE_TODOS['items'])
