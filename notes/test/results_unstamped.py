@@ -1,3 +1,8 @@
+EMPTY_RESULTS = {
+    'count': 0,
+    'items': []
+}
+
 ALL_INCOMPLETE_TODOS = {
     'count': 6,
     'items': [
@@ -174,14 +179,14 @@ ALL_UNANSWERED_QUESTIONS = {
         }, {
             'answer': None,
             'file_path': '/questions.note',
-            'line_number': '20',
+            'line_number': '21',
             'question': 'How do you write software with no bugs :software:'
         }
     ]
 }
 
 SEARCH_RESULTS_FOOD = {
-    'count': 3,
+    'count': 4,
     'items': [
         {
             'file_path': '/definitions.note',
@@ -195,6 +200,21 @@ SEARCH_RESULTS_FOOD = {
             'file_path': '/questions.note',
             'line_number': '17',
             'match_content': '? What is the best kind of cereal :food:'
+        }, {
+            'file_path': '/questions.note',
+            'line_number': '19',
+            'match_content': 'Food is an essential part of a balanced diet'
+        }
+    ]
+}
+
+SEARCH_RESULTS_FOOD_SENSITIVE = {
+    'count': 1,
+    'items': [
+        {
+            'file_path': '/questions.note',
+            'line_number': '19',
+            'match_content': 'Food is an essential part of a balanced diet'
         }
     ]
 }
