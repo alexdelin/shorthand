@@ -8,14 +8,6 @@ ALL_INCOMPLETE_TODOS = {
     'items': [
         {
             'end_date': None,
-            'file_path': '/todos.note',
-            'line_number': '12',
-            'start_date': '2019-05-30',
-            'status': 'incomplete',
-            'todo_text': 'A follow up item',
-            'tags': []
-        }, {
-            'end_date': None,
             'file_path': '/section/mixed.note',
             'line_number': '23',
             'start_date': None,
@@ -42,10 +34,18 @@ ALL_INCOMPLETE_TODOS = {
             'end_date': None,
             'file_path': '/todos.note',
             'line_number': '8',
-            'start_date': None,
+            'start_date': '2120-06-01',
             'status': 'incomplete',
-            'todo_text': 'Indented',
-            'tags': ['topic']
+            'todo_text': 'Indented todo which won\'t start for a **long** time',
+            'tags': ['future']
+        }, {
+            'end_date': None,
+            'file_path': '/todos.note',
+            'line_number': '12',
+            'start_date': '2019-05-30',
+            'status': 'incomplete',
+            'todo_text': 'A follow up item which is still open',
+            'tags': []
         }, {
             'end_date': None,
             'file_path': '/todos.note',
@@ -62,6 +62,14 @@ ALL_SKIPPED_TODOS = {
     'count': 4,
     'items': [
         {
+            'end_date': None,
+            'file_path': '/todos.note',
+            'line_number': '20',
+            'start_date': None,
+            'status': 'skipped',
+            'tags': [],
+            'todo_text': "Something that I could have done but didn't"
+        }, {
             'end_date': '2019-06-03',
             'file_path': '/todos.note',
             'line_number': '21',
@@ -76,15 +84,7 @@ ALL_SKIPPED_TODOS = {
             'start_date': '2019-05-30',
             'status': 'skipped',
             'tags': [],
-            'todo_text': 'A follow up item which seemed like a good idea'
-        }, {
-            'end_date': None,
-            'file_path': '/todos.note',
-            'line_number': '20',
-            'start_date': None,
-            'status': 'skipped',
-            'tags': [],
-            'todo_text': "Something that I could have done but didn't"
+            'todo_text': 'A follow up item which seemed like a good idea but wasn\'t'
         }, {
             'end_date': None,
             'file_path': '/todos.note',
@@ -103,11 +103,11 @@ ALL_COMPLETE_TODOS = {
         {
             'end_date': None,
             'file_path': '/todos.note',
-            'line_number': '38',
-            'start_date': '2019-05-30',
+            'line_number': '33',
+            'start_date': None,
             'status': 'complete',
             'tags': [],
-            'todo_text': 'A follow up item which seemed like a good idea'
+            'todo_text': 'Something that got completed'
         }, {
             'end_date': '2019-06-04',
             'file_path': '/todos.note',
@@ -119,11 +119,11 @@ ALL_COMPLETE_TODOS = {
         }, {
             'end_date': None,
             'file_path': '/todos.note',
-            'line_number': '33',
-            'start_date': None,
+            'line_number': '38',
+            'start_date': '2019-05-30',
             'status': 'complete',
             'tags': [],
-            'todo_text': 'Something that got completed'
+            'todo_text': 'A follow up item which seemed like a good idea and is now finished'
         }, {
             'end_date': None,
             'file_path': '/todos.note',
@@ -136,8 +136,8 @@ ALL_COMPLETE_TODOS = {
     ]
 }
 
-ALL_ANSWERED_QUESTIONS = {
-    'count': 4,
+ALL_QUESTIONS = {
+    'count': 7,
     'items': [
         {
             'answer': 'Granny Smith',
@@ -159,14 +159,7 @@ ALL_ANSWERED_QUESTIONS = {
             'file_path': '/questions.note',
             'line_number': '12',
             'question': 'Why did the chicken cross the road'
-        }
-    ]
-}
-
-ALL_UNANSWERED_QUESTIONS = {
-    'count': 3,
-    'items': [
-        {
+        }, {
             'answer': None,
             'file_path': '/questions.note',
             'line_number': '16',

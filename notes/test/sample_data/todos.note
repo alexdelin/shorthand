@@ -5,11 +5,11 @@ Every possible type of todo is included here
 ### Standalone
 [] Something to do
 [ ] With a space in the brackets already
-    [] Indented :topic:
+    [] (2120-06-01) Indented todo which won't start for a **long** time :future:
 
 ### In a List
 - Some items
-[ ] (2019-05-30) A follow up item
+[ ] (2019-05-30) A follow up item which is still open
     1. A sub-task
     2. Second element
         [] A more specific todo :nested:
@@ -22,7 +22,7 @@ Every possible type of todo is included here
 
 ### In a List
 - Some items
-[S] (2019-05-30) A follow up item which seemed like a good idea
+[S] (2019-05-30) A follow up item which seemed like a good idea but wasn't
     a) A sub-task
     b) Second element
         [S] A more specific todo :nested:
@@ -35,7 +35,7 @@ Every possible type of todo is included here
 
 ### In a List
 - Some items
-[X] (2019-05-30) A follow up item which seemed like a good idea
+[X] (2019-05-30) A follow up item which seemed like a good idea and is now finished
     a) A sub-task
     b) Second element
         [X] A more specific todo :nested:

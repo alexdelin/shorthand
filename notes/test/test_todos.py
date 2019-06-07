@@ -1,26 +1,26 @@
 import os
 from datetime import datetime
 
-from note_parser.todo_tools import get_todos, mark_todo, stamp_notes
+from note_parser.todo_tools import get_todos, stamp_notes
 
 from utils import setup_environment
-from results_unstamped import ALL_INCOMPLETE_TODOS, ALL_SKIPPED_TODOS, \
-                              ALL_COMPLETE_TODOS
+from model import NoteparserModel
 
 
 CONFIG = setup_environment()
+MODEL = NoteparserModel()
 
 
 # Helper to make the tests simpler
 def get_todo_results(todo_status='incomplete', directory_filter=None, query_string=None,
-                     sort_by='start_date', suppress_future=False):
+                     sort_by=None, suppress_future=False, stamp=False):
     return get_todos(notes_directory=CONFIG['notes_directory'],
                      todo_status=todo_status, directory_filter=directory_filter,
                      query_string=query_string, sort_by=sort_by,
                      suppress_future=suppress_future)
 
 
-class TestPrestampedTodos(object):
+class TestUnstampedTodos(object):
     """Test basic search functionality of the library"""
 
     def test_setup(self):
@@ -28,27 +28,55 @@ class TestPrestampedTodos(object):
         test_dir = CONFIG['notes_directory']
         assert os.path.exists(test_dir)
 
-    def test_get_incomplete_todos(self):
+    def test_unstamped_incomplete_todos_basic(self):
+
         # Test Getting all incomplete todos
-        all_incomplete_todos = get_todo_results('incomplete')
-        assert all_incomplete_todos == ALL_INCOMPLETE_TODOS
+        args = {
+            'todo_status': 'incomplete'
+        }
+        assert get_todo_results(**args) == MODEL.search_todos(**args)
 
         # Test Directory filter
+        args = {
+            'todo_status': 'incomplete',
+            'directory_filter': 'section'
+        }
+        assert get_todo_results(**args) == MODEL.search_todos(**args)
+
         # Test Query String
+        query_tests = ['cooking', '"follow up"', '"follow up" cooking']
+        for query_test in query_tests:
+            args = {
+                'todo_status': 'incomplete',
+                'query_string': query_test
+            }
+            assert get_todo_results(**args) == MODEL.search_todos(**args)
+
         # Test Sort Order
+        args = {
+            'todo_status': 'incomplete',
+            'sort_by': 'start_date'
+        }
+        assert get_todo_results(**args) == MODEL.search_todos(**args)
+
         # Test Suppress Future
-        # Test Tag Filter
+        args = {
+            'todo_status': 'incomplete',
+            'suppress_future': True
+        }
+        assert get_todo_results(**args) == MODEL.search_todos(**args)
 
-    def test_skipped_todos(self):
-        all_skipped_todos = get_todo_results('skipped')
-        assert all_skipped_todos == ALL_SKIPPED_TODOS
+    def test_unstamped_skipped_todos_basic(self):
+        args = {
+            'todo_status': 'skipped'
+        }
+        assert get_todo_results(**args) == MODEL.search_todos(**args)
 
-    def test_get_complete_todos(self):
-        all_complete_todos = get_todo_results('complete')
-        assert all_complete_todos == ALL_COMPLETE_TODOS
-
-    def test_invalid_todo_request(self):
-        pass
+    def test_unstamped_complete_todos_basic(self):
+        args = {
+            'todo_status': 'complete'
+        }
+        assert get_todo_results(**args) == MODEL.search_todos(**args)
 
 
 class TestTodoStamping(object):
@@ -63,44 +91,64 @@ class TestTodoStamping(object):
         # that the placeholder text has been replaced as expected
         pass
 
-    def test_todo_date_stamping(self):
-        # Get todo content after stamping
-        stamped_incomplete_todos = get_todo_results('incomplete')
-        stamped_skipped_todos = get_todo_results('skipped')
-        stamped_complete_todos = get_todo_results('complete')
 
-        # Check number of items returned
-        assert len(stamped_incomplete_todos['items']) == len(ALL_INCOMPLETE_TODOS['items'])
-        assert stamped_incomplete_todos['count'] == ALL_INCOMPLETE_TODOS['count']
-        assert len(stamped_skipped_todos['items']) == len(ALL_SKIPPED_TODOS['items'])
-        assert stamped_skipped_todos['count'] == ALL_SKIPPED_TODOS['count']
-        assert len(stamped_complete_todos['items']) == len(ALL_COMPLETE_TODOS['items'])
-        assert stamped_complete_todos['count'] == ALL_COMPLETE_TODOS['count']
+class TestStampedTodos(object):
+    """Repeat all tests for unstamped todos to ensure that
+       nothing unexpected has changed.
+    """
 
-        # Check that every Incomplete todo has a start date and *not* an end date
-        for todo in stamped_incomplete_todos['items']:
-            assert todo['start_date']
-            assert not todo['end_date']
+    def test_stamped_incomplete_todos_basic(self):
+        # Test Getting all incomplete todos
+        args = {
+            'todo_status': 'incomplete',
+            'stamp': True
+        }
+        assert get_todo_results(**args) == MODEL.search_todos(**args)
 
-        # Check that every Skipped todo has both a start date and end date
-        for todo in stamped_skipped_todos['items']:
-            assert todo['start_date']
-            assert todo['end_date']
+        # Test Directory filter
+        args = {
+            'todo_status': 'incomplete',
+            'directory_filter': 'section',
+            'stamp': True
+        }
+        assert get_todo_results(**args) == MODEL.search_todos(**args)
 
-        # Check that every Complete todo has both a start date and end date
-        for todo in stamped_complete_todos['items']:
-            assert todo['start_date']
-            assert todo['end_date']
+        # Test Query String
+        query_tests = ['cooking', '"follow up"', '"follow up" cooking']
+        for query_test in query_tests:
+            args = {
+                'todo_status': 'incomplete',
+                'query_string': query_test,
+                'stamp': True
+            }
+            assert get_todo_results(**args) == MODEL.search_todos(**args)
 
-        # Check that the contents (other than date) of each todo have
-        # not changed due to stamping
-        expected_incomplete_results = []
-        for todo in ALL_INCOMPLETE_TODOS['items']:
-            expected_result = todo
-            if not expected_result.get('start_date'):
-                expected_result['start_date'] = datetime.now().isoformat()[:10]
-            expected_incomplete_results.append(expected_result)
-        expected_incomplete_results = sorted(
-            expected_incomplete_results, key=lambda k: k['start_date'], reverse=True)
-        assert expected_incomplete_results == stamped_incomplete_todos['items']
+        # Test Sort Order
+        args = {
+            'todo_status': 'incomplete',
+            'sort_by': 'start_date',
+            'stamp': True
+        }
+        assert get_todo_results(**args) == MODEL.search_todos(**args)
 
+        # Test Suppress Future
+        args = {
+            'todo_status': 'incomplete',
+            'suppress_future': True,
+            'stamp': True
+        }
+        assert get_todo_results(**args) == MODEL.search_todos(**args)
+
+    def test_stamped_skipped_todos_basic(self):
+        args = {
+            'todo_status': 'skipped',
+            'stamp': True
+        }
+        assert get_todo_results(**args) == MODEL.search_todos(**args)
+
+    def test_stamped_complete_todos_basic(self):
+        args = {
+            'todo_status': 'complete',
+            'stamp': True
+        }
+        assert get_todo_results(**args) == MODEL.search_todos(**args)

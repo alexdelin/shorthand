@@ -3,11 +3,18 @@ import os
 from note_parser.question_tools import get_questions
 
 from utils import setup_environment
-from results_unstamped import ALL_ANSWERED_QUESTIONS, \
-                              ALL_UNANSWERED_QUESTIONS
+from model import NoteparserModel
 
 
 CONFIG = setup_environment()
+MODEL = NoteparserModel()
+
+
+# Helper function to simplify tests
+def get_question_results(question_status='all', directory_filter=None):
+    return get_questions(notes_directory=CONFIG['notes_directory'],
+                         question_status=question_status,
+                         directory_filter=directory_filter)
 
 
 class TestQuestions(object):
@@ -19,23 +26,37 @@ class TestQuestions(object):
         assert os.path.exists(test_dir)
 
     def test_get_unanswered_questions(self):
-        all_unanswered_questions = get_questions(
-            notes_directory=CONFIG['notes_directory'],
-            question_status='unanswered', directory_filter=None)
-        assert all_unanswered_questions == ALL_UNANSWERED_QUESTIONS
+        args = {
+            'question_status': 'unanswered'
+        }
+        assert get_question_results(**args) == MODEL.search_questions(**args)
+
+        args = {
+            'question_status': 'unanswered',
+            'directory_filter': 'section'
+        }
+        assert get_question_results(**args) == MODEL.search_questions(**args)
 
     def test_get_answered_questions(self):
-        all_answered_questions = get_questions(
-            notes_directory=CONFIG['notes_directory'],
-            question_status='answered', directory_filter=None)
-        assert all_answered_questions == ALL_ANSWERED_QUESTIONS
+        args = {
+            'question_status': 'answered'
+        }
+        assert get_question_results(**args) == MODEL.search_questions(**args)
+
+        args = {
+            'question_status': 'answered',
+            'directory_filter': 'section'
+        }
+        assert get_question_results(**args) == MODEL.search_questions(**args)
 
     def test_get_all_questions(self):
-        all_questions = get_questions(
-            notes_directory=CONFIG['notes_directory'],
-            question_status='all', directory_filter=None)
-        # Compare results to expected results, but ignore order
-        assert True
+        args = {
+            'question_status': 'all'
+        }
+        assert get_question_results(**args) == MODEL.search_questions(**args)
 
-    def test_invalid_question_request(self):
-        pass
+        args = {
+            'question_status': 'all',
+            'directory_filter': 'section'
+        }
+        assert get_question_results(**args) == MODEL.search_questions(**args)
