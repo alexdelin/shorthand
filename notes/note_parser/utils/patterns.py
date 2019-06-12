@@ -27,5 +27,16 @@ TODAY_LINE_PATTERN = r'(.*)(\\today)(.*)'
 
 TAG_PATTERN = r':\w*:'
 
+DEFINITION_PATTERN = r"^(\w*)({.*} )(.*)"
+
+CHARS_TO_ESCAPE = ['(', ')']
+
 def escape_for_grep(input_pattern):
-    pass
+
+    clean_pattern = ''
+    for char in input_pattern:
+        if char in CHARS_TO_ESCAPE:
+            clean_pattern += '\\' + char
+        else:
+            clean_pattern += char
+    return clean_pattern
