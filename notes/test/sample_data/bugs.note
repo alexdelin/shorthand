@@ -1,0 +1,11 @@
+# Bugs
+
+This file includes content that reproduces bugs found in the parsing logic
+
+## Double colons in URLS
+
+[] Read through https://url-that-looks-like-a-tag.com/foo:bar:baz
+
+something :foo: :bar:
+
+else :baz:

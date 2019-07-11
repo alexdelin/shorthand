@@ -4,9 +4,17 @@ EMPTY_RESULTS = {
 }
 
 ALL_INCOMPLETE_TODOS = {
-    'count': 6,
+    'count': 7,
     'items': [
         {
+            'end_date': None,
+            'file_path': '/bugs.note',
+            'line_number': '7',
+            'start_date': None,
+            'status': 'incomplete',
+            'todo_text': 'Read through https://url-that-looks-like-a-tag.com/foo:bar:baz',
+            'tags': []
+        }, {
             'end_date': None,
             'file_path': '/section/mixed.note',
             'line_number': '23',

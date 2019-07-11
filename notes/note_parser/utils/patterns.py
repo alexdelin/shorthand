@@ -26,10 +26,11 @@ TODAY_GREP = r'"\\\today"'
 TODAY_LINE_PATTERN = r'(.*)(\\today)(.*)'
 
 TAG_PATTERN = r':\w*:'
+LINE_TAG_PATTERN = r'(:\w*:)(?!\w)'
 
 DEFINITION_PATTERN = r"^(\w*)({.*} )(.*)"
 
-CHARS_TO_ESCAPE = ['(', ')']
+CHARS_TO_ESCAPE = ['(', ')', '[', ']', '\\']
 
 def escape_for_grep(input_pattern):
 
