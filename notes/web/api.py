@@ -10,7 +10,7 @@ import json
 from flask import Flask, request, render_template, send_from_directory
 
 from note_parser.todo_tools import get_todos, mark_todo, stamp_notes
-from note_parser.search_tools import search_notes, get_context
+from note_parser.search_tools import search_notes, get_context, get_note
 from note_parser.question_tools import get_questions
 from note_parser.tag_tools import get_tags
 from note_parser.utils.config import get_notes_config
@@ -115,11 +115,25 @@ def get_line_context():
     return json.dumps(get_context(filename, line_number, width))
 
 
+@app.route('/get_note', methods=['GET'])
+def get_full_note():
+
+    path = request.args.get('path')
+
+    if NOTES_CONFIG['notes_directory'] not in path:
+        path = NOTES_CONFIG['notes_directory'] + path
+
+    return get_note(path)
+
+
 @app.route('/render', methods=['GET'])
 def send_rendered_note():
 
     file_path = NOTES_CONFIG['notes_directory'] + request.args.get('path')
     file_content = get_file_content(file_path)
+    file_content = file_content.replace("\\", "\\\\")
+    file_content = file_content.replace('\n', '\\n')
+    file_content = file_content.replace("'", "\\'")
     return render_template('viewer.j2', file_content=file_content)
 
 

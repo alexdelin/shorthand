@@ -111,3 +111,11 @@ def get_context(filename, line_number, width):
         "line": line_content,
         "after": after_content
     }
+
+
+def get_note(path):
+
+    with open(path, 'r') as note_file_object:
+        note_content = note_file_object.read()
+
+    return note_content
