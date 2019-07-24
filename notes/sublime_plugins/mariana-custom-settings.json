@@ -9,14 +9,32 @@
         "grey2": "hsl(0, 0%, 70%)",
         "grey3": "hsl(0, 0%, 50%)",
         "green2": "hsl(114, 51%, 68%)",
+        "green3": "hsl(180, 53%, 68%)",
+        "blue7": "hsl(210, 15%, 20%)",
     },
     "globals": {
         // "foreground": "var(green)",
+        "background": "var(blue7)",
     },
     "rules": [
         {
             // "scope": "string",
             // "foreground": "#00FF00",
+        },
+        {
+            "name": "LaTeX Start",
+            "scope": "markup.latex.start.markdown",
+            "foreground": "var(grey3)"
+        },
+        {
+            "name": "LaTeX End",
+            "scope": "markup.latex.end.markdown",
+            "foreground": "var(grey3)"
+        },
+        {
+            "name": "LaTeX Content",
+            "scope": "markup.latex.markdown",
+            "foreground": "var(green3)"
         },
         {
             "name": "Definition Term",

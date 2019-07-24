@@ -192,6 +192,11 @@ contexts:
         - match: ^(?=\S)
           pop: true
         - include: list-paragraph
+    - match: '(\$\$(?!\$))([^\$]+)(\$\$)[ \n,.?!]'
+      captures:
+        1: markup.latex.start.markdown
+        2: markup.latex.markdown
+        3: markup.latex.end.markdown
     - match: '^([ ]{0,3})(\[ \]|\[\])(?=\s)'
       captures:
         1: markup.list.unnumbered.markdown
@@ -734,6 +739,7 @@ contexts:
     - include: link-ref-literal
     - include: link-ref
     - include: link-ref-footnote
+    - include: latex-span-double
   inline-bold-italic:
     - include: inline
     - include: bold
@@ -1125,6 +1131,21 @@ contexts:
     - match: |-
          (?x)
           {{fenced_code_block_start}}
+          ((?i:latex|tex))
+          \s*$\n?          # any whitespace until EOL
+      captures:
+        0: meta.code-fence.definition.begin.python.markdown-gfm
+        2: punctuation.definition.raw.code-fence.begin.markdown
+        3: constant.other.language-name.markdown
+      embed: scope:source.tex
+      embed_scope: markup.raw.code-fence.python.markdown-gfm
+      escape: '{{code_fence_escape}}'
+      escape_captures:
+        0: meta.code-fence.definition.end.python.markdown-gfm
+        1: punctuation.definition.raw.code-fence.end.markdown
+    - match: |-
+         (?x)
+          {{fenced_code_block_start}}
           ((?i:graphviz))
           \s*$\n?          # any whitespace until EOL
       captures:
@@ -1405,6 +1426,18 @@ contexts:
         - match: ^\s*$\n?
           scope: invalid.illegal.non-terminated.raw.markdown
           pop: true
+  latex-span-single:
+    - match: '[^\$](\$(?!\$))([^\$]+)(\$)[ \n,.?!]'
+      captures:
+        1: markup.latex.start.markdown
+        2: markup.latex.markdown
+        3: markup.latex.end.markdown
+  latex-span-double:
+    - match: '[^\$](\$\$(?!\$))([^\$]+)(\$\$)[ \n,.?!]'
+      captures:
+        1: markup.latex.start.markdown
+        2: source.latex.markdown
+        3: markup.latex.end.markdown
   raw:
     - match: ^(?={{fenced_code_block_start}})
       push:
@@ -1412,6 +1445,8 @@ contexts:
           pop: true
         - include: fenced-code-block
     - include: code-span
+    - include: latex-span-single
+    - include: latex-span-double
   thematic-break:
     - match: '(?={{thematic_break}})'
       push:
