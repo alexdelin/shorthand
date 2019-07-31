@@ -1,6 +1,7 @@
 import re
 from subprocess import Popen, PIPE
-from note_parser.utils.patterns import ALL_QUESTIONS_GREP, ANSWER_PATTERN
+from note_parser.utils.patterns import ALL_QUESTIONS_GREP, ANSWER_PATTERN, \
+                                       escape_for_grep
 
 
 ANSWER_REGEX = re.compile(ANSWER_PATTERN)
@@ -51,8 +52,8 @@ def get_questions(notes_directory, question_status='all', directory_filter=None)
     print(search_directory)
 
     proc = Popen(
-        'grep -rn -A 1 {pattern} {dir}'.format(
-            pattern=ALL_QUESTIONS_GREP,
+        'grep -rn -A 1 "{pattern}" {dir}'.format(
+            pattern=escape_for_grep(ALL_QUESTIONS_GREP),
             dir=search_directory),
         stdout=PIPE, stderr=PIPE,
         shell=True)

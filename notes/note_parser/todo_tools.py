@@ -9,7 +9,7 @@ from note_parser.utils.patterns import INCOMPLETE_PREFIX_GREP, \
     VALID_INCOMPLETE_PATTERN, VALID_COMPLETE_PATTERN, \
     UNFINISHED_UNSTAMPED_PATTERN, FINISHED_START_STAMPED_PATTERN, \
     FINISHED_UNSTAMPED_PATTERN, START_STAMP_ONLY_PATTERN, \
-    START_END_STAMP_ONLY_PATTERN, TODAY_GREP, TODAY_LINE_PATTERN
+    START_END_STAMP_ONLY_PATTERN, TODAY_GREP, TODAY_LINE_PATTERN, escape_for_grep
 
 # Set up Regexes to use for finding files to process with `grep`
 PATTERN_MAPPING = {
@@ -25,14 +25,14 @@ def stamp_notes(notes_directory, stamp_todos=True, stamp_today=True):
 
     # Stamp start and end dates for todo elements
     if stamp_todos:
-        grep_command = 'grep -r {pattern} {directory} | '\
+        grep_command = 'grep -r "{pattern}" {directory} | '\
                        'grep -v "\\.git" | '\
-                       'grep -v {filter_1} | '\
-                       'grep -v {filter_2}'.format(
-                            pattern=CATCH_ALL_PATTERN,
+                       'grep -v "{filter_1}" | '\
+                       'grep -v "{filter_2}"'.format(
+                            pattern=escape_for_grep(CATCH_ALL_PATTERN),
                             directory=notes_directory,
-                            filter_1=VALID_INCOMPLETE_PATTERN,
-                            filter_2=VALID_COMPLETE_PATTERN)
+                            filter_1=escape_for_grep(VALID_INCOMPLETE_PATTERN),
+                            filter_2=escape_for_grep(VALID_COMPLETE_PATTERN))
 
         proc = Popen(grep_command,
                      stdout=PIPE, stderr=PIPE,
@@ -49,7 +49,6 @@ def stamp_notes(notes_directory, stamp_todos=True, stamp_today=True):
         finished_unstamped_regex = re.compile(FINISHED_UNSTAMPED_PATTERN)
 
         for filename in matched_filenames:
-            print(filename)
             with open(filename, 'r') as file_object:
 
                 stamped_content = []
@@ -58,30 +57,27 @@ def stamp_notes(notes_directory, stamp_todos=True, stamp_today=True):
 
                     if unfinished_unstamped_regex.match(line):
                         # unfinished unstamped
-                        print(line.rstrip())
                         line = unfinished_unstamped_regex.sub(
                             '\\g<1>[ ] ({timestamp}) '.format(
                                 timestamp=datetime.now().isoformat()[:10]),
                             line)
-                        print(line.rstrip())
                         stamped_content.append(line)
+
                     elif finished_start_stamped_regex.match(line):
                         # finished with start stamped
-                        print(line.rstrip())
                         line = finished_start_stamped_regex.sub(
                             '\\g<1>[\\g<3>] (\\g<6> -> {timestamp_2}) '.format(
                                 timestamp_2=datetime.now().isoformat()[:10]),
                             line)
-                        print(line.rstrip())
+
                         stamped_content.append(line)
+
                     elif finished_unstamped_regex.match(line):
                         # finished unstamped
-                        print(line.rstrip())
                         line = finished_unstamped_regex.sub(
                             '\\g<1>[\\g<3>] ({timestamp} -> {timestamp}) '.format(
                                 timestamp=datetime.now().isoformat()[:10]),
                             line)
-                        print(line.rstrip())
                         stamped_content.append(line)
                     else:
                         # no to-dos -or- correctly formatted already
@@ -109,7 +105,6 @@ def stamp_notes(notes_directory, stamp_todos=True, stamp_today=True):
         today_placeholder_regex = re.compile(TODAY_LINE_PATTERN)
 
         for filename in today_matched_filenames:
-            print(filename)
             with open(filename, 'r') as file_object:
 
                 stamped_content = []
@@ -118,12 +113,10 @@ def stamp_notes(notes_directory, stamp_todos=True, stamp_today=True):
 
                     if today_placeholder_regex.match(line):
                         # unfinished unstamped
-                        print(line.rstrip())
                         line = today_placeholder_regex.sub(
                             '\\g<1>{timestamp}\\g<3>'.format(
                                 timestamp=datetime.now().isoformat()[:10]),
                             line)
-                        print(line.rstrip())
                         stamped_content.append(line)
                     else:
                         # no today placeholders
@@ -152,8 +145,8 @@ def get_todos(notes_directory, todo_status='incomplete', directory_filter=None,
             search_directory += '/'
         search_directory += directory_filter
 
-    grep_command = 'grep -rn {pattern} {dir} | grep -v "\\.git"'.format(
-            pattern=PATTERN_MAPPING[todo_status],
+    grep_command = 'grep -rn "{pattern}" {dir} | grep -v "\\.git"'.format(
+            pattern=escape_for_grep(PATTERN_MAPPING[todo_status]),
             dir=search_directory)
 
     if query_string:
@@ -176,8 +169,6 @@ def get_todos(notes_directory, todo_status='incomplete', directory_filter=None,
                             mode=grep_filter_mode,
                             pattern=additional_filter)
             grep_command = grep_command + new_filter
-
-    print(grep_command)
 
     proc = Popen(
         grep_command,
@@ -247,7 +238,7 @@ def get_todos(notes_directory, todo_status='incomplete', directory_filter=None,
     # Sort Results
     if sort_by:
         if sort_by not in SUPPORTED_SORT_FIELDS:
-            print('Invalid sort field {}'.format(sort_by))
+            raise ValueError('Invalid sort field {}'.format(sort_by))
         todo_items = sorted(todo_items, key=lambda k: k[sort_by], reverse=True)
 
     # Wrap Results
@@ -264,7 +255,6 @@ def mark_todo(filename, line_number, status):
 
     split_content = file_content.split('\n')
     line_content = split_content[line_number-1]
-    print(line_content)
 
     # Modify line_content
     block_pattern = r'(^\s*)(\[)([ XS]*)(\])'
@@ -281,7 +271,6 @@ def mark_todo(filename, line_number, status):
         '\\g<1>[{}]'.format(sub_character),
         line_content)
 
-    print(line_content)
     split_content[line_number-1] = line_content
     with open(filename, 'w') as file_object:
         file_object.write('\n'.join(split_content))
