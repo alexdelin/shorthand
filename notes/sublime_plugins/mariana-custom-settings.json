@@ -11,6 +11,12 @@
         "green2": "hsl(114, 51%, 68%)",
         "green3": "hsl(180, 53%, 68%)",
         "blue7": "hsl(210, 15%, 20%)",
+        "heading1": "hsl(0, 89%, 65%)",
+        "heading2": "hsl(15, 89%, 65%)",
+        "heading3": "hsl(30, 89%, 65%)",
+        "heading4": "hsl(45, 89%, 65%)",
+        "heading5": "hsl(60, 89%, 65%)",
+        "heading6": "hsl(75, 89%, 65%)",
     },
     "globals": {
         // "foreground": "var(green)",
@@ -150,32 +156,32 @@
         {
             "name": "markup h1",
             "scope": "markup.heading.1 punctuation.definition.heading",
-            "foreground": "var(red)"
+            "foreground": "var(heading1)"
         },
         {
             "name": "markup h2",
             "scope": "markup.heading.2 punctuation.definition.heading",
-            "foreground": "var(red2)"
+            "foreground": "var(heading2)"
         },
         {
             "name": "markup h3",
             "scope": "markup.heading.3 punctuation.definition.heading",
-            "foreground": "var(orange2)"
+            "foreground": "var(heading3)"
         },
         {
             "name": "markup h4",
             "scope": "markup.heading.4 punctuation.definition.heading",
-            "foreground": "var(orange)"
+            "foreground": "var(heading4)"
         },
         {
             "name": "markup h5",
             "scope": "markup.heading.5 punctuation.definition.heading",
-            "foreground": "var(orange3)"
+            "foreground": "var(heading5)"
         },
         {
             "name": "markup h6",
             "scope": "markup.heading.6 punctuation.definition.heading",
-            "foreground": "var(yellow)"
+            "foreground": "var(heading6)"
         },
     ],
 }
