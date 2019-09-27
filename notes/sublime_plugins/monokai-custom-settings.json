@@ -1,0 +1,196 @@
+{
+    // http://www.sublimetext.com/docs/3/color_schemes.html
+    "variables": {
+        // "green": "#FF0000",
+        // "yellow": "hsl(56, 100%, 45%)",
+        // "yellow2": "hsl(56, 50%, 70%)",
+        "brown": "hsl(23, 85%, 37%)",
+        "blue8": "hsl(210, 50%, 45%)",
+        "pink2": "hsl(330, 65%, 68%)",
+        "grey2": "hsl(0, 0%, 70%)",
+        "grey3": "hsl(0, 0%, 50%)",
+        "green2": "hsl(114, 51%, 68%)",
+        "green3": "hsl(180, 53%, 68%)",
+        "blue4": "hsl(210, 13%, 45%)",
+        "blue5": "hsl(180, 36%, 54%)",
+        "blue7": "hsl(210, 15%, 20%)",
+        "purple2": "hsl(261, 50%, 75%)",
+        "heading1": "hsl(0, 89%, 65%)",
+        "heading2": "hsl(15, 89%, 65%)",
+        "heading3": "hsl(30, 89%, 65%)",
+        "heading4": "hsl(45, 89%, 65%)",
+        "heading5": "hsl(60, 89%, 65%)",
+        "heading6": "hsl(75, 89%, 65%)",
+    },
+    "globals": {
+        // "foreground": "var(green)",
+    },
+    "rules": [
+        {
+            // "scope": "string",
+            // "foreground": "#00FF00",
+        },
+        {
+            "name": "markup code",
+            "scope": "markup.raw.inline",
+            "background": "color(var(white) alpha(0.094))",
+            "foreground": "var(purple)"
+        },
+        {
+            "name": "LaTeX Start",
+            "scope": "markup.latex.start.markdown",
+            "foreground": "var(grey3)"
+        },
+        {
+            "name": "LaTeX End",
+            "scope": "markup.latex.end.markdown",
+            "foreground": "var(grey3)"
+        },
+        {
+            "name": "LaTeX Content",
+            "scope": "markup.latex.markdown",
+            "foreground": "var(green3)"
+        },
+        {
+            "name": "Definition Term",
+            "scope": "noteparser.definition.term",
+            "foreground": "var(yellow)"
+        },
+        {
+            "name": "Definition text",
+            "scope": "noteparser.definition.definition",
+            "foreground": "var(orange)"
+        },
+        {
+            "name": "Metadata Tag",
+            "scope": "noteparser.metadata-tag",
+            "foreground": "var(red)"
+        },
+        {
+            "name": "Quote Content",
+            "scope": "markup.quote",
+            "foreground": "var(grey2)"
+        },
+        {
+            "name": "Question Start",
+            "scope": "markup.list.question.start",
+            "foreground": "var(yellow)"
+        },
+        {
+            "name": "Question Content",
+            "scope": "markup.list.question.content",
+            "foreground": "var(pink2)"
+        },
+        {
+            "name": "Answer Start",
+            "scope": "markup.list.answer.start",
+            "foreground": "var(blue5)"
+        },
+        {
+            "name": "Answer Content",
+            "scope": "markup.list.answer.content",
+            "foreground": "var(green2)"
+        },
+        {
+            "name": "unnumbered list",
+            "scope": "markup.list.unnumbered",
+            "foreground": "var(white3)"
+        },
+        {
+            "name": "numbered list",
+            "scope": "markup.list.numbered",
+            "foreground": "var(white3)"
+        },
+        {
+            "name": "todo items",
+            "scope": "markup.list.todo",
+            "foreground": "var(yellow2)"
+        },
+        {
+            "name": "markup todo skipped start",
+            "scope": "markup.list.todo.skipped.start",
+            "foreground": "var(grey2)"
+        },
+        {
+            "name": "markup todo skipped content",
+            "scope": "markup.list.todo.skipped.content",
+            "foreground": "var(grey3)"
+        },
+        {
+            "name": "markup todo incomplete start",
+            "scope": "markup.list.todo.incomplete.start",
+            "foreground": "var(red)"
+        },
+        {
+            "name": "todo incomplete content",
+            "scope": "markup.list.todo.incomplete.content",
+            "foreground": "var(yellow)"
+        },
+        {
+            "name": "markup todo complete start",
+            "scope": "markup.list.todo.complete.start",
+            "foreground": "var(blue8)"
+        },
+        {
+            "name": "todo complete content",
+            "scope": "markup.list.todo.complete.content",
+            "foreground": "var(blue4)"
+        },
+        {
+            "name": "strikethrough",
+            "scope": "markup.strikethrough",
+            "foreground": "var(brown)"
+        },
+        {
+            "name": "strikethrough begin",
+            "scope": "punctuation.definition.strikethrough.begin",
+            "foreground": "var(brown)"
+        },
+        {
+            "name": "strikethrough end",
+            "scope": "punctuation.definition.strikethrough.end",
+            "foreground": "var(brown)"
+        },
+        {
+            "name": "markup timestamp",
+            "scope": "markup.timestamp",
+            "foreground": "var(blue5)"
+        },
+        // Brighter section titles
+        {
+            "name": "section title",
+            "scope": "entity.name.section",
+            "foreground": "var(white)"
+        },
+        {
+            "name": "markup h1",
+            "scope": "markup.heading.1 punctuation.definition.heading",
+            "foreground": "var(heading1)"
+        },
+        {
+            "name": "markup h2",
+            "scope": "markup.heading.2 punctuation.definition.heading",
+            "foreground": "var(heading2)"
+        },
+        {
+            "name": "markup h3",
+            "scope": "markup.heading.3 punctuation.definition.heading",
+            "foreground": "var(heading3)"
+        },
+        {
+            "name": "markup h4",
+            "scope": "markup.heading.4 punctuation.definition.heading",
+            "foreground": "var(heading4)"
+        },
+        {
+            "name": "markup h5",
+            "scope": "markup.heading.5 punctuation.definition.heading",
+            "foreground": "var(heading5)"
+        },
+        {
+            "name": "markup h6",
+            "scope": "markup.heading.6 punctuation.definition.heading",
+            "foreground": "var(heading6)"
+        },
+    ],
+}
