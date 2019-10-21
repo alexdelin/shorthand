@@ -73,5 +73,3 @@ def get_calendar(notes_directory, directory_filter=None):
         calendar[event_year][event_month][event_day].append(event)
 
     return calendar
-
-print(json.dumps(get_calendar('~/notes')))

@@ -1,0 +1,41 @@
+<html>
+<head>
+  <meta charset='utf-8'>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+  <script src="https://code.highcharts.com/highcharts.js"></script></script>
+</head>
+<body>
+
+  <div class="row fullwrapper">
+    <div class="col-md-2 gutter"></div>
+    <div class="col-md-8 pagewrapper">
+        <div class="row title-bar">
+          <div class="col-md-12">Top Space</div>
+        </div>
+        <div class="row content">
+          <div class="col-md-12 note-content">
+            <div id="out"></div>
+          </div>
+        </div>
+        <div class="row footer-bar">
+          <div class="col-md-12">Bottom Space</div>
+        </div>
+    </div>
+    <div class="col-md-2 gutter"></div>
+  </div>
+  <script type="text/javascript">
+    Highcharts.chart('out', {
+        chart: {zoomType: 'x'},
+        title: {text: 'Daily Productivity'},
+        subtitle: {text: 'Meetings / sections created per day'},
+        tooltip: {valueDecimals: 2},
+        xAxis: {type: 'datetime'},
+        series: [{
+            data: {{summary}},
+            lineWidth: 0.5,
+            name: 'Sections per day'
+        }]
+    });
+  </script>
+</body>
+</html>

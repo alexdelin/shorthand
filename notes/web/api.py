@@ -6,6 +6,7 @@ Note Parser Web API
 
 import os
 import json
+from datetime import datetime
 
 from flask import Flask, request, render_template, send_from_directory
 
@@ -13,9 +14,11 @@ from note_parser.todo_tools import get_todos, mark_todo, stamp_notes
 from note_parser.search_tools import search_notes, get_context, get_note
 from note_parser.question_tools import get_questions
 from note_parser.tag_tools import get_tags
+from note_parser.calendar_tools import get_calendar
 from note_parser.utils.config import get_notes_config
 from note_parser.utils.render import get_file_content, get_rendered_markdown
 from note_parser.utils.typeahead import get_typeahead_suggestions
+
 
 app = Flask(__name__)
 
@@ -89,6 +92,18 @@ def fetch_tags():
                 directory_filter=directory_filter))
 
 
+@app.route('/get_calendar', methods=['GET'])
+def fetch_calendar():
+
+    directory_filter = request.args.get('directory_filter')
+    if directory_filter == 'ALL':
+        directory_filter = None
+
+    return json.dumps(get_calendar(
+                notes_directory=NOTES_CONFIG['notes_directory'],
+                directory_filter=directory_filter))
+
+
 @app.route('/search', methods=['GET'])
 def get_search_results():
 
@@ -135,6 +150,27 @@ def send_rendered_note():
     file_content = file_content.replace('\n', '\\n')
     file_content = file_content.replace("'", "\\'")
     return render_template('viewer.j2', file_content=file_content)
+
+
+@app.route('/calendar', methods=['GET'])
+def show_calendar():
+
+    summary = get_calendar(NOTES_CONFIG['notes_directory'])
+    parsed_data = []
+    for year, year_data in summary.iteritems():
+        for month, month_data in year_data.iteritems():
+            for day, day_data in month_data.iteritems():
+                parsed_data.append([
+                    int(datetime.strptime(
+                        '{year}-{month}-{day}T12:00:00'.format(
+                            year=year,
+                            month=month,
+                            day=day),
+                        '%Y-%m-%dT%H:%M:%S').strftime("%s")) * 1000,
+                    len(day_data)
+                    ])
+    parsed_data = sorted(parsed_data, key=lambda x: x[0])
+    return render_template('calendar.j2', summary=json.dumps(parsed_data))
 
 
 @app.route('/mark_todo', methods=['GET'])
