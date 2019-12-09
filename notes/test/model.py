@@ -51,16 +51,17 @@ class NoteparserModel(object):
 
         # Apply sort
         if sort_by:
-            todos = sorted(todos, key=lambda k: k[sort_by], reverse=True)
+            todos = sorted(todos, key=lambda k: k[sort_by] if k[sort_by] else '', reverse=True)
 
         # Apply suppress future
         if suppress_future:
             filtered_todos = []
             for todo in todos:
-                if todo['start_date'] > datetime.now().isoformat()[:10]:
-                    continue
-                else:
-                    filtered_todos.append(todo)
+                if todo['start_date']:
+                    if todo['start_date'] > datetime.now().isoformat()[:10]:
+                        continue
+
+                filtered_todos.append(todo)
             todos = filtered_todos
 
         # Emulate Stamping

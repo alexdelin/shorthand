@@ -39,7 +39,7 @@ def stamp_notes(notes_directory, stamp_todos=True, stamp_today=True):
                      shell=True)
         output, err = proc.communicate()
 
-        output_lines = output.split('\n')
+        output_lines = output.decode().split('\n')
         matched_filenames = [line.split(':')[0] for line in output_lines if line.strip()]
         matched_filenames = list(set(matched_filenames))
 
@@ -98,7 +98,7 @@ def stamp_notes(notes_directory, stamp_todos=True, stamp_today=True):
                      shell=True)
         today_output, err = today_proc.communicate()
 
-        today_output_lines = today_output.split('\n')
+        today_output_lines = today_output.decode().split('\n')
         today_matched_filenames = [line.split(':')[0] for line in today_output_lines if line.strip()]
         today_matched_filenames = list(set(today_matched_filenames))
 
@@ -175,7 +175,7 @@ def get_todos(notes_directory, todo_status='incomplete', directory_filter=None,
         stdout=PIPE, stderr=PIPE,
         shell=True)
     output, err = proc.communicate()
-    output_lines = output.split('\n')
+    output_lines = output.decode().split('\n')
 
     for line in output_lines:
 
@@ -229,8 +229,9 @@ def get_todos(notes_directory, todo_status='incomplete', directory_filter=None,
 
         is_future_todo = False
         current_date_stamp = datetime.now().isoformat()[:10]
-        if start_date > current_date_stamp:
-            is_future_todo = True
+        if start_date:
+            if start_date > current_date_stamp:
+                is_future_todo = True
 
         if not suppress_future or not is_future_todo:
             todo_items.append(processed_todo)
@@ -239,7 +240,7 @@ def get_todos(notes_directory, todo_status='incomplete', directory_filter=None,
     if sort_by:
         if sort_by not in SUPPORTED_SORT_FIELDS:
             raise ValueError('Invalid sort field {}'.format(sort_by))
-        todo_items = sorted(todo_items, key=lambda k: k[sort_by], reverse=True)
+        todo_items = sorted(todo_items, key=lambda k: k[sort_by] if k[sort_by] else '', reverse=True)
 
     # Wrap Results
     return {

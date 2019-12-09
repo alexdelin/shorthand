@@ -30,7 +30,7 @@ def get_tags(notes_directory, directory_filter=None):
         stdout=PIPE, stderr=PIPE,
         shell=True)
     output, err = proc.communicate()
-    output_lines = output.split('\n')
+    output_lines = output.decode().split('\n')
 
     print(output_lines)
     for line in output_lines:
@@ -45,6 +45,7 @@ def get_tags(notes_directory, directory_filter=None):
     tag_items = [item.strip().strip(':') for item in list(set(tag_items))]
     # Only keep tags with at least one letter
     tag_items = [item for item in tag_items if any(char.isalpha() for char in item)]
+    # tag_items.sort()
     return tag_items
 
 

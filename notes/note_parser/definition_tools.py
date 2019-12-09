@@ -28,7 +28,7 @@ def get_definitions(notes_directory, directory_filter=None):
         stdout=PIPE, stderr=PIPE,
         shell=True)
     output, err = proc.communicate()
-    output_lines = output.split('\n')
+    output_lines = output.decode().split('\n')
 
     for line in output_lines:
 

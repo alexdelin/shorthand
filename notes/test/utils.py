@@ -4,7 +4,6 @@ import shutil
 
 SAMPLE_DATA_DIR = 'sample_data'
 TEMP_DIR = os.path.dirname(os.path.realpath(__file__)) + '/temp'
-print TEMP_DIR
 
 TEST_CONFIG = {
     "notes_directory": TEMP_DIR

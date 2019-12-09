@@ -51,7 +51,7 @@ def search_notes(notes_directory, query_string,
         stdout=PIPE, stderr=PIPE,
         shell=True)
     output, err = proc.communicate()
-    output_lines = output.split('\n')
+    output_lines = output.decode().split('\n')
 
     search_results = []
 
@@ -61,7 +61,6 @@ def search_notes(notes_directory, query_string,
             continue
 
         split_line = line.split(':', 2)
-        print(split_line)
         file_path = split_line[0].strip()
         line_number = split_line[1].strip()
         match_content = split_line[2].strip()

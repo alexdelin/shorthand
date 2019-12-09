@@ -58,7 +58,7 @@ def get_questions(notes_directory, question_status='all', directory_filter=None)
         stdout=PIPE, stderr=PIPE,
         shell=True)
     output, err = proc.communicate()
-    output_lines = output.split('\n')
+    output_lines = output.decode().split('\n')
 
     for idx, output_line in enumerate(output_lines):
 
@@ -87,9 +87,12 @@ def get_questions(notes_directory, question_status='all', directory_filter=None)
 
             # If the next line is an answer line, add the answer
             # text as metadata to the question
-            is_answer, answer_content = is_answer_line(output_lines[idx + 1])
-            if is_answer:
-                parsed_question['answer'] = answer_content
+            if idx < len(output_lines) - 1:
+                is_answer, answer_content = is_answer_line(output_lines[idx + 1])
+                if is_answer:
+                    parsed_question['answer'] = answer_content
+            else:
+                is_answer = False
 
             if question_status == 'all':
                 parsed_questions.append(parsed_question)
