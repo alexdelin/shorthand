@@ -89,5 +89,3 @@ def escape_for_grep(input_pattern):
             input_pattern = input_pattern[1:]
 
     return clean_pattern
-
-print(escape_for_grep(INCOMPLETE_PREFIX_GREP))
