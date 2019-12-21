@@ -156,21 +156,27 @@ def send_rendered_note():
 def show_calendar():
 
     summary = get_calendar(NOTES_CONFIG['notes_directory'])
-    parsed_data = []
+    timeline_data = []
+    events = []
     for year, year_data in summary.items():
         for month, month_data in year_data.items():
             for day, day_data in month_data.items():
-                parsed_data.append([
+                timeline_data.append([
                     int(datetime.strptime(
-                        '{year}-{month}-{day}T12:00:00'.format(
-                            year=year,
-                            month=month,
-                            day=day),
+                        f'{year}-{month}-{day}T12:00:00',
                         '%Y-%m-%dT%H:%M:%S').strftime("%s")) * 1000,
                     len(day_data)
                     ])
-    parsed_data = sorted(parsed_data, key=lambda x: x[0])
-    return render_template('calendar.j2', summary=json.dumps(parsed_data))
+                for event in day_data:
+                    events.append({
+                            'title': event['event'],
+                            'start': f'{year}-{month}-{day}',
+                            'url': f'/render?path={event["file_path"]}'
+                        })
+    timeline_data = sorted(timeline_data, key=lambda x: x[0])
+
+    return render_template('calendar.j2', summary=json.dumps(timeline_data),
+                           events=json.dumps(events))
 
 
 @app.route('/mark_todo', methods=['GET'])

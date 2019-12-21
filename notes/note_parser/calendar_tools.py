@@ -50,6 +50,9 @@ def get_calendar(notes_directory, directory_filter=None):
             heading_text = heading_match.group(3).strip()
             date = heading_match.group(4).strip()
 
+        if notes_directory in file_path:
+            file_path = file_path[len(notes_directory):]
+
         parsed_heading = {
             "file_path": file_path,
             "line_number": line_number,

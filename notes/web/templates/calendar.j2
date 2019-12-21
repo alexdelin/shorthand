@@ -21,9 +21,9 @@
         </div>
         <div class="row content">
           <div class="col-md-12 note-content">
-            <!--
+
             <div id="out"></div>
-            -->
+
             <div id="calendar"></div>
           </div>
         </div>
@@ -53,7 +53,8 @@
       var calendarEl = document.getElementById('calendar');
 
       var calendar = new FullCalendar.Calendar(calendarEl, {
-        plugins: [ 'dayGrid' ]
+        plugins: [ 'dayGrid' ],
+        events: {{events}}
       });
 
       calendar.render();
