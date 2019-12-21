@@ -8,7 +8,8 @@ function getTagsElements(tags) {
 
 function getTodoElement(text, file, startDate, endDate, line, tags) {
     return '<tr><td class="todoText">' + text + getTagsElements(tags) +
-           '</td><td class="filePath">' + file +
+           '</td><td class="filePath">' +
+           '<a href="/render?path=' + file + '">' + file + '</a>' +
            '</td><td>' + startDate +
            '</td><td>' + endDate +
            '</td><td class="lineNumber">' + line +
