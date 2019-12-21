@@ -157,9 +157,9 @@ def show_calendar():
 
     summary = get_calendar(NOTES_CONFIG['notes_directory'])
     parsed_data = []
-    for year, year_data in summary.iteritems():
-        for month, month_data in year_data.iteritems():
-            for day, day_data in month_data.iteritems():
+    for year, year_data in summary.items():
+        for month, month_data in year_data.items():
+            for day, day_data in month_data.items():
                 parsed_data.append([
                     int(datetime.strptime(
                         '{year}-{month}-{day}T12:00:00'.format(

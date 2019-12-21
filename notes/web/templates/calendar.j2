@@ -1,8 +1,15 @@
 <html>
 <head>
   <meta charset='utf-8'>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
-  <script src="https://code.highcharts.com/highcharts.js"></script></script>
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <script src="/js/highcharts.js"></script></script>
+
+  <!-- Calendar Stuff -->
+  <link href='/css/calendar.css' rel='stylesheet' />
+  <link href='/css/daygrid.css' rel='stylesheet' />
+
+  <script src='/js/calendar.js'></script>
+  <script src='/js/daygrid.js'></script>
 </head>
 <body>
 
@@ -14,7 +21,10 @@
         </div>
         <div class="row content">
           <div class="col-md-12 note-content">
+            <!--
             <div id="out"></div>
+            -->
+            <div id="calendar"></div>
           </div>
         </div>
         <div class="row footer-bar">
@@ -36,6 +46,19 @@
             name: 'Sections per day'
         }]
     });
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var calendarEl = document.getElementById('calendar');
+
+      var calendar = new FullCalendar.Calendar(calendarEl, {
+        plugins: [ 'dayGrid' ]
+      });
+
+      calendar.render();
+    });
+
   </script>
 </body>
 </html>
