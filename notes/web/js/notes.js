@@ -13,11 +13,11 @@ function getTodoElement(text, file, startDate, endDate, line, tags) {
            '</td><td>' + startDate +
            '</td><td>' + endDate +
            '</td><td class="lineNumber">' + line +
-           '</td><td class="actionButtons">' +
-                '<span class="getContext">🔎</span> ' +
-                '<span class="markComlete">✅</span> ' +
-                '<span class="markSkipped">⏭</span> ' +
-                '<span class="editContent">✏️</span>' +
+           '</td><td>' +
+                '<span class="getContext"><i class="material-icons action-button">search</i></span> ' +
+                '<span class="markComlete"><i class="material-icons action-button">check_box</i></span> ' +
+                '<span class="markSkipped"><i class="material-icons action-button">skip_next</i></span> ' +
+                '<span class="editContent"><i class="material-icons action-button">edit</i></span>' +
            '</td></tr>'
 }
 

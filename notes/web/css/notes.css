@@ -44,8 +44,17 @@
     font-size: 20px;
 }
 
-.actionButtons {
-    font-size: 32px;
+.material-icons.nav-icon {
+    font-size: 6rem;
+    line-height: 6rem;
+    vertical-align: middle;
+    color: white;
+}
+
+.material-icons.action-button {
+    font-size: 4rem;
+    line-height: 4rem;
+    vertical-align: middle;
 }
 
 .padded-top {
@@ -53,46 +62,46 @@
 }
 
 .actionsColumn {
-    min-width: 200px;
+    min-width: 220px;
 }
 
 .tt-hint {
-  color: #999
+    color: #999
 }
 
 .tt-menu {
-  width: 422px;
-  margin: 12px 0;
-  padding: 8px 0;
-  background-color: #fff;
-  border: 1px solid #ccc;
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  -webkit-border-radius: 8px;
-     -moz-border-radius: 8px;
-          border-radius: 8px;
-  -webkit-box-shadow: 0 5px 10px rgba(0,0,0,.2);
-     -moz-box-shadow: 0 5px 10px rgba(0,0,0,.2);
-          box-shadow: 0 5px 10px rgba(0,0,0,.2);
+    width: 422px;
+    margin: 12px 0;
+    padding: 8px 0;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
+    -webkit-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+    -moz-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+    box-shadow: 0 5px 10px rgba(0,0,0,.2);
 }
 
 .tt-suggestion {
-  padding: 3px 20px;
-  font-size: 18px;
-  line-height: 24px;
+    padding: 3px 20px;
+    font-size: 18px;
+    line-height: 24px;
 }
 
 .tt-suggestion:hover {
-  cursor: pointer;
-  color: #fff;
-  background-color: #0097cf;
+    cursor: pointer;
+    color: #fff;
+    background-color: #0097cf;
 }
 
 .tt-suggestion.tt-cursor {
-  color: #fff;
-  background-color: #0097cf;
+    color: #fff;
+    background-color: #0097cf;
 
 }
 
 .tt-suggestion p {
-  margin: 0;
+    margin: 0;
 }

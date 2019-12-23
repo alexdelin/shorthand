@@ -9,6 +9,7 @@
     <script src="/js/typeahead.bundle.min.js"></script>
     <script type="text/javascript" src="/js/underscore-min.js"></script>
     <script type="text/javascript" src="/js/notes.js" defer></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <title>Notes</title>
 </head>
 <body>
@@ -20,11 +21,14 @@
     <div class="col-md-10 pagewrapper" style="min-height: 1000px;">
 
         <div class="row title-bar">
-            <div class="col-md-12">
-                <!-- <a href="/">
-                    <img id="ml-logo" src="/img/microscope.png" height="60">
-                </a> -->
-                <h1 id="ml-title">Notes</h1>
+            <div class="col-md-6">
+                <h1 id="ml-title" style="vertical-align: middle; line-height: 6rem;">Notes</h1>
+            </div>
+            <div class="col-md-6" style="text-align: right;">
+                <a href="/"><i class="material-icons nav-icon">home</i></a>
+                <a href="/calendar"><i class="material-icons nav-icon">event</i></a>
+                <a href="/chart"><i class="material-icons nav-icon">equalizer</i></a>
+                <a href="/browse"><i class="material-icons nav-icon">toc</i></a>
             </div>
         </div>
 
@@ -71,8 +75,7 @@
 
               <!-- Search Button -->
               <button id="masterSearch" class="btn btn-primary">Search</button>
-              <a href="/calendar" class="btn btn-primary">Calendar</a>
-            </div>
+
           </div>
         </div>
 
