@@ -15,6 +15,7 @@ from note_parser.search_tools import search_notes, get_context, get_note
 from note_parser.question_tools import get_questions
 from note_parser.tag_tools import get_tags
 from note_parser.calendar_tools import get_calendar
+from note_parser.toc_tools import get_toc
 from note_parser.utils.config import get_notes_config
 from note_parser.utils.render import get_file_content, get_rendered_markdown
 from note_parser.utils.typeahead import get_typeahead_suggestions
@@ -156,8 +157,25 @@ def send_rendered_note():
 def show_calendar():
 
     summary = get_calendar(NOTES_CONFIG['notes_directory'])
-    timeline_data = []
     events = []
+    for year, year_data in summary.items():
+        for month, month_data in year_data.items():
+            for day, day_data in month_data.items():
+                for event in day_data:
+                    events.append({
+                            'title': event['event'],
+                            'start': f'{year}-{month}-{day}',
+                            'url': f'/render?path={event["file_path"]}'
+                        })
+
+    return render_template('calendar.j2', events=json.dumps(events))
+
+
+@app.route('/chart', methods=['GET'])
+def show_chart():
+
+    summary = get_calendar(NOTES_CONFIG['notes_directory'])
+    timeline_data = []
     for year, year_data in summary.items():
         for month, month_data in year_data.items():
             for day, day_data in month_data.items():
@@ -167,16 +185,20 @@ def show_calendar():
                         '%Y-%m-%dT%H:%M:%S').strftime("%s")) * 1000,
                     len(day_data)
                     ])
-                for event in day_data:
-                    events.append({
-                            'title': event['event'],
-                            'start': f'{year}-{month}-{day}',
-                            'url': f'/render?path={event["file_path"]}'
-                        })
     timeline_data = sorted(timeline_data, key=lambda x: x[0])
 
-    return render_template('calendar.j2', summary=json.dumps(timeline_data),
-                           events=json.dumps(events))
+    return render_template('chart.j2', summary=json.dumps(timeline_data))
+
+
+@app.route('/toc', methods=['GET'])
+def get_toc_data():
+    return json.dumps(get_toc(NOTES_CONFIG['notes_directory']))
+
+
+@app.route('/browse', methods=['GET'])
+def show_browse_page():
+    toc = get_toc(NOTES_CONFIG['notes_directory'])
+    return render_template('browse.j2', toc=json.dumps(toc))
 
 
 @app.route('/mark_todo', methods=['GET'])

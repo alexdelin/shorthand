@@ -2,10 +2,12 @@
     display: inline;
 }
 
-#ml-title {
+#notes-title {
     display: inline;
     vertical-align: middle;
     padding-left: 10px;
+    vertical-align: middle;
+    line-height: 6rem;
 }
 
 .title-bar {
@@ -55,6 +57,14 @@
     font-size: 4rem;
     line-height: 4rem;
     vertical-align: middle;
+}
+
+.calendar-content {
+    padding: 30px;
+}
+
+.note-content {
+    padding: 30px;
 }
 
 .padded-top {

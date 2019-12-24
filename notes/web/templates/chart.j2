@@ -35,6 +35,7 @@
           <div class="col-md-12 calendar-content">
 
             <div id="calendar"></div>
+            <div id="out"></div>
 
           </div>
         </div>
@@ -44,6 +45,20 @@
     </div>
     <div class="col-md-2 gutter"></div>
   </div>
+  <script type="text/javascript">
+    Highcharts.chart('out', {
+        chart: {zoomType: 'x'},
+        title: {text: 'Daily Productivity'},
+        subtitle: {text: 'Meetings / sections created per day'},
+        tooltip: {valueDecimals: 2},
+        xAxis: {type: 'datetime'},
+        series: [{
+            data: {{summary}},
+            lineWidth: 0.5,
+            name: 'Sections per day'
+        }]
+    });
+  </script>
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
