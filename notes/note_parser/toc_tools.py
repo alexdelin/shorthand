@@ -5,6 +5,7 @@ import json
 def get_toc(notes_directory, directory_filter=None):
 
     fs_lookup = {}
+    ordered_dirs = []
     full_contents = list(os.walk(notes_directory, topdown=False))
     for dir_path, dirnames, filenames in full_contents:
 
@@ -22,14 +23,9 @@ def get_toc(notes_directory, directory_filter=None):
             'path': dir_path,
             'text': dir_path.split('/')[-1]
         }
+        ordered_dirs.append(dir_path)
 
-    for dir_path, dirnames, filenames in full_contents:
-
-        if '.git' in dir_path:
-            continue
-
-        if notes_directory in dir_path:
-            dir_path = dir_path[len(notes_directory):]
+    for dir_path in ordered_dirs:
 
         populated_subdirs = []
         for subdir in fs_lookup[dir_path]['dirs']:
