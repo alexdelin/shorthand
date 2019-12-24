@@ -46,7 +46,7 @@
     let md;
     document.addEventListener("DOMContentLoaded", () => {
         const tm = texmath.use(katex);
-        md = markdownit().use(tm,{delimiters:'dollars',macros:{"\\RR": "\\mathbb{R}"}});
+        md = markdownit({html:true}).use(tm,{delimiters:'dollars',macros:{"\\RR": "\\mathbb{R}"}});
         out.innerHTML = md.render('{{ file_content }}');
     })
   </script>
