@@ -147,6 +147,7 @@ def send_rendered_note():
 
     file_path = NOTES_CONFIG['notes_directory'] + request.args.get('path')
     file_content = get_file_content(file_path)
+    file_content = get_rendered_markdown(file_content)
     file_content = file_content.replace("\\", "\\\\")
     file_content = file_content.replace('\n', '\\n')
     file_content = file_content.replace("'", "\\'")
