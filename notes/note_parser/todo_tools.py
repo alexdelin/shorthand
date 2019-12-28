@@ -128,9 +128,59 @@ def stamp_notes(notes_directory, stamp_todos=True, stamp_today=True):
     return 'Done!'
 
 
+def parse_todo(todo_line):
+    '''A standalone parser for a single line todo element
+    '''
+
+    # remove the leading `[]`, `[ ]`, `[X]`, or `[S]`
+    todo_content = todo_line.split(']', 1)[1].strip()
+    status_marker = todo_line.split(']', 1)[0].split('[')[1].strip()
+    if status_marker == 'X':
+        todo_status = 'complete'
+    elif status_marker == 'S':
+        todo_status = 'skipped'
+    else:
+        todo_status = 'incomplete'
+
+    # Pull out and structure out date info if included
+    start_stamp_regex = re.compile(START_STAMP_ONLY_PATTERN)
+    start_end_stamp_regex = re.compile(START_END_STAMP_ONLY_PATTERN)
+
+    start_stamp_match = start_stamp_regex.match(todo_content)
+    start_end_stamp_match = start_end_stamp_regex.match(todo_content)
+    if start_stamp_match:
+        start_date = start_stamp_match.groups()[1]
+        end_date = None
+        todo_text = start_stamp_match.groups()[4]
+    elif start_end_stamp_match:
+        start_date = start_end_stamp_match.groups()[1]
+        end_date = start_end_stamp_match.groups()[3]
+        todo_text = start_end_stamp_match.groups()[6]
+    else:
+        start_date = None
+        end_date = None
+        todo_text = todo_content
+
+    tags, clean_text = extract_tags(todo_text)
+    if tags:
+        todo_text = clean_text
+
+    processed_todo = {
+            'todo_text': todo_text,
+            'start_date': start_date,
+            'end_date': end_date,
+            'status': todo_status,
+            'tags': tags
+        }
+
+    return processed_todo
+
+
 def get_todos(notes_directory, todo_status='incomplete', directory_filter=None,
               query_string=None, case_sensitive=False, sort_by=None,
               suppress_future=True):
+    '''Get a specified set of todos using grep on the filesystem
+    '''
 
     todo_status = todo_status.lower()
 
@@ -277,3 +327,5 @@ def mark_todo(filename, line_number, status):
         file_object.write('\n'.join(split_content))
 
     return line_content
+
+

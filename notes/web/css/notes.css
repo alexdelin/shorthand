@@ -75,6 +75,29 @@
     min-width: 220px;
 }
 
+.todo-element {
+    border: 1px solid black;
+    padding: 5px;
+    margin-left: 0px !important;
+    margin-right: 0px !important;
+}
+
+.todo-incomplete {
+    background-color: #ffb2ab;
+}
+
+.todo-complete {
+    background-color: #c4c5ff;
+}
+
+.todo-skipped {
+    background-color: #b3b3b3;
+}
+
+.todo-meta {
+    text-align: right;
+}
+
 .tt-hint {
     color: #999
 }

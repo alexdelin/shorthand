@@ -1,5 +1,7 @@
 import codecs
 
+from note_parser.todo_tools import parse_todo
+
 
 def get_rendered_markdown(markdown_content):
     '''Pre-render all non-standard notes file
@@ -30,13 +32,10 @@ def get_rendered_markdown(markdown_content):
         # Process All to-dos
         if len(markdown_line) >= 4:
             if markdown_line.strip()[:4] in ['[ ] ', '[X] ', '[S] '] or markdown_line.strip()[:3] == '[] ':
-                if markdown_line.strip()[1] == 'X':
-                    state = 'completed'
-                elif markdown_line.strip()[1] == 'S':
-                    state = 'skipped'
-                else:
-                    state = 'open'
-                todo_element = f'<div class="todo-element">{state} To-Do Element: {markdown_line.strip()[4:]}</div>'
+                parsed_todo = parse_todo(markdown_line.strip())
+                leading_spaces = len(markdown_line) - len(markdown_line.lstrip(' '))
+
+                todo_element = get_todo_element(parsed_todo, leading_spaces)
                 html_content_lines.append(todo_element)
                 continue
 
@@ -47,7 +46,7 @@ def get_rendered_markdown(markdown_content):
                     element_type = 'question'
                 if markdown_line.strip()[:2] == '@ ':
                     element_type = 'answer'
-                question_element = f'<div class="qa-element">{element_type}: {markdown_line.strip()[2:]}</div>'
+                question_element = f'- <div class="qa-element">{element_type}: {markdown_line.strip()[2:]}</div>'
                 html_content_lines.append(question_element)
                 continue
 
@@ -60,6 +59,28 @@ def get_rendered_markdown(markdown_content):
     return html_content
 
 
+def get_todo_element(todo, leading_spaces=0):
+    '''Get a rendered HTML element for a todo given
+    its properties
+    '''
+
+    status = todo['status']
+    text = todo['todo_text']
+    start = todo['start_date']
+    end = todo['end_date']
+    tags = todo['tags']
+    tag_elements = ''.join([f'<span class="badge">{tag}</span>' for tag in tags])
+
+    todo_element = f'- <span style="display: none;">a</span>' \
+                   f'<div class="row todo-element todo-{status}">' \
+                   f'<div class="col-md-8">{text}</div>' \
+                   f'<div class="col-md-4 todo-meta">{tag_elements}<br />{start} -> {end}</div>' \
+                   f'</div>'
+
+    todo_element = (' ' * leading_spaces) + todo_element
+    return todo_element
+
+
 def get_file_content(file_path):
     '''Get the raw unmodified contents of a
     note file
@@ -69,3 +90,5 @@ def get_file_content(file_path):
         file_content = file_object.read()
 
     return file_content
+
+print(get_rendered_markdown(get_file_content('/Users/alexdelin/notes/sample.note')))
