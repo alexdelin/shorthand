@@ -76,7 +76,7 @@
 }
 
 .todo-element {
-    border: 1px solid black;
+    /*border: 1px solid black;*/
     padding: 5px;
     margin-left: 0px !important;
     margin-right: 0px !important;
@@ -91,10 +91,29 @@
 }
 
 .todo-skipped {
-    background-color: #b3b3b3;
+    background-color: #c4c4c4;
 }
 
 .todo-meta {
+    text-align: right;
+}
+
+.qa-element {
+    /*border: 1px solid black;*/
+    padding: 5px;
+    margin-left: 0px !important;
+    margin-right: 0px !important;
+}
+
+.qa-question {
+    background-color: #f4b8ff;
+}
+
+.qa-answer {
+    background-color: #afffa3;
+}
+
+.question-meta {
     text-align: right;
 }
 

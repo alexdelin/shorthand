@@ -1,6 +1,7 @@
 import codecs
 
 from note_parser.todo_tools import parse_todo
+from note_parser.tag_tools import extract_tags
 
 
 def get_rendered_markdown(markdown_content):
@@ -32,21 +33,14 @@ def get_rendered_markdown(markdown_content):
         # Process All to-dos
         if len(markdown_line) >= 4:
             if markdown_line.strip()[:4] in ['[ ] ', '[X] ', '[S] '] or markdown_line.strip()[:3] == '[] ':
-                parsed_todo = parse_todo(markdown_line.strip())
-                leading_spaces = len(markdown_line) - len(markdown_line.lstrip(' '))
-
-                todo_element = get_todo_element(parsed_todo, leading_spaces)
+                todo_element = get_todo_element(markdown_line)
                 html_content_lines.append(todo_element)
                 continue
 
         # Process Questions & Answers
         if len(markdown_line) >= 2:
             if markdown_line.strip()[:2] in ['? ', '@ ']:
-                if markdown_line.strip()[:2] == '? ':
-                    element_type = 'question'
-                if markdown_line.strip()[:2] == '@ ':
-                    element_type = 'answer'
-                question_element = f'- <div class="qa-element">{element_type}: {markdown_line.strip()[2:]}</div>'
+                question_element = get_question_element(markdown_line)
                 html_content_lines.append(question_element)
                 continue
 
@@ -59,10 +53,13 @@ def get_rendered_markdown(markdown_content):
     return html_content
 
 
-def get_todo_element(todo, leading_spaces=0):
+def get_todo_element(raw_todo):
     '''Get a rendered HTML element for a todo given
     its properties
     '''
+
+    todo = parse_todo(raw_todo.strip())
+    leading_spaces = len(raw_todo) - len(raw_todo.lstrip(' '))
 
     status = todo['status']
     text = todo['todo_text']
@@ -70,15 +67,51 @@ def get_todo_element(todo, leading_spaces=0):
     end = todo['end_date']
     tags = todo['tags']
     tag_elements = ''.join([f'<span class="badge">{tag}</span>' for tag in tags])
+    if status == 'incomplete':
+        icon = '<i class="material-icons">check_box_outline_blank</i>'
+    elif status == 'complete':
+        icon = '<i class="material-icons">check_box</i>'
+    else:
+        icon = '<i class="material-icons">indeterminate_check_box</i>'
 
     todo_element = f'- <span style="display: none;">a</span>' \
                    f'<div class="row todo-element todo-{status}">' \
-                   f'<div class="col-md-8">{text}</div>' \
+                   f'<div class="col-md-1">{icon}</div>' \
+                   f'<div class="col-md-7">{text}</div>' \
                    f'<div class="col-md-4 todo-meta">{tag_elements}<br />{start} -> {end}</div>' \
                    f'</div>'
 
     todo_element = (' ' * leading_spaces) + todo_element
     return todo_element
+
+
+def get_question_element(raw_question):
+    '''Get rendered HTML for a question given its properties
+    '''
+
+    if raw_question.strip()[:2] == '? ':
+        element_type = 'question'
+        icon = '<i class="material-icons">help_outline</i>'
+    if raw_question.strip()[:2] == '@ ':
+        element_type = 'answer'
+        icon = '<i class="material-icons">subdirectory_arrow_right</i>'
+
+    text = raw_question.strip()[2:]
+    tags, text = extract_tags(text)
+    tag_elements = ''.join([f'<span class="badge">{tag}</span>' for tag in tags])
+
+    leading_spaces = len(raw_question) - len(raw_question.lstrip(' '))
+
+    # question_element = f'- <div class="qa-element">{element_type}: {}</div>'
+    question_element = f'- <span style="display: none;">a</span>' \
+                       f'<div class="row qa-element qa-{element_type}">' \
+                       f'<div class="col-md-1">{icon}</div>' \
+                       f'<div class="col-md-9">{text}</div>' \
+                       f'<div class="col-md-2 question-meta">{tag_elements}</div>' \
+                       f'</div>'
+
+    question_element = (' ' * leading_spaces) + question_element
+    return question_element
 
 
 def get_file_content(file_path):
@@ -91,4 +124,3 @@ def get_file_content(file_path):
 
     return file_content
 
-print(get_rendered_markdown(get_file_content('/Users/alexdelin/notes/sample.note')))
