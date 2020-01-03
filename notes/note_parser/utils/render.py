@@ -46,6 +46,14 @@ def get_rendered_markdown(markdown_content):
 
         # Process Definitions
 
+        # Process Headings for Navigation
+        if markdown_line[0] == '#':
+            split_heading = markdown_line.split(' ', 1)
+            element_id = split_heading[1].replace(' ', '-')
+            heading_html_line = f'{markdown_line}<div id="{element_id}"></div>'
+            html_content_lines.append(heading_html_line)
+            continue
+
         # Catch-all for everything else
         html_content_lines.append(markdown_line)
 

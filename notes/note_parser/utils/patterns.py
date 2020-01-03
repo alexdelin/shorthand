@@ -50,6 +50,7 @@ LINE_TAG_PATTERN = r'(:\w*:)(?!\w)'
 
 DEFINITION_PATTERN = r"^(\w*)({.*} )(.*)"
 
+HEADING_PATTERN = r'^(#+)( )(.*)'
 DATED_HEADING_PATTERN = r'^(#+)( )(.*)(' + DATE_STAMP_PATTERN + r')'
 
 CHARS_TO_ESCAPE = ['(', ')', '{', '}', '+', '|', '?']

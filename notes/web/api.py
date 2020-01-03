@@ -166,7 +166,7 @@ def show_calendar():
                     events.append({
                             'title': event['event'],
                             'start': f'{year}-{month}-{day}',
-                            'url': f'/render?path={event["file_path"]}'
+                            'url': f'/render?path={event["file_path"]}#{event["element_id"]}'
                         })
 
     return render_template('calendar.j2', events=json.dumps(events))

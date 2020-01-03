@@ -53,11 +53,15 @@ def get_calendar(notes_directory, directory_filter=None):
         if notes_directory in file_path:
             file_path = file_path[len(notes_directory):]
 
+        split_heading = heading_raw.split(' ', 1)
+        element_id = split_heading[1].replace(' ', '-')
+
         parsed_heading = {
             "file_path": file_path,
             "line_number": line_number,
             "event": heading_text,
-            "date": date
+            "date": date,
+            "element_id": element_id
         }
 
         events.append(parsed_heading)
