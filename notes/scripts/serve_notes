@@ -1,0 +1,4 @@
+#!/bin/bash
+
+python ~/code/helpers/notes/web/api.py
+# open http://localhost:8181

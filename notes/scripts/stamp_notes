@@ -1,0 +1,3 @@
+#!/bin/bash
+
+python ~/code/helpers/notes/note_parser/cli.py --action stamp
