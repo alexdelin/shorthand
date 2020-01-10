@@ -12,6 +12,7 @@ def get_rendered_markdown(markdown_content):
     html_content_lines = []
     markdown_content_lines = markdown_content.split('\n')
     is_fenced_code_block = False
+    is_diagram_block = False
     for markdown_line in markdown_content_lines:
 
         # Handle empty or pseudo-empty lines
@@ -20,7 +21,18 @@ def get_rendered_markdown(markdown_content):
             continue
 
         # Handle edges of fenced code blocks
-        if markdown_line[:3] == '```':
+        if markdown_line.strip()[:3] == '```':
+
+            # Special handling for diagram blocks
+            if markdown_line.strip()[:10] == '```mermaid':
+                is_diagram_block = True
+                html_content_lines.append('<div class="mermaid">')
+                continue
+            elif is_diagram_block:
+                is_diagram_block = False
+                html_content_lines.append('</div>')
+                continue
+
             is_fenced_code_block = not is_fenced_code_block
             html_content_lines.append(markdown_line)
             continue
