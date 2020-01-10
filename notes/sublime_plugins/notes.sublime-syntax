@@ -1131,17 +1131,17 @@ contexts:
     - match: |-
          (?x)
           {{fenced_code_block_start}}
-          ((?i:latex|tex))
+          ((?i:mermaid))
           \s*$\n?          # any whitespace until EOL
       captures:
-        0: meta.code-fence.definition.begin.python.markdown-gfm
+        0: meta.code-fence.definition.begin.mermaid.markdown-gfm
         2: punctuation.definition.raw.code-fence.begin.markdown
         3: constant.other.language-name.markdown
-      embed: scope:source.tex
-      embed_scope: markup.raw.code-fence.python.markdown-gfm
+      embed: scope:source.mermaid
+      embed_scope: markup.raw.code-fence.mermaid.markdown-gfm
       escape: '{{code_fence_escape}}'
       escape_captures:
-        0: meta.code-fence.definition.end.python.markdown-gfm
+        0: meta.code-fence.definition.end.mermaid.markdown-gfm
         1: punctuation.definition.raw.code-fence.end.markdown
     - match: |-
          (?x)
