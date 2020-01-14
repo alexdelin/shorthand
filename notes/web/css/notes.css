@@ -10,6 +10,10 @@
     line-height: 6rem;
 }
 
+svg {
+    max-width: 800px;
+}
+
 .title-bar {
     background-color: #999;
     color: white;
@@ -22,6 +26,15 @@
 
 .pagewrapper {
     background-color: white;
+}
+
+.render-pagewrapper {
+    background-color: white;
+    max-width: 900px;
+}
+
+.katex-display {
+    font-size: 18px;
 }
 
 .fullwrapper {
