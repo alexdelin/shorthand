@@ -86,7 +86,7 @@ def get_todo_element(raw_todo):
     start = todo['start_date']
     end = todo['end_date']
     tags = todo['tags']
-    tag_elements = ''.join([f'<span class="badge">{tag}</span>' for tag in tags])
+    tag_elements = ''.join([f'<span class="badge badge-secondary">{tag}</span>' for tag in tags])
     if status == 'incomplete':
         icon = '<i class="material-icons">check_box_outline_blank</i>'
     elif status == 'complete':
@@ -118,7 +118,7 @@ def get_question_element(raw_question):
 
     text = raw_question.strip()[2:]
     tags, text = extract_tags(text)
-    tag_elements = ''.join([f'<span class="badge">{tag}</span>' for tag in tags])
+    tag_elements = ''.join([f'<span class="badge badge-secondary">{tag}</span>' for tag in tags])
 
     leading_spaces = len(raw_question) - len(raw_question.lstrip(' '))
 

@@ -7,11 +7,19 @@
     vertical-align: middle;
     padding-left: 10px;
     vertical-align: middle;
-    line-height: 6rem;
+    line-height: 5rem;
 }
 
 svg {
-    max-width: 800px;
+    max-width: 900px;
+}
+
+code {
+    max-width: 900px;
+}
+
+pre {
+    max-width: 900px;
 }
 
 .title-bar {
@@ -19,6 +27,11 @@ svg {
     color: white;
     padding-top: 15px;
     padding-bottom: 15px;
+}
+
+.search-input {
+    padding: 5px;
+    margin-bottom: 20px;
 }
 
 .gutter {
@@ -30,11 +43,11 @@ svg {
 
 .render-pagewrapper {
     background-color: white;
-    max-width: 900px;
+    max-width: 1000px;
 }
 
 .katex-display {
-    font-size: 18px;
+    font-size: 20px;
 }
 
 .fullwrapper {
@@ -65,15 +78,19 @@ svg {
 }
 
 .material-icons.nav-icon {
-    font-size: 6rem;
-    line-height: 6rem;
+    font-size: 5rem;
+    line-height: 5rem;
     vertical-align: middle;
     color: white;
 }
 
+.actionButtons {
+    min-width: 230px;
+}
+
 .material-icons.action-button {
-    font-size: 4rem;
-    line-height: 4rem;
+    font-size: 3rem;
+    line-height: 3rem;
     vertical-align: middle;
 }
 
@@ -82,7 +99,7 @@ svg {
 }
 
 .note-content {
-    padding: 30px;
+    padding: 40px;
 }
 
 .padded-top {

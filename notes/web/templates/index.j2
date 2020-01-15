@@ -35,35 +35,42 @@
         <!-- Single Search bar -->
         <div class="row padded-top">
           <div class="col-md-12">
-            <div class="form-inline">
-              <div class="form-group">
-                <div class="input-group">
-                  <div class="input-group-btn">
+            <form>
+              <div class="form-row align-items-center search-input">
 
-                    <!-- Filter Result Types -->
-                    <select id="resultType" class="form-control" onchange="setDropdownViz('resultType')">
-                      <option>Everything</option>
-                      <option>To-Dos</option>
-                      <option>Questions</option>
-                    </select>
+                <div class="col-auto">
+                  <!-- Filter Result Types -->
+                  <select id="resultType" class="form-control" onchange="setDropdownViz('resultType')">
+                    <option>Everything</option>
+                    <option>To-Dos</option>
+                    <option>Questions</option>
+                  </select>
+                </div>
 
-                    <!-- To-Do-Specific Filters -->
-                    <select id="todoType" class="form-control" style="display: none;" onchange="setDropdownViz('todoType')">
-                      <option>Incomplete</option>
-                      <option>Complete</option>
-                      <option>Skipped</option>
-                    </select>
+                <div class="col-auto">
+                  <!-- To-Do-Specific Filters -->
+                  <select id="todoType" class="form-control" style="display: none;" onchange="setDropdownViz('todoType')">
+                    <option>Incomplete</option>
+                    <option>Complete</option>
+                    <option>Skipped</option>
+                  </select>
+                </div>
 
-                    <!-- Question-Specific Filters -->
-                    <select id="questionType" class="form-control" style="display: none;" onchange="setDropdownViz('questionType')">
-                      <option>All</option>
-                      <option>Answered</option>
-                      <option>Unanswered</option>
-                    </select>
+                <div class="col-auto">
+                  <!-- Question-Specific Filters -->
+                  <select id="questionType" class="form-control" style="display: none;" onchange="setDropdownViz('questionType')">
+                    <option>All</option>
+                    <option>Answered</option>
+                    <option>Unanswered</option>
+                  </select>
+                </div>
 
+                <div class="col-auto">
                   <!-- Search Bar -->
                   <input type="text" class="form-control typeahead" id="searchFilter" placeholder="Search">
+                </div>
 
+                <div class="col-auto">
                   <!-- Directory Filter -->
                   <select id="directoryFilter" class="form-control">
                     {% for sub_directory in all_directories %}
@@ -71,10 +78,14 @@
                     {% endfor %}
                   </select>
                 </div>
-              </div>
 
-              <!-- Search Button -->
-              <button id="masterSearch" class="btn btn-primary">Search</button>
+                <div class="col-auto">
+                  <!-- Search Button -->
+                  <div id="masterSearch" class="btn btn-primary">Search</div>
+                </div>
+
+              </div>
+            </form>
 
           </div>
         </div>

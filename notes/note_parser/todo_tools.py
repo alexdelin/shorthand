@@ -267,8 +267,16 @@ def get_todos(notes_directory, todo_status='incomplete', directory_filter=None,
         if tags:
             todo_text = clean_text
 
+        display_path = file_path
+        display_path = display_path.strip('/')
+        if directory_filter:
+            display_path = display_path[len(directory_filter.strip('/')):]
+        display_path = display_path.strip('/')
+        display_path = ' → '.join(display_path.split('/'))
+
         processed_todo = {
             'file_path': file_path,
+            'display_path': display_path,
             'line_number': line_number,
             'todo_text': todo_text,
             'start_date': start_date,

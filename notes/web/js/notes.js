@@ -1,19 +1,19 @@
 function getTagsElements(tags) {
     var tagElement = ' '
     _.each(tags, function (tag) {
-        tagElement = tagElement + '<span class="badge">' + tag + '</span>';
+        tagElement = tagElement + '<span class="badge badge-secondary">' + tag + '</span>';
     });
     return tagElement
 }
 
-function getTodoElement(text, file, startDate, endDate, line, tags) {
+function getTodoElement(text, filePath, displayPath, startDate, endDate, line, tags) {
     return '<tr><td class="todoText">' + text + getTagsElements(tags) +
            '</td><td class="filePath">' +
-           '<a href="/render?path=' + file + '">' + file + '</a>' +
+           '<a href="/render?path=' + filePath + '">' + displayPath + '</a>' +
            '</td><td>' + startDate +
            '</td><td>' + endDate +
            '</td><td class="lineNumber">' + line +
-           '</td><td>' +
+           '</td><td class="actionButtons">' +
                 '<span class="getContext"><i class="material-icons action-button">search</i></span> ' +
                 '<span class="markComlete"><i class="material-icons action-button">check_box</i></span> ' +
                 '<span class="markSkipped"><i class="material-icons action-button">skip_next</i></span> ' +
@@ -111,12 +111,13 @@ function renderTodoResults(todoData) {
     var todoListElement = ''
     _.each(loadedData['items'], function(todoResult) {
         var text = todoResult['todo_text']
-        var file = todoResult['file_path']
+        var filePath = todoResult['file_path']
+        var displayPath = todoResult['display_path']
         var startDate = todoResult['start_date']
         var endDate = todoResult['end_date']
         var line = todoResult['line_number']
         var tags = todoResult['tags']
-        var newRowElement = getTodoElement(text, file, startDate, endDate, line, tags)
+        var newRowElement = getTodoElement(text, filePath, displayPath, startDate, endDate, line, tags)
         todoListElement = todoListElement + newRowElement
     })
     $('#todoList').append(todoListElement)
