@@ -8,7 +8,7 @@ function getTagsElements(tags) {
 
 function getTodoElement(text, filePath, displayPath, startDate, endDate, line, tags) {
     return '<tr><td class="todoText">' + text + getTagsElements(tags) +
-           '</td><td class="filePath">' +
+           '</td><td class="filePath" path="' + filePath + '">' +
            '<a href="/render?path=' + filePath + '">' + displayPath + '</a>' +
            '</td><td>' + startDate +
            '</td><td>' + endDate +
@@ -56,7 +56,7 @@ function setResultActions(resultType) {
         $(".markComlete").click(function(ev) {
             console.log('Marking Complete')
             rowElement = ev.currentTarget.parentElement.parentElement
-            todoFile = $(rowElement).find('.filePath')[0].innerText
+            todoFile = $(rowElement).find('.filePath')[0].getAttribute('path')
             todoLine = $(rowElement).find('.lineNumber')[0].innerText
             $.get(
                 'mark_todo',
@@ -74,7 +74,7 @@ function setResultActions(resultType) {
         $(".markSkipped").click(function(ev) {
             console.log('Marking Skipped')
             rowElement = ev.currentTarget.parentElement.parentElement
-            todoFile = $(rowElement).find('.filePath')[0].innerText
+            todoFile = $(rowElement).find('.filePath')[0].getAttribute('path')
             todoLine = $(rowElement).find('.lineNumber')[0].innerText
             $.get(
                 'mark_todo',
