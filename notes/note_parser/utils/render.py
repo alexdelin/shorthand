@@ -1,7 +1,11 @@
+import re
 import codecs
 
 from note_parser.todo_tools import parse_todo
 from note_parser.tag_tools import extract_tags
+from note_parser.utils.patterns import DEFINITION_PATTERN
+
+definition_regex = re.compile(DEFINITION_PATTERN)
 
 
 def get_rendered_markdown(markdown_content):
@@ -57,6 +61,11 @@ def get_rendered_markdown(markdown_content):
                 continue
 
         # Process Definitions
+        definition_match = definition_regex.match(markdown_line)
+        if definition_match:
+            definition_element = get_definition_element(definition_match, markdown_line)
+            html_content_lines.append(definition_element)
+            continue
 
         # Process Headings for Navigation
         if markdown_line[0] == '#':
@@ -132,6 +141,20 @@ def get_question_element(raw_question):
 
     question_element = (' ' * leading_spaces) + question_element
     return question_element
+
+
+def get_definition_element(definition_match, markdown_line):
+    term = definition_match.group(2)
+    term = term.strip().strip('{}')
+    definition = definition_match.group(3)
+
+    leading_spaces = len(raw_question) - len(raw_question.lstrip(' '))
+
+    element = f'- <div class="card"><div class="card-header">{term}</div>' \
+              f'<div class="card-body">{definition}</div></div>'
+
+    element = (' ' * leading_spaces) + element
+    return element
 
 
 def get_file_content(file_path):
