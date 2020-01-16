@@ -38,8 +38,10 @@ def show_ui():
             continue
         else:
             all_directories.append(subdir_path)
+    default_directory = NOTES_CONFIG.get('default_directory')
 
-    return render_template('index.j2', all_directories=all_directories)
+    return render_template('index.j2', all_directories=all_directories,
+                           default_directory=default_directory)
 
 
 @app.route('/js/<path:path>', methods=['GET', 'POST'])

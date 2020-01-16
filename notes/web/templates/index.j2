@@ -73,6 +73,9 @@
                 <div class="col-auto">
                   <!-- Directory Filter -->
                   <select id="directoryFilter" class="form-control">
+                    {% if default_directory %}
+                      <option>{{ default_directory }}</option>
+                    {% endif %}
                     {% for sub_directory in all_directories %}
                       <option>{{ sub_directory }}</option>
                     {% endfor %}
