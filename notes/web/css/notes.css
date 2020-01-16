@@ -110,6 +110,20 @@ pre {
     min-width: 220px;
 }
 
+.definition-element {
+    padding: 5px;
+    margin-left: 0px !important;
+    margin-right: 0px !important;
+}
+
+.definition-term {
+    background-color: #ffd38c;
+}
+
+.definition-text {
+    background-color: #fbfc8d;
+}
+
 .todo-element {
     /*border: 1px solid black;*/
     padding: 5px;

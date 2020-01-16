@@ -148,10 +148,11 @@ def get_definition_element(definition_match, markdown_line):
     term = term.strip().strip('{}')
     definition = definition_match.group(3)
 
-    leading_spaces = len(raw_question) - len(raw_question.lstrip(' '))
+    leading_spaces = len(markdown_line) - len(markdown_line.lstrip(' '))
 
-    element = f'- <div class="card"><div class="card-header">{term}</div>' \
-              f'<div class="card-body">{definition}</div></div>'
+    element = f'- <div class="row definition-element">'\
+              f'<div class="col-md-2 definition-term">{term}</div>' \
+              f'<div class="col-md-10 definition-text">{definition}</div></div>'
 
     element = (' ' * leading_spaces) + element
     return element
