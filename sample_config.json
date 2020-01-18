@@ -1,3 +1,6 @@
 {
-    "notes_directory": "~/notes/"
+    "notes_directory": "/home/user/notes/",
+    "ngram_db_directory": "/home/user/ngram_db",
+    "default_directory": "",
+    "log_file_path": "/var/log/apps/shorthand/shorthand.log"
 }

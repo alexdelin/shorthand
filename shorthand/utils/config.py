@@ -1,7 +1,7 @@
 import os
 import json
 
-CONFIG_FILE_LOCATION = '~/.config/notes_config.json'
+CONFIG_FILE_LOCATION = '/etc/apps/shorthand/shorthand_config.json'
 
 
 def get_notes_config(config_location=CONFIG_FILE_LOCATION):

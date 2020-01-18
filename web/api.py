@@ -1,7 +1,7 @@
 #!/usr/bin/env/python
 
 '''
-Note Parser Web API
+Shorthand Web API
 '''
 
 import os
