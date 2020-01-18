@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# $brew install fswatch
+fswatch -o $HOME/notes | xargs -n1 -I{} stamp_notes

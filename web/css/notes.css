@@ -1,0 +1,212 @@
+#ml-logo {
+    display: inline;
+}
+
+#notes-title {
+    display: inline;
+    vertical-align: middle;
+    padding-left: 10px;
+    vertical-align: middle;
+    line-height: 4rem;
+}
+
+.material-icons.nav-icon {
+    font-size: 4rem;
+    line-height: 4rem;
+    vertical-align: middle;
+    color: white;
+}
+
+.actionButtons {
+    min-width: 230px;
+}
+
+.material-icons.action-button {
+    font-size: 2.5rem;
+    line-height: 2.5rem;
+    vertical-align: middle;
+}
+
+svg {
+    max-width: 900px;
+}
+
+code {
+    max-width: 900px;
+}
+
+pre {
+    max-width: 900px;
+}
+
+.title-bar {
+    background-color: #999;
+    color: white;
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+.search-input {
+    padding: 5px;
+    margin-bottom: 20px;
+}
+
+.gutter {
+}
+
+.pagewrapper {
+    background-color: white;
+}
+
+.render-pagewrapper {
+    background-color: white;
+    max-width: 1000px;
+}
+
+.katex-display {
+    font-size: 20px;
+}
+
+.fullwrapper {
+    background-color: #999;
+}
+
+#page-name {
+    float: right;
+    display: inline;
+    vertical-align: middle;
+}
+
+#todoList {
+    font-size: 20px;
+}
+
+#searchResults {
+    font-size: 20px;
+}
+
+#questionList {
+    font-size: 20px;
+}
+
+.table>tbody>tr>td {
+    max-width: 400px;
+    word-wrap: break-word;
+}
+
+.calendar-content {
+    padding: 30px;
+}
+
+.note-content {
+    padding: 40px;
+}
+
+.padded-top {
+    padding-top: 10px;
+}
+
+.actionsColumn {
+    min-width: 220px;
+}
+
+.definition-element {
+    padding: 5px;
+    margin-left: 0px !important;
+    margin-right: 0px !important;
+}
+
+.definition-term {
+    background-color: #ffd38c;
+}
+
+.definition-text {
+    background-color: #fbfc8d;
+}
+
+.todo-element {
+    /*border: 1px solid black;*/
+    padding: 5px;
+    margin-left: 0px !important;
+    margin-right: 0px !important;
+}
+
+.todo-incomplete {
+    background-color: #ffb2ab;
+}
+
+.todo-complete {
+    background-color: #c4c5ff;
+}
+
+.todo-skipped {
+    background-color: #c4c4c4;
+}
+
+.todo-meta {
+    text-align: right;
+}
+
+.qa-element {
+    /*border: 1px solid black;*/
+    padding: 5px;
+    margin-left: 0px !important;
+    margin-right: 0px !important;
+}
+
+.qa-question {
+    background-color: #f4b8ff;
+}
+
+.qa-answer {
+    background-color: #afffa3;
+}
+
+.question-meta {
+    text-align: right;
+}
+
+.mermaid {
+    text-align: center;
+}
+
+.tt-hint {
+    color: #999
+}
+
+.tt-menu {
+    width: 422px;
+    margin: 12px 0;
+    padding: 8px 0;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
+    -webkit-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+    -moz-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+    box-shadow: 0 5px 10px rgba(0,0,0,.2);
+}
+
+.tt-suggestion {
+    padding: 3px 20px;
+    font-size: 18px;
+    line-height: 24px;
+}
+
+.tt-suggestion:hover {
+    cursor: pointer;
+    color: #fff;
+    background-color: #0097cf;
+}
+
+.tt-suggestion.tt-cursor {
+    color: #fff;
+    background-color: #0097cf;
+
+}
+
+.tt-suggestion p {
+    margin: 0;
+}

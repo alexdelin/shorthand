@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="/css/notes.css">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <script src="/js/jquery-3.3.1.min.js"></script>
+    <link rel="stylesheet" href="/css/highlight.min.css">
+    <script src="/js/highlight.min.js"></script>
+    <script src="/js/typeahead.bundle.min.js"></script>
+    <script type="text/javascript" src="/js/underscore-min.js"></script>
+    <script type="text/javascript" src="/js/notes.js" defer></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <title>Notes</title>
+</head>
+<body>
+
+<div class="row fullwrapper">
+
+    <div class="col-md-1 gutter"></div>
+
+    <div class="col-md-10 pagewrapper" style="min-height: 1000px;">
+
+        <div class="row title-bar">
+            <div class="col-md-6">
+                <h1 id="notes-title">Notes</h1>
+            </div>
+            <div class="col-md-6" style="text-align: right;">
+                <a href="/"><i class="material-icons nav-icon">home</i></a>
+                <a href="/calendar"><i class="material-icons nav-icon">event</i></a>
+                <a href="/chart"><i class="material-icons nav-icon">show_chart</i></a>
+                <a href="/browse"><i class="material-icons nav-icon">toc</i></a>
+            </div>
+        </div>
+
+        <!-- Single Search bar -->
+        <div class="row padded-top">
+          <div class="col-md-12">
+            <form>
+              <div class="form-row align-items-center search-input">
+
+                <div class="col-auto">
+                  <!-- Filter Result Types -->
+                  <select id="resultType" class="form-control" onchange="setDropdownViz('resultType')">
+                    <option>Everything</option>
+                    <option>To-Dos</option>
+                    <option>Questions</option>
+                  </select>
+                </div>
+
+                <div class="col-auto">
+                  <!-- To-Do-Specific Filters -->
+                  <select id="todoType" class="form-control" style="display: none;" onchange="setDropdownViz('todoType')">
+                    <option>Incomplete</option>
+                    <option>Complete</option>
+                    <option>Skipped</option>
+                  </select>
+                </div>
+
+                <div class="col-auto">
+                  <!-- Question-Specific Filters -->
+                  <select id="questionType" class="form-control" style="display: none;" onchange="setDropdownViz('questionType')">
+                    <option>All</option>
+                    <option>Answered</option>
+                    <option>Unanswered</option>
+                  </select>
+                </div>
+
+                <div class="col-auto">
+                  <!-- Search Bar -->
+                  <input type="text" class="form-control typeahead" id="searchFilter" placeholder="Search">
+                </div>
+
+                <div class="col-auto">
+                  <!-- Directory Filter -->
+                  <select id="directoryFilter" class="form-control">
+                    {% if default_directory %}
+                      <option>{{ default_directory }}</option>
+                    {% endif %}
+                    {% for sub_directory in all_directories %}
+                      <option>{{ sub_directory }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+
+                <div class="col-auto">
+                  <!-- Search Button -->
+                  <div id="masterSearch" class="btn btn-primary">Search</div>
+                </div>
+
+              </div>
+            </form>
+
+          </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12" style="margin-left: 10px;">
+              <h3>Total: <span id="resultCount">0</span></h3>
+            </div>
+          </div>
+
+        <div id="resultWrapper" class="row">
+            <div class="col-md-12">
+                <table id="todoContent" class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th scope="col">ToDo</th>
+                      <th scope="col">File Path</th>
+                      <th scope="col">Start Date</th>
+                      <th scope="col">End Date</th>
+                      <th scope="col">Line Number</th>
+                      <th scope="col" class="actionsColumn">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="todoList">
+                    <!-- ToDo Results go here -->
+                  </tbody>
+                </table>
+
+                <table id="questionContent" class="table table-striped" style="display: none">
+                  <thead>
+                    <tr>
+                      <th scope="col">Question</th>
+                      <th scope="col">File Path</th>
+                      <th scope="col">Line Number</th>
+                      <th scope="col">Answer</th>
+                      <th scope="col" class="actionsColumn">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="questionList">
+                    <!-- Question Results go here -->
+                  </tbody>
+                </table>
+
+                <table id="searchContent" class="table table-striped" style="display: none">
+                  <thead>
+                    <tr>
+                      <th scope="col">Matching Line</th>
+                      <th scope="col">File Path</th>
+                      <th scope="col">Line Number</th>
+                      <th scope="col" class="actionsColumn">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="searchResults">
+                    <!-- Search Results go here -->
+                  </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+    <div class="col-md-1 gutter"></div>
+</div>
+
+</body>
+</html>

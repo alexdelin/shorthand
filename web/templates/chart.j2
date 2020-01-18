@@ -1,0 +1,77 @@
+<html>
+<head>
+  <meta charset='utf-8'>
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <script src="/js/highcharts.js"></script></script>
+  <link rel="stylesheet" type="text/css" href="/css/notes.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <!-- Calendar Stuff -->
+  <link href='/css/calendar.css' rel='stylesheet' />
+  <link href='/css/daygrid.css' rel='stylesheet' />
+
+  <script src='/js/calendar.js'></script>
+  <script src='/js/daygrid.js'></script>
+</head>
+<body>
+
+  <div class="row fullwrapper">
+    <div class="col-md-2 gutter"></div>
+    <div class="col-md-8 pagewrapper">
+
+        <div class="row title-bar">
+            <div class="col-md-6">
+                <h1 id="notes-title">Notes</h1>
+            </div>
+            <div class="col-md-6" style="text-align: right;">
+                <a href="/"><i class="material-icons nav-icon">home</i></a>
+                <a href="/calendar"><i class="material-icons nav-icon">event</i></a>
+                <a href="/chart"><i class="material-icons nav-icon">show_chart</i></a>
+                <a href="/browse"><i class="material-icons nav-icon">toc</i></a>
+            </div>
+        </div>
+
+        <div class="row content">
+          <div class="col-md-12 calendar-content">
+
+            <div id="calendar"></div>
+            <div id="out"></div>
+
+          </div>
+        </div>
+        <div class="row footer-bar">
+          <div class="col-md-12"></div>
+        </div>
+    </div>
+    <div class="col-md-2 gutter"></div>
+  </div>
+  <script type="text/javascript">
+    Highcharts.chart('out', {
+        chart: {zoomType: 'x'},
+        title: {text: 'Daily Productivity'},
+        subtitle: {text: 'Meetings / sections created per day'},
+        tooltip: {valueDecimals: 2},
+        xAxis: {type: 'datetime'},
+        series: [{
+            data: {{summary}},
+            lineWidth: 0.5,
+            name: 'Sections per day'
+        }]
+    });
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var calendarEl = document.getElementById('calendar');
+
+      var calendar = new FullCalendar.Calendar(calendarEl, {
+        plugins: [ 'dayGrid' ],
+        events: {{events}}
+      });
+
+      calendar.render();
+    });
+
+  </script>
+</body>
+</html>
