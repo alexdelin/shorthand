@@ -5,7 +5,9 @@ Note Parser Web API
 '''
 
 import os
+import time
 import json
+import logging
 from datetime import datetime
 
 from flask import Flask, request, render_template, send_from_directory
@@ -17,6 +19,7 @@ from note_parser.tag_tools import get_tags
 from note_parser.calendar_tools import get_calendar
 from note_parser.toc_tools import get_toc
 from note_parser.utils.config import get_notes_config
+from note_parser.utils.logging import setup_logging
 from note_parser.utils.render import get_file_content, get_rendered_markdown
 from note_parser.utils.typeahead import get_typeahead_suggestions
 
@@ -24,6 +27,7 @@ from note_parser.utils.typeahead import get_typeahead_suggestions
 app = Flask(__name__)
 
 NOTES_CONFIG = get_notes_config()
+log = setup_logging(NOTES_CONFIG)
 
 
 @app.route('/', methods=['GET'])
@@ -40,6 +44,7 @@ def show_ui():
             all_directories.append(subdir_path)
     default_directory = NOTES_CONFIG.get('default_directory')
 
+    log.warning('Showing the Home page!')
     return render_template('index.j2', all_directories=all_directories,
                            default_directory=default_directory)
 
