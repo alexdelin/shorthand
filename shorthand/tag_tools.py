@@ -3,7 +3,7 @@ from datetime import datetime
 from subprocess import Popen, PIPE
 import shlex
 
-from note_parser.utils.patterns import TAG_PATTERN, LINE_TAG_PATTERN
+from shorthand.utils.patterns import TAG_PATTERN, LINE_TAG_PATTERN
 
 
 tag_regex = re.compile(LINE_TAG_PATTERN)

@@ -3,7 +3,7 @@ from datetime import datetime
 from subprocess import Popen, PIPE
 import shlex
 
-from note_parser.utils.patterns import DEFINITION_PATTERN, escape_for_grep
+from shorthand.utils.patterns import DEFINITION_PATTERN, escape_for_grep
 
 
 definition_regex = re.compile(DEFINITION_PATTERN)

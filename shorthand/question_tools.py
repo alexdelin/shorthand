@@ -1,6 +1,7 @@
 import re
 from subprocess import Popen, PIPE
-from note_parser.utils.patterns import ALL_QUESTIONS_GREP, ANSWER_PATTERN, \
+
+from shorthand.utils.patterns import ALL_QUESTIONS_GREP, ANSWER_PATTERN, \
                                        escape_for_grep
 
 

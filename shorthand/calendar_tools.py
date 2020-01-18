@@ -4,7 +4,7 @@ from datetime import datetime
 from subprocess import Popen, PIPE
 import shlex
 
-from note_parser.utils.patterns import DATED_HEADING_PATTERN, escape_for_grep
+from shorthand.utils.patterns import DATED_HEADING_PATTERN, escape_for_grep
 
 
 dated_heading_regex = re.compile(DATED_HEADING_PATTERN)

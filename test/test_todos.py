@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 
-from note_parser.todo_tools import get_todos, stamp_notes
+from shorthand.todo_tools import get_todos, stamp_notes
 
 from utils import setup_environment
 from model import NoteparserModel

@@ -1,6 +1,6 @@
 import os
 
-from note_parser.question_tools import get_questions
+from shorthand.question_tools import get_questions
 
 from utils import setup_environment
 from model import NoteparserModel

@@ -3,8 +3,8 @@ from datetime import datetime
 from subprocess import Popen, PIPE
 import shlex
 
-from note_parser.tag_tools import extract_tags
-from note_parser.utils.patterns import INCOMPLETE_PREFIX_GREP, \
+from shorthand.tag_tools import extract_tags
+from shorthand.utils.patterns import INCOMPLETE_PREFIX_GREP, \
     COMPLETE_PREFIX_GREP, SKIPPED_PREFIX_GREP, CATCH_ALL_PATTERN, \
     VALID_INCOMPLETE_PATTERN, VALID_COMPLETE_PATTERN, \
     UNFINISHED_UNSTAMPED_PATTERN, FINISHED_START_STAMPED_PATTERN, \

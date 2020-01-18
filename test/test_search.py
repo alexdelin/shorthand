@@ -1,6 +1,6 @@
 import os
 
-from note_parser.search_tools import search_notes, get_context
+from shorthand.search_tools import search_notes, get_context
 
 from utils import setup_environment
 from results_unstamped import EMPTY_RESULTS, SEARCH_RESULTS_FOOD, \

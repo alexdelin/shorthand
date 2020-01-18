@@ -1,9 +1,9 @@
 import re
 import codecs
 
-from note_parser.todo_tools import parse_todo
-from note_parser.tag_tools import extract_tags
-from note_parser.utils.patterns import DEFINITION_PATTERN
+from shorthand.todo_tools import parse_todo
+from shorthand.tag_tools import extract_tags
+from shorthand.utils.patterns import DEFINITION_PATTERN
 
 definition_regex = re.compile(DEFINITION_PATTERN)
 

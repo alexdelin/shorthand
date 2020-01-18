@@ -2,8 +2,8 @@
 
 import argparse
 
-from note_parser.utils.config import get_notes_config
-from note_parser.todo_tools import stamp_notes, get_todos
+from shorthand.utils.config import get_notes_config
+from shorthand.todo_tools import stamp_notes, get_todos
 
 
 def run():
