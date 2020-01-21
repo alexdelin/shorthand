@@ -1,0 +1,15 @@
+[Unit]
+Description=Shorthand uWSGI service
+
+[Service]
+User=pi
+Group=pi
+ExecStartPre=/bin/bash -c 'mkdir -p /var/run/apps/shorthand/; chown pi:www-data /var/run/apps/shorthand/'
+ExecStart=/home/pi/.virtualenvs/shorthand/bin/uwsgi --ini /etc/uwsgi/sites/shorthand_uwsgi_conf.ini
+Restart=always
+KillSignal=SIGQUIT
+Type=notify
+NotifyAccess=all
+
+[Install]
+WantedBy=multi-user.target
