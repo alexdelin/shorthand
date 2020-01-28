@@ -4,7 +4,7 @@
 name: Notes
 file_extensions:
   - note
-scope: text.html.markdown
+scope: text.notes
 comment: |-
   this definition aims to meet CommonMark specifications http://spec.commonmark.org/
   with GitHub Formatted Markdown extensions              https://github.github.com/gfm/
@@ -1142,6 +1142,51 @@ contexts:
       escape: '{{code_fence_escape}}'
       escape_captures:
         0: meta.code-fence.definition.end.mermaid.markdown-gfm
+        1: punctuation.definition.raw.code-fence.end.markdown
+    - match: |-
+         (?x)
+          {{fenced_code_block_start}}
+          ((?i:nginx|nginx_conf|nginx_config))
+          \s*$\n?          # any whitespace until EOL
+      captures:
+        0: meta.code-fence.definition.begin.nginx.markdown-gfm
+        2: punctuation.definition.raw.code-fence.begin.markdown
+        3: constant.other.language-name.markdown
+      embed: scope:source.nginx
+      embed_scope: markup.raw.code-fence.nginx.markdown-gfm
+      escape: '{{code_fence_escape}}'
+      escape_captures:
+        0: meta.code-fence.definition.end.nginx.markdown-gfm
+        1: punctuation.definition.raw.code-fence.end.markdown
+    - match: |-
+         (?x)
+          {{fenced_code_block_start}}
+          ((?i:rec|recfile))
+          \s*$\n?          # any whitespace until EOL
+      captures:
+        0: meta.code-fence.definition.begin.recfile.markdown-gfm
+        2: punctuation.definition.raw.code-fence.begin.markdown
+        3: constant.other.language-name.markdown
+      embed: scope:text.recfile
+      embed_scope: markup.raw.code-fence.recfile.markdown-gfm
+      escape: '{{code_fence_escape}}'
+      escape_captures:
+        0: meta.code-fence.definition.end.recfile.markdown-gfm
+        1: punctuation.definition.raw.code-fence.end.markdown
+    - match: |-
+         (?x)
+          {{fenced_code_block_start}}
+          ((?i:yaml|yml))
+          \s*$\n?          # any whitespace until EOL
+      captures:
+        0: meta.code-fence.definition.begin.yaml.markdown-gfm
+        2: punctuation.definition.raw.code-fence.begin.markdown
+        3: constant.other.language-name.markdown
+      embed: scope:source.yaml
+      embed_scope: markup.raw.code-fence.yaml.markdown-gfm
+      escape: '{{code_fence_escape}}'
+      escape_captures:
+        0: meta.code-fence.definition.end.yaml.markdown-gfm
         1: punctuation.definition.raw.code-fence.end.markdown
     - match: |-
          (?x)
