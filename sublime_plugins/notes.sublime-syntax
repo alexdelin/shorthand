@@ -1176,6 +1176,21 @@ contexts:
     - match: |-
          (?x)
           {{fenced_code_block_start}}
+          ((?i:config|ini))
+          \s*$\n?          # any whitespace until EOL
+      captures:
+        0: meta.code-fence.definition.begin.ini.markdown-gfm
+        2: punctuation.definition.raw.code-fence.begin.markdown
+        3: constant.other.language-name.markdown
+      embed: scope:source.ini
+      embed_scope: markup.raw.code-fence.ini.markdown-gfm
+      escape: '{{code_fence_escape}}'
+      escape_captures:
+        0: meta.code-fence.definition.end.ini.markdown-gfm
+        1: punctuation.definition.raw.code-fence.end.markdown
+    - match: |-
+         (?x)
+          {{fenced_code_block_start}}
           ((?i:yaml|yml))
           \s*$\n?          # any whitespace until EOL
       captures:
