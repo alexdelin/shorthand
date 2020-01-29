@@ -44,7 +44,7 @@ def show_ui():
             all_directories.append(subdir_path)
     default_directory = SHORTHAND_CONFIG.get('default_directory')
 
-    log.warning('Showing the Home page!')
+    log.info('Showing the home page')
     return render_template('index.j2', all_directories=all_directories,
                            default_directory=default_directory)
 
@@ -66,13 +66,18 @@ def get_current_todos():
     directory_filter = request.args.get('directory_filter')
     query_string = request.args.get('query_string')
     sort_by = request.args.get('sort_by')
+    log.info(f'Getting {status} todos in directory {directory_filter}' \
+             f' with query string "{query_string}" sorted by {sort_by}')
+
     if directory_filter == 'ALL':
         directory_filter = None
 
-    return json.dumps(get_todos(
-                notes_directory=SHORTHAND_CONFIG['notes_directory'],
-                todo_status=status, directory_filter=directory_filter,
-                query_string=query_string, sort_by=sort_by, suppress_future=True))
+    todos = get_todos(notes_directory=SHORTHAND_CONFIG['notes_directory'],
+                      todo_status=status, directory_filter=directory_filter,
+                      query_string=query_string, sort_by=sort_by,
+                      suppress_future=True)
+    log.info(f'Returning {len(todos)} todo results')
+    return json.dumps(todos)
 
 
 @app.route('/get_questions', methods=['GET'])
@@ -82,10 +87,13 @@ def fetch_questions():
     directory_filter = request.args.get('directory_filter')
     if directory_filter == 'ALL':
         directory_filter = None
+    log.info(f'Getting {status} questions in directory {directory}')
 
-    return json.dumps(get_questions(
-                notes_directory=SHORTHAND_CONFIG['notes_directory'],
-                question_status=status, directory_filter=directory_filter))
+    questions = get_questions(
+                    notes_directory=SHORTHAND_CONFIG['notes_directory'],
+                    question_status=status, directory_filter=directory_filter)
+    log.info(f'Returning {len(questions)} question results')
+    return json.dumps(questions)
 
 
 @app.route('/get_tags', methods=['GET'])
