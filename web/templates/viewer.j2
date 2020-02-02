@@ -11,6 +11,7 @@
   <script src="/js/markdown-it.js"></script>
   <script src="/js/katex.min.js"></script>
   <script src="/js/texmath.js"></script>
+  <script src="/js/jquery-3.3.1.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mermaid@8.4.0/dist/mermaid.min.js"></script>
 </head>
 <body>
@@ -30,6 +31,17 @@
             </div>
         </div>
 
+        <div class="row">
+          <div class="col-md-10">
+            <div class="toc-content hidden">
+              <h3>Table of Contents</h3>
+              <div id="toc"></div>
+            </div>
+          </div>
+          <div class="toc-button col-md-2">
+            <div id="showTOC" class="btn btn-primary">Show ToC</div>
+          </div>
+        </div>
         <div class="row content">
           <div class="note-content">
             <div id="out"></div>
@@ -46,8 +58,13 @@
     document.addEventListener("DOMContentLoaded", () => {
         const tm = texmath.use(katex);
         md = markdownit({html:true}).use(tm,{delimiters:'dollars',macros:{"\\RR": "\\mathbb{R}"}});
+        toc.innerHTML = md.render('{{ toc_content }}');
         out.innerHTML = md.render('{{ file_content }}');
     })
+
+    $("#showTOC").click(function(){
+      $(".toc-content").toggleClass("hidden");
+    });
   </script>
   <script>hljs.initHighlightingOnLoad();</script>
 </body>

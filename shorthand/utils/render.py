@@ -14,6 +14,7 @@ def get_rendered_markdown(markdown_content):
     '''
 
     html_content_lines = []
+    toc_content_lines = []
     markdown_content_lines = markdown_content.split('\n')
     is_fenced_code_block = False
     is_diagram_block = False
@@ -70,16 +71,20 @@ def get_rendered_markdown(markdown_content):
         # Process Headings for Navigation
         if markdown_line[0] == '#':
             split_heading = markdown_line.split(' ', 1)
+            heading_level = len(split_heading[0])
             element_id = split_heading[1].replace(' ', '-')
             heading_html_line = f'{markdown_line}<div id="{element_id}"></div>'
+            toc_markdown_line = f'{"  " * (heading_level - 1)}- [{split_heading[1]}](#{element_id})'
             html_content_lines.append(heading_html_line)
+            toc_content_lines.append(toc_markdown_line)
             continue
 
         # Catch-all for everything else
         html_content_lines.append(markdown_line)
 
     html_content = '\n'.join(html_content_lines)
-    return html_content
+    toc_content = '\n'.join(toc_content_lines)
+    return html_content, toc_content
 
 
 def get_todo_element(raw_todo):

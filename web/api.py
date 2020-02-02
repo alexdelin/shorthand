@@ -162,11 +162,14 @@ def send_rendered_note():
 
     file_path = SHORTHAND_CONFIG['notes_directory'] + request.args.get('path')
     file_content = get_file_content(file_path)
-    file_content = get_rendered_markdown(file_content)
+    file_content, toc_content = get_rendered_markdown(file_content)
     file_content = file_content.replace("\\", "\\\\")
     file_content = file_content.replace('\n', '\\n')
     file_content = file_content.replace("'", "\\'")
-    return render_template('viewer.j2', file_content=file_content)
+    toc_content = toc_content.replace("\\", "\\\\")
+    toc_content = toc_content.replace('\n', '\\n')
+    toc_content = toc_content.replace("'", "\\'")
+    return render_template('viewer.j2', file_content=file_content, toc_content=toc_content)
 
 
 @app.route('/calendar', methods=['GET'])
