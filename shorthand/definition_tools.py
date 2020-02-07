@@ -2,11 +2,15 @@ import re
 from datetime import datetime
 from subprocess import Popen, PIPE
 import shlex
+import logging
 
 from shorthand.utils.patterns import DEFINITION_PATTERN, escape_for_grep
 
 
 definition_regex = re.compile(DEFINITION_PATTERN)
+
+
+log = logging.getLogger(__name__)
 
 
 def get_definitions(notes_directory, directory_filter=None):

@@ -1,5 +1,9 @@
 import shlex
+import logging
 from subprocess import Popen, PIPE
+
+
+log = logging.getLogger(__name__)
 
 
 def search_notes(notes_directory, query_string,

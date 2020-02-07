@@ -2,12 +2,15 @@ import re
 from datetime import datetime
 from subprocess import Popen, PIPE
 import shlex
+import logging
 
 from shorthand.utils.patterns import TAG_PATTERN, LINE_TAG_PATTERN
 
 
 tag_regex = re.compile(LINE_TAG_PATTERN)
 
+
+log = logging.getLogger(__name__)
 
 
 def get_tags(notes_directory, directory_filter=None):

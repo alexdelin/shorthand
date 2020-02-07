@@ -1,4 +1,5 @@
 import re
+import logging
 from subprocess import Popen, PIPE
 
 from shorthand.utils.patterns import ALL_QUESTIONS_GREP, ANSWER_PATTERN, \
@@ -6,6 +7,9 @@ from shorthand.utils.patterns import ALL_QUESTIONS_GREP, ANSWER_PATTERN, \
 
 
 ANSWER_REGEX = re.compile(ANSWER_PATTERN)
+
+
+log = logging.getLogger(__name__)
 
 
 def is_question_line(line_content):

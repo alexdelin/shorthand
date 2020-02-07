@@ -2,6 +2,7 @@ from subprocess import Popen, PIPE
 from collections import OrderedDict
 import json
 import codecs
+import logging
 
 from nltk import bigrams, trigrams
 from nltk.tokenize import sent_tokenize, WhitespaceTokenizer, \
@@ -12,6 +13,9 @@ FORBIDDEN_CHARS = [
     '[', ']', '(', ')', '\\', '/', '.', ',',
     '?', '!', '@', '#', '$', '`', "'", '"',
     '-', '_', '=', '+', '*']
+    
+    
+log = logging.getLogger(__name__)
 
 
 def get_typeahead_suggestions(ngram_db_dir, query_string, limit=10):

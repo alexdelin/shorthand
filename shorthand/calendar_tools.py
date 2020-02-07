@@ -1,5 +1,6 @@
 import json
 import re
+import logging
 from datetime import datetime
 from subprocess import Popen, PIPE
 import shlex
@@ -8,6 +9,9 @@ from shorthand.utils.patterns import DATED_HEADING_PATTERN, escape_for_grep
 
 
 dated_heading_regex = re.compile(DATED_HEADING_PATTERN)
+
+
+log = logging.getLogger(__name__)
 
 
 def get_calendar(notes_directory, directory_filter=None):
