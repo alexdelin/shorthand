@@ -1,4 +1,5 @@
 import re
+import logging
 from datetime import datetime
 from subprocess import Popen, PIPE
 import shlex
@@ -19,6 +20,9 @@ PATTERN_MAPPING = {
 }
 
 SUPPORTED_SORT_FIELDS = ['start_date']
+
+
+log = logging.getLogger(__name__)
 
 
 def stamp_notes(notes_directory, stamp_todos=True, stamp_today=True):
@@ -301,6 +305,7 @@ def get_todos(notes_directory, todo_status='incomplete', directory_filter=None,
         todo_items = sorted(todo_items, key=lambda k: k[sort_by] if k[sort_by] else '', reverse=True)
 
     # Wrap Results
+    log.info(f'returning {len(todo_items)} todos')
     return {
         "items": todo_items,
         "count": len(todo_items)
