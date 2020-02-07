@@ -27,7 +27,8 @@ from shorthand.utils.typeahead import get_typeahead_suggestions
 app = Flask(__name__)
 
 SHORTHAND_CONFIG = get_notes_config()
-log = setup_logging(SHORTHAND_CONFIG)
+setup_logging(SHORTHAND_CONFIG)
+log = logging.getLogger(__name__)
 
 
 @app.route('/', methods=['GET'])
