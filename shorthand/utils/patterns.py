@@ -6,7 +6,7 @@ via the command line
 
 # General
 ## Matches a valid Date Stamp
-DATE_STAMP_PATTERN = r'[1-2]\d{3}\-\d{2}\-\d{2}'
+DATE_STAMP_PATTERN = r'[1-2][0-9]{3}\-[0-3][0-9]\-[0-3][0-9]'
 ## Matches a valid Date Stamp within parentheses
 START_STAMP_PATTERN = r'\(' + DATE_STAMP_PATTERN + r'\)'
 ## Matches two valid Date Stamps within parentheses with an arrow between
