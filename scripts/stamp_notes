@@ -1,3 +1,6 @@
 #!/bin/bash
 
+source ~/.profile
+workon notes
+
 python ~/code/shorthand/shorthand/cli.py --action stamp

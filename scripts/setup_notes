@@ -1,0 +1,6 @@
+#!/bin/bash
+
+set -e
+
+screen -dmS stamp_notes ~/bin/loop_stamp
+screen -dmS serve_notes ~/bin/serve_notes
