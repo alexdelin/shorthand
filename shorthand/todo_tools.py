@@ -37,6 +37,8 @@ def stamp_notes(notes_directory, stamp_todos=True, stamp_today=True):
                             directory=notes_directory,
                             filter_1=escape_for_grep(VALID_INCOMPLETE_PATTERN),
                             filter_2=escape_for_grep(VALID_COMPLETE_PATTERN))
+                            
+        log.debug(f'running grep command "{grep_command}" to get todos to stamp')
 
         proc = Popen(grep_command,
                      stdout=PIPE, stderr=PIPE,
@@ -46,6 +48,7 @@ def stamp_notes(notes_directory, stamp_todos=True, stamp_today=True):
         output_lines = output.decode().split('\n')
         matched_filenames = [line.split(':')[0] for line in output_lines if line.strip()]
         matched_filenames = list(set(matched_filenames))
+        log.info(f'stamping elements in files {", ".join(matched_filenames)}')
 
         # Compile regexes for replacing lines
         unfinished_unstamped_regex = re.compile(UNFINISHED_UNSTAMPED_PATTERN)
