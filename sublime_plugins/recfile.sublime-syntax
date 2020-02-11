@@ -1,0 +1,67 @@
+%YAML 1.2
+---
+name: Recfile
+file_extensions:
+  - rec
+  - recfile
+scope: text.recfile
+
+contexts:
+  main:
+    - match: '#.+'
+      scope: comment.recfile
+
+    - match: '%\b(mandatory|unique)\b'
+      scope: keyword.recfile
+
+    - match: '(%rec): (.+)'
+      captures:
+        1: keyword.recfile
+        2: constant.other.recfile
+
+    - match: '(%typedef): (\w+) '
+      captures:
+        1: keyword.recfile
+        2: storage.type.recfile
+      push: typedef
+
+    - match: '(%type): (\w+) (\w+)'
+      captures:
+        1: keyword.recfile
+        2: entity.name.function.recfile
+        3: storage.type.recfile
+
+    - match: "(%doc): (.+)"
+      captures:
+        1: keyword.recfile
+        2: string.recfile
+
+    - match: '^(\w+):'
+      scope: entity.name.function.recfile
+
+  typedef:
+    - match: '(int|real|bool|line)'
+      scope: storage.type.recfile
+      pop: true
+
+    - match: '(size) (\d+)'
+      captures:
+        1: storage.type.recfile
+        2: constant.numeric.recfile
+      pop: true
+
+    - match: '(range) (\d+) (\d+)'
+      captures:
+        1: storage.type.recfile
+        2: constant.numeric.recfile
+        3: constant.numeric.recfile
+      pop: true
+
+    - match: '(regexp) .(.+).'
+      captures:
+        1: storage.type.recfile
+        2: string.recfile
+      pop: true
+
+    - match: '.+'
+      pop: true
