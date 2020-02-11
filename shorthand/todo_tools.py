@@ -27,6 +27,7 @@ log = logging.getLogger(__name__)
 
 def stamp_notes(notes_directory, stamp_todos=True, stamp_today=True):
 
+    log.info('Stamping notes')
     # Stamp start and end dates for todo elements
     if stamp_todos:
         grep_command = 'grep -r "{pattern}" {directory} | '\
@@ -37,7 +38,7 @@ def stamp_notes(notes_directory, stamp_todos=True, stamp_today=True):
                             directory=notes_directory,
                             filter_1=escape_for_grep(VALID_INCOMPLETE_PATTERN),
                             filter_2=escape_for_grep(VALID_COMPLETE_PATTERN))
-                            
+
         log.debug(f'running grep command "{grep_command}" to get todos to stamp')
 
         proc = Popen(grep_command,
@@ -64,27 +65,32 @@ def stamp_notes(notes_directory, stamp_todos=True, stamp_today=True):
 
                     if unfinished_unstamped_regex.match(line):
                         # unfinished unstamped
+                        log.debug(f'Found unstamped unfinished todo "{line}"')
                         line = unfinished_unstamped_regex.sub(
                             '\\g<1>[ ] ({timestamp}) '.format(
                                 timestamp=datetime.now().isoformat()[:10]),
                             line)
+                        log.debug(f'Writing stamped unfinished todo "{line}"')
                         stamped_content.append(line)
 
                     elif finished_start_stamped_regex.match(line):
                         # finished with start stamped
+                        log.debug(f'Found unstamped finished todo "{line}"')
                         line = finished_start_stamped_regex.sub(
                             '\\g<1>[\\g<3>] (\\g<6> -> {timestamp_2}) '.format(
                                 timestamp_2=datetime.now().isoformat()[:10]),
                             line)
-
+                        log.debug(f'Writing stamped finished todo "{line}"')
                         stamped_content.append(line)
 
                     elif finished_unstamped_regex.match(line):
                         # finished unstamped
+                        log.debug(f'Found unstamped finished todo "{line}"')
                         line = finished_unstamped_regex.sub(
                             '\\g<1>[\\g<3>] ({timestamp} -> {timestamp}) '.format(
                                 timestamp=datetime.now().isoformat()[:10]),
                             line)
+                        log.debug(f'Writing stamped finished todo "{line}"')
                         stamped_content.append(line)
                     else:
                         # no to-dos -or- correctly formatted already
@@ -100,6 +106,7 @@ def stamp_notes(notes_directory, stamp_todos=True, stamp_today=True):
                             pattern=TODAY_GREP,
                             directory=notes_directory)
 
+        log.debug(f'running grep command "{grep_command}" to get `\\today`s to replace')
         today_proc = Popen(today_grep_command,
                      stdout=PIPE, stderr=PIPE,
                      shell=True)
@@ -119,11 +126,13 @@ def stamp_notes(notes_directory, stamp_todos=True, stamp_today=True):
                 for line in file_object:
 
                     if today_placeholder_regex.match(line):
-                        # unfinished unstamped
+                        # Today placeholder
+                        log.debug(f'Found todo placeholder "{line}"')
                         line = today_placeholder_regex.sub(
                             '\\g<1>{timestamp}\\g<3>'.format(
                                 timestamp=datetime.now().isoformat()[:10]),
                             line)
+                        log.debug(f'Replaced todo placeholder "{line}"')
                         stamped_content.append(line)
                     else:
                         # no today placeholders
@@ -131,6 +140,7 @@ def stamp_notes(notes_directory, stamp_todos=True, stamp_today=True):
 
             with open(filename, 'w') as write_file_object:
                 write_file_object.write(''.join(stamped_content))
+            log.info('Wrote stamping changes')
 
     return 'Done!'
 
@@ -189,10 +199,15 @@ def get_todos(notes_directory, todo_status='incomplete', directory_filter=None,
     '''Get a specified set of todos using grep on the filesystem
     '''
 
+    log.info(f'Getting {todo_status} todos in directory {directory_filter}' \
+             f' with query string "{query_string}" sorted by {sort_by}')
+
     todo_status = todo_status.lower()
 
     if todo_status not in PATTERN_MAPPING.keys():
-        raise ValueError('Invalid todo type ' + todo_status)
+        log.error(f'Got invalid todo type {todo_status}')
+        raise ValueError(f'Invalid todo type {todo_status} specified. ' \
+                         f'Valid options are: {", ".join(PATTERN_MAPPING.keys())}')
 
     todo_items = []
 
@@ -227,6 +242,7 @@ def get_todos(notes_directory, todo_status='incomplete', directory_filter=None,
                             pattern=additional_filter)
             grep_command = grep_command + new_filter
 
+    log.debug(f'Running grep command {grep_command} to get todos')
     proc = Popen(
         grep_command,
         stdout=PIPE, stderr=PIPE,

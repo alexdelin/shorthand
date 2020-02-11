@@ -67,8 +67,6 @@ def get_current_todos():
     directory_filter = request.args.get('directory_filter')
     query_string = request.args.get('query_string')
     sort_by = request.args.get('sort_by')
-    log.info(f'Getting {status} todos in directory {directory_filter}' \
-             f' with query string "{query_string}" sorted by {sort_by}')
 
     if directory_filter == 'ALL':
         directory_filter = None
