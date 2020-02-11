@@ -1,0 +1,68 @@
+# -*- mode: rec -*-
+
+%rec: Book
+%mandatory: Title
+%unique: Location
+%key: Id
+%allowed: Id Title Author Publisher Location Pages Rating DateFinished WasGood DateAcquired
+%prohibit: Review
+%size: <= 100
+%typedef: id_type int
+%type: Id id_type
+%typedef: title_type line
+%type: Title title_type
+%typedef: author_type line
+%type: Author author_type
+%typedef: publisher_type line
+%type: Publisher publisher_type
+%typedef: location_type enum loaned home unknown
+%type: Location location_type
+%typedef: pages_type range 0 MAX
+%type: Pages pages_type
+%typedef: rating_type real
+%type: Rating rating_type
+%typedef: date_finished_type date
+%type: DateFinished date_finished_type
+%type: DateAcquired date
+%typedef: was_good_type bool
+%type: WasGood was_good_type
+%auto: DateAcquired
+%sort: Author Title
+%doc: Each record in this record set represents
++ A book in my personal collection.
+
+Id: 0
+Title: GNU Emacs Manual
+Author: Richard M. Stallman
+DateAcquired: 2018-06-20
+Pages: 0xFA73
+Publisher: FSF
+Location: home
+
+Id: 1
+Title: The Colour of Magic
+DateAcquired: 201810-12
+Author: Terry Pratchett
+Location: loaned
+Pages: 306
+Rating: 4.2
+WasGood: true
+
+Id: 2
+Title: Mio Cid
+Author: Anonymous
+DateAcquired: 2019-03-17
+Location: home
+DateFinished: 2020-02-03
+WasGood: yes
+
+Id: 3
+Title: chapters.gnu.org administration guide
+Author: Nacho Gonzalez
+Author: Jose E. Marchesi
+Location: unknown
+WasGood: 0
+
+Id: 4
+Title: Yeelong User Manual
+Location: home

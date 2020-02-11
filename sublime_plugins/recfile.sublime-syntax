@@ -11,21 +11,23 @@ contexts:
     - match: '#.+'
       scope: comment.recfile
 
-    - match: '%\b(mandatory|unique)\b'
-      scope: keyword.recfile
+    - match: '(%mandatory|%unique|%auto|%sort|%prohibit|%allowed|%key): (.+)'
+      captures:
+        1: keyword.recfile
+        2: entity.name.function.recfile
 
     - match: '(%rec): (.+)'
       captures:
         1: keyword.recfile
-        2: constant.other.recfile
+        2: constant.language.recfile
 
     - match: '(%typedef): (\w+) '
       captures:
         1: keyword.recfile
-        2: storage.type.recfile
+        2: variable.function.recfile
       push: typedef
 
-    - match: '(%type): (\w+) (\w+)'
+    - match: '(%type): ([\w,]+) (\w+)'
       captures:
         1: keyword.recfile
         2: entity.name.function.recfile
@@ -40,7 +42,7 @@ contexts:
       scope: entity.name.function.recfile
 
   typedef:
-    - match: '(int|real|bool|line)'
+    - match: '(int|real|bool|line|date)'
       scope: storage.type.recfile
       pop: true
 
@@ -50,7 +52,7 @@ contexts:
         2: constant.numeric.recfile
       pop: true
 
-    - match: '(range) (\d+) (\d+)'
+    - match: '(range) (\d+|MIN|0x[\dA-F]+) (\d+|MAX|0x[\dA-F]+)'
       captures:
         1: storage.type.recfile
         2: constant.numeric.recfile
@@ -64,4 +66,5 @@ contexts:
       pop: true
 
     - match: '.+'
+      scope: string.recfile
       pop: true
