@@ -37,6 +37,12 @@ contexts:
       captures:
         1: keyword.recfile
         2: string.recfile
+        
+    - match: '(%size): ([<>=]+) (\d+)'
+      captures:
+        1: keyword.recfile
+        2: constant.language.recfile
+        3: constant.numeric.recfile
 
     - match: '^(\w+):'
       scope: entity.name.function.recfile
