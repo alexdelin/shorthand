@@ -23,6 +23,7 @@ def load_from_string(input_string):
     field_config = {}
     # Loop through all lines until we reach the end of the field config
     field_config_start = False
+    field_config_item = None
     for line in input_string.split('\n'):
 
         if line[0] == '#':
@@ -39,6 +40,12 @@ def load_from_string(input_string):
                 raise ValueError(f'Invalid Syntax. Line "{line}" in field '\
                                  f'config does not start with either "%" '\
                                  f'or "+"')
+        
+        #TODO - switch over to using a regex
+        if line[0] == '%':
+            key = line.split(':', 1)[0][1:]
+            if key not in ALLOWED_FIELD_CONFIG:
+                raise ValueError(f'unknown config key {key} specified')
 
 
 class RecordSet(object):
