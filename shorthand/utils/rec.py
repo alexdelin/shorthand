@@ -1,6 +1,12 @@
 import csv
 
 
+ALLOWED_CONFIG_KEYS = [
+    "rec", "mandatory", "unique", "key",
+    "allowed", "prohibit", "size", "typedef",
+    "type", "auto", "sort", "doc"]
+
+
 def load_from_file(file_path):
     '''Load one or more record sets from a rec file
     '''
@@ -40,11 +46,11 @@ def load_from_string(input_string):
                 raise ValueError(f'Invalid Syntax. Line "{line}" in field '\
                                  f'config does not start with either "%" '\
                                  f'or "+"')
-        
+
         #TODO - switch over to using a regex
         if line[0] == '%':
             key = line.split(':', 1)[0][1:]
-            if key not in ALLOWED_FIELD_CONFIG:
+            if key not in ALLOWED_CONFIG_KEYS:
                 raise ValueError(f'unknown config key {key} specified')
 
 
