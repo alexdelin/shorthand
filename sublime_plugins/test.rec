@@ -15,7 +15,10 @@
 %type: Author author_type
 %typedef: publisher_type line
 %type: Publisher publisher_type
-%typedef: location_type enum loaned home unknown
+%typedef: location_type enum
++ loaned (Out on credit)
++ home (It's literally on my bookshelf right now)
++ unknown (No idea)
 %type: Location location_type
 %typedef: pages_type range 0 MAX
 %type: Pages pages_type
