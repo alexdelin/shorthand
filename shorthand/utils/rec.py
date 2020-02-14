@@ -6,6 +6,13 @@ ALLOWED_CONFIG_KEYS = [
     "allowed", "prohibit", "size", "typedef",
     "type", "auto", "sort", "doc"]
 
+FIELD_LIST_FIELDS = [
+    'mandatory', 'unique', 'allowed',
+    'prohibit', 'auto', 'sort']
+
+PRIMITIVE_TYPES = [
+    "int", "line", "date", "bool", "real"]
+
 
 def load_from_file(file_path):
     '''Load one or more record sets from a rec file
@@ -32,42 +39,46 @@ def load_from_string(input_string):
     field_config_item = None
     for line in input_string.split('\n'):
 
-        if line[0] == '#':
-            # Comments
-            continue
-
         if not line.strip():
             # Blank Line
             if field_config_start:
                 break
+            else:
+                continue
+
+        if line[0] == '#':
+            # Comments
+            continue
 
         if line[0] not in ['+', '%']:
             if field_config_start:
-                raise ValueError(f'Invalid Syntax. Line "{line}" in field '\
-                                 f'config does not start with either "%" '\
+                raise ValueError(f'Invalid Syntax. Line "{line}" in field '
+                                 f'config does not start with either "%" '
                                  f'or "+"')
 
         #TODO - switch over to using a regex
         if line[0] == '%':
             key = line.split(':', 1)[0][1:]
-            value = line.split(':' 2)[1]
+            value = line.split(':', 2)[1]
             # check to see if there is more to the value on the next line
-            
+
             if key not in ALLOWED_CONFIG_KEYS:
                 raise ValueError(f'unknown config key {key} specified')
-            
+
             if key == 'rec':
                 # only keep the first word
                 field_config[key] = value.strip().split(' ')[0]
-            
-            if key in ['mandatory', 'unique', 'allowed', 'prohibit', 'auto', 'sort']:
+
+            if key in FIELD_LIST_FIELDS:
                 # keep a list of fields
                 field_config[key] = value.strip().split(' ')
-                
+
             if key == 'doc':
                 field_config[key] = value.strip()
-            
 
+    return field_config
+
+print(load_from_file('/Users/alexdelin/code/shorthand/sublime_plugins/test.rec'))
 
 class RecordSet(object):
     """Record Set object which holds the field configuration
