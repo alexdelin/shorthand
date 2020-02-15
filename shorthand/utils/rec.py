@@ -33,11 +33,12 @@ def load_from_string(input_string):
     3. Return the resulting record set object
     '''
 
+    split_lines = input_string.split('\n')
     field_config = {}
     # Loop through all lines until we reach the end of the field config
     field_config_start = False
     field_config_item = None
-    for line in input_string.split('\n'):
+    for idx, line in enumerate(split_lines):
 
         if not line.strip():
             # Blank Line
@@ -55,12 +56,26 @@ def load_from_string(input_string):
                 raise ValueError(f'Invalid Syntax. Line "{line}" in field '
                                  f'config does not start with either "%" '
                                  f'or "+"')
+                                 
+        if line[0] == '+':
+            # we already got this content when 
+            # processing the line above
+            continue
 
         #TODO - switch over to using a regex
         if line[0] == '%':
             key = line.split(':', 1)[0][1:]
-            value = line.split(':', 2)[1]
+            value = line.split(':', 2)[1].strip()
             # check to see if there is more to the value on the next line
+            lookahead = 1
+            while true:
+                next_line = split_lines[idx + lookahead]
+                if next_line[0] == '+' and len(next_line.strip()) > 2:
+                    value = value + ' ' + next_line.strip()
+                    #TODO- handle comments in enum definitions
+                    lookahead += 1
+                else:
+                    break
 
             if key not in ALLOWED_CONFIG_KEYS:
                 raise ValueError(f'unknown config key {key} specified')
@@ -75,10 +90,18 @@ def load_from_string(input_string):
 
             if key == 'doc':
                 field_config[key] = value.strip()
+                
+            if key == 'typedef':
+                pass
+                
+            if key == 'type':
+                pass
 
     return field_config
 
+
 print(load_from_file('/Users/alexdelin/code/shorthand/sublime_plugins/test.rec'))
+
 
 class RecordSet(object):
     """Record Set object which holds the field configuration
