@@ -189,6 +189,18 @@ def load_from_string(input_string):
 
     record_set = RecordSet(config=record_set_config)
 
+    records = []
+    current_record = {}
+    for idx, line in enumerate(split_lines):
+
+        if not line.strip():
+            if current_record:
+                records.append(current_record)
+                current_record = {}
+
+        if re.match(r'[a-zA-Z][a-zA-Z0-9_]*: .*', line):
+            pass
+
 
 load_from_file('/Users/alexdelin/code/shorthand/sublime_plugins/test.rec')
 
