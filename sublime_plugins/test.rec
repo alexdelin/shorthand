@@ -32,7 +32,7 @@
 %auto: DateAcquired
 %sort: Author Title
 %doc: Each record in this record set represents
-+ A book in my personal collection.
++ a book in my personal collection.
 
 Id: 0
 Title: GNU Emacs Manual
