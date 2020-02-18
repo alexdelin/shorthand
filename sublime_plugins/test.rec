@@ -11,7 +11,7 @@
 %type: Id id_type
 %typedef: title_type line
 %type: Title title_type
-%typedef: author_type line
+%typedef: author_type size 100
 %type: Author author_type
 %typedef: publisher_type line
 %type: Publisher publisher_type
@@ -20,7 +20,7 @@
 + home (It's literally on my bookshelf right now)
 + unknown (No idea)
 %type: Location location_type
-%typedef: pages_type range 0 MAX
+%typedef: pages_type range 1 MAX
 %type: Pages pages_type
 %typedef: rating_type real
 %type: Rating rating_type
@@ -29,6 +29,8 @@
 %type: DateAcquired date
 %typedef: was_good_type bool
 %type: WasGood was_good_type
+%typedef: book_id_type regexp /[0-9]{9}[a-zA-Z]/
+%type: BookId book_id_type
 %auto: DateAcquired
 %sort: Author Title
 %doc: Each record in this record set represents
@@ -41,6 +43,7 @@ DateAcquired: 2018-06-20
 Pages: 0xFA73
 Publisher: FSF
 Location: home
+BookId: 753018376K
 
 Id: 1
 Title: The Colour of Magic
