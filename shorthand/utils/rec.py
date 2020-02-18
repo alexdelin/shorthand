@@ -199,7 +199,20 @@ def load_from_string(input_string):
                 current_record = {}
 
         if re.match(r'[a-zA-Z][a-zA-Z0-9_]*: .*', line):
-            pass
+            split_line = line.split(':', 1)
+            key = split_line[0]
+            value = split_line[1]
+            current_record.setdefault(key, [])
+            current_record[key].append(value)
+            
+        if line[0] == '%':
+            # we have reached the start of a new record set
+            break
+            
+    for record in records:
+        record_set.insert(record)
+        
+    return record_set
 
 
 load_from_file('/Users/alexdelin/code/shorthand/sublime_plugins/test.rec')
@@ -216,14 +229,25 @@ class RecordSet(object):
         self.config = config
         self.fields = {}
         self.records = []
+        
+    def insert():
+        '''insert raw dictionaries into the record set
+        '''
+        pass
 
-    def dump():
+    def get_rec():
         '''Serialize the record set to recfile format
         '''
         pass
 
-    def save(file_path):
+    def save_rec(file_path):
         '''Write the contents of the record set to a file in recfile format
+        '''
+        pass
+        
+    def insert_rec(records_string):
+        '''Insert one or more new records into the record set from a string
+        in recfile format
         '''
         pass
 
@@ -232,8 +256,18 @@ class RecordSet(object):
         '''
         pass
 
-    def import_csv(csv_data):
+    def insert_csv(csv_data):
         '''Import CSV data to update the record set
+        '''
+        pass
+        
+    def get_json():
+        '''serialize the record set to a JSON string
+        '''
+        pass
+        
+    def insert_json():
+        '''Import JSON data to update the record set
         '''
         pass
 
@@ -246,12 +280,6 @@ class RecordSet(object):
         '''Get the total number of records in the record set
         '''
         return len(self.records)
-
-    def insert(records_string):
-        '''Insert one or more new records into the record set from a string
-        in recfile format
-        '''
-        pass
 
     def all():
         '''Get all records in the record set as a list
