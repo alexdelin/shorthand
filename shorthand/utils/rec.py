@@ -2,6 +2,8 @@ import csv
 import re
 import json
 
+from dateutil import parser
+
 
 ALLOWED_CONFIG_KEYS = [
     "rec", "mandatory", "unique", "key",
@@ -83,17 +85,93 @@ class RecordSet(object):
                 return f'Primary key value {record[primary_key_field][0]} already exists for field {primary_key_field}'
 
         # Validate types of all specified fields
+        for field_name, field_values in record.items():
+            field_type = self.config.get('field_types', {}).get(field_name)
+
+            # Get the full type definition if it is a custom type
+            if field_type['type'] == 'custom':
+                field_type = self.config.get('custom_types', {}).get(field_type['name'])
+
             # Validate int field
+            if field_type['type'] == 'int':
+                for field_value in field_values:
+                    try:
+                        _ = int(field_value)
+                    except ValueError:
+                        return f"can't convert value \"{field_value}\" of field \"{field_name}\" to an int"
+
             # Validate line field
+            if field_type['type'] == 'line':
+                for field_value in field_values:
+                    if '\n' in field_value:
+                        return f'value "{field_value}" of line type field "{field_name}" contains a newline character '
+
             # Validate date field
+            if field_type['type'] == 'date':
+                for field_value in field_values:
+                    try:
+                        _ = parser.parse(field_value)
+                    except:
+                        return f'cannot parse date value "{field_value}" of field "{field_name}"'
+
             # Validate bool field
+            if field_type['type'] == 'bool':
+                for field_value in field_values:
+                    if field_value not in ['0', '1', 'true', 'false', 'yes', 'no']:
+                        return f'Value {field_value} for bool field {field_name} is not allowed'
+
             # Validate real field
+            if field_type['type'] == 'real':
+                for field_value in field_values:
+                    try:
+                        _ = float(field_value)
+                    except ValueError:
+                        return f"can't convert value \"{field_value}\" of field \"{field_name}\" to a float"
+
             # Validate range field
+            if field_type['type'] == 'range':
+                max_value = field_type.get('max')
+                min_value = field_type.get('min')
+                for field_value in field_values:
+                    try:
+                        if field_value[:2] == '0x':
+                            float_value = int(field_value[2:], 16)
+                        else:
+                            float_value = float(field_value)
+                    except ValueError:
+                        return f"can't convert value \"{field_value}\" of field \"{field_name}\" to a float"
+                    if max_value and float_value > max_value:
+                        return f'Value {field_value} of field {field_name} exceeds the maximum range value {max_value}'
+                    if min_value and float_value < min_value:
+                        return f'Value {field_value} of field {field_name} is below the minimum range value {min_value}'
+
             # Validate enum field
+            if field_type['type'] == 'enum':
+                allowed_values = field_type.get('values', [])
+                for field_value in field_values:
+                    if field_value not in allowed_values:
+                        return f'value {field_value} of field {field_name} is not in allowed values {allowed_values}'
+
             # Validate size field
+            if field_type['type'] == 'size':
+                size_limit = field_type['limit']
+                for field_value in field_values:
+                    if len(field_value) > size_limit:
+                        return f'Value {field_value} of field {field_name} is above the field\'s size limit of {size_limit} characters'
+
             # Validate regexp field
-        # Auto-generate field values
-        # Add a new field to the field list
+            if field_type['type'] == 'regexp':
+                pattern = field_type['pattern']
+                for field_value in field_values:
+                    #TODO- Implement
+                    pass
+
+            #TODO- Auto-generate field values if needed
+
+            # Add a new field to the field list
+            if not self.fields.get(field_name):
+                self.fields[field_name] = True
+
         return False
 
     def insert(self, records):
@@ -192,10 +270,29 @@ def process_type_definition(definition_string):
             min_value = 0
             max_value = extra_params[0]
 
+            if max_value[:2] == '0x':
+                max_value = int(max_value[2:], 16)
+            else:
+                max_value = float(max_value)
+
         elif len(extra_params) == 2:
             # Both max and min are specified
             min_value = extra_params[0]
             max_value = extra_params[1]
+
+            if max_value[:2] == '0x':
+                max_value = int(max_value[2:], 16)
+            elif max_value == 'MAX':
+                max_value = None
+            else:
+                max_value = float(max_value)
+
+            if min_value[:2] == '0x':
+                min_value = int(min_value[2:], 16)
+            elif min_value == 'MIN':
+                min_value = None
+            else:
+                min_value = float(min_value)
 
         else:
             # We have either no values specified for the range or more than 2
@@ -220,16 +317,21 @@ def process_type_definition(definition_string):
         if len(extra_params) != 1:
             raise ValueError('Only a single size limit can be specified for a size type')
         else:
+            size_limit = extra_params[0]
+            if size_limit[:2] == '0x':
+                size_limit = int(size_limit, 16)
+            else:
+                size_limit = int(size_limit)
             return {
                 'type': 'size',
-                'limit': extra_params[0]
+                'limit': size_limit
             }
 
     elif linked_type_name == 'regexp':
-        extra_params_string = ' '.join(extra_params).strip()
+        regex_pattern = ' '.join(extra_params).strip().strip('/')
         return {
             'type': 'regexp',
-            'pattern': extra_params_string
+            'pattern': regex_pattern
         }
 
     else:
