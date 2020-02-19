@@ -4,7 +4,7 @@
 %mandatory: Title
 %unique: Location
 %key: Id
-%allowed: Id Title Author Publisher Location Pages Rating DateFinished WasGood DateAcquired
+%allowed: Id Title Author Publisher Location Pages Rating DateFinished WasGood DateAcquired BookId
 %prohibit: Review
 %size: <= 100
 %typedef: id_type int

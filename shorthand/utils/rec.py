@@ -37,6 +37,7 @@ class RecordSet(object):
             self.config = {}
         self.fields = {}
         self.records = []
+        self.primary_keys = {}
 
     def validate_config(self, config):
         '''Validate configuration for a record set
@@ -64,15 +65,23 @@ class RecordSet(object):
             for field_name in record.keys():
                 if field_name not in allowed_fields:
                     return f'field {field_name} not in allowed fields {allowed_fields}'
-                    
+
         # Validate Prohibited Fields
         prohibited_fields = self.config.get('prohibited', [])
         for prohibited_field in prohibited_fields:
             if prohibited_field in record.keys():
                 return f'prohibited field {prohibited_field} present in record'
-                
+
         # Validate Primary Key
-        # Validate Size Constraint
+        primary_key_field = self.config.get('key')
+        if primary_key_field:
+            if not record.get(primary_key_field):
+                return f'Missing primary key field {primary_key_field}'
+            if len(record.get(primary_key_field)) > 1:
+                return f'Primary key field {primary_key_field} can only have a single value per record'
+            if self.primary_keys.get(record[primary_key_field][0]):
+                return f'Primary key value {record[primary_key_field][0]} already exists for field {primary_key_field}'
+
         # Validate types of all specified fields
             # Validate int field
             # Validate line field
@@ -83,7 +92,7 @@ class RecordSet(object):
             # Validate enum field
             # Validate size field
             # Validate regexp field
-        # Auto-generate fields
+        # Auto-generate field values
         # Add a new field to the field list
         return False
 
@@ -94,9 +103,14 @@ class RecordSet(object):
         for record in records:
             error_message = self.validate_record(record)
             if not error_message:
+                primary_key_field = self.config.get('key')
+                if primary_key_field:
+                    self.primary_keys[record[primary_key_field][0]] = True
                 self.records.append(record)
             else:
                 raise ValueError(f'Validation Error: {error_message} in record {record}')
+
+        #TODO- check that size constrains are still met
 
     def get_rec(self):
         '''Serialize the record set to recfile format
@@ -298,6 +312,36 @@ def load_from_string(input_string):
             if key == 'doc':
                 record_set_config[key] = value.strip()
 
+            if key == 'key':
+                if len(value.strip().split(' ')) > 1:
+                    raise ValueError('Only a single field can be specified as a primary key')
+                record_set_config[key] = value.strip()
+
+            if key == 'size':
+
+                split_value = value.strip().split(' ')
+                if len(split_value) == 1:
+                    # Only a specific number of records is specified
+                    amount = int(split_value[0])
+                    record_set_config[key] = {
+                        'amount': amount,
+                        'condition': '=='
+                    }
+
+                elif len(split_value) == 2:
+                    # A condition and number of records is specified
+                    condition = split_value[0]
+                    if condition not in ['==', '<', '>', '<=', '>=']:
+                        raise ValueError(f'Unknown condition {condition} specified')
+                    amount = int(split_value[1])
+                    record_set_config[key] = {
+                        'amount': amount,
+                        'condition': condition
+                    }
+
+                else:
+                    raise ValueError(f'Invalid size condition "{value}" specified')
+
             if key == 'typedef':
                 split_value = value.split(' ')
                 custom_type_name = split_value[0]
@@ -322,13 +366,19 @@ def load_from_string(input_string):
                     field_name = split_value[0]
                     type_name = split_value[1]
                     if type_name in record_set_config['custom_types'].keys():
-                        type_definition = record_set_config['custom_types'][type_name]
+                        # We are referencing a custom type that exists
+                        type_definition = {
+                            'type': 'custom',
+                            'name': type_name
+                        }
                         record_set_config['field_types'][field_name] = type_definition
                     elif type_name in ALL_TYPES:
+                        # We are referencing a builtin type
                         type_definition_string = ' '.join(split_value[1:])
                         type_definition = process_type_definition(type_definition_string)
                         record_set_config['field_types'][field_name] = type_definition
                     else:
+                        # We are referencing a custom type that doesn't exist
                         raise ValueError(f'Undefined type {type_name} specified '
                                          f'for field {field_name}')
 
