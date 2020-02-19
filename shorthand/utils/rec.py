@@ -59,7 +59,18 @@ class RecordSet(object):
                 return f'More than 1 value found for unique field {unique_field}'
 
         # Validate Allowed Fields
+        allowed_fields = self.config.get('allowed')
+        if allowed_fields:
+            for field_name in record.keys():
+                if field_name not in allowed_fields:
+                    return f'field {field_name} not in allowed fields {allowed_fields}'
+                    
         # Validate Prohibited Fields
+        prohibited_fields = self.config.get('prohibited', [])
+        for prohibited_field in prohibited_fields:
+            if prohibited_field in record.keys():
+                return f'prohibited field {prohibited_field} present in record'
+                
         # Validate Primary Key
         # Validate Size Constraint
         # Validate types of all specified fields
