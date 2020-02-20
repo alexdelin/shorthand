@@ -1,4 +1,5 @@
 import os
+import unittest
 
 from shorthand.question_tools import get_questions
 
@@ -17,7 +18,7 @@ def get_question_results(question_status='all', directory_filter=None):
                          directory_filter=directory_filter)
 
 
-class TestQuestions(object):
+class TestQuestions(unittest.TestCase):
     """Test basic search functionality of the library"""
 
     def test_setup(self):
@@ -29,34 +30,34 @@ class TestQuestions(object):
         args = {
             'question_status': 'unanswered'
         }
-        assert get_question_results(**args) == MODEL.search_questions(**args)
+        self.assertCountEqual(get_question_results(**args), MODEL.search_questions(**args))
 
         args = {
             'question_status': 'unanswered',
             'directory_filter': 'section'
         }
-        assert get_question_results(**args) == MODEL.search_questions(**args)
+        self.assertCountEqual(get_question_results(**args), MODEL.search_questions(**args))
 
     def test_get_answered_questions(self):
         args = {
             'question_status': 'answered'
         }
-        assert get_question_results(**args) == MODEL.search_questions(**args)
+        self.assertCountEqual(get_question_results(**args), MODEL.search_questions(**args))
 
         args = {
             'question_status': 'answered',
             'directory_filter': 'section'
         }
-        assert get_question_results(**args) == MODEL.search_questions(**args)
+        self.assertCountEqual(get_question_results(**args), MODEL.search_questions(**args))
 
     def test_get_all_questions(self):
         args = {
             'question_status': 'all'
         }
-        assert get_question_results(**args) == MODEL.search_questions(**args)
+        self.assertCountEqual(get_question_results(**args), MODEL.search_questions(**args))
 
         args = {
             'question_status': 'all',
             'directory_filter': 'section'
         }
-        assert get_question_results(**args) == MODEL.search_questions(**args)
+        self.assertCountEqual(get_question_results(**args), MODEL.search_questions(**args))
