@@ -44,6 +44,12 @@ class RecordSet(object):
     def validate_config(self, config):
         '''Validate configuration for a record set
         '''
+        
+        # check that prohibited fields are not referenced
+        # check that non-allowed fields are not referenced
+        # check that regexes are valid
+        # check that ranges are valid
+        # check all auto-generated fields have a supported type
         return True
 
     def validate_record(self, record):
@@ -83,6 +89,15 @@ class RecordSet(object):
                 return f'Primary key field {primary_key_field} can only have a single value per record'
             if self.primary_keys.get(record[primary_key_field][0]):
                 return f'Primary key value {record[primary_key_field][0]} already exists for field {primary_key_field}'
+                
+        # validate record set size constraint only if it is a less than or less than or equal to constraint
+        size_condition = self.config.get('size', {}).get('condition')
+        if size_condition in ['<', '<=']:
+            size_limit = self.config.get('size', {}).get('limit')
+            if size_condition == '<=':
+                size_limit = size_limit + 1
+            if len(self.records) > size_limit:
+                return f'adding another record will exceed the size limit of {size_limit} in the record set'
 
         # Validate types of all specified fields
         for field_name, field_values in record.items():
@@ -163,10 +178,12 @@ class RecordSet(object):
             if field_type['type'] == 'regexp':
                 pattern = field_type['pattern']
                 for field_value in field_values:
-                    #TODO- Implement
-                    pass
+                    if not re.match(pattern, field_value):
+                        return f'value {field_value} of field {field_name} does not match regex {pattern}'
 
             #TODO- Auto-generate field values if needed
+            for auto_field in self.config.get('auto', []):
+                pass
 
             # Add a new field to the field list
             if not self.fields.get(field_name):
