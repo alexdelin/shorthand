@@ -1,4 +1,5 @@
 import os
+import unittest
 from datetime import datetime
 
 from shorthand.todo_tools import get_todos, stamp_notes
@@ -20,7 +21,7 @@ def get_todo_results(todo_status='incomplete', directory_filter=None, query_stri
                      suppress_future=suppress_future)
 
 
-class TestUnstampedTodos(object):
+class TestUnstampedTodos(unittest.TestCase):
     """Test basic search functionality of the library"""
 
     def test_setup(self):
@@ -34,14 +35,14 @@ class TestUnstampedTodos(object):
         args = {
             'todo_status': 'incomplete'
         }
-        assert get_todo_results(**args) == MODEL.search_todos(**args)
+        self.assertCountEqual(get_todo_results(**args), MODEL.search_todos(**args))
 
         # Test Directory filter
         args = {
             'todo_status': 'incomplete',
             'directory_filter': 'section'
         }
-        assert get_todo_results(**args) == MODEL.search_todos(**args)
+        self.assertCountEqual(get_todo_results(**args), MODEL.search_todos(**args))
 
         # Test Query String
         query_tests = ['cooking', '"follow up"', '"follow up" cooking']
@@ -50,33 +51,33 @@ class TestUnstampedTodos(object):
                 'todo_status': 'incomplete',
                 'query_string': query_test
             }
-            assert get_todo_results(**args) == MODEL.search_todos(**args)
+            self.assertCountEqual(get_todo_results(**args), MODEL.search_todos(**args))
 
         # Test Sort Order
         args = {
             'todo_status': 'incomplete',
             'sort_by': 'start_date'
         }
-        assert get_todo_results(**args) == MODEL.search_todos(**args)
+        self.assertCountEqual(get_todo_results(**args), MODEL.search_todos(**args))
 
         # Test Suppress Future
         args = {
             'todo_status': 'incomplete',
             'suppress_future': True
         }
-        assert get_todo_results(**args) == MODEL.search_todos(**args)
+        self.assertCountEqual(get_todo_results(**args), MODEL.search_todos(**args))
 
     def test_unstamped_skipped_todos_basic(self):
         args = {
             'todo_status': 'skipped'
         }
-        assert get_todo_results(**args) == MODEL.search_todos(**args)
+        self.assertCountEqual(get_todo_results(**args), MODEL.search_todos(**args))
 
     def test_unstamped_complete_todos_basic(self):
         args = {
             'todo_status': 'complete'
         }
-        assert get_todo_results(**args) == MODEL.search_todos(**args)
+        self.assertCountEqual(get_todo_results(**args), MODEL.search_todos(**args))
 
 
 class TestTodoStamping(object):
@@ -92,7 +93,7 @@ class TestTodoStamping(object):
         pass
 
 
-class TestStampedTodos(object):
+class TestStampedTodos(unittest.TestCase):
     """Repeat all tests for unstamped todos to ensure that
        nothing unexpected has changed.
     """
@@ -103,7 +104,7 @@ class TestStampedTodos(object):
             'todo_status': 'incomplete',
             'stamp': True
         }
-        assert get_todo_results(**args) == MODEL.search_todos(**args)
+        self.assertCountEqual(get_todo_results(**args), MODEL.search_todos(**args))
 
         # Test Directory filter
         args = {
@@ -111,7 +112,7 @@ class TestStampedTodos(object):
             'directory_filter': 'section',
             'stamp': True
         }
-        assert get_todo_results(**args) == MODEL.search_todos(**args)
+        self.assertCountEqual(get_todo_results(**args), MODEL.search_todos(**args))
 
         # Test Query String
         query_tests = ['cooking', '"follow up"', '"follow up" cooking']
@@ -121,7 +122,7 @@ class TestStampedTodos(object):
                 'query_string': query_test,
                 'stamp': True
             }
-            assert get_todo_results(**args) == MODEL.search_todos(**args)
+            self.assertCountEqual(get_todo_results(**args), MODEL.search_todos(**args))
 
         # Test Sort Order
         args = {
@@ -129,7 +130,7 @@ class TestStampedTodos(object):
             'sort_by': 'start_date',
             'stamp': True
         }
-        assert get_todo_results(**args) == MODEL.search_todos(**args)
+        self.assertCountEqual(get_todo_results(**args), MODEL.search_todos(**args))
 
         # Test Suppress Future
         args = {
@@ -137,18 +138,18 @@ class TestStampedTodos(object):
             'suppress_future': True,
             'stamp': True
         }
-        assert get_todo_results(**args) == MODEL.search_todos(**args)
+        self.assertCountEqual(get_todo_results(**args), MODEL.search_todos(**args))
 
     def test_stamped_skipped_todos_basic(self):
         args = {
             'todo_status': 'skipped',
             'stamp': True
         }
-        assert get_todo_results(**args) == MODEL.search_todos(**args)
+        self.assertCountEqual(get_todo_results(**args), MODEL.search_todos(**args))
 
     def test_stamped_complete_todos_basic(self):
         args = {
             'todo_status': 'complete',
             'stamp': True
         }
-        assert get_todo_results(**args) == MODEL.search_todos(**args)
+        self.assertCountEqual(get_todo_results(**args), MODEL.search_todos(**args))
