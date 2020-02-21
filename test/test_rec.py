@@ -6,11 +6,9 @@ import pytest
 
 from shorthand.utils.rec import load_from_string
 from utils import setup_environment
-from model import NoteparserModel
 
 
 CONFIG = setup_environment()
-MODEL = NoteparserModel()
 
 
 class TestRec(unittest.TestCase):

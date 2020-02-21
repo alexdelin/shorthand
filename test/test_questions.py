@@ -4,11 +4,11 @@ import unittest
 from shorthand.question_tools import get_questions
 
 from utils import setup_environment
-from model import NoteparserModel
+from model import ShorthandModel
 
 
 CONFIG = setup_environment()
-MODEL = NoteparserModel()
+MODEL = ShorthandModel()
 
 
 # Helper function to simplify tests

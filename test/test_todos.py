@@ -5,11 +5,11 @@ from datetime import datetime
 from shorthand.todo_tools import get_todos, stamp_notes
 
 from utils import setup_environment
-from model import NoteparserModel
+from model import ShorthandModel
 
 
 CONFIG = setup_environment()
-MODEL = NoteparserModel()
+MODEL = ShorthandModel()
 
 
 # Helper to make the tests simpler

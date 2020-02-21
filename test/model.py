@@ -1,5 +1,5 @@
 '''
-A model to use for testing noteparser functionality
+A model to use for testing shorthand functionality
 This model works by computing _expected_ results for test runs
     which can then be compared to the results returned by the system
 This model relies on the raw structured elements in the file `results_unstamped.py`
@@ -12,11 +12,11 @@ from results_unstamped import ALL_INCOMPLETE_TODOS, ALL_SKIPPED_TODOS, \
                               ALL_COMPLETE_TODOS, ALL_QUESTIONS
 
 
-class NoteparserModel(object):
-    """The noteparser model base class"""
+class ShorthandModel(object):
+    """The shorthand model base class"""
 
     def __init__(self):
-        super(NoteparserModel, self).__init__()
+        super(ShorthandModel, self).__init__()
 
     def search_todos(self, notes_directory=None, todo_status='incomplete',
                      directory_filter=None, query_string=None, sort_by=None,

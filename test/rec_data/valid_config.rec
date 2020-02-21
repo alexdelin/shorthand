@@ -79,17 +79,17 @@
 
 # A custom type that maps to real
 
-%typedef: int_type real
+%typedef: real_type real
 
 # A field using a custom type that maps to real
 
-%typedef: int_type real
-%type: Foo int_type
+%typedef: real_type real
+%type: Foo real_type
 
 # Multiple fields using a custom type that maps to real
 
-%typedef: int_type real
-%type: Foo,Bar int_type
+%typedef: real_type real
+%type: Foo,Bar real_type
 
 # A full example
 
