@@ -1,0 +1,76 @@
+# -*- mode: rec -*-
+
+%rec: Book
+%mandatory: Title
+%unique: Location
+%key: Id
+%allowed: Id Title Author Publisher Location Pages Rating DateFinished WasGood DateAcquired BookId Untyped
+%prohibit: Review
+%size: <= 100
+%typedef: id_type int
+%type: Id id_type
+%typedef: title_type line
+%type: Title title_type
+%typedef: author_type size 100
+%type: Author author_type
+%typedef: publisher_type line
+%type: Publisher publisher_type
+%typedef: location_type enum
++ loaned (Out on credit)
++ home (It's literally on my bookshelf right now)
++ unknown (No idea)
+%type: Location location_type
+%typedef: pages_type range 1 MAX
+%type: Pages pages_type
+%typedef: rating_type real
+%type: Rating rating_type
+%typedef: date_finished_type date
+%type: DateFinished date_finished_type
+%type: DateAcquired date
+%typedef: was_good_type bool
+%type: WasGood was_good_type
+%typedef: book_id_type regexp /[0-9]{9}[a-zA-Z]/
+%type: BookId book_id_type
+%auto: DateAcquired Id
+%sort: Author Title
+%doc: Each record in this record set represents
++ a book in my personal collection.
+
+Id: 0
+Title: GNU Emacs Manual
+Author: Richard M. Stallman
+DateAcquired: 2018-06-20
+Pages: 0xFA73
+Publisher: FSF
+Location: home
+BookId: 753018376K
+
+Id: 1
+Title: The Colour of Magic
+DateAcquired: 2018-10-12
+Author: Terry Pratchett
+Location: loaned
+Pages: 306
+Rating: 4.2
+WasGood: true
+
+Id: 2
+Title: Mio Cid
+Author: Anonymous
+DateAcquired: 2019-03-17
+Location: home
+DateFinished: 2020-02-03
+WasGood: yes
+
+Id: 3
+Title: chapters.gnu.org administration guide
+Author: Nacho Gonzalez
+Author: Jose E. Marchesi
+Location: unknown
+WasGood: 0
+Untyped: Somthing that just kind of keeps on going on
++ It might as well just go on forever
+
+Id: 4
+Title: Yeelong User Manual
+Location: home

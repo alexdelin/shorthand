@@ -53,17 +53,17 @@
         },
         {
             "name": "Definition Term",
-            "scope": "noteparser.definition.term",
+            "scope": "shorthand.definition.term",
             "foreground": "var(yellow)"
         },
         {
             "name": "Definition text",
-            "scope": "noteparser.definition.definition",
+            "scope": "shorthand.definition.definition",
             "foreground": "var(orange)"
         },
         {
             "name": "Metadata Tag",
-            "scope": "noteparser.metadata-tag",
+            "scope": "shorthand.metadata-tag",
             "foreground": "var(red)"
         },
         {

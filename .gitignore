@@ -1,2 +1,3 @@
 *.pyc
-note_parser.egg-info/
+shorthand.egg-info/
+web/shorthand.log

@@ -4,7 +4,7 @@
 name: Notes
 file_extensions:
   - note
-scope: text.notes
+scope: text.html.markdown
 comment: |-
   this definition aims to meet CommonMark specifications http://spec.commonmark.org/
   with GitHub Formatted Markdown extensions              https://github.github.com/gfm/
@@ -211,9 +211,9 @@ contexts:
     - match: '^([ ]{0,3})(\{.*\})(?=\s)'
       captures:
         1: markup.list.unnumbered.markdown
-        2: noteparser.definition.term
+        2: shorthand.definition.term
       push:
-        - meta_content_scope: noteparser.definition.definition
+        - meta_content_scope: shorthand.definition.definition
         - match: ^(?=\S)
           pop: true
         - match: \n
@@ -796,11 +796,11 @@ contexts:
         - include: bold-italic-trailing
   metadata-tag:
     - match: '(:+)(?![\s\d])(?!:)'
-      scope: noteparser.metadata-tag.begin
+      scope: shorthand.metadata-tag.begin
       push:
-        - meta_scope: noteparser.metadata-tag
+        - meta_scope: shorthand.metadata-tag
         - match: ':+'
-          scope: noteparser.metadata-tag.end
+          scope: shorthand.metadata-tag.end
           pop: true
         - include: inline
         - include: bold
@@ -1036,10 +1036,10 @@ contexts:
         - match: '([ ]*)(\{.*\})(?=\s)'
           captures:
             1: markup.list.unnumbered.markdown
-            2: noteparser.definition.term
+            2: shorthand.definition.term
           push:
             - clear_scopes: 1
-            - meta_content_scope: noteparser.definition.definition
+            - meta_content_scope: shorthand.definition.definition
             - include: list-content
         - match: '([ ]*)([*+-])(?=\s)'
           captures:
@@ -1172,6 +1172,21 @@ contexts:
       escape: '{{code_fence_escape}}'
       escape_captures:
         0: meta.code-fence.definition.end.recfile.markdown-gfm
+        1: punctuation.definition.raw.code-fence.end.markdown
+    - match: |-
+         (?x)
+          {{fenced_code_block_start}}
+          ((?i:config|ini))
+          \s*$\n?          # any whitespace until EOL
+      captures:
+        0: meta.code-fence.definition.begin.ini.markdown-gfm
+        2: punctuation.definition.raw.code-fence.begin.markdown
+        3: constant.other.language-name.markdown
+      embed: scope:source.ini
+      embed_scope: markup.raw.code-fence.ini.markdown-gfm
+      escape: '{{code_fence_escape}}'
+      escape_captures:
+        0: meta.code-fence.definition.end.ini.markdown-gfm
         1: punctuation.definition.raw.code-fence.end.markdown
     - match: |-
          (?x)

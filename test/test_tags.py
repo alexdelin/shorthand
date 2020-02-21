@@ -1,6 +1,6 @@
 import os
 
-from note_parser.tag_tools import get_tags
+from shorthand.tag_tools import get_tags
 
 from utils import setup_environment
 

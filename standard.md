@@ -1,4 +1,4 @@
-# Noteparser Format Specification
+# Shorthand Format Specification
 This document defines the "Note" format for note-taking and personal organization based roughly on markdown.
 The origin of many of the elements added here are practices that are common with pen and paper note-taking, but lack good equivalents in digital note-taking tools and personal organization tools.
 

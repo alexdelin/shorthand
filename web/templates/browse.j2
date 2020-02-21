@@ -2,10 +2,11 @@
 <head>
   <meta charset='utf-8'>
   <link rel="stylesheet" href="/css/bootstrap.min.css">
-  <script src="/js/highcharts.js"></script></script>
+  <script src="/js/highcharts.js"></script>
   <link rel="stylesheet" type="text/css" href="/css/notes.css">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <script src="/js/jquery-3.3.1.min.js"></script>
+  <script src="/js/underscore-min.js"></script>
 
 </head>
 <body>
@@ -27,9 +28,10 @@
         </div>
 
         <div class="row content">
-          <div class="col-md-12 calendar-content">
+          <div class="col-md-12 toc-content">
 
-            <div id="toc"></div>
+            <div id="tocRoot">
+            </div>
 
           </div>
         </div>
@@ -41,6 +43,51 @@
   </div>
   <script type="text/javascript">
     // Placeholder
+    var toc = JSON.parse('{{ toc }}');
+
+    // Create root parent element
+    var root_element = $('#tocRoot')[0];
+
+    function process_subdir(dir_data, element, isRoot) {
+      // Traverse the toc object and add nodes in a depth-first search
+      var path = dir_data.path;
+      var text = dir_data.text;
+      var files = dir_data.files;
+      var subdirs = dir_data.dirs;
+
+      // Draw all subdirs in the current dir
+      _.each(subdirs, function (subdir_data) {
+        var subdir_text = subdir_data.text;
+        // Create a nested element to house the child directory
+        var newElement = $('<div class="alert alert-primary toc-entry" role="alert">' + subdir_text + '</div>');
+        if (!isRoot) {
+          newElement.addClass('hidden');
+        }
+        element.append(newElement[0]);
+        var child_element = $(element).children().last();
+        process_subdir(subdir_data, child_element, false);
+      });
+
+      // Draw all files in the current dir
+      _.each(files, function (file) {
+        // Add a child element for a given file
+        var newElement = $('<div class="alert alert-danger" role="alert"><a href="/render?path=' + path + '/' + file + '">' + file + '</a></div>');
+        if (!isRoot) {
+          newElement.addClass('hidden');
+        }
+        element.append(newElement[0]);
+      });
+
+    };
+
+    process_subdir(toc, root_element, true)
+
+    $('.toc-entry').click(function(ev) {
+      console.log('clicked element');
+      console.log(ev.currentTarget);
+      $(ev.currentTarget).children().toggleClass('hidden');
+      ev.stopPropagation();
+    })
   </script>
 </body>
 </html>
