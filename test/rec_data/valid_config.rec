@@ -2,16 +2,94 @@
 
 %rec: Atest
 
+# A record type with a URL
+
+%rec: Atest https://docs.pytest.org/en/latest/
+
 # A documentation string
 
-%rec: Atest
 %doc: This is just a test record config
 
 # Multiline documentation string
 
-%rec: Atest
 %doc: This is just a test record config
 + which spans multiple lines
+
+# Mandatory Fields
+
+%mandatory: Foo Bar Baz
+
+# Unique Fields
+
+%unique: Foo Bar Baz
+
+# A (single) Primary Key Field
+
+%key: Foo
+
+# Allowed Fields
+
+%allowed: Foo Bar Baz
+
+# Prohibited Fields
+
+%prohibit: Foo Bar Baz
+
+# An exact size constraint
+
+%size: 37
+
+# A size constraint with a range
+
+%size: < 75
+
+# Fields to sort by
+
+%sort: Foo Bar Baz
+
+# A field directly typed int
+
+%type: Foo int
+
+# Multiple fields directly typed int
+
+%type: Foo,Bar int
+
+# A custom type that maps to int
+
+%typedef: int_type int
+
+# A field using a custom type that maps to int
+
+%typedef: int_type int
+%type: Foo int_type
+
+# Multiple fields using a custom type that maps to int
+
+%typedef: int_type int
+%type: Foo,Bar int_type
+
+# A field directly typed real
+
+%type: Foo real
+
+# Multiple fields directly typed real
+
+%type: Foo,Bar real
+
+# A custom type that maps to real
+
+%typedef: int_type real
+
+# A field using a custom type that maps to real
+
+%typedef: int_type real
+%type: Foo int_type
+
+# Multiple fields using a custom type that maps to real
+
+%typedef: int_type real
+%type: Foo,Bar int_type
 
 # A full example
 

@@ -1,0 +1,11 @@
+# An Invalid Key
+
+%foo: Bar
+
+# Multiple Record set names
+
+%rec: Foo Bar Baz
+
+# Auto-Generated fields without corresponding types that can be auto-generated
+
+%auto: Foo Bar Baz
