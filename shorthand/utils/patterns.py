@@ -1,5 +1,5 @@
 '''
-Regular Expression Library used by Noteparser.
+Regular Expression Library used by Shorthand.
 Patterns that begin with `"` characters are meant to be used with `grep`
 via the command line
 '''
