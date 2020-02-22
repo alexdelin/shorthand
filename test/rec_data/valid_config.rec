@@ -91,6 +91,28 @@
 %typedef: real_type real
 %type: Foo,Bar real_type
 
+# A field directly typed line
+
+%type: Foo line
+
+# Multiple fields directly typed line
+
+%type: Foo,Bar line
+
+# A custom type that maps to line
+
+%typedef: line_type line
+
+# A field using a custom type that maps to line
+
+%typedef: line_type line
+%type: Foo line_type
+
+# Multiple fields using a custom type that maps to line
+
+%typedef: line_type line
+%type: Foo,Bar line_type
+
 # A full example
 
 %rec: Book

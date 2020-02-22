@@ -181,8 +181,16 @@ def load_from_string(input_string):
                 raise ValueError(f'unknown config key {key} specified')
 
             if key == 'rec':
-                # only keep the first word
-                record_set_config[key] = value.strip().split(' ')[0]
+                split_value = value.strip().split(' ')
+                if len(split_value) == 1:
+                    record_set_name = split_value[0]
+                    record_set_config[key] = {'name': record_set_name}
+                elif len(split_value) == 2:
+                    record_set_name = split_value[0]
+                    record_set_link = split_value[1]
+                    record_set_config[key] = {'name': record_set_name, 'link': record_set_link}
+                else:
+                    raise ValueError(f'Invalid Record Set name definition "{line}"')
 
             if key in FIELD_LIST_FIELDS:
                 # keep a list of fields

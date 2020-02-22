@@ -36,6 +36,16 @@ class RecordSet(object):
         # check that regexes are valid
         # check that ranges are valid
         # check all auto-generated fields have a supported type
+        for auto_field in config.get('auto', []):
+
+            auto_field_type = config.get('field_types', {}).get(auto_field, {})
+            if auto_field_type.get('type') == 'custom':
+                auto_field_type = config.get('custom_types', {}).get(auto_field_type['name'])
+
+            if auto_field_type.get('type') not in ['date', 'int', 'uuid']:
+                raise ValueError(f'Cannot auto-generate a value for field {auto_field} of type {auto_field_type.get("type")}')
+
+        # If we have not found any issues
         return True
 
     def validate_record(self, record: dict):
