@@ -39,9 +39,21 @@
 
 %size: 37
 
-# A size constraint with a range
+# A size constraint with a less than range
 
 %size: < 75
+
+# A size constraint with a less than or equal to range
+
+%size: <= 41
+
+# A size constraint with a greater than range
+
+%size: > 82
+
+# A size constraint with a greater than or equal to range
+
+%size: >= 907
 
 # Fields to sort by
 
@@ -112,6 +124,50 @@
 
 %typedef: line_type line
 %type: Foo,Bar line_type
+
+# A field directly typed bool
+
+%type: Foo bool
+
+# Multiple fields directly typed bool
+
+%type: Foo,Bar bool
+
+# A custom type that maps to bool
+
+%typedef: bool_type bool
+
+# A field using a custom type that maps to bool
+
+%typedef: bool_type bool
+%type: Foo bool_type
+
+# Multiple fields using a custom type that maps to bool
+
+%typedef: bool_type bool
+%type: Foo,Bar bool_type
+
+# A field directly typed date
+
+%type: Foo date
+
+# Multiple fields directly typed date
+
+%type: Foo,Bar date
+
+# A custom type that maps to date
+
+%typedef: date_type date
+
+# A field using a custom type that maps to date
+
+%typedef: date_type date
+%type: Foo date_type
+
+# Multiple fields using a custom type that maps to date
+
+%typedef: date_type date
+%type: Foo,Bar date_type
 
 # A full example
 

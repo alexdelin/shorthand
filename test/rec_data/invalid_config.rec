@@ -2,10 +2,38 @@
 
 %foo: Bar
 
-# Multiple Record set names
+# Multiple Record set names in a single line
 
 %rec: Foo Bar Baz
+
+# Record set name specified multiple times
+
+%rec: Foo
+%rec: Bar
 
 # Auto-Generated fields without corresponding types that can be auto-generated
 
 %auto: Foo Bar Baz
+
+# Multiple documentation strings specified
+
+%doc: Foo bar baz
+%doc: Something else
+
+# An Invalid Size constraint
+
+%size: >< 54
+
+# Multiple size constraints
+
+%size: < 54
+%size: > 21
+
+# Multiple primary key fields in a single line
+
+%key: Foo Bar
+
+# Multiple primary key fields defined separately
+
+%key: Foo
+%key: Bar

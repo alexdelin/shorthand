@@ -125,6 +125,8 @@ def load_from_string(input_string):
     3. Return the resulting record set object
     '''
 
+    print(f'Got rec data: {input_string}')
+
     split_lines = input_string.split('\n')
     record_set_config = {
         'custom_types': {},
