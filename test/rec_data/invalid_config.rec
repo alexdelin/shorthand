@@ -2,6 +2,10 @@
 
 %foo: Bar
 
+# An Empty record set name
+
+%rec:
+
 # Multiple Record set names in a single line
 
 %rec: Foo Bar Baz
@@ -11,14 +15,26 @@
 %rec: Foo
 %rec: Bar
 
+# An empty auto field
+
+%auto:
+
 # Auto-Generated fields without corresponding types that can be auto-generated
 
 %auto: Foo Bar Baz
 
-# Multiple documentation strings specified
+# An Empty documentation field
+
+%doc:
+
+# Multiple documentation strings specified separately
 
 %doc: Foo bar baz
 %doc: Something else
+
+# An Empty size field
+
+%size:
 
 # An Invalid Size constraint
 
@@ -28,6 +44,10 @@
 
 %size: < 54
 %size: > 21
+
+# An Empty primary key field
+
+%key:
 
 # Multiple primary key fields in a single line
 
