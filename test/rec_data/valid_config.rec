@@ -177,6 +177,10 @@
 
 %type: Foo range MIN 7
 
+# A field directly typed range (with negative values)
+
+%type: Foo range -17 -2
+
 # Multiple fields directly typed range
 
 %type: Foo,Bar range 0x7A
@@ -192,7 +196,7 @@
 
 # Multiple fields using a custom type that maps to range
 
-%typedef: range_type range 0x8E MAX
+%typedef: range_type range -0x8E MAX
 %type: Foo,Bar range_type
 
 # A field directly typed enum
@@ -228,6 +232,14 @@
 # A field directly typed regexp
 
 %type: Foo regexp /[0-9]{5}/
+
+# A regexp pattern using different border characters
+
+%type: Foo regexp /[0-9]{5}/
+%type: Bar regexp *[0-9]{5}*
+%type: Baz regexp |[0-9]{5}|
+%type: Bam regexp +[0-9]{5}+
+%type: Zam regexp `[0-9]{5}`
 
 # Multiple fields directly typed regexp
 

@@ -2,6 +2,14 @@
 
 %foo: Bar
 
+# An Invalid empty key
+
+%foo:
+
+# An Invalid empty key without a colon
+
+%foo
+
 # An Empty record set name
 
 %rec:
@@ -19,9 +27,92 @@
 
 %auto:
 
-# Auto-Generated fields without corresponding types that can be auto-generated
+# Auto-Generated fields without corresponding types that can be auto-generated (undefined)
 
 %auto: Foo Bar Baz
+
+# Auto field with type that can't be auto-generated (real)
+
+%type: Foo real
+%auto: Foo
+
+# Auto field with type that can't be auto-generated (enum)
+
+%type: Foo enum foo bar baz
+%auto: Foo
+
+# Auto field with type that can't be auto-generated (regexp)
+
+%type: Foo regexp /[0-9]{5}/
+%auto: Foo
+
+# Auto field with type that can't be auto-generated (line)
+
+%type: Foo line
+%auto: Foo
+
+# Auto field with type that can't be auto-generated (bool)
+
+%type: Foo bool
+%auto: Foo
+
+# Auto field with type that can't be auto-generated (size)
+
+%type: Foo size 37
+%auto: Foo
+
+# Auto field with type that can't be auto-generated (range)
+
+%type: Foo range 9 71
+%auto: Foo
+
+# Auto field with custom type that doesn't exist
+
+%type: Foo custom_type
+%auto: Foo
+
+# Auto field with custom type that can't be auto-generated (real)
+
+%typedef: custom_type real
+%type: Foo custom_type
+%auto: Foo
+
+# Auto field with custom type that can't be auto-generated (enum)
+
+%typedef: custom_type enum foo bar baz
+%type: Foo custom_type
+%auto: Foo
+
+# Auto field with custom type that can't be auto-generated (regexp)
+
+%typedef: custom_type regexp /[0-9]{3}/
+%type: Foo custom_type
+%auto: Foo
+
+# Auto field with custom type that can't be auto-generated (line)
+
+%typedef: custom_type line
+%type: Foo custom_type
+%auto: Foo
+
+# Auto field with custom type that can't be auto-generated (bool)
+
+%typedef: custom_type bool
+%type: Foo custom_type
+%auto: Foo
+
+# Auto field with custom type that can't be auto-generated (size)
+
+%typedef: custom_type size 8
+%type: Foo custom_type
+%auto: Foo
+
+# Auto field with custom type that can't be auto-generated (range)
+
+%typedef: custom_type range 0 MAX
+%type: Foo custom_type
+%auto: Foo
+
 
 # An Empty documentation field
 
@@ -45,6 +136,10 @@
 %size: < 54
 %size: > 21
 
+# An Impossible size constraint
+
+%size: < 0
+
 # An Empty primary key field
 
 %key:
@@ -57,3 +152,180 @@
 
 %key: Foo
 %key: Bar
+
+# An Empty Allowed Field
+
+%Allowed:
+
+# A non-allowed field is specified as mandatory
+
+%allowed: Foo
+%mandatory: Bar
+
+# A non-allowed field is specified as unique
+
+%allowed: Foo
+%unique: Bar
+
+# A non-allowed field is specified as a primary key
+
+%allowed: Foo
+%key: Bar
+
+# A non-allowed field has a type definition
+
+%allowed: Foo
+%type: Bar real
+
+# A non-allowed field is specified to be auto-generated
+
+%allowed: Foo
+%auto: Bar
+
+# A non-allowed field is specified for sorting
+
+%allowed: Foo
+%sort: Bar
+
+# A prohibited field is specified as mandatory
+
+%prohibit: Foo
+%mandatory: Foo
+
+# A prohibited field is specified as unique
+
+%prohibit: Foo
+%unique: Foo
+
+# A prohibited field is specified as a primary key
+
+%prohibit: Foo
+%key: Foo
+
+# A prohibited field has a type definition
+
+%prohibit: Foo
+%type: Foo line
+
+# A prohibited field is specified to be auto-generated
+
+%prohibit: Foo
+%auto: Foo
+
+# A prohibited field is specified for sorting
+
+%prohibit: Foo
+%sort: Foo
+
+# A custom type definition that references no type
+
+%typedef: Foo
+
+# A custom type definition that references a non-existent type
+
+%typedef: new_type old_type
+
+# A custom type definition that references an invalid range type (only a negative max value specified)
+
+%typedef: new_type range -7
+
+# A custom type definition that references an invalid range type (no values)
+
+%typedef: new_type range
+
+# A custom type definition that references an invalid range type (max less than min)
+
+%typedef: new_type range 81 30
+
+# A custom type definition that references an invalid range type (max less than min)
+
+%typedef: new_type range 81 MIN
+
+# A custom type definition that references an invalid range type (non-numeric)
+
+%typedef: new_type range 81 Foo
+
+# A custom type definition that references an invalid size type (negative)
+
+%typedef: new_type size -3
+
+# A custom type definition that references an invalid size type (zero)
+
+%typedef: new_type size 0
+
+# A custom type definition that references an invalid size type (non-number)
+
+%typedef: new_type size Foo
+
+# A custom type definition that references an invalid enum type
+
+%typedef: new_type enum
+
+# A custom type definition that references an invalid regexp type (no pattern)
+
+%typedef: new_type regexp
+
+# A custom type definition that references an invalid regexp type (invalid pattern)
+
+%typedef: new_type regexp /[/
+
+# Circular dependencies in custom types
+
+%typedef: new_type other_type
+%typedef: other_type new_type
+
+# A type definition that references nothing
+
+%type: Foo
+
+# A type definition that references a non-existent custom type
+
+%type: Foo custom_type
+
+# A type definition that references an invalid range type (no values)
+
+%type: Foo range
+
+# A type definition that references an invalid range type (max less than min)
+
+%type: Foo range 81 30
+
+# A type definition that references an invalid range type (max less than min)
+
+%type: Foo range 81 MIN
+
+# A type definition that references an invalid range type (non-numeric)
+
+%type: Foo range 81 Foo
+
+# A type definition that references an invalid size type (negative)
+
+%type: Foo size -3
+
+# A type definition that references an invalid size type (zero)
+
+%type: Foo size 0
+
+# A type definition that references an invalid size type (non-number)
+
+%type: Foo size Foo
+
+# A type definition that references an invalid enum type (no values)
+
+%type: Foo enum
+
+# A type definition that references an invalid regexp type (no pattern)
+
+%type: Foo regexp
+
+# A type definition that references an invalid regexp type (invalid pattern)
+
+%type: Foo regexp /[/
+
+#    import re
+#    try:
+#        re.compile('[')
+#        is_valid = True
+#    except re.error:
+#        is_valid = False
+
