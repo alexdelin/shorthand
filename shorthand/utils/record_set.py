@@ -31,10 +31,65 @@ class RecordSet(object):
         '''Validate configuration for a record set
         '''
 
-        # check that prohibited fields are not referenced
-        # check that non-allowed fields are not referenced
+        # check that all custom types referenced actually exist
+        # check that prohibited and/or non-allowed fields are not referenced
+        has_prohibited_fields = False
+        if config.get('prohibit'):
+            prohibited_fields = config.get('prohibit')
+            has_prohibited_fields = True
+        else:
+            prohibited_fields = []
+
+        has_allowed_fields = False
+        if config.get('allowed'):
+            allowed_fields = config.get('allowed')
+            has_allowed_fields = True
+        else:
+            allowed_fields = []
+
+        if config.get('mandatory'):
+            for mandatory_field in config.get('mandatory', []):
+                if has_prohibited_fields and mandatory_field in prohibited_fields:
+                    raise ValueError(f'Prohibited field {mandatory_field} specified as mandatory')
+                if has_allowed_fields and mandatory_field not in allowed_fields:
+                    raise ValueError(f'Non-allowed field {mandatory_field} specified as mandatory')
+
+        if config.get('unique'):
+            for unique_field in config.get('unique', []):
+                if has_prohibited_fields and unique_field in prohibited_fields:
+                    raise ValueError(f'Prohibited field {unique_field} specified as unique')
+                if has_allowed_fields and unique_field not in allowed_fields:
+                    raise ValueError(f'Non-allowed field {unique_field} specified as unique')
+
+        if config.get('key'):
+            key_field = config.get('key', [])
+            if has_prohibited_fields and key_field in prohibited_fields:
+                raise ValueError(f'Prohibited field {key_field} specified as prmary key')
+            if has_allowed_fields and key_field not in allowed_fields:
+                raise ValueError(f'Non-allowed field {key_field} specified as primary key')
+
+        if config.get('field_types', {}).keys():
+            for typed_field in config.get('field_types', {}).keys():
+                if has_prohibited_fields and typed_field in prohibited_fields:
+                    raise ValueError(f'Prohibited field {typed_field} has a type defined')
+                if has_allowed_fields and typed_field not in allowed_fields:
+                    raise ValueError(f'Non-allowed field {typed_field} has a type defined')
+
+        if config.get('sort'):
+            for sort_field in config.get('sort', []):
+                if has_prohibited_fields and sort_field in prohibited_fields:
+                    raise ValueError(f'Prohibited field {sort_field} specified as sort')
+                if has_allowed_fields and sort_field not in allowed_fields:
+                    raise ValueError(f'Non-allowed field {sort_field} specified as sort')
+
         # check that regexes are valid
         # check that ranges are valid
+        # check that size constraints are valid
+        if config.get('size'):
+
+            if config.get('size', {})['amount'] <= 0:
+                raise ValueError('Size limit for a record set must be greater than zero')
+
         # check all auto-generated fields have a supported type
         for auto_field in config.get('auto', []):
 
