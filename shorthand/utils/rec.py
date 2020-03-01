@@ -57,6 +57,9 @@ def process_type_definition(definition_string):
     linked_type_name = split_value[0]
     extra_params = split_value[1:]
 
+    if not linked_type_name.strip():
+        raise ValueError('Empty type definition found')
+
     if linked_type_name in PRIMITIVE_TYPES:
         return {'type': linked_type_name}
 

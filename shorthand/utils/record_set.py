@@ -7,6 +7,10 @@ from datetime import datetime
 
 from dateutil import parser
 
+ALL_TYPES = [
+    "int", "line", "date", "bool", "real", "uuid",
+    "range", "enum", "size", "regexp"]
+
 
 class RecordSet(object):
     """Record Set object which holds the field configuration
@@ -32,6 +36,23 @@ class RecordSet(object):
         '''
 
         # check that all custom types referenced actually exist
+        for custom_type in config.get('custom_types', {}).keys():
+            link_depth = 1
+            next_type = config.get('custom_types').get(custom_type)
+            while True:
+                print(f'Link depth: {link_depth} got type {next_type}')
+                if link_depth > 10:
+                    raise ValueError(f'Exceeded custom type link threshold of 10 for custom type {custom_type}')
+                if not next_type:
+                    raise ValueError(f'custom type {custom_type} is not defined')
+                elif next_type.get('type') == 'custom':
+                    next_type = config.get('custom_types').get(next_type['name'])
+                    link_depth += 1
+                    continue
+                elif next_type.get('type') in ALL_TYPES:
+                    # We found a valid type definition
+                    break
+
         # check that prohibited and/or non-allowed fields are not referenced
         has_prohibited_fields = False
         if config.get('prohibit'):
