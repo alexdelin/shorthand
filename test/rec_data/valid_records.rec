@@ -1,0 +1,13 @@
+# An Integer field
+
+%type: Foo int
+
+Foo: 5
+
+Foo: -10
+
+# A real Field
+
+%type: Foo real
+
+Foo: 5.3

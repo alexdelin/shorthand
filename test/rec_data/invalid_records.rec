@@ -1,0 +1,5 @@
+# An Integer Field
+
+%type: Foo int
+
+Foo: K
