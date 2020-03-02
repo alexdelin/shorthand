@@ -72,6 +72,8 @@ def process_type_definition(definition_string):
 
             if max_value[:2] == '0x' or max_value[:3] == '-0x':
                 max_value = get_hex_int(max_value)
+            else:
+                max_value = int(max_value)
 
         elif len(extra_params) == 2:
             # Both max and min are specified
@@ -94,8 +96,8 @@ def process_type_definition(definition_string):
 
         else:
             # We have either no values specified for the range or more than 2
-            raise ValueError(f'range type definition for type {custom_type_name} '
-                             f'must specify either a max value or max and min value')
+            raise ValueError(f'range type definition must specify either '
+                             f'a max value or max and min value')
 
         return {
             'type': 'range',
@@ -108,7 +110,7 @@ def process_type_definition(definition_string):
         no_comments = re.sub(r'( ?)\(.*?\)', '', extra_params_string)
         return {
             'type': 'enum',
-            'values': no_comments.split(' ')
+            'values': [value for value in no_comments.split(' ') if value]
         }
 
     elif linked_type_name == 'size':
@@ -126,7 +128,11 @@ def process_type_definition(definition_string):
             }
 
     elif linked_type_name == 'regexp':
-        regex_pattern = ' '.join(extra_params).strip().strip('/')
+        raw_pattern = ' '.join(extra_params).strip()
+        if not raw_pattern:
+            raise ValueError('No pattern specified for regex type')
+        edge_character = raw_pattern[0]
+        regex_pattern = raw_pattern.strip(edge_character)
         return {
             'type': 'regexp',
             'pattern': regex_pattern
@@ -298,7 +304,7 @@ def load_from_string(input_string):
                 split_value = value.split(' ')
                 if len(split_value) < 2:
                     raise ValueError(f'Invalid type assignment: {line}')
-                elif len(split_value) == 2:
+                elif len(split_value) >= 2:
                     # We are assigning the field to either a primitive type
                     # or a custom type
                     field_names = split_value[0].split(',')

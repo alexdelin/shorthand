@@ -321,11 +321,3 @@
 # A type definition that references an invalid regexp type (invalid pattern)
 
 %type: Foo regexp /[/
-
-#    import re
-#    try:
-#        re.compile('[')
-#        is_valid = True
-#    except re.error:
-#        is_valid = False
-

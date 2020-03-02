@@ -40,7 +40,6 @@ class RecordSet(object):
             link_depth = 1
             next_type = config.get('custom_types').get(custom_type)
             while True:
-                print(f'Link depth: {link_depth} got type {next_type}')
                 if link_depth > 10:
                     raise ValueError(f'Exceeded custom type link threshold of 10 for custom type {custom_type}')
                 if not next_type:
@@ -103,9 +102,49 @@ class RecordSet(object):
                 if has_allowed_fields and sort_field not in allowed_fields:
                     raise ValueError(f'Non-allowed field {sort_field} specified as sort')
 
-        # check that regexes are valid
-        # check that ranges are valid
-        # check that size constraints are valid
+        # check that regexp types are valid
+        regexp_types = [type_def for type_def in config.get('custom_types', {}).values() if type_def['type'] == 'regexp']
+        regexp_types.extend([type_def for type_def in config.get('field_types', {}).values() if type_def['type'] == 'regexp'])
+        for regexp_type in regexp_types:
+            re_pattern = regexp_type.get('pattern')
+            is_valid = True
+            if not re_pattern:
+                is_valid = False
+            try:
+                re.compile(re_pattern)
+            except re.error:
+                is_valid = False
+            if not is_valid:
+                raise ValueError(f'Regex pattern "{regexp_type.get("pattern")}" is invalid')
+
+        # check that range types are valid
+        range_types = [type_def for type_def in config.get('custom_types', {}).values() if type_def['type'] == 'range']
+        range_types.extend([type_def for type_def in config.get('field_types', {}).values() if type_def['type'] == 'range'])
+        for range_type in range_types:
+
+            max_value = range_type.get('max')
+            min_value = range_type.get('min')
+            if isinstance(min_value, int) and isinstance(max_value, int):
+                if min_value >= max_value:
+                    raise ValueError(f"Invalid range with maximum value {max_value} and minimum value {min_value}")
+            elif not isinstance(min_value, (int, type(None))) and not isinstance(max_value, (int, type(None))):
+                raise ValueError(f'Invalid range type {range_type}. Max and min must be either integers or None')
+
+        # check that size types are valid
+        size_types = [type_def for type_def in config.get('custom_types', {}).values() if type_def['type'] == 'size']
+        size_types.extend([type_def for type_def in config.get('field_types', {}).values() if type_def['type'] == 'size'])
+        for size_type in size_types:
+            if not size_type.get('limit') > 0:
+                raise ValueError(f'Size types must have a limit greater than zero')
+
+        # check that enum types are valid
+        enum_types = [type_def for type_def in config.get('custom_types', {}).values() if type_def['type'] == 'enum']
+        enum_types.extend([type_def for type_def in config.get('field_types', {}).values() if type_def['type'] == 'enum'])
+        for enum_type in enum_types:
+            if not enum_type.get('values'):
+                raise ValueError(f'Enum types must specify all allowed values')
+
+        # check that size constraints for the record set are valid
         if config.get('size'):
 
             if config.get('size', {})['amount'] <= 0:
