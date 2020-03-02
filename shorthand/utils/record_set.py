@@ -306,7 +306,7 @@ class RecordSet(object):
                     return f'field {field_name} not in allowed fields {allowed_fields}', None
 
         # Validate Prohibited Fields
-        prohibited_fields = self.config.get('prohibited', [])
+        prohibited_fields = self.config.get('prohibit', [])
         for prohibited_field in prohibited_fields:
             if prohibited_field in processed_record.keys():
                 return f'prohibited field {prohibited_field} present in record', None
@@ -337,6 +337,24 @@ class RecordSet(object):
 
         return False, processed_record
 
+    def validate_size_constraint(self):
+        size_constraint = self.config.get('size')
+        if not size_constraint:
+            return
+        constraint_condition = size_constraint.get('condition')
+        current_length = len(self.records)
+        constraint_amount = size_constraint.get('amount')
+        if constraint_condition == '==' and current_length != constraint_amount:
+            raise ValueError(f'Record set must have {constraint_amount} records but has {current_length}')
+        elif constraint_condition == '<' and current_length >= constraint_amount:
+            raise ValueError(f'Record set must have less than {constraint_amount} records but has {current_length}')
+        elif constraint_condition == '<=' and current_length > constraint_amount:
+            raise ValueError(f'Record set must have {constraint_amount} records or less but has {current_length}')
+        elif constraint_condition == '>' and current_length <= constraint_amount:
+            raise ValueError(f'Record set must have more than {constraint_amount} records but has {current_length}')
+        elif constraint_condition == '>=' and current_length < constraint_amount:
+            raise ValueError(f'Record set must have {constraint_amount} records or more but has {current_length}')
+
     def insert(self, records):
         '''Insert raw dictionaries into the record set
         Typically only called by internal methods
@@ -351,7 +369,8 @@ class RecordSet(object):
             else:
                 raise ValueError(f'Validation Error: {error_message} in record {record}')
 
-        #TODO- check that size constrains are still met
+        #TODO- check that size constraints are still met
+        self.validate_size_constraint()
 
     def get_rec(self):
         '''Serialize the record set to recfile format

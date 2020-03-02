@@ -378,7 +378,8 @@ def load_from_string(input_string):
                                  'in the middle of a record')
             continue
 
-    record_set.insert(records)
+    if records:
+        record_set.insert(records)
 
     print('--- Record Set JSON ---')
     print(record_set.get_json())
@@ -387,8 +388,3 @@ def load_from_string(input_string):
     print(json.dumps(record_set.get_fields()))
 
     return record_set
-
-
-load_from_file('/Users/alexdelin/code/shorthand/sublime_plugins/test.rec')
-
-

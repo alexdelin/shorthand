@@ -1,5 +1,187 @@
-# An Integer Field
+# A mandatory field missing
+
+%mandatory: Foo
+
+Foo: test
+Bar: test
+
+Bar: test
+
+Foo: test
+Bar: test
+
+# A unique field with multiple values
+
+%unique: Label
+
+Text: I loved the movie
+Label: pos
+
+Text: I hated the restaurant
+Label: neg
+
+Text: I'm not sure
+Label: pos
+Label: neg
+
+# A primary key field (which is not auto-generated) missing
+
+%key: Id
+
+Id: 0
+Name: Sam
+
+Name: Tony
+
+Id: 2
+Name: John
+
+Id: 3
+Name: David
+
+# A primary key field with multiple values
+
+%key: Id
+
+Id: 0
+Name: Sam
+
+Id: 1
+Name: Tony
+Id: 2
+
+# A non-allowed field present
+
+%allowed: Text Label
+
+Text: I loved the movie
+Label: pos
+
+Text: I hated the restaurant
+label: neg
+
+# A prohibited field present
+
+%prohibit: Baz
+
+Foo: test
+Bar: test
+
+Foo: test
+Bar: test
+Baz: test
+
+# An exact size constraint not met
+
+%size: 3
+
+Foo: test 1
+
+Foo: test 2
+
+Foo: test 3
+
+Foo: test 4
+
+# A less than size constraint not met
+
+%size: < 3
+
+Foo: test 1
+
+Foo: test 2
+
+Foo: test 3
+
+# A greater than size constraint not met
+
+%size: > 7
+
+Foo: test 1
+
+Foo: test 2
+
+# --- Integer Type ---
+# An Integer Field directly typed
 
 %type: Foo int
 
-Foo: K
+Foo: Five
+
+# An Integer field indirectly typed
+
+%typedef: int_type int
+%type: Foo int_type
+
+Foo: a string
+
+# Multiple integer values in a single field
+
+%type: Foo int
+
+Foo: 3 217
+
+# Multiple integer fields defined at once
+
+%type: Foo,Bar int
+
+Foo: 6
+Bar: Q
+
+# --- Real Type ---
+# A real Field directly typed
+
+%type: Foo real
+
+Foo: Five
+
+# A real field indirectly typed
+
+%typedef: int_type real
+%type: Foo int_type
+
+Foo: a string
+
+# Multiple real values in a single field
+
+%type: Foo real
+
+Foo: 3.1415926535 217.0
+
+# Multiple real fields defined at once
+
+%type: Foo,Bar real
+
+Foo: 6.1
+Bar: Q
+
+# --- Line Type ---
+# A line Field directly typed
+
+%type: Foo line
+
+Foo: This is a value that
++ includes a newline
+
+# A line field indirectly typed
+
+%typedef: int_type line
+%type: Foo int_type
+
+Foo: a string that continues
++ onto the next line
+
+# Multiple line fields defined at once
+
+%type: Foo,Bar line
+
+Foo: 6.1
+Bar: Something over
++ two lines
+
+# --- Bool Type ---
+# --- Date Type ---
+# --- Range Type ---
+# --- Enum Type ---
+# --- Regexp Type ---
+# --- UUID Type ---

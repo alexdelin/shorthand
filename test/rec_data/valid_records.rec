@@ -1,3 +1,17 @@
+# Plain string fields
+
+Foo: Just a test
+
+Foo: Another record
+Bar: A value that spans
++ Multiple lines
+
+# Unicode values
+
+Chinese: 我爱汉语
+Russian: ето оцчен чарацчо
+German: das ist sehr schön
+
 # An Integer field
 
 %type: Foo int
@@ -5,6 +19,9 @@
 Foo: 5
 
 Foo: -10
+
+Foo: 6
+Foo: 0
 
 # A real Field
 
