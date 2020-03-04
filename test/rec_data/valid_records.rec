@@ -9,7 +9,7 @@ Bar: A value that spans
 # Unicode values
 
 Chinese: 我爱汉语
-Russian: ето оцчен чарацчо
+Russian: ето очен хорошо
 German: das ist sehr schön
 
 # An Integer field
@@ -23,8 +23,41 @@ Foo: -10
 Foo: 6
 Foo: 0
 
+Foo: 0x7B31
+Foo: -0xA9F20
+
 # A real Field
 
 %type: Foo real
 
 Foo: 5.3
+
+Foo: 6
+
+Foo: -180.3
+
+Foo: .00076
+
+# A line field
+
+%type: Foo line
+
+Foo: test
+
+Foo: This is a string of text that is really long but doesn't have a newline character in it. Although editors may wrap it for display purposes it is technically a single line and thus is a valid value for a line field
+
+# A bool field
+
+%type: Foo bool
+
+Foo: yes
+
+Foo: 1
+
+Foo: true
+
+Foo: no
+
+Foo: 0
+
+Foo: false

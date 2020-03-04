@@ -126,7 +126,7 @@ Foo: 3 217
 %type: Foo,Bar int
 
 Foo: 6
-Bar: Q
+Bar: 0x7M
 
 # --- Real Type ---
 # A real Field directly typed

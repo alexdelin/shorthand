@@ -7,6 +7,9 @@ from datetime import datetime
 
 from dateutil import parser
 
+from shorthand.utils.rec_lib import get_hex_int
+
+
 ALL_TYPES = [
     "int", "line", "date", "bool", "real", "uuid",
     "range", "enum", "size", "regexp"]
@@ -186,7 +189,10 @@ class RecordSet(object):
                 processed_record[field_name] = []
                 for field_value in field_values:
                     try:
-                        num_value = int(field_value)
+                        if field_value[:2] == '0x' or field_value[:3] == '-0x':
+                            num_value = get_hex_int(field_value)
+                        else:
+                            num_value = int(field_value)
                         processed_record[field_name].append(num_value)
                     except ValueError:
                         return f"can't convert value \"{field_value}\" of field \"{field_name}\" to an int", None
