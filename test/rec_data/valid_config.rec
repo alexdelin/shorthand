@@ -259,6 +259,28 @@
 %typedef: regexp_type regexp /[0-9]{3}-[0-9]{2}-[0-9]{4}/
 %type: Foo,Bar regexp_type
 
+# A field directly typed uuid
+
+%type: Foo uuid
+
+# Multiple fields directly typed uuid
+
+%type: Foo,Bar uuid
+
+# A custom type that maps to uuid
+
+%typedef: uuid_type uuid
+
+# A field using a custom type that maps to uuid
+
+%typedef: uuid_type uuid
+%type: Foo uuid_type
+
+# Multiple fields using a custom type that maps to uuid
+
+%typedef: uuid_type uuid
+%type: Foo,Bar uuid_type
+
 # Link multiple levels of custom types together
 
 %typedef: custom_type_1 int
