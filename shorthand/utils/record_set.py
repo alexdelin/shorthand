@@ -244,9 +244,9 @@ class RecordSet(object):
                             processed_record[field_name].append(num_value)
                     except ValueError:
                         return f"can't convert value \"{field_value}\" of field \"{field_name}\" to a float", None
-                    if max_value and num_value > max_value:
+                    if isinstance(max_value, int) and num_value > max_value:
                         return f'Value {field_value} of field {field_name} exceeds the maximum range value {max_value}', None
-                    if min_value and num_value < min_value:
+                    if isinstance(min_value, int)  and num_value < min_value:
                         return f'Value {field_value} of field {field_name} is below the minimum range value {min_value}', None
 
             # Validate enum field

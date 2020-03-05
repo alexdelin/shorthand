@@ -194,13 +194,68 @@ Foo: not
 Foo: 10
 
 # --- Date Type ---
+
+%type: Foo date
+
+Foo: Tomorrow!
+
+Foo: 2018-07-02T11:04:13 2019-07-02T11:04:13 2020-07-02T11:04:13
+
 # --- Range Type ---
 # A range type with an implicit zero min
+
+%type: Foo range 7
+
+Foo: -1
+
 # A range type with a MIN specified
+
+%type: Foo range MIN 2
+
+Foo: 7
+
 # A range type with a MAX specified
+
+%type: Foo range 3 MAX
+
+Foo: 1
+
 # A range type with two numeric values specified
+
+%type: Foo range 4 7
+
+Foo: 3
+
 # A range type with hexadecimal bounds
+
+%type: Foo range 0x4 0x7
+
+Foo: 9
+
 # --- Enum Type ---
+
+%type: Foo enum foo bar baz
+
+Foo: new
+
 # An enum field with comments on values
+
+%type: Foo enum foo (first option)
++ bar (second option)
++ baz (third option)
+
+Foo: new
+
 # --- Regexp Type ---
+
+%type: Foo regexp /^[0-9]{5}$/
+
+Foo: 72365
+
+Foo: 723659
+
 # --- UUID Type ---
+
+%type: Foo uuid
+
+Foo: 4DBF50C7D6BD4335

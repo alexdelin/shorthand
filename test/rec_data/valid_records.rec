@@ -173,6 +173,8 @@ Foo: false
 
 Foo: 2019-07-02T11:04:13
 
+Foo: 2019-07-02 11:04:13
+
 Foo: 2020-03-03
 
 # A range type with an implicit zero min
