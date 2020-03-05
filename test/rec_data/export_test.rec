@@ -1,0 +1,22 @@
+# This is a test of records to export in various formats
+
+%rec: ExportTest
+%doc: A set of test records which will be exported in different fomats to check that they still include all expected data
+%mandatory: A
+%key: Id
+%unique: C
+%allowed: A
+%prohibit: A
+%size: 7
+%typedef: a_type int
+%type: A a_type
+%auto: DateCreated Id
+%sort: Rating
+
+Id: 0
+A: test
+B: test
+
+Id: 1
+A: test
+B: test

@@ -41,7 +41,7 @@ class TestRecConfig(unittest.TestCase):
             assert str(e.value)
 
 
-class TestRecConfig(unittest.TestCase):
+class TestRecordParsing(unittest.TestCase):
     '''Basic tests for recfile record set parsing
     '''
 
@@ -64,3 +64,89 @@ class TestRecConfig(unittest.TestCase):
                 loaded_record_set = load_from_string(invalid_record_set)
             assert str(e.value)
 
+
+class TestRecordLoad(unittest.TestCase):
+    """Test Loading new records into a record set"""
+
+    def test_load_csv_no_pk(self):
+        '''Test importing data from a CSV file into a
+        record set with no primary key field set
+        '''
+        with open('rec_data/base_config_no_pk.rec') as f:
+            base_record_set_raw = f.read()
+        pass
+
+    def test_load_csv_with_pk(self):
+        '''Test importing data from a CSV file into a
+        record set with a primary key field set
+        '''
+        with open('rec_data/base_config_with_pk.rec') as f:
+            base_record_set_raw = f.read()
+        pass
+
+    def test_load_json_no_pk(self):
+        '''Test importing data from a JSON file into a
+        record set with no primary key field set
+        '''
+        with open('rec_data/base_config_no_pk.rec') as f:
+            base_record_set_raw = f.read()
+        pass
+
+    def test_load_json_with_pk(self):
+        '''Test importing data from a JSON file into a
+        record set with a primary key field set
+        '''
+        with open('rec_data/base_config_with_pk.rec') as f:
+            base_record_set_raw = f.read()
+        pass
+
+
+class TestRecordExport(unittest.TestCase):
+    """Test Exporting a record set to various formats"""
+
+    def test_loading_record_set(self):
+        '''Load a record set to test exports of in later tests
+        '''
+        with open('rec_data/export_test.rec', 'r') as f:
+            record_data = f.read()
+        record_set = load_from_string(record_data)
+        assert record_set.records
+
+    def test_json_export(self):
+        '''Test exporting a record set to JSON format
+        '''
+        pass
+
+    def test_csv_export(self):
+        '''Test exporting a record set to CSV format
+        '''
+        pass
+
+    def test_rec_export(self):
+        '''Test exporting a record set to rec format
+        '''
+
+        # Test exporting with config included
+        # Test exporting with config excluded
+        pass
+
+
+class TestFiltering(object):
+    """Test filtering, querying, and sorting record set results"""
+
+    def test_sorting(self):
+        '''Test that records are sorted by designated sort fields
+        '''
+        pass
+
+    def test_filtering(self):
+        '''Test filtering records to include only records with an
+        exact match in a field value
+        '''
+        pass
+
+    def test_querying(self):
+        '''Test querying records to include records that match a given
+        query or expression
+        '''
+        pass
