@@ -10,6 +10,8 @@ from dateutil import parser
 from shorthand.utils.rec_lib import get_hex_int
 
 
+UUID_PATTERN = r'^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$'
+
 ALL_TYPES = [
     "int", "line", "date", "bool", "real", "uuid",
     "range", "enum", "size", "regexp"]
@@ -234,11 +236,11 @@ class RecordSet(object):
                 processed_record[field_name] = []
                 for field_value in field_values:
                     try:
-                        if field_value[:2] == '0x':
-                            num_value = int(field_value[2:], 16)
+                        if field_value[:2] == '0x' or field_value[:3] == '-0x':
+                            num_value = get_hex_int(field_value)
                             processed_record[field_name].append(num_value)
                         else:
-                            num_value = float(field_value)
+                            num_value = int(field_value)
                             processed_record[field_name].append(num_value)
                     except ValueError:
                         return f"can't convert value \"{field_value}\" of field \"{field_name}\" to a float", None
@@ -266,7 +268,13 @@ class RecordSet(object):
                 pattern = field_type['pattern']
                 for field_value in field_values:
                     if not re.match(pattern, field_value):
-                        return f'value {field_value} of field {field_name} does not match regex {pattern}', None
+                        return f'value "{field_value}" of field {field_name} does not match regex {pattern}', None
+
+            # Validate uuid field
+            if field_type.get('type') == 'uuid':
+                for field_value in field_values:
+                    if not re.match(UUID_PATTERN, field_value):
+                        return f'value "{field_value}" of uuid field {field_name} is not a valid UUID4', None
 
             # Auto-generate field values if needed
             for auto_field in self.config.get('auto', []):

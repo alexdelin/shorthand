@@ -180,8 +180,27 @@ Bar: Something over
 + two lines
 
 # --- Bool Type ---
+# A bool field directly typed
+
+%type: Foo bool
+
+Foo: not
+
+# A bool field indirectly typed
+
+%typedef: bool_type bool
+%type: Foo bool_type
+
+Foo: 10
+
 # --- Date Type ---
 # --- Range Type ---
+# A range type with an implicit zero min
+# A range type with a MIN specified
+# A range type with a MAX specified
+# A range type with two numeric values specified
+# A range type with hexadecimal bounds
 # --- Enum Type ---
+# An enum field with comments on values
 # --- Regexp Type ---
 # --- UUID Type ---
