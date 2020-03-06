@@ -4,6 +4,7 @@ import json
 import uuid
 import copy
 from datetime import datetime
+from io import StringIO
 
 from dateutil import parser
 
@@ -407,10 +408,22 @@ class RecordSet(object):
         '''
         pass
 
-    def insert_csv(self, csv_data):
+    def insert_csv(self, csv_data, delimiter=',', value_separator=None):
         '''Import CSV data to update the record set
         '''
-        pass
+
+        f = StringIO(csv_data)
+        reader = csv.DictReader(f, delimiter=delimiter)
+        all_rows = []
+        for row in reader:
+            processed_row = {}
+            for key, value in dict(row).items():
+                if value_separator:
+                    processed_row[key] = value.split(value_separator)
+                else:
+                    processed_row[key] = [value]
+            all_rows.append(processed_row)
+        self.insert(all_rows)
 
     def get_json(self):
         '''serialize the record set to a JSON string
@@ -421,7 +434,23 @@ class RecordSet(object):
         '''Import JSON data to update the record set
         '''
         records = json.loads(json_data)
-        self.insert(records)
+        if not isinstance(records, list):
+            raise ValueError(f'Records added in JSON format must be submitted as an array of objects, not as {type(records)}')
+        clean_records = []
+        for record in records:
+            clean_record = {}
+            if not isinstance(record, dict):
+                raise ValueError(f'Each record added must be a JSON object. Object of type {type(record)} found: {record}')
+            for key, value in record.items():
+                if isinstance(value, list):
+                    clean_record[key] = value
+                elif not isinstance(key, str) or not isinstance(value, str):
+                    raise ValueError(f'All keys and values in JSON imported data must be provided as strings')
+                else:
+                    clean_record[key] = [value]
+            clean_records.append(clean_record)
+
+        self.insert(clean_records)
 
     def get_fields(self):
         '''Get all of the fields present in the record set

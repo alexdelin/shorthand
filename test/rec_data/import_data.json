@@ -1,6 +1,6 @@
 [
   {
-    "Id": 2,
+    "Id": "2",
     "Date": "2019-04-03",
     "Temp": "65.2",
     "Location": "Austin, TX"
@@ -8,7 +8,7 @@
   {
     "Id": "3",
     "Date": "2019-05-05",
-    "Temp": 58.2,
+    "Temp": "58.2",
     "Location": "Chicago, IL"
   },
   {
