@@ -72,33 +72,57 @@ class TestRecordLoad(unittest.TestCase):
         '''Test importing data from a CSV file into a
         record set with no primary key field set
         '''
-        with open('rec_data/base_config_no_pk.rec') as f:
+        with open('rec_data/base_config_no_pk.rec', 'r') as f:
             base_record_set_raw = f.read()
-        pass
+        record_set = load_from_string(base_record_set_raw)
+
+        with open('rec_data/import_data.csv', 'r') as f:
+            csv_data = f.read()
+        record_set.insert_csv(csv_data)
+
+        assert len(record_set.records) == 6
 
     def test_load_csv_with_pk(self):
         '''Test importing data from a CSV file into a
         record set with a primary key field set
         '''
-        with open('rec_data/base_config_with_pk.rec') as f:
+        with open('rec_data/base_config_with_pk.rec', 'r') as f:
             base_record_set_raw = f.read()
-        pass
+        record_set = load_from_string(base_record_set_raw)
+
+        with open('rec_data/import_data.csv', 'r') as f:
+            csv_data = f.read()
+        record_set.insert_csv(csv_data)
+
+        assert len(record_set.records) == 5
 
     def test_load_json_no_pk(self):
         '''Test importing data from a JSON file into a
         record set with no primary key field set
         '''
-        with open('rec_data/base_config_no_pk.rec') as f:
+        with open('rec_data/base_config_no_pk.rec', 'r') as f:
             base_record_set_raw = f.read()
-        pass
+        record_set = load_from_string(base_record_set_raw)
+
+        with open('rec_data/import_data.json', 'r') as f:
+            csv_data = f.read()
+        record_set.insert_json(csv_data)
+
+        assert len(record_set.records) == 6
 
     def test_load_json_with_pk(self):
         '''Test importing data from a JSON file into a
         record set with a primary key field set
         '''
-        with open('rec_data/base_config_with_pk.rec') as f:
+        with open('rec_data/base_config_with_pk.rec', 'r') as f:
             base_record_set_raw = f.read()
-        pass
+        record_set = load_from_string(base_record_set_raw)
+
+        with open('rec_data/import_data.json', 'r') as f:
+            csv_data = f.read()
+        record_set.insert_json(csv_data)
+
+        assert len(record_set.records) == 5
 
 
 class TestRecordExport(unittest.TestCase):
@@ -107,6 +131,7 @@ class TestRecordExport(unittest.TestCase):
     def test_loading_record_set(self):
         '''Load a record set to test exports of in later tests
         '''
+        return
         with open('rec_data/export_test.rec', 'r') as f:
             record_data = f.read()
         record_set = load_from_string(record_data)
