@@ -7,11 +7,10 @@
 %unique: A
 %allowed: Id A B
 %prohibit: C
-%size: 7
+%size: 2
 %typedef: a_type line
 %type: A a_type
-%auto: DateCreated Id
-%sort: Rating
+%type: Id int
 
 Id: 0
 A: test

@@ -373,7 +373,7 @@
 %type: WasGood was_good_type
 %typedef: book_id_type regexp /[0-9]{9}[a-zA-Z]/
 %type: BookId book_id_type
-%auto: DateAcquired Id
+%auto: DateAcquired
 %sort: Author Title
 %doc: Each record in this record set represents
 + a book in my personal collection.

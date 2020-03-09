@@ -34,8 +34,7 @@ class RecordSet(object):
         else:
             self.config = {}
         self.fields = {}
-        self.records = []
-        self.primary_keys = {}
+        self.records = {}
 
     def validate_config(self, config):
         '''Validate configuration for a record set
@@ -93,6 +92,8 @@ class RecordSet(object):
                 raise ValueError(f'Prohibited field {key_field} specified as prmary key')
             if has_allowed_fields and key_field not in allowed_fields:
                 raise ValueError(f'Non-allowed field {key_field} specified as primary key')
+            if key_field in config.get('auto', []):
+                raise ValueError(f'Primary key field "{key_field}" cannot be auto-generated')
 
         if config.get('field_types', {}).keys():
             for typed_field in config.get('field_types', {}).keys():
@@ -178,6 +179,16 @@ class RecordSet(object):
         '''
 
         processed_record = copy.deepcopy(record)
+
+        # Validate Primary Key
+        primary_key_field = self.config.get('key')
+        if primary_key_field:
+            if not processed_record.get(primary_key_field):
+                return f'Missing primary key field {primary_key_field}', None
+            if len(processed_record.get(primary_key_field)) > 1:
+                return f'Primary key field {primary_key_field} can only have a single value per record', None
+            # if self.primary_keys.get(processed_record.get(primary_key_field, [None])[0]):
+            #     return f'Primary key value {processed_record.get(primary_key_field, [None])[0]} already exists for field {primary_key_field}', None
 
         # Validate types of all specified fields
         for field_name, field_values in record.items():
@@ -326,16 +337,6 @@ class RecordSet(object):
             if prohibited_field in processed_record.keys():
                 return f'prohibited field {prohibited_field} present in record', None
 
-        # Validate Primary Key
-        primary_key_field = self.config.get('key')
-        if primary_key_field:
-            if not processed_record.get(primary_key_field):
-                return f'Missing primary key field {primary_key_field}', None
-            if len(processed_record.get(primary_key_field)) > 1:
-                return f'Primary key field {primary_key_field} can only have a single value per record', None
-            if self.primary_keys.get(processed_record[primary_key_field][0]):
-                return f'Primary key value {processed_record[primary_key_field][0]} already exists for field {primary_key_field}', None
-
         # validate record set size constraint only if it is a less than or less than or equal to constraint
         size_condition = self.config.get('size', {}).get('condition')
         if size_condition in ['<', '<=']:
@@ -378,35 +379,65 @@ class RecordSet(object):
             error_message, processed_record = self.validate_record(record)
             if not error_message:
                 primary_key_field = self.config.get('key')
+                primary_key_value = str(processed_record.get(primary_key_field, [None])[0])
                 if primary_key_field:
-                    self.primary_keys[processed_record[primary_key_field][0]] = True
-                self.records.append(processed_record)
+                    self.records[primary_key_value] = processed_record
+                else:
+                    if len(self.records.keys()):
+                        primary_key_value = str(len(self.records.keys()) + 1)
+                    else:
+                        primary_key_value = 1
+                    self.records[primary_key_value] = processed_record
             else:
                 raise ValueError(f'Validation Error: {error_message} in record {record}')
 
-        #TODO- check that size constraints are still met
+        # Check that size constraints are still met
         self.validate_size_constraint()
 
-    def get_rec(self):
+    def get_rec(self, include_config=False):
         '''Serialize the record set to recfile format
         '''
-        pass
+
+        # Write config to string
+        if include_config:
+            raise NotImplementedError()
+        # Write records to string
+        record_strings = []
+        for record in self.records.values():
+            record_string = ''
+            for key, values in record.items():
+                for value in values:
+                    clean_value = str(value).replace("\n", "\n+ ")
+                    record_string += f'{key}: {clean_value}\n'
+            record_string = record_string.strip()
+            record_strings.append(record_string)
+        output_string = '\n\n'.join(record_strings)
+        return output_string
 
     def save_rec(self, file_path):
         '''Write the contents of the record set to a file in recfile format
         '''
-        pass
+        raise NotImplementedError()
 
     def insert_rec(self, records_string):
         '''Insert one or more new records into the record set from a string
         in recfile format
         '''
-        pass
+        raise NotImplementedError()
 
-    def get_csv(self):
+    def get_csv(self, value_separator='|'):
         '''Serialize the record set to a string of CSV data
         '''
-        pass
+
+        csv_string = StringIO()
+        writer = csv.DictWriter(csv_string, fieldnames=self.get_fields())
+        writer.writeheader()
+        for record in self.records.values():
+            processed_record = {}
+            for key, values in record.items():
+                processed_record[key] = value_separator.join([str(value) for value in values])
+            writer.writerow(processed_record)
+        return csv_string.getvalue()
 
     def insert_csv(self, csv_data, delimiter=',', value_separator=None):
         '''Import CSV data to update the record set
@@ -428,7 +459,7 @@ class RecordSet(object):
     def get_json(self):
         '''serialize the record set to a JSON string
         '''
-        return json.dumps(self.records)
+        return json.dumps(list(self.records.values()))
 
     def insert_json(self, json_data):
         '''Import JSON data to update the record set
@@ -460,9 +491,9 @@ class RecordSet(object):
     def get_record_count(self):
         '''Get the total number of records in the record set
         '''
-        return len(self.records)
+        return len(self.records.values())
 
     def all(self):
         '''Get all records in the record set as a list of dictionaries
         '''
-        return self.records
+        return self.records.values()

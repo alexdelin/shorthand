@@ -1,5 +1,6 @@
 import os
 import re
+import json
 import unittest
 
 import pytest
@@ -131,21 +132,27 @@ class TestRecordExport(unittest.TestCase):
     def test_loading_record_set(self):
         '''Load a record set to test exports of in later tests
         '''
-        return
+
         with open('rec_data/export_test.rec', 'r') as f:
             record_data = f.read()
         record_set = load_from_string(record_data)
-        assert record_set.records
+        assert len(record_set.records) == 2
 
     def test_json_export(self):
         '''Test exporting a record set to JSON format
         '''
-        pass
+        with open('rec_data/export_test.rec', 'r') as f:
+            record_data = f.read()
+        record_set = load_from_string(record_data)
+        self.assertCountEqual(json.loads(record_set.get_json()), [{"Id": [0], "A": ["test"], "B": ["test"]}, {"Id": [1], "A": ["test"], "B": ["test"]}])
 
     def test_csv_export(self):
         '''Test exporting a record set to CSV format
         '''
-        pass
+        with open('rec_data/export_test.rec', 'r') as f:
+            record_data = f.read()
+        record_set = load_from_string(record_data)
+        assert record_set.get_csv() == 'Id,A,B\r\n0,test,test\r\n1,test,test\r\n'
 
     def test_rec_export(self):
         '''Test exporting a record set to rec format
@@ -153,7 +160,10 @@ class TestRecordExport(unittest.TestCase):
 
         # Test exporting with config included
         # Test exporting with config excluded
-        pass
+        with open('rec_data/export_test.rec', 'r') as f:
+            record_data = f.read()
+        record_set = load_from_string(record_data)
+        assert record_set.get_rec() == 'Id: 0\nA: test\nB: test\n\nId: 1\nA: test\nB: test'
 
 
 class TestFiltering(object):
