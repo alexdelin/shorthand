@@ -337,6 +337,10 @@ def load_from_string(input_string):
             # check to see if there is more to the value on the next line
             lookahead = 1
             while True:
+
+                if idx + lookahead >= len(split_lines):
+                    break
+
                 next_line = split_lines[idx + lookahead]
 
                 if not next_line.strip():

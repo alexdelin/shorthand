@@ -488,6 +488,11 @@ class RecordSet(object):
         '''
         return list(self.fields.keys())
 
+    def get_config(self):
+        '''Get the config for the record set
+        '''
+        return self.config
+
     def get_record_count(self):
         '''Get the total number of records in the record set
         '''

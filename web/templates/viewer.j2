@@ -6,12 +6,16 @@
   <link rel="stylesheet" href="/css/texmath.css">
   <link rel="stylesheet" href="/css/bootstrap.min.css">
   <link rel="stylesheet" href="/css/highlight.min.css">
+  <link rel="stylesheet" href="/css/dataTables.bootstrap4.min.css">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <script src="/js/highlight.min.js"></script>
+  <script src="/js/underscore-min.js"></script>
   <script src="/js/markdown-it.js"></script>
   <script src="/js/katex.min.js"></script>
   <script src="/js/texmath.js"></script>
   <script src="/js/jquery-3.3.1.min.js"></script>
+  <script src="/js/jquery.dataTables.min.js"></script>
+  <script src="/js/dataTables.bootstrap4.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mermaid@8.4.0/dist/mermaid.min.js"></script>
 </head>
 <body>
@@ -54,6 +58,7 @@
   </div>
 
   <script>
+    // Render main markdown content
     let md;
     document.addEventListener("DOMContentLoaded", () => {
         const tm = texmath.use(katex);
@@ -62,9 +67,29 @@
         out.innerHTML = md.render('{{ file_content }}');
     })
 
+    // Wire click events for show / hide TOC button
     $("#showTOC").click(function(){
       $(".toc-content").toggleClass("hidden");
     });
+
+    // Render tables with record sets
+    $(document).ready(function() {
+
+        _.each($('.record-set-table'), function (tableElement) {
+            console.log(tableElement);
+            var jsonString = $(tableElement).attr('data-rec');
+            var tableData = JSON.parse(jsonString);
+            console.log(tableData);
+            var colString = $(tableElement).attr('data-cols');
+            var columns = JSON.parse(colString);
+            console.log(columns);
+            $(tableElement).DataTable({
+                data: tableData,
+                columns: columns
+            });
+        });
+
+    } );
   </script>
   <script>hljs.initHighlightingOnLoad();</script>
 </body>

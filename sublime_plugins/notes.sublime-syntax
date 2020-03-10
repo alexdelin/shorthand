@@ -1161,7 +1161,7 @@ contexts:
     - match: |-
          (?x)
           {{fenced_code_block_start}}
-          ((?i:rec|recfile))
+          ((?i:rec|recfile|rec-data))
           \s*$\n?          # any whitespace until EOL
       captures:
         0: meta.code-fence.definition.begin.recfile.markdown-gfm
