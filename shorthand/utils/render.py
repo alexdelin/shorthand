@@ -30,7 +30,6 @@ def get_rendered_markdown(markdown_content):
 
         # Grab everything for record sets
         if markdown_line.strip()[:3] != '```' and is_rec_data_block:
-            print('Adding Line!')
             rec_data_lines.append(markdown_line)
             continue
 
@@ -54,11 +53,9 @@ def get_rendered_markdown(markdown_content):
 
             # Special handling for record sets
             if markdown_line.strip()[:11] == '```rec-data':
-                print('Found rec data')
                 is_rec_data_block = True
                 continue
             elif is_rec_data_block:
-                print('Completed rec block')
                 is_rec_data_block = False
                 record_set = load_from_string('\n'.join(rec_data_lines))
                 record_set_data = json.dumps(list(record_set.all()))
@@ -66,10 +63,11 @@ def get_rendered_markdown(markdown_content):
                 record_set_name = record_set.get_config().get('rec', {}).get('name')
                 if record_set_name:
                     html_content_lines.append(f'##### Record Set: {record_set_name}')
-                html_content_lines.append(f'<table class="table table-striped table-bordered '
+                html_content_lines.append(f'<div><div class="record-set-data">{record_set_data}'
+                                          f'</div><table class="table table-striped table-bordered '
                                           f'record-set-table" style="width:100%" data-rec=\''
-                                          f'{record_set_data}\' data-cols=\''
-                                          f'{json.dumps(column_config)}\'></table>')
+                                          f'\' data-cols=\''
+                                          f'{json.dumps(column_config)}\'></table></div>')
                 rec_data_lines = []
                 continue
 

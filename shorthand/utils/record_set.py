@@ -425,13 +425,13 @@ class RecordSet(object):
         '''
         raise NotImplementedError()
 
-    def get_csv(self, value_separator='|'):
+    def get_csv(self, value_separator='|', include_headers=True):
         '''Serialize the record set to a string of CSV data
         '''
-
         csv_string = StringIO()
         writer = csv.DictWriter(csv_string, fieldnames=self.get_fields())
-        writer.writeheader()
+        if include_headers:
+            writer.writeheader()
         for record in self.records.values():
             processed_record = {}
             for key, values in record.items():

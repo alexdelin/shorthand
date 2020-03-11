@@ -355,7 +355,19 @@ def load_from_string(input_string):
 
             current_record.setdefault(key, [])
             current_record[key].append(value)
+
+            if idx == len(split_lines) - 1:
+                # Last line
+                if current_record:
+                    records.append(current_record)
+                    current_record = {}
+                    continue
+                else:
+                    continue
+
             continue
+
+
 
         if line[0] == '%':
             # we have reached the start of a new record set
