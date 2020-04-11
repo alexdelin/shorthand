@@ -14,7 +14,7 @@ END_STAMP_PATTERN = r'\(' + DATE_STAMP_PATTERN + r' -> ' + DATE_STAMP_PATTERN + 
 
 # To-Dos
 ## Matches all valid prefixes for incomplete, complete, or skipped todos
-CATCH_ALL_PATTERN = r'(^\s*)(\[[XS ]?\])'
+CATCH_ALL_PATTERN = r'(^\s*)(\[[XS ]?\])( [a-zA-A1-9\(\)])'
 ## Matches all incomplete todos with valid timestamps
 VALID_INCOMPLETE_PATTERN = r'\[ \] ' + START_STAMP_PATTERN
 ## Matches all completed or skipped todos with valid start and end timestamps
@@ -26,11 +26,11 @@ FINISHED_START_STAMPED_PATTERN = r'(^\s*)(\[)([XS])(\] )(\()(' + DATE_STAMP_PATT
 ## Matches completed or skipped todos with no valid timestamp
 FINISHED_UNSTAMPED_PATTERN = r'(^\s*)(\[)([XS])(\] )(?!(' + START_STAMP_PATTERN + r'|' + END_STAMP_PATTERN + r'))'
 ## Matches the prefix of a skipped todo
-SKIPPED_PREFIX_GREP = r'(^\s*)(\[S\])'
+SKIPPED_PREFIX_GREP = r'(^\s*)(\[S\])( [a-zA-A1-9\(\)])'
 ## Matches the prefix of an incomplete todo
-INCOMPLETE_PREFIX_GREP = r'(^\s*)(\[ ?\])'
+INCOMPLETE_PREFIX_GREP = r'(^\s*)(\[ ?\])( [a-zA-A1-9\(\)])'
 ## Matches the prefix of a complete todo
-COMPLETE_PREFIX_GREP = r'(^\s*)(\[X\])'
+COMPLETE_PREFIX_GREP = r'(^\s*)(\[X\])( [a-zA-A1-9\(\)])'
 ## matches a start stamp and todo without the prefix
 START_STAMP_ONLY_PATTERN = r'(\()(' + DATE_STAMP_PATTERN + r')(\))( )(.*)'
 ## matches an end stamp and todo without the prefix
@@ -53,7 +53,9 @@ DEFINITION_PATTERN = r"^(\w*)({.*} )(.*)"
 HEADING_PATTERN = r'^(#+)( )(.*)'
 DATED_HEADING_PATTERN = r'^(#+)( )(.*)(' + DATE_STAMP_PATTERN + r')'
 
-CHARS_TO_ESCAPE = ['(', ')', '{', '}', '+', '|', '?']
+RECORD_SET_PATTERN = r'^```rec-data$'
+
+CHARS_TO_ESCAPE = ['(', ')', '{', '}', '+', '|', '?', '`']
 
 def escape_for_grep(input_pattern):
     '''Patterns designed for the python `re` library need to be
