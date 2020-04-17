@@ -18,6 +18,7 @@ from shorthand.question_tools import get_questions
 from shorthand.tag_tools import get_tags
 from shorthand.calendar_tools import get_calendar
 from shorthand.toc_tools import get_toc
+from shorthand.rec_tools import get_record_sets, get_record_set
 from shorthand.utils.config import get_notes_config
 from shorthand.utils.logging import setup_logging
 from shorthand.utils.render import get_file_content, get_rendered_markdown
@@ -44,10 +45,11 @@ def show_ui():
         else:
             all_directories.append(subdir_path)
     default_directory = SHORTHAND_CONFIG.get('default_directory')
+    tags = get_tags(SHORTHAND_CONFIG['notes_directory'])
 
     log.info('Showing the home page')
     return render_template('index.j2', all_directories=all_directories,
-                           default_directory=default_directory)
+                           default_directory=default_directory, tags=tags)
 
 
 @app.route('/js/<path:path>', methods=['GET', 'POST'])
@@ -67,14 +69,17 @@ def get_current_todos():
     directory_filter = request.args.get('directory_filter')
     query_string = request.args.get('query_string')
     sort_by = request.args.get('sort_by')
+    tag = request.args.get('tag')
 
     if directory_filter == 'ALL':
         directory_filter = None
+    if tag == 'ALL':
+        tag = None
 
     todos = get_todos(notes_directory=SHORTHAND_CONFIG['notes_directory'],
                       todo_status=status, directory_filter=directory_filter,
                       query_string=query_string, sort_by=sort_by,
-                      suppress_future=True)
+                      suppress_future=True, tag=tag)
     log.info(f'Returning {len(todos)} todo results')
     return json.dumps(todos)
 
@@ -117,6 +122,39 @@ def fetch_calendar():
     return json.dumps(get_calendar(
                 notes_directory=SHORTHAND_CONFIG['notes_directory'],
                 directory_filter=directory_filter))
+
+
+@app.route('/get_record_sets', methods=['GET'])
+def fetch_record_sets():
+
+    directory_filter = request.args.get('directory_filter')
+    if directory_filter == 'ALL':
+        directory_filter = None
+
+    return json.dumps(get_record_sets(
+                notes_directory=SHORTHAND_CONFIG['notes_directory'],
+                directory_filter=None))
+
+
+@app.route('/get_record_set', methods=['GET'])
+def fetch_record_set():
+
+    file_path = request.args.get('file_path')
+    line_number = int(request.args.get('line_number'))
+    parse = request.args.get('parse', 'true')
+    if parse.lower() == 'true':
+        parse = True
+    elif parse.lower() == 'false':
+        parse = False
+    else:
+        raise ValueError(f'Argument parse must be either "true" or "false", found "{parse}"')
+    parse_format = request.args.get('parse_format', 'json')
+
+    return get_record_set(
+                file_path=file_path,
+                line_number=line_number,
+                parse=parse,
+                parse_format=parse_format)
 
 
 @app.route('/search', methods=['GET'])

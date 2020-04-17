@@ -41,15 +41,15 @@
                 <div class="col-auto">
                   <!-- Filter Result Types -->
                   <select id="resultType" class="form-control" onchange="setDropdownViz('resultType')">
-                    <option>Everything</option>
                     <option>To-Dos</option>
+                    <option>Everything</option>
                     <option>Questions</option>
                   </select>
                 </div>
 
                 <div class="col-auto">
                   <!-- To-Do-Specific Filters -->
-                  <select id="todoType" class="form-control" style="display: none;" onchange="setDropdownViz('todoType')">
+                  <select id="todoType" class="form-control" onchange="setDropdownViz('todoType')">
                     <option>Incomplete</option>
                     <option>Complete</option>
                     <option>Skipped</option>
@@ -81,6 +81,18 @@
                     {% endfor %}
                   </select>
                 </div>
+
+                {% if tags %}
+                <div class="col-auto">
+                  <!-- Directory Filter -->
+                  <select id="tagFilter" class="form-control">
+                    <option>ALL</option>
+                    {% for tag in tags %}
+                      <option>{{ tag }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                {% endif %}
 
                 <div class="col-auto">
                   <!-- Search Button -->

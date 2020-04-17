@@ -236,6 +236,7 @@ $("#masterSearch").click(function() {
     var questionFilter = $('#questionType')[0].value;
     var directoryFilter = $('#directoryFilter')[0].value;
     var searchFilter = $('#searchFilter')[0].value
+    var tagFilter = $('#tagFilter')[0].value
 
     if (resultFilter === 'Everything') {
         // Do a full-text search
@@ -252,7 +253,8 @@ $("#masterSearch").click(function() {
                 status: todoFilter,
                 directory_filter: directoryFilter,
                 query_string: searchFilter,
-                sort_by: 'start_date'
+                sort_by: 'start_date',
+                tag: tagFilter
             },
             function(todoData){
                 renderTodoResults(todoData)

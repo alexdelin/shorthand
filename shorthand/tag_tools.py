@@ -4,10 +4,10 @@ from subprocess import Popen, PIPE
 import shlex
 import logging
 
-from shorthand.utils.patterns import TAG_PATTERN, LINE_TAG_PATTERN
+from shorthand.utils.patterns import escape_for_grep, TAG_PATTERN
 
 
-tag_regex = re.compile(LINE_TAG_PATTERN)
+tag_regex = re.compile(TAG_PATTERN)
 
 
 log = logging.getLogger(__name__)
@@ -24,9 +24,9 @@ def get_tags(notes_directory, directory_filter=None):
         search_directory += directory_filter
 
     grep_command = 'grep -r "{pattern}" {dir} | grep -v "\\.git"'.format(
-            pattern=TAG_PATTERN,
+            pattern=escape_for_grep(TAG_PATTERN),
             dir=search_directory)
-    print(grep_command)
+    log.debug(f'Running grep command {grep_command} to get tags')
 
     proc = Popen(
         grep_command,
@@ -35,20 +35,23 @@ def get_tags(notes_directory, directory_filter=None):
     output, err = proc.communicate()
     output_lines = output.decode().split('\n')
 
-    print(output_lines)
     for line in output_lines:
 
         if not line.strip():
             continue
 
         tags = tag_regex.findall(line)
+        # Matches are returned as tuples because the pattern
+        # has two groups. We only want to keep the first one
+        tags = [tag[0] for tag in tags]
         tag_items.extend(tags)
 
     # Only keep a unique set of tags with no wrapping colons
+    log.debug(tag_items)
     tag_items = [item.strip().strip(':') for item in list(set(tag_items))]
     # Only keep tags with at least one letter
     tag_items = [item for item in tag_items if any(char.isalpha() for char in item)]
-    # tag_items.sort()
+    tag_items.sort()
     return tag_items
 
 

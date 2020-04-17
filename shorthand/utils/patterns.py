@@ -45,8 +45,7 @@ ANSWER_PATTERN = r'(^\s*)(@ )(.*)'
 TODAY_GREP = r'"\\\today"'
 TODAY_LINE_PATTERN = r'(.*)(\\today)(.*)'
 
-TAG_PATTERN = r':\w*:'
-LINE_TAG_PATTERN = r'(:\w*:)(?!\w)'
+TAG_PATTERN = r'( :\w+:)( |$)'
 
 DEFINITION_PATTERN = r"^(\w*)({.*} )(.*)"
 

@@ -49,7 +49,7 @@ def stamp_notes(notes_directory, stamp_todos=True, stamp_today=True):
         output_lines = output.decode().split('\n')
         matched_filenames = [line.split(':')[0] for line in output_lines if line.strip()]
         matched_filenames = list(set(matched_filenames))
-        log.info(f'stamping elements in files {", ".join(matched_filenames)}')
+        log.info(f'Found unstamped todos in files {", ".join(matched_filenames)}')
 
         # Compile regexes for replacing lines
         unfinished_unstamped_regex = re.compile(UNFINISHED_UNSTAMPED_PATTERN)
@@ -57,6 +57,7 @@ def stamp_notes(notes_directory, stamp_todos=True, stamp_today=True):
         finished_unstamped_regex = re.compile(FINISHED_UNSTAMPED_PATTERN)
 
         for filename in matched_filenames:
+            log.debug(f'Stamping todos in file {filename}')
             with open(filename, 'r') as file_object:
 
                 stamped_content = []
@@ -65,38 +66,39 @@ def stamp_notes(notes_directory, stamp_todos=True, stamp_today=True):
 
                     if unfinished_unstamped_regex.match(line):
                         # unfinished unstamped
-                        log.debug(f'Found unstamped unfinished todo "{line}"')
+                        log.info(f'Found unstamped unfinished todo "{line}"')
                         line = unfinished_unstamped_regex.sub(
                             '\\g<1>[ ] ({timestamp}) '.format(
                                 timestamp=datetime.now().isoformat()[:10]),
                             line)
-                        log.debug(f'Writing stamped unfinished todo "{line}"')
+                        log.info(f'Writing stamped unfinished todo "{line}"')
                         stamped_content.append(line)
 
                     elif finished_start_stamped_regex.match(line):
                         # finished with start stamped
-                        log.debug(f'Found unstamped finished todo "{line}"')
+                        log.info(f'Found unstamped finished todo "{line}"')
                         line = finished_start_stamped_regex.sub(
                             '\\g<1>[\\g<3>] (\\g<6> -> {timestamp_2}) '.format(
                                 timestamp_2=datetime.now().isoformat()[:10]),
                             line)
-                        log.debug(f'Writing stamped finished todo "{line}"')
+                        log.info(f'Writing stamped finished todo "{line}"')
                         stamped_content.append(line)
 
                     elif finished_unstamped_regex.match(line):
                         # finished unstamped
-                        log.debug(f'Found unstamped finished todo "{line}"')
+                        log.info(f'Found unstamped finished todo "{line}"')
                         line = finished_unstamped_regex.sub(
                             '\\g<1>[\\g<3>] ({timestamp} -> {timestamp}) '.format(
                                 timestamp=datetime.now().isoformat()[:10]),
                             line)
-                        log.debug(f'Writing stamped finished todo "{line}"')
+                        log.info(f'Writing stamped finished todo "{line}"')
                         stamped_content.append(line)
                     else:
                         # no to-dos -or- correctly formatted already
                         stamped_content.append(line)
 
             with open(filename, 'w') as write_file_object:
+                log.debug(f'Saving changes in file {filename}')
                 write_file_object.write(''.join(stamped_content))
 
     # Replace placeholders for `\today` helper
@@ -119,6 +121,7 @@ def stamp_notes(notes_directory, stamp_todos=True, stamp_today=True):
         today_placeholder_regex = re.compile(TODAY_LINE_PATTERN)
 
         for filename in today_matched_filenames:
+            log.debug(f'Replacing today placeholder in {filename}')
             with open(filename, 'r') as file_object:
 
                 stamped_content = []
@@ -127,20 +130,20 @@ def stamp_notes(notes_directory, stamp_todos=True, stamp_today=True):
 
                     if today_placeholder_regex.match(line):
                         # Today placeholder
-                        log.debug(f'Found todo placeholder "{line}"')
+                        log.info(f'Found today placeholder "{line}"')
                         line = today_placeholder_regex.sub(
                             '\\g<1>{timestamp}\\g<3>'.format(
                                 timestamp=datetime.now().isoformat()[:10]),
                             line)
-                        log.debug(f'Replaced todo placeholder "{line}"')
+                        log.info(f'Replaced today placeholder "{line}"')
                         stamped_content.append(line)
                     else:
                         # no today placeholders
                         stamped_content.append(line)
 
             with open(filename, 'w') as write_file_object:
+                log.debug(f'Saving changes in file {filename}')
                 write_file_object.write(''.join(stamped_content))
-            log.info('Wrote stamping changes')
 
     return 'Done!'
 
@@ -195,7 +198,7 @@ def parse_todo(todo_line):
 
 def get_todos(notes_directory, todo_status='incomplete', directory_filter=None,
               query_string=None, case_sensitive=False, sort_by=None,
-              suppress_future=True):
+              suppress_future=True, tag=None):
     '''Get a specified set of todos using grep on the filesystem
     '''
 
@@ -241,6 +244,10 @@ def get_todos(notes_directory, todo_status='incomplete', directory_filter=None,
                             mode=grep_filter_mode,
                             pattern=additional_filter)
             grep_command = grep_command + new_filter
+
+    if tag:
+        new_filter = f' | grep ":{tag}:"'
+        grep_command = grep_command + new_filter
 
     log.debug(f'Running grep command {grep_command} to get todos')
     proc = Popen(
