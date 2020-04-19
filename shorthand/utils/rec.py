@@ -1,8 +1,12 @@
 import re
 import json
+import logging
 
 from shorthand.utils.record_set import RecordSet
 from shorthand.utils.rec_lib import get_hex_int
+
+
+log = logging.getLogger(__name__)
 
 
 ALLOWED_CONFIG_KEYS = [
@@ -138,7 +142,7 @@ def load_from_string(input_string):
     3. Return the resulting record set object
     '''
 
-    print(f'Got rec data: {input_string}')
+    log.debug(f'Got rec data: {input_string}')
 
     split_lines = input_string.split('\n')
     record_set_config = {
@@ -310,8 +314,7 @@ def load_from_string(input_string):
                         raise ValueError(f'Undefined type {type_name} specified '
                                          f'for field(s) {split_value[0]}')
 
-    print('--- Got config ---')
-    print(json.dumps(record_set_config))
+    log.debug(f'Got rec config: {json.dumps(record_set_config)}')
 
     record_set = RecordSet(config=record_set_config)
 
@@ -367,8 +370,6 @@ def load_from_string(input_string):
 
             continue
 
-
-
         if line[0] == '%':
             # we have reached the start of a new record set
             if current_record:
@@ -379,10 +380,7 @@ def load_from_string(input_string):
     if records:
         record_set.insert(records)
 
-    print('--- Record Set JSON ---')
-    print(record_set.get_json())
-
-    print('--- Found Fields ---')
-    print(json.dumps(record_set.get_fields()))
+    log.debug(f'Got Record Set JSON {record_set.get_json()}')
+    log.debug(f'Found record set fields {json.dumps(record_set.get_fields())}')
 
     return record_set
