@@ -15,6 +15,7 @@ from flask import Flask, request, render_template, send_from_directory
 from shorthand.todo_tools import get_todos, mark_todo, stamp_notes
 from shorthand.search_tools import search_notes, get_context, get_note
 from shorthand.question_tools import get_questions
+from shorthand.definition_tools import get_definitions
 from shorthand.tag_tools import get_tags
 from shorthand.calendar_tools import get_calendar
 from shorthand.toc_tools import get_toc
@@ -120,6 +121,18 @@ def fetch_calendar():
         directory_filter = None
 
     return json.dumps(get_calendar(
+                notes_directory=SHORTHAND_CONFIG['notes_directory'],
+                directory_filter=directory_filter))
+
+
+@app.route('/get_definitions', methods=['GET'])
+def fetch_definitions():
+
+    directory_filter = request.args.get('directory_filter')
+    if directory_filter == 'ALL':
+        directory_filter = None
+
+    return json.dumps(get_definitions(
                 notes_directory=SHORTHAND_CONFIG['notes_directory'],
                 directory_filter=directory_filter))
 
