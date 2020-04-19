@@ -47,7 +47,8 @@ TODAY_LINE_PATTERN = r'(.*)(\\today)(.*)'
 
 TAG_PATTERN = r'( :\w+:)( |$)'
 
-DEFINITION_PATTERN = r"^(\w*)({.*} )(.*)"
+DEFINITION_PATTERN = r"^(\w*)(\{.*\} )(.*)"
+DEFINITION_GREP = r"^\(\\w*\)\({.*} \)\(.*\)"
 
 HEADING_PATTERN = r'^(#+)( )(.*)'
 DATED_HEADING_PATTERN = r'^(#+)( )(.*)(' + DATE_STAMP_PATTERN + r')'

@@ -4,7 +4,7 @@ from subprocess import Popen, PIPE
 import shlex
 import logging
 
-from shorthand.utils.patterns import DEFINITION_PATTERN, escape_for_grep
+from shorthand.utils.patterns import DEFINITION_PATTERN, DEFINITION_GREP
 
 
 definition_regex = re.compile(DEFINITION_PATTERN)
@@ -24,9 +24,10 @@ def get_definitions(notes_directory, directory_filter=None):
         search_directory += directory_filter
 
     grep_command = 'grep -rn "{pattern}" {dir} | grep -v "\\.git"'.format(
-            pattern=escape_for_grep(DEFINITION_PATTERN),
+            pattern=DEFINITION_GREP,
             dir=search_directory)
 
+    log.debug(f'Running grep command {grep_command} to get definitions')
     proc = Popen(
         grep_command,
         stdout=PIPE, stderr=PIPE,
@@ -46,7 +47,7 @@ def get_definitions(notes_directory, directory_filter=None):
 
         definition_match = definition_regex.match(definition_raw)
         if not definition_match:
-            print('NO MATCH FOUND?!?!')
+            log.debug(f'No definition match found for line {line}')
         else:
             term = definition_match.group(2)
             term = term.strip().strip('{}')
