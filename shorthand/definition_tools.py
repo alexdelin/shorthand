@@ -24,7 +24,7 @@ def get_definitions(notes_directory, directory_filter=None, grep_path='grep'):
         search_directory += directory_filter
 
     grep_command = '{grep_path} -rn "{pattern}" {dir} | {grep_path} -v "\\.git"'.format(
-            grep_path=grep_path
+            grep_path=grep_path,
             pattern=DEFINITION_GREP,
             dir=search_directory)
 

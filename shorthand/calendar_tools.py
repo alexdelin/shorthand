@@ -26,7 +26,7 @@ def get_calendar(notes_directory, directory_filter=None, grep_path='grep'):
         search_directory += directory_filter
 
     grep_command = '{grep_path} -rn "{pattern}" {dir} | {grep_path} -v "\\.git"'.format(
-            grep_path=grep_path
+            grep_path=grep_path,
             pattern=escape_for_grep(DATED_HEADING_PATTERN),
             dir=search_directory)
 

@@ -70,9 +70,9 @@ def get_record_sets(notes_directory, directory_filter=None, grep_path='grep'):
             search_directory += '/'
         search_directory += directory_filter
 
-    grep_command = '{grep_path} -rn "{pattern}" {dir}'
+    grep_command = '{grep_path} -rn "{pattern}" {dir}' \
                    ' | {grep_path} -v "\\.git"'.format(
-                        grep_path=grep_path
+                        grep_path=grep_path,
                         pattern=escape_for_grep(RECORD_SET_PATTERN),
                         dir=search_directory)
 
