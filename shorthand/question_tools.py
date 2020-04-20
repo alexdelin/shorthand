@@ -55,8 +55,6 @@ def get_questions(notes_directory, question_status='all',
             search_directory += '/'
         search_directory += directory_filter
 
-    print(search_directory)
-
     proc = Popen(
         '{grep_path} -rn -A 1 "{pattern}" {dir}'.format(
             grep_path=grep_path,

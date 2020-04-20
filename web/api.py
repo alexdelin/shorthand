@@ -63,7 +63,28 @@ def show_ui():
                     grep_path=SHORTHAND_CONFIG.get('grep_path'))
 
     log.info('Showing the home page')
-    return render_template('index.j2', all_directories=all_directories,
+    return render_template('todos.j2', all_directories=all_directories,
+                           default_directory=default_directory, tags=tags)
+
+
+@app.route('/questions', methods=['GET'])
+def show_questions():
+
+    all_directories = ['ALL']
+    for subdir in os.walk(SHORTHAND_CONFIG['notes_directory']):
+        subdir_path = subdir[0][len(SHORTHAND_CONFIG['notes_directory']) + 1:]
+        if '.git' in subdir_path or not subdir_path:
+            continue
+        elif len(subdir_path.split('/')) > 2:
+            continue
+        else:
+            all_directories.append(subdir_path)
+    default_directory = SHORTHAND_CONFIG.get('default_directory')
+    tags = get_tags(SHORTHAND_CONFIG['notes_directory'],
+                    grep_path=SHORTHAND_CONFIG.get('grep_path'))
+
+    log.info('Showing the questions search page')
+    return render_template('questions.j2', all_directories=all_directories,
                            default_directory=default_directory, tags=tags)
 
 
