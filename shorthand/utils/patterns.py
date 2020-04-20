@@ -45,7 +45,8 @@ ANSWER_PATTERN = r'(^\s*)(@ )(.*)'
 TODAY_GREP = r'"\\\today"'
 TODAY_LINE_PATTERN = r'(.*)(\\today)(.*)'
 
-TAG_PATTERN = r'( :\w+:)( |$)'
+TAG_FILTER = r'( :\w+:)'
+TAG_PATTERN = r'( :\w+:)($|(?= ))'
 
 DEFINITION_PATTERN = r"^(\w*)(\{.*\} )(.*)"
 DEFINITION_GREP = r"^\(\\w*\)\({.*} \)\(.*\)"
@@ -55,7 +56,7 @@ DATED_HEADING_PATTERN = r'^(#+)( )(.*)(' + DATE_STAMP_PATTERN + r')'
 
 RECORD_SET_PATTERN = r'^```rec-data$'
 
-CHARS_TO_ESCAPE = ['(', ')', '{', '}', '+', '|', '?', '`']
+CHARS_TO_ESCAPE = ['(', ')', '{', '}', '+', '|', '?', '`', '=']
 
 def escape_for_grep(input_pattern):
     '''Patterns designed for the python `re` library need to be
