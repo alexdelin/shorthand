@@ -39,7 +39,8 @@ def is_answer_line(line_content):
     return False, None
 
 
-def get_questions(notes_directory, question_status='all', directory_filter=None):
+def get_questions(notes_directory, question_status='all',
+                  directory_filter=None, grep_path='grep'):
 
     question_status = question_status.lower()
 
@@ -57,7 +58,8 @@ def get_questions(notes_directory, question_status='all', directory_filter=None)
     print(search_directory)
 
     proc = Popen(
-        'grep -rn -A 1 "{pattern}" {dir}'.format(
+        '{grep_path} -rn -A 1 "{pattern}" {dir}'.format(
+            grep_path=grep_path,
             pattern=escape_for_grep(ALL_QUESTIONS_GREP),
             dir=search_directory),
         stdout=PIPE, stderr=PIPE,

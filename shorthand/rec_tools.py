@@ -58,7 +58,7 @@ def get_record_set(file_path, line_number, parse=True, parse_format='json'):
         return record_set_raw
 
 
-def get_record_sets(notes_directory, directory_filter=None):
+def get_record_sets(notes_directory, directory_filter=None, grep_path='grep'):
     '''List all record sets within a specified directory
     '''
 
@@ -70,9 +70,11 @@ def get_record_sets(notes_directory, directory_filter=None):
             search_directory += '/'
         search_directory += directory_filter
 
-    grep_command = 'grep -rn "{pattern}" {dir} | grep -v "\\.git"'.format(
-            pattern=escape_for_grep(RECORD_SET_PATTERN),
-            dir=search_directory)
+    grep_command = '{grep_path} -rn "{pattern}" {dir}'
+                   ' | {grep_path} -v "\\.git"'.format(
+                        grep_path=grep_path
+                        pattern=escape_for_grep(RECORD_SET_PATTERN),
+                        dir=search_directory)
 
     proc = Popen(
         grep_command,

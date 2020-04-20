@@ -25,15 +25,16 @@ SUPPORTED_SORT_FIELDS = ['start_date']
 log = logging.getLogger(__name__)
 
 
-def stamp_notes(notes_directory, stamp_todos=True, stamp_today=True):
+def stamp_notes(notes_directory, stamp_todos=True, stamp_today=True, grep_path='grep'):
 
     log.info('Stamping notes')
     # Stamp start and end dates for todo elements
     if stamp_todos:
-        grep_command = 'grep -r "{pattern}" {directory} | '\
-                       'grep -v "\\.git" | '\
-                       'grep -v "{filter_1}" | '\
-                       'grep -v "{filter_2}"'.format(
+        grep_command = '{grep_path} -r "{pattern}" {directory} | '\
+                       '{grep_path} -v "\\.git" | '\
+                       '{grep_path} -v "{filter_1}" | '\
+                       '{grep_path} -v "{filter_2}"'.format(
+                            grep_path=grep_path,
                             pattern=escape_for_grep(CATCH_ALL_PATTERN),
                             directory=notes_directory,
                             filter_1=escape_for_grep(VALID_INCOMPLETE_PATTERN),
@@ -103,8 +104,9 @@ def stamp_notes(notes_directory, stamp_todos=True, stamp_today=True):
 
     # Replace placeholders for `\today` helper
     if stamp_today:
-        today_grep_command = 'grep -r {pattern} {directory} | '\
-                       'grep -v "\\.git"'.format(
+        today_grep_command = '{grep_path} -r {pattern} {directory} | '\
+                       '{grep_path} -v "\\.git"'.format(
+                            grep_path=grep_path,
                             pattern=TODAY_GREP,
                             directory=notes_directory)
 
@@ -198,7 +200,7 @@ def parse_todo(todo_line):
 
 def get_todos(notes_directory, todo_status='incomplete', directory_filter=None,
               query_string=None, case_sensitive=False, sort_by=None,
-              suppress_future=True, tag=None):
+              suppress_future=True, tag=None, grep_path='grep'):
     '''Get a specified set of todos using grep on the filesystem
     '''
 
@@ -220,7 +222,8 @@ def get_todos(notes_directory, todo_status='incomplete', directory_filter=None,
             search_directory += '/'
         search_directory += directory_filter
 
-    grep_command = 'grep -rn "{pattern}" {dir} | grep -v "\\.git"'.format(
+    grep_command = '{grep_path} -rn "{pattern}" {dir} | {grep_path} -v "\\.git"'.format(
+            grep_path=grep_path,
             pattern=escape_for_grep(PATTERN_MAPPING[todo_status]),
             dir=search_directory)
 
@@ -240,13 +243,14 @@ def get_todos(notes_directory, todo_status='incomplete', directory_filter=None,
             grep_filter_mode = ''
 
         for additional_filter in query_components:
-            new_filter = ' | grep{mode} "{pattern}"'.format(
+            new_filter = ' | {grep_path}{mode} "{pattern}"'.format(
+                            grep_path=grep_path,
                             mode=grep_filter_mode,
                             pattern=additional_filter)
             grep_command = grep_command + new_filter
 
     if tag:
-        new_filter = f' | grep ":{tag}:"'
+        new_filter = f' | {grep_path} ":{tag}:"'
         grep_command = grep_command + new_filter
 
     log.debug(f'Running grep command {grep_command} to get todos')

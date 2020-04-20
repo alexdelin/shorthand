@@ -2,6 +2,7 @@
     "notes_directory": "/home/user/notes/",
     "ngram_db_directory": "/home/user/ngram_db",
     "default_directory": "",
+    "grep_path": "/usr/local/bin/grep",
     "log_file_path": "/var/log/shorthand/shorthand.log",
     "log_level": "INFO"
 }

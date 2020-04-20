@@ -13,7 +13,7 @@ tag_regex = re.compile(TAG_PATTERN)
 log = logging.getLogger(__name__)
 
 
-def get_tags(notes_directory, directory_filter=None):
+def get_tags(notes_directory, directory_filter=None, grep_path='grep'):
 
     tag_items = []
 
@@ -23,7 +23,8 @@ def get_tags(notes_directory, directory_filter=None):
             search_directory += '/'
         search_directory += directory_filter
 
-    grep_command = 'grep -r "{pattern}" {dir} | grep -v "\\.git"'.format(
+    grep_command = '{grep_path} -r "{pattern}" {dir} | {grep_path} -v "\\.git"'.format(
+            grep_path=grep_path,
             pattern=escape_for_grep(TAG_PATTERN),
             dir=search_directory)
     log.debug(f'Running grep command {grep_command} to get tags')
@@ -63,6 +64,7 @@ def extract_tags(text):
         return tags, text
     else:
         raw_tags = tag_regex.findall(text)
+        raw_tags = [tag[0] for tag in raw_tags]
         # Only keep a unique set of tags with no wrapping colons
         tags = [item.strip().strip(':') for item in list(set(raw_tags))]
         # Only keep tags with at least one letter

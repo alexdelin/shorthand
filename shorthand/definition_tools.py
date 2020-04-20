@@ -13,7 +13,7 @@ definition_regex = re.compile(DEFINITION_PATTERN)
 log = logging.getLogger(__name__)
 
 
-def get_definitions(notes_directory, directory_filter=None):
+def get_definitions(notes_directory, directory_filter=None, grep_path='grep'):
 
     definitions = []
 
@@ -23,7 +23,8 @@ def get_definitions(notes_directory, directory_filter=None):
             search_directory += '/'
         search_directory += directory_filter
 
-    grep_command = 'grep -rn "{pattern}" {dir} | grep -v "\\.git"'.format(
+    grep_command = '{grep_path} -rn "{pattern}" {dir} | {grep_path} -v "\\.git"'.format(
+            grep_path=grep_path
             pattern=DEFINITION_GREP,
             dir=search_directory)
 
