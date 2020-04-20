@@ -6,9 +6,9 @@ function getTagsElements(tags) {
     return tagElement
 }
 
-function getTodoElement(text, filePath, displayPath, startDate, endDate, line, tags) {
-    return '<tr><td class="todoText">' + text + getTagsElements(tags) +
-           '</td><td class="filePath" path="' + filePath + '">' +
+function getTodoElement(text, filePath, displayPath, startDate, endDate, line, tags, idx) {
+    return '<tr><td class="todoText"><div id="todo-' + idx + '">' + text + getTagsElements(tags) +
+           '</div></td><td class="filePath" path="' + filePath + '">' +
            '<a href="/render?path=' + filePath + '">' + displayPath + '</a>' +
            '</td><td>' + startDate +
            '</td><td>' + endDate +
@@ -109,6 +109,7 @@ function renderTodoResults(todoData) {
     // Render new results
     var loadedData = JSON.parse(todoData)
     var todoListElement = ''
+    var todoIdx = 1
     _.each(loadedData['items'], function(todoResult) {
         var text = todoResult['todo_text']
         var filePath = todoResult['file_path']
@@ -117,12 +118,24 @@ function renderTodoResults(todoData) {
         var endDate = todoResult['end_date']
         var line = todoResult['line_number']
         var tags = todoResult['tags']
-        var newRowElement = getTodoElement(text, filePath, displayPath, startDate, endDate, line, tags)
+        var newRowElement = getTodoElement(text, filePath, displayPath, startDate, endDate, line, tags, todoIdx)
         todoListElement = todoListElement + newRowElement
+        todoIdx = todoIdx + 1
     })
     $('#todoList').append(todoListElement)
+    // Update count of todos returned
     setCount(loadedData['count'])
+    // Wire up actions for button on each todo
     setResultActions('todo')
+    // Render markdown in todos returned
+    _.each($('.todoText'), function (elem) {
+        console.log(elem);
+        var todoMd = $(elem).find('div')[0].innerHTML
+        var targetElem = $(elem).find('div')[0]
+        const tm = texmath.use(katex);
+        md = markdownit({html:true}).use(tm,{delimiters:'dollars',macros:{"\\RR": "\\mathbb{R}"}});
+        targetElem.innerHTML = md.render(todoMd);
+    });
 }
 
 $("#stampNotes").click(function() {
