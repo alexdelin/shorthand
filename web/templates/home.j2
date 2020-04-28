@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="/css/notes.css">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <script src="/js/highcharts.js"></script></script>
+    <script type="text/javascript" src="/js/underscore-min.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!-- Calendar Stuff -->
+    <link href='/css/calendar.css' rel='stylesheet' />
+    <link href='/css/daygrid.css' rel='stylesheet' />
+
+    <script src='/js/calendar.js'></script>
+    <script src='/js/daygrid.js'></script>
+
+    <title>Notes</title>
+</head>
+<body>
+
+<div class="row fullwrapper">
+
+    <div class="col-md-1 gutter"></div>
+
+    <div class="col-md-10 pagewrapper" style="min-height: 1000px;">
+
+        <div class="row title-bar">
+            <div class="col-md-3">
+                <h1 id="notes-title">Notes</h1>
+            </div>
+            <div class="col-md-9" style="text-align: right;">
+                <a href="/"><img class="svg-icon" src="/img/home-24.svg"></a>
+                <a href="/todos"><img class="svg-icon" src="/img/tasklist-24.svg"></a>
+                <a href="/questions"><img class="svg-icon" src="/img/question-24.svg"></a>
+                <a href="/glossary"><img class="svg-icon" src="/img/book-24.svg"></a>
+                <a href="/databases"><img class="svg-icon" src="/img/database-24.svg"></a>
+                <a href="/calendar"><img class="svg-icon" src="/img/calendar-24.svg"></a>
+                <a href="/chart"><img class="svg-icon" src="/img/graph-24.svg"></a>
+                <a href="/browse"><img class="svg-icon" src="/img/quote-24.svg"></a>
+                <a href="/search"><img class="svg-icon" src="/img/search-24.svg"></a>
+                <a href="#"><img class="svg-icon" src="/img/sync-24.svg"></a>
+                <a href="#"><img class="svg-icon" src="/img/settings-24.svg"></a>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12" style="margin-left: 10px;">
+                <div class="row">
+                    <div class="col-md-6 homepage-info">
+                        <a href="/todos"><h2>{{ num_todos }} Incomplete Todos</h2></a>
+                    </div>
+                    <div class="col-md-6 homepage-info">
+                        <a href="/questions"><h2>{{ num_questions }} Open Questions</h2></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="homepage-info">
+                    <h2>This week</h2>
+                </div>
+                <div id="calendar"></div>
+            </div>
+        </div>
+
+    </div>
+    <div class="col-md-1 gutter"></div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var calendarEl = document.getElementById('calendar');
+
+      var calendar = new FullCalendar.Calendar(calendarEl, {
+        plugins: [ 'dayGrid' ],
+        defaultView: 'dayGridWeek',
+        height: 300,
+        events: {{events}}
+      });
+
+      calendar.render();
+    });
+
+  </script>
+</body>
+</html>

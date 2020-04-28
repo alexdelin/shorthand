@@ -17,8 +17,24 @@
     color: white;
 }
 
-.actionButtons {
-    min-width: 230px;
+.svg-icon {
+    height: 4rem;
+    line-height: 4rem;
+    vertical-align: middle;
+    fill: white;
+    stroke: white;
+    margin-left: 20px;
+}
+
+.homepage-info {
+    text-align: center;
+    margin-top: 60px;
+}
+
+.actionButtons img {
+    vertical-align: middle;
+    height: 2.5rem;
+    line-height: 2.5rem;
 }
 
 .material-icons.action-button {

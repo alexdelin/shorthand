@@ -46,8 +46,51 @@ def server_error(e):
     return json.dumps(error_object), 500
 
 
+@app.route('/js/<path:path>', methods=['GET', 'POST'])
+def send_js(path):
+    return send_from_directory('js', path)
+
+
+@app.route('/css/<path:path>', methods=['GET', 'POST'])
+def send_css(path):
+    return send_from_directory('css', path)
+
+
+@app.route('/img/<path:path>', methods=['GET', 'POST'])
+def send_img(path):
+    return send_from_directory('img', path)
+
+
 @app.route('/', methods=['GET'])
-def show_ui():
+def show_home_page():
+    default_directory = SHORTHAND_CONFIG.get('default_directory')
+    todos = get_todos(notes_directory=SHORTHAND_CONFIG['notes_directory'],
+                      todo_status='incomplete',
+                      directory_filter=default_directory,
+                      grep_path=SHORTHAND_CONFIG.get('grep_path'))
+    questions = get_questions(
+                    notes_directory=SHORTHAND_CONFIG['notes_directory'],
+                    question_status='unanswered',
+                    directory_filter=default_directory,
+                    grep_path=SHORTHAND_CONFIG.get('grep_path'))
+    summary = get_calendar(SHORTHAND_CONFIG['notes_directory'])
+    events = []
+    for year, year_data in summary.items():
+        for month, month_data in year_data.items():
+            for day, day_data in month_data.items():
+                for event in day_data:
+                    events.append({
+                            'title': event['event'],
+                            'start': f'{year}-{month}-{day}',
+                            'url': f'/render?path={event["file_path"]}#{event["element_id"]}'
+                        })
+    return render_template('home.j2', num_todos=todos['count'],
+                           num_questions=questions['count'],
+                           events=json.dumps(events))
+
+
+@app.route('/todos', methods=['GET'])
+def show_todos_page():
 
     all_directories = ['ALL']
     for subdir in os.walk(SHORTHAND_CONFIG['notes_directory']):
@@ -86,16 +129,6 @@ def show_questions():
     log.info('Showing the questions search page')
     return render_template('questions.j2', all_directories=all_directories,
                            default_directory=default_directory, tags=tags)
-
-
-@app.route('/js/<path:path>', methods=['GET', 'POST'])
-def send_js(path):
-    return send_from_directory('js', path)
-
-
-@app.route('/css/<path:path>', methods=['GET', 'POST'])
-def send_css(path):
-    return send_from_directory('css', path)
 
 
 @app.route('/get_todos', methods=['GET'])

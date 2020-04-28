@@ -7,10 +7,10 @@ function getTodoElement(text, filePath, displayPath, startDate, endDate, line, t
            '</td><td>' + endDate +
            '</td><td class="lineNumber">' + line +
            '</td><td class="actionButtons">' +
-                '<span class="getContext"><i class="material-icons action-button">search</i></span> ' +
-                '<span class="markComlete"><i class="material-icons action-button">check_box</i></span> ' +
-                '<span class="markSkipped"><i class="material-icons action-button">skip_next</i></span> ' +
-                '<span class="editContent"><i class="material-icons action-button">edit</i></span>' +
+                '<span class="getContext"><img src="/img/eye-24.svg"></span> ' +
+                '<span class="markComlete"><img src="/img/check-circle-24.svg"></span> ' +
+                '<span class="markSkipped"><img src="/img/skip-24.svg"></span> ' +
+                '<span class="editContent"><img src="/img/pencil-24.svg"></span>' +
            '</td></tr>'
 }
 
