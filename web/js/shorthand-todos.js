@@ -67,7 +67,6 @@ function renderTodoResults(todoData) {
     setTodoResultActions()
     // Render markdown in todos returned
     _.each($('.todoText'), function (elem) {
-        console.log(elem);
         var todoMd = $(elem).find('div')[0].innerHTML
         var targetElem = $(elem).find('div')[0]
         const tm = texmath.use(katex);
@@ -110,10 +109,10 @@ function setTodoResultActions() {
 
     // Wire up mark complete button
     $(".markComlete").click(function(ev) {
-        console.log('Marking Complete')
-        rowElement = ev.currentTarget.parentElement.parentElement
-        todoFile = $(rowElement).find('.filePath')[0].getAttribute('path')
-        todoLine = $(rowElement).find('.lineNumber')[0].innerText
+        console.log('Marking Complete');
+        rowElement = ev.currentTarget.parentElement.parentElement;
+        todoFile = $(rowElement).find('.filePath')[0].getAttribute('path');
+        todoLine = $(rowElement).find('.lineNumber')[0].innerText;
         $.get(
             'mark_todo',
             {
@@ -122,7 +121,7 @@ function setTodoResultActions() {
                 status: 'complete'
             },
             function(contextResponse) {
-                rowElement.style.display = 'none'
+                $("#todoSearch").click();
         });
     });
 
@@ -140,7 +139,7 @@ function setTodoResultActions() {
                 status: 'skipped'
             },
             function(contextResponse) {
-                rowElement.style.display = 'none'
+                $("#todoSearch").click();
         });
     });
 
