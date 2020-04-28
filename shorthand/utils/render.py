@@ -6,9 +6,10 @@ import codecs
 from shorthand.todo_tools import parse_todo
 from shorthand.tag_tools import extract_tags
 from shorthand.utils.rec import load_from_string
-from shorthand.utils.patterns import DEFINITION_PATTERN
+from shorthand.utils.patterns import DEFINITION_PATTERN, INTERNAL_LINK_PATTERN
 
 definition_regex = re.compile(DEFINITION_PATTERN)
+internal_link_regex = re.compile(INTERNAL_LINK_PATTERN)
 
 
 log = logging.getLogger(__name__)
@@ -79,6 +80,11 @@ def get_rendered_markdown(markdown_content):
         if is_fenced_code_block:
             html_content_lines.append(markdown_line)
             continue
+
+        # Process internal links
+        markdown_line = internal_link_regex.sub(
+            '\\g<1>/render?path=\\g<2>\\g<3>',
+            markdown_line)
 
         # Process All to-dos
         if len(markdown_line) >= 4:

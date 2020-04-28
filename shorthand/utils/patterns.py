@@ -56,6 +56,9 @@ DATED_HEADING_PATTERN = r'^(#+)( )(.*)(' + DATE_STAMP_PATTERN + r')'
 
 RECORD_SET_PATTERN = r'^```rec-data$'
 
+LINK_PATTERN = r'\[.*?\]\(.*?\)'
+INTERNAL_LINK_PATTERN = r'(\[[^\[]*?\]\()(\/.*?)(\))'
+
 CHARS_TO_ESCAPE = ['(', ')', '{', '}', '+', '|', '?', '`', '=']
 
 def escape_for_grep(input_pattern):
