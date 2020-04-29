@@ -20,3 +20,9 @@ $("#stampNotes").click(function() {
             alert('Stamped Notes!')
     });
 });
+
+// Utility function to render an error in a modal
+function renderError(errorText='None') {
+    $('#errorDescription').text(errorText)
+    $('#errorModal').modal()
+}

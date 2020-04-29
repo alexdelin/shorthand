@@ -10,6 +10,7 @@ import json
 import logging
 from datetime import datetime
 
+from werkzeug.exceptions import HTTPException
 from flask import Flask, request, render_template, send_from_directory, abort
 
 from shorthand.todo_tools import get_todos, mark_todo, stamp_notes
@@ -33,17 +34,16 @@ setup_logging(SHORTHAND_CONFIG)
 log = logging.getLogger(__name__)
 
 
-@app.errorhandler(404)
-def resource_not_found(e):
-    return json.dumps({'error': 'Page not found'}), 404
+@app.errorhandler(Exception)
+def handle_exception(e):
+    '''This method is a catch-all for all errors thrown by the server
+    '''
 
+    # pass through HTTP errors
+    if isinstance(e, HTTPException):
+        return e
 
-@app.errorhandler(500)
-def server_error(e):
-    error_object = {
-        'error': str(e)
-    }
-    return json.dumps(error_object), 500
+    return json.dumps({'error': str(e)}), 500
 
 
 @app.route('/js/<path:path>', methods=['GET', 'POST'])

@@ -15,7 +15,7 @@ function getTodoElement(text, filePath, displayPath, startDate, endDate, line, t
 }
 
 // Click handler for the todo search button
-$("#todoSearch").click(function() {
+$("#todoSearch").click( function() {
     console.log('Todo Search clicked!')
 
     // Dropdown filter elements
@@ -26,16 +26,23 @@ $("#todoSearch").click(function() {
 
     // Search To-Dos
     console.log('searching To-Dos');
-    $.get('get_todos',
-        {
+    $.ajax({
+        url: '/get_todos',
+        type: 'GET',
+        data: {
             status: todoFilter,
             directory_filter: directoryFilter,
             query_string: searchFilter,
             sort_by: 'start_date',
             tag: tagFilter
         },
-        function(todoData){
+        success: function(todoData) {
             renderTodoResults(todoData)
+        },
+        error: function(responseData) {
+            var loadedResponse = JSON.parse(responseData.responseText)
+            renderError(loadedResponse.error)
+        }
     });
 });
 
