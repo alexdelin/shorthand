@@ -49,7 +49,7 @@ $("#todoSearch").click( function() {
 // Render todo results from the raw API response (as a string)
 function renderTodoResults(todoData) {
     // Clear old todos
-    $('#todoList')[0].innerHTML = ''
+    $('#todoList').html('')
 
     // Render new results
     var loadedData = JSON.parse(todoData)

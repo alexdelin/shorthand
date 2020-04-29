@@ -9,7 +9,7 @@ function getTagsElements(tags) {
 
 // Utility to set the result count
 function setCount(count) {
-    $('#resultCount')[0].innerHTML = count
+    $('#resultCount').text(count)
 }
 
 // Handler for Stamping Notes
