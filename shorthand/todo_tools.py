@@ -5,6 +5,7 @@ from subprocess import Popen, PIPE
 import shlex
 
 from shorthand.tag_tools import extract_tags
+from shorthand.utils.paths import get_relative_path, get_display_path
 from shorthand.utils.patterns import INCOMPLETE_PREFIX_GREP, \
     COMPLETE_PREFIX_GREP, SKIPPED_PREFIX_GREP, CATCH_ALL_PATTERN, \
     VALID_INCOMPLETE_PATTERN, VALID_COMPLETE_PATTERN, \
@@ -261,6 +262,9 @@ def get_todos(notes_directory, todo_status='incomplete', directory_filter=None,
     output, err = proc.communicate()
     output_lines = output.decode().split('\n')
 
+    start_stamp_regex = re.compile(START_STAMP_ONLY_PATTERN)
+    start_end_stamp_regex = re.compile(START_END_STAMP_ONLY_PATTERN)
+
     for line in output_lines:
 
         if not line.strip():
@@ -275,13 +279,9 @@ def get_todos(notes_directory, todo_status='incomplete', directory_filter=None,
         match_content = match_content.split(']', 1)[1].strip()
 
         # Return all paths as relative paths within the notes dir
-        if notes_directory in file_path:
-            file_path = file_path[len(notes_directory):]
+        file_path = get_relative_path(notes_directory, file_path)
 
         # Pull out and structure out date info if included
-        start_stamp_regex = re.compile(START_STAMP_ONLY_PATTERN)
-        start_end_stamp_regex = re.compile(START_END_STAMP_ONLY_PATTERN)
-
         start_stamp_match = start_stamp_regex.match(match_content)
         start_end_stamp_match = start_end_stamp_regex.match(match_content)
         if start_stamp_match:
@@ -301,12 +301,7 @@ def get_todos(notes_directory, todo_status='incomplete', directory_filter=None,
         if tags:
             todo_text = clean_text
 
-        display_path = file_path
-        display_path = display_path.strip('/')
-        if directory_filter:
-            display_path = display_path[len(directory_filter.strip('/')):]
-        display_path = display_path.strip('/')
-        display_path = ' → '.join(display_path.split('/'))
+        display_path = get_display_path(notes_directory, file_path, directory_filter)
 
         processed_todo = {
             'file_path': file_path,

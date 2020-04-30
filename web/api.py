@@ -25,6 +25,7 @@ from shorthand.utils.config import get_notes_config
 from shorthand.utils.logging import setup_logging
 from shorthand.utils.render import get_file_content, get_rendered_markdown
 from shorthand.utils.typeahead import get_typeahead_suggestions
+from shorthand.utils.paths import get_relative_path, get_display_path
 
 
 app = Flask(__name__)
@@ -131,6 +132,21 @@ def show_questions():
                            default_directory=default_directory, tags=tags)
 
 
+@app.route('/databases', methods=['GET'])
+def show_databases():
+    record_sets = get_record_sets(
+                    notes_directory=SHORTHAND_CONFIG['notes_directory'],
+                    grep_path=SHORTHAND_CONFIG.get('grep_path'))
+    record_sets = [{
+            'display_path': get_display_path(SHORTHAND_CONFIG['notes_directory'],
+                get_relative_path(SHORTHAND_CONFIG['notes_directory'],
+                record_set['file_path'])),
+            'file_path': record_set['file_path'],
+            'line_number': record_set['line_number']
+        } for record_set in record_sets]
+    return render_template('record_sets.j2', record_sets=record_sets)
+
+
 @app.route('/get_todos', methods=['GET'])
 def get_current_todos():
 
@@ -233,14 +249,22 @@ def fetch_record_set():
     elif parse.lower() == 'false':
         parse = False
     else:
-        abort(500, f'Argument parse must be either "true" or "false", found "{parse}"')
+        raise ValueError(f'Argument parse must be either "true" or "false", found "{parse}"')
+    include_config = request.args.get('include_config', 'false')
+    if include_config.lower() == 'true':
+        include_config = True
+    elif include_config.lower() == 'false':
+        include_config = False
+    else:
+        raise ValueError(f'Argument include_config must be either "true" or "false", found "{include_config}"')
     parse_format = request.args.get('parse_format', 'json')
 
     return get_record_set(
                 file_path=file_path,
                 line_number=line_number,
                 parse=parse,
-                parse_format=parse_format)
+                parse_format=parse_format,
+                include_config=include_config)
 
 
 @app.route('/search', methods=['GET'])

@@ -12,7 +12,8 @@ from shorthand.utils.rec import load_from_string
 log = logging.getLogger(__name__)
 
 
-def get_record_set(file_path, line_number, parse=True, parse_format='json'):
+def get_record_set(file_path, line_number, parse=True, parse_format='json',
+                   include_config=False):
     '''Get the full contents of a record set
     If `parse` is set to False then the record set
         contents are returned as a string
@@ -49,6 +50,13 @@ def get_record_set(file_path, line_number, parse=True, parse_format='json'):
     if parse:
         record_set = load_from_string(record_set_raw)
         if parse_format == 'json':
+            if include_config:
+                output = {
+                    'records': list(record_set.all()),
+                    'config': record_set.get_config(),
+                    'fields': record_set.get_fields()
+                }
+                return output
             output = record_set.get_json()
             return output
         elif parse_format == 'csv':
