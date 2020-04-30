@@ -301,7 +301,7 @@ def get_todos(notes_directory, todo_status='incomplete', directory_filter=None,
         if tags:
             todo_text = clean_text
 
-        display_path = get_display_path(notes_directory, file_path, directory_filter)
+        display_path = get_display_path(file_path, directory_filter)
 
         processed_todo = {
             'file_path': file_path,

@@ -15,9 +15,16 @@ function setCount(count) {
 // Handler for Stamping Notes
 $("#stampNotes").click(function() {
     console.log( "Handler for stamp notes called." );
-    $.get('stamp', {},
-        function(responseData){
+    $.ajax({
+        url: 'stamp',
+        data: {},
+        success: function(responseData){
             alert('Stamped Notes!')
+        },
+        error: function(responseData) {
+            var loadedResponse = JSON.parse(responseData.responseText)
+            renderError(loadedResponse.error)
+        }
     });
 });
 

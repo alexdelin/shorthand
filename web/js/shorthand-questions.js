@@ -1,8 +1,9 @@
 // Build an HTML element for a question result from its properties
-function getQuestionElement(text, file, line, answer) {
+function getQuestionElement(text, file, display, line, answer) {
     return '<tr><td class="questionText">' + text +
-           '</td><td class="filePath">' + file +
-           '</td><td class="lineNumber">' + line +
+           '</td><td><span class="filePath" style="display: none;">' +
+           file + '</span>' + '<a href="/render?path=' + file + '">' +
+           display + '</a>' + '</td><td class="lineNumber">' + line +
            '</td><td>' + answer +
            '</td><td class="actionButtons">' +
                '<span class="getContext">🔎</span> ' +
@@ -21,13 +22,20 @@ $("#questionSearch").click(function() {
 
     // Search Questions
     console.log('searching Questions');
-    $.get('get_questions',
-        {
+    $.ajax({
+        url: 'get_questions',
+        type: 'GET',
+        data: {
             status: questionFilter,
             directory_filter: directoryFilter
         },
-        function(questionData){
+        success: function(questionData){
             renderQuestionResults(questionData)
+        },
+        error: function(responseData) {
+            var loadedResponse = JSON.parse(responseData.responseText)
+            renderError(loadedResponse.error)
+        }
     });
 });
 
@@ -42,9 +50,10 @@ function renderQuestionResults(questionData) {
     _.each(loadedData['items'], function(questionResult) {
         var text = questionResult['question'];
         var file = questionResult['file_path'];
+        var display = questionResult['display_path'];
         var line = questionResult['line_number'];
         var answer = questionResult['answer'];
-        var newRowElement = getQuestionElement(text, file, line, answer)
+        var newRowElement = getQuestionElement(text, file, display, line, answer)
         questionResultElement = questionResultElement + newRowElement;
     });
     $('#questionList').append(questionResultElement);
@@ -62,24 +71,27 @@ function setQuestionResultActions() {
         filePath = $(rowElement).find('.filePath')[0].innerText
         lineNumber = $(rowElement).find('.lineNumber')[0].innerText
         var contextElement = '<pre><code class="markdown">'
-        $.get('get_context', {filename: filePath, line_number: lineNumber}, function(contextResponse) {
-            var loadedContext = JSON.parse(contextResponse)
-            console.log(loadedContext)
-            _.each(loadedContext['before'], function (beforeLine) {
-                contextElement += beforeLine + '\n'
-            });
-            contextElement += loadedContext['line'] + '\n'
-            _.each(loadedContext['after'], function (afterLine) {
-                contextElement += afterLine + '\n'
-            });
-            contextElement += '</code></pre>'
-            console.log(contextElement)
-            if (resultType == 'todo') {
-                $(rowElement).find('.todoText')[0].innerHTML = contextElement
-            } else if (resultType == 'search') {
-                $(rowElement).find('.searchResult')[0].innerHTML = contextElement
-            } else if (resultType == 'question') {
+        $.ajax({
+            url: '/get_context',
+            data: {
+                filename: filePath,
+                line_number: lineNumber
+            },
+            success: function(contextResponse) {
+                var loadedContext = JSON.parse(contextResponse)
+                _.each(loadedContext['before'], function (beforeLine) {
+                    contextElement += beforeLine + '\n'
+                });
+                contextElement += loadedContext['line'] + '\n'
+                _.each(loadedContext['after'], function (afterLine) {
+                    contextElement += afterLine + '\n'
+                });
+                contextElement += '</code></pre>'
                 $(rowElement).find('.questionText')[0].innerHTML = contextElement
+            },
+            error: function(responseData) {
+                var loadedResponse = JSON.parse(responseData.responseText)
+                renderError(loadedResponse.error)
             }
         });
     });

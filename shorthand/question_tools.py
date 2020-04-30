@@ -4,6 +4,7 @@ from subprocess import Popen, PIPE
 
 from shorthand.utils.patterns import ALL_QUESTIONS_GREP, ANSWER_PATTERN, \
                                        escape_for_grep
+from shorthand.utils.paths import get_relative_path, get_display_path
 
 
 ANSWER_REGEX = re.compile(ANSWER_PATTERN)
@@ -80,11 +81,12 @@ def get_questions(notes_directory, question_status='all',
             question_text = split_line[2].strip()[2:]
 
             # Return all paths as relative paths within the notes dir
-            if notes_directory in file_path:
-                file_path = file_path[len(notes_directory):]
+            file_path = get_relative_path(notes_directory, file_path)
+            display_path = get_display_path(file_path, directory_filter)
 
             parsed_question = {
                 'file_path': file_path,
+                'display_path': display_path,
                 'line_number': line_number,
                 'question': question_text,
                 'answer': None

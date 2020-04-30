@@ -7,6 +7,7 @@ import json
 
 from shorthand.utils.patterns import RECORD_SET_PATTERN, escape_for_grep
 from shorthand.utils.rec import load_from_string
+from shorthand.utils.paths import get_relative_path, get_display_path
 
 
 log = logging.getLogger(__name__)
@@ -100,9 +101,13 @@ def get_record_sets(notes_directory, directory_filter=None, grep_path='grep'):
         file_path = split_line[0]
         line_number = split_line[1]
 
+        file_path = get_relative_path(notes_directory, file_path)
+        display_path = get_display_path(file_path, directory_filter)
+
         parsed_record_set = {
             "file_path": file_path,
-            "line_number": line_number
+            "line_number": line_number,
+            "display_path": display_path
         }
 
         record_sets.append(parsed_record_set)

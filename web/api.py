@@ -137,13 +137,6 @@ def show_databases():
     record_sets = get_record_sets(
                     notes_directory=SHORTHAND_CONFIG['notes_directory'],
                     grep_path=SHORTHAND_CONFIG.get('grep_path'))
-    record_sets = [{
-            'display_path': get_display_path(SHORTHAND_CONFIG['notes_directory'],
-                get_relative_path(SHORTHAND_CONFIG['notes_directory'],
-                record_set['file_path'])),
-            'file_path': record_set['file_path'],
-            'line_number': record_set['line_number']
-        } for record_set in record_sets]
     return render_template('record_sets.j2', record_sets=record_sets)
 
 
