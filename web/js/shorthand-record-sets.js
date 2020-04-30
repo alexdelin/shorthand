@@ -37,3 +37,43 @@ $('.showRec').click( function (ev) {
         }
     });
 })
+
+
+$('.getCsv').click( function (ev) {
+    var parentElement = $(ev.currentTarget.parentElement)
+    var lineNumber = parentElement.find('.lineNumber').text()
+    var filePath = parentElement.find('.filePath').text()
+    $.ajax({
+        type: 'GET',
+        url: '/get_record_set',
+        data: {
+            file_path: filePath,
+            line_number: lineNumber,
+            parse: 'true',
+            parse_format: 'csv'
+        },
+        success: function(responseData) {
+            downloadFile('record_set.csv', responseData)
+        },
+        error: function(responseData) {
+            var loadedResponse = JSON.parse(responseData.responseText)
+            renderError(loadedResponse.error)
+        }
+    });
+})
+
+
+// Utility function to download a text file. Taken from:
+// https://stackoverflow.com/a/18197341
+function downloadFile(filename, text) {
+  var element = document.createElement('a');
+  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+  element.setAttribute('download', filename);
+
+  element.style.display = 'none';
+  document.body.appendChild(element);
+
+  element.click();
+
+  document.body.removeChild(element);
+}
