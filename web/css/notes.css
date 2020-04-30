@@ -62,6 +62,10 @@ pre {
     padding-bottom: 15px;
 }
 
+.elements-bar {
+    text-align: right;
+}
+
 .search-input {
     padding: 5px;
     margin-bottom: 20px;

@@ -318,9 +318,18 @@ def show_calendar():
 
     summary = get_calendar(SHORTHAND_CONFIG['notes_directory'])
     events = []
+    timeline_data = []
     for year, year_data in summary.items():
         for month, month_data in year_data.items():
             for day, day_data in month_data.items():
+
+                timeline_data.append([
+                    int(datetime.strptime(
+                        f'{year}-{month}-{day}T12:00:00',
+                        '%Y-%m-%dT%H:%M:%S').strftime("%s")) * 1000,
+                    len(day_data)
+                    ])
+
                 for event in day_data:
                     events.append({
                             'title': event['event'],
@@ -328,26 +337,10 @@ def show_calendar():
                             'url': f'/render?path={event["file_path"]}#{event["element_id"]}'
                         })
 
-    return render_template('calendar.j2', events=json.dumps(events))
-
-
-@app.route('/chart', methods=['GET'])
-def show_chart():
-
-    summary = get_calendar(SHORTHAND_CONFIG['notes_directory'])
-    timeline_data = []
-    for year, year_data in summary.items():
-        for month, month_data in year_data.items():
-            for day, day_data in month_data.items():
-                timeline_data.append([
-                    int(datetime.strptime(
-                        f'{year}-{month}-{day}T12:00:00',
-                        '%Y-%m-%dT%H:%M:%S').strftime("%s")) * 1000,
-                    len(day_data)
-                    ])
     timeline_data = sorted(timeline_data, key=lambda x: x[0])
 
-    return render_template('chart.j2', summary=json.dumps(timeline_data))
+    return render_template('calendar.j2', events=json.dumps(events),
+                           summary=json.dumps(timeline_data))
 
 
 @app.route('/toc', methods=['GET'])

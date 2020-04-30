@@ -14,6 +14,10 @@
     <script src='/js/calendar.js'></script>
     <script src='/js/daygrid.js'></script>
 
+    <script src="/js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="/js/bootstrap.js" defer></script>
+    <script type="text/javascript" src="/js/shorthand-common.js" defer></script>
+
     <title>Notes</title>
 </head>
 <body>
@@ -30,16 +34,21 @@
             </div>
             <div class="col-md-9" style="text-align: right;">
                 <a href="/"><img class="svg-icon" src="/img/home-24.svg"></a>
-                <a href="/todos"><img class="svg-icon" src="/img/tasklist-24.svg"></a>
-                <a href="/questions"><img class="svg-icon" src="/img/question-24.svg"></a>
-                <a href="/glossary"><img class="svg-icon" src="/img/book-24.svg"></a>
-                <a href="/databases"><img class="svg-icon" src="/img/database-24.svg"></a>
+                <a id="elementsCollapser" href="#"><img class="svg-icon" src="/img/code-square-24.svg"></a>
                 <a href="/calendar"><img class="svg-icon" src="/img/calendar-24.svg"></a>
-                <a href="/chart"><img class="svg-icon" src="/img/graph-24.svg"></a>
                 <a href="/browse"><img class="svg-icon" src="/img/quote-24.svg"></a>
                 <a href="/search"><img class="svg-icon" src="/img/search-24.svg"></a>
                 <a href="#"><img class="svg-icon" src="/img/sync-24.svg"></a>
                 <a href="#"><img class="svg-icon" src="/img/settings-24.svg"></a>
+            </div>
+        </div>
+
+        <div class="row title-bar elements-bar collapse" id="elementsBar">
+            <div class="col-md-12">
+                <a href="/todos"><img class="svg-icon" src="/img/tasklist-24.svg"></a>
+                <a href="/questions"><img class="svg-icon" src="/img/question-24.svg"></a>
+                <a href="/glossary"><img class="svg-icon" src="/img/book-24.svg"></a>
+                <a href="/databases"><img class="svg-icon" src="/img/database-24.svg"></a>
             </div>
         </div>
 

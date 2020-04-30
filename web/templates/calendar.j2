@@ -31,7 +31,6 @@
                 <a href="/glossary"><img class="svg-icon" src="/img/book-24.svg"></a>
                 <a href="/databases"><img class="svg-icon" src="/img/database-24.svg"></a>
                 <a href="/calendar"><img class="svg-icon" src="/img/calendar-24.svg"></a>
-                <a href="/chart"><img class="svg-icon" src="/img/graph-24.svg"></a>
                 <a href="/browse"><img class="svg-icon" src="/img/quote-24.svg"></a>
                 <a href="/search"><img class="svg-icon" src="/img/search-24.svg"></a>
                 <a href="#"><img class="svg-icon" src="/img/sync-24.svg"></a>
@@ -43,6 +42,7 @@
           <div class="col-md-12 calendar-content">
 
             <div id="calendar"></div>
+            <div id="productivityChart" style="margin-top: 30px;"></div>
 
           </div>
         </div>
@@ -79,10 +79,24 @@
         plugins: [ 'dayGrid' ],
         events: {{events}}
       });
-
       calendar.render();
     });
-
   </script>
+
+  <script type="text/javascript">
+    Highcharts.chart('productivityChart', {
+        chart: {zoomType: 'x'},
+        title: {text: 'Daily Productivity'},
+        subtitle: {text: 'Meetings / sections created per day'},
+        tooltip: {valueDecimals: 2},
+        xAxis: {type: 'datetime'},
+        series: [{
+            data: {{summary}},
+            lineWidth: 0.5,
+            name: 'Sections per day'
+        }]
+    });
+  </script>
+
 </body>
 </html>
