@@ -1,5 +1,5 @@
 $('.showRec').click( function (ev) {
-    var parentElement = $(ev.currentTarget.parentElement)
+    var parentElement = $(ev.currentTarget.parentElement.parentElement.parentElement)
     var lineNumber = parentElement.find('.lineNumber').text()
     var filePath = parentElement.find('.filePath').text()
     var tableElement = parentElement.find('.record-set-table')
@@ -16,7 +16,6 @@ $('.showRec').click( function (ev) {
         },
         tableElement: tableElement,
         success: function(responseData) {
-
             // var loadedData = JSON.parse(responseData)
             console.log(responseData)
             var records = responseData.records
@@ -29,7 +28,6 @@ $('.showRec').click( function (ev) {
                 data: records,
                 columns: colConfig
             });
-
         },
         error: function(responseData) {
             var loadedResponse = JSON.parse(responseData.responseText)
@@ -40,7 +38,7 @@ $('.showRec').click( function (ev) {
 
 
 $('.getCsv').click( function (ev) {
-    var parentElement = $(ev.currentTarget.parentElement)
+    var parentElement = $(ev.currentTarget.parentElement.parentElement)
     var lineNumber = parentElement.find('.lineNumber').text()
     var filePath = parentElement.find('.filePath').text()
     $.ajax({
@@ -56,6 +54,7 @@ $('.getCsv').click( function (ev) {
             downloadFile('record_set.csv', responseData)
         },
         error: function(responseData) {
+            debugger;
             var loadedResponse = JSON.parse(responseData.responseText)
             renderError(loadedResponse.error)
         }
