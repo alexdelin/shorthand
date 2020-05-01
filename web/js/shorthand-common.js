@@ -2,7 +2,7 @@
 function getTagsElements(tags) {
     var tagElement = ' '
     for (var i = tags.length - 1; i >= 0; i--) {
-        tagElement = tagElement + '<span class="badge badge-secondary">' + tags[i] + '</span>';
+        tagElement = tagElement + '<span class="badge badge-secondary tag-badge">' + tags[i] + '</span>';
     }
     return tagElement
 }
