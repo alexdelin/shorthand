@@ -54,7 +54,6 @@ $('.getCsv').click( function (ev) {
             downloadFile('record_set.csv', responseData)
         },
         error: function(responseData) {
-            debugger;
             var loadedResponse = JSON.parse(responseData.responseText)
             renderError(loadedResponse.error)
         }

@@ -1,46 +1,47 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset='utf-8'>
-    <link rel="stylesheet" type="text/css" href="/css/notes.css">
+    <!-- Common Resources for all pages -->
+    <link rel="stylesheet" type="text/css" href="/css/shorthand-common.css">
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+    <script type="text/javascript" src="/js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="/js/shorthand-common.js" defer></script>
+    <script type="text/javascript" src="/js/bootstrap.js" defer></script>
+
+    <!-- Markdown & LaTeX Rendering -->
     <link rel="stylesheet" href="/css/katex.min.css">
     <link rel="stylesheet" href="/css/texmath.css">
-    <link rel="stylesheet" href="/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/css/highlight.min.css">
-    <link rel="stylesheet" href="/css/dataTables.bootstrap4.min.css">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <script src="/js/highlight.min.js"></script>
-    <script src="/js/underscore-min.js"></script>
     <script src="/js/markdown-it.js"></script>
     <script src="/js/katex.min.js"></script>
     <script src="/js/texmath.js"></script>
-    <script src="/js/jquery-3.3.1.min.js"></script>
+
+    <!-- Code Highlighting -->
+    <link rel="stylesheet" href="/css/highlight.min.css">
+    <script src="/js/highlight.min.js"></script>
+
+    <!-- Data Table Rendering -->
+    <link rel="stylesheet" href="/css/dataTables.bootstrap4.min.css">
     <script src="/js/jquery.dataTables.min.js"></script>
     <script src="/js/dataTables.bootstrap4.min.js"></script>
+
+    <!-- Helpers for this page -->
+    <script src="/js/underscore-min.js"></script>
+
+    <!-- Mermaid Diagram Rendering -->
     <script src="https://cdn.jsdelivr.net/npm/mermaid@8.4.0/dist/mermaid.min.js"></script>
+
+    <!-- Materialize Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <meta charset='utf-8'>
+    <title>Notes</title>
 </head>
 <body>
 
   <div class="row fullwrapper justify-content-center">
     <div class="render-pagewrapper">
 
-        <div class="row title-bar">
-            <div class="col-md-3">
-                <h1 id="notes-title">Notes</h1>
-            </div>
-            <div class="col-md-9" style="text-align: right;">
-                <a href="/"><img class="svg-icon" src="/img/home-24.svg"></a>
-                <a href="/todos"><img class="svg-icon" src="/img/tasklist-24.svg"></a>
-                <a href="/questions"><img class="svg-icon" src="/img/question-24.svg"></a>
-                <a href="/glossary"><img class="svg-icon" src="/img/book-24.svg"></a>
-                <a href="/databases"><img class="svg-icon" src="/img/database-24.svg"></a>
-                <a href="/calendar"><img class="svg-icon" src="/img/calendar-24.svg"></a>
-                <a href="/browse"><img class="svg-icon" src="/img/quote-24.svg"></a>
-                <a href="/search"><img class="svg-icon" src="/img/search-24.svg"></a>
-                <a href="#"><img class="svg-icon" src="/img/sync-24.svg"></a>
-                <a href="#"><img class="svg-icon" src="/img/settings-24.svg"></a>
-            </div>
-        </div>
+        {{ header }}
 
         <div class="row">
           <div class="col-md-10">
@@ -64,23 +65,7 @@
     </div>
   </div>
 
-  <div id="errorWrapper">
-    <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLongTitle">Server Error</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div id="errorDescription" class="modal-body">
-            placeholder
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  {{ error_modal }}
 
   <script>
     // Render main markdown content

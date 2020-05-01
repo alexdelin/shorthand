@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Common Resources for all pages -->
+    <link rel="stylesheet" type="text/css" href="/css/shorthand-common.css">
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+    <script type="text/javascript" src="/js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="/js/shorthand-common.js" defer></script>
+    <script type="text/javascript" src="/js/bootstrap.js" defer></script>
+
+    <!-- Helpers for this page -->
+    <script type="text/javascript" src="/js/underscore-min.js"></script>
+
+    <meta charset='utf-8'>
+    <title>Notes</title>
+</head>
+<body>
+
+<div class="row fullwrapper">
+
+    <div class="col-md-1 gutter"></div>
+
+    <div class="col-md-10 pagewrapper" style="min-height: 1000px;">
+
+        {{ header }}
+
+        <div class="row">
+            <div class="col-md-10" style="padding: 30px;">
+                <div class="input-group">
+                    <input type="text" class="form-control form-control-lg" placeholder="Search" aria-label="Search" aria-describedby="button-addon2">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-primary" type="button" id="button-addon2">Search</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2" style="padding: 30px;">
+                <a class="btn-lg btn-secondary" type="button" href="/browse" style="margin-bottom: 30px;">Browse</a>
+            </div>
+        </div>
+
+    </div>
+    <div class="col-md-1 gutter"></div>
+</div>
+
+{{ error_modal }}
+
+</body>
+</html>

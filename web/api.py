@@ -27,6 +27,8 @@ from shorthand.utils.render import get_file_content, get_rendered_markdown
 from shorthand.utils.typeahead import get_typeahead_suggestions
 from shorthand.utils.paths import get_relative_path, get_display_path
 
+import static_elements
+
 
 app = Flask(__name__)
 
@@ -87,7 +89,9 @@ def show_home_page():
                         })
     return render_template('home.j2', num_todos=todos['count'],
                            num_questions=questions['count'],
-                           events=json.dumps(events))
+                           events=json.dumps(events),
+                           header=static_elements.HEADER_HTML,
+                           error_modal=static_elements.ERROR_MODAL)
 
 
 @app.route('/todos', methods=['GET'])
@@ -108,7 +112,9 @@ def show_todos_page():
 
     log.info('Showing the home page')
     return render_template('todos.j2', all_directories=all_directories,
-                           default_directory=default_directory, tags=tags)
+                           default_directory=default_directory, tags=tags,
+                           header=static_elements.HEADER_HTML,
+                           error_modal=static_elements.ERROR_MODAL)
 
 
 @app.route('/questions', methods=['GET'])
@@ -129,7 +135,9 @@ def show_questions():
 
     log.info('Showing the questions search page')
     return render_template('questions.j2', all_directories=all_directories,
-                           default_directory=default_directory, tags=tags)
+                           default_directory=default_directory, tags=tags,
+                           header=static_elements.HEADER_HTML,
+                           error_modal=static_elements.ERROR_MODAL)
 
 
 @app.route('/databases', methods=['GET'])
@@ -137,7 +145,9 @@ def show_databases():
     record_sets = get_record_sets(
                     notes_directory=SHORTHAND_CONFIG['notes_directory'],
                     grep_path=SHORTHAND_CONFIG.get('grep_path'))
-    return render_template('record_sets.j2', record_sets=record_sets)
+    return render_template('record_sets.j2', record_sets=record_sets,
+                           header=static_elements.HEADER_HTML,
+                           error_modal=static_elements.ERROR_MODAL)
 
 
 @app.route('/get_todos', methods=['GET'])
@@ -261,6 +271,13 @@ def fetch_record_set():
 
 
 @app.route('/search', methods=['GET'])
+def show_search_page():
+    return render_template('search.j2',
+                           header=static_elements.HEADER_HTML,
+                           error_modal=static_elements.ERROR_MODAL)
+
+
+@app.route('/search_notes', methods=['GET'])
 def get_search_results():
 
     query_string = request.args.get('query_string')
@@ -310,7 +327,10 @@ def send_rendered_note():
     toc_content = toc_content.replace("\\", "\\\\")
     toc_content = toc_content.replace('\n', '\\n')
     toc_content = toc_content.replace("'", "\\'")
-    return render_template('viewer.j2', file_content=file_content, toc_content=toc_content)
+    return render_template('viewer.j2', file_content=file_content,
+                           toc_content=toc_content,
+                           header=static_elements.HEADER_HTML,
+                           error_modal=static_elements.ERROR_MODAL)
 
 
 @app.route('/calendar', methods=['GET'])
@@ -340,7 +360,9 @@ def show_calendar():
     timeline_data = sorted(timeline_data, key=lambda x: x[0])
 
     return render_template('calendar.j2', events=json.dumps(events),
-                           summary=json.dumps(timeline_data))
+                           summary=json.dumps(timeline_data),
+                           header=static_elements.HEADER_HTML,
+                           error_modal=static_elements.ERROR_MODAL)
 
 
 @app.route('/toc', methods=['GET'])
@@ -351,7 +373,9 @@ def get_toc_data():
 @app.route('/browse', methods=['GET'])
 def show_browse_page():
     toc = get_toc(SHORTHAND_CONFIG['notes_directory'])
-    return render_template('browse.j2', toc=json.dumps(toc))
+    return render_template('browse.j2', toc=json.dumps(toc),
+                           header=static_elements.HEADER_HTML,
+                           error_modal=static_elements.ERROR_MODAL)
 
 
 @app.route('/mark_todo', methods=['GET'])
