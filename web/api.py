@@ -37,16 +37,16 @@ setup_logging(SHORTHAND_CONFIG)
 log = logging.getLogger(__name__)
 
 
-@app.errorhandler(Exception)
-def handle_exception(e):
-    '''This method is a catch-all for all errors thrown by the server
-    '''
+# @app.errorhandler(Exception)
+# def handle_exception(e):
+#     '''This method is a catch-all for all errors thrown by the server
+#     '''
 
-    # pass through HTTP errors
-    if isinstance(e, HTTPException):
-        return e
+#     # pass through HTTP errors
+#     if isinstance(e, HTTPException):
+#         return e
 
-    return json.dumps({'error': str(e)}), 500
+#     return json.dumps({'error': str(e)}), 500
 
 
 @app.route('/js/<path:path>', methods=['GET', 'POST'])
@@ -211,6 +211,28 @@ def fetch_calendar():
                 grep_path=SHORTHAND_CONFIG.get('grep_path'))
 
 
+@app.route('/glossary', methods=['GET'])
+def show_glossary():
+    all_directories = ['ALL']
+    for subdir in os.walk(SHORTHAND_CONFIG['notes_directory']):
+        subdir_path = subdir[0][len(SHORTHAND_CONFIG['notes_directory']) + 1:]
+        if '.git' in subdir_path or not subdir_path:
+            continue
+        elif len(subdir_path.split('/')) > 2:
+            continue
+        else:
+            all_directories.append(subdir_path)
+    default_directory = SHORTHAND_CONFIG.get('default_directory')
+    tags = get_tags(SHORTHAND_CONFIG['notes_directory'],
+                    grep_path=SHORTHAND_CONFIG.get('grep_path'))
+
+    log.info('Showing the Definitions search page')
+    return render_template('glossary.j2',
+                           all_directories=all_directories,
+                           default_directory=default_directory, tags=tags,
+                           static_content=static_content)
+
+
 @app.route('/get_definitions', methods=['GET'])
 def fetch_definitions():
 
@@ -220,8 +242,8 @@ def fetch_definitions():
 
     return json.dumps(get_definitions(
                 notes_directory=SHORTHAND_CONFIG['notes_directory'],
-                directory_filter=directory_filter),
-                grep_path=SHORTHAND_CONFIG.get('grep_path'))
+                directory_filter=directory_filter,
+                grep_path=SHORTHAND_CONFIG.get('grep_path')))
 
 
 @app.route('/get_record_sets', methods=['GET'])
