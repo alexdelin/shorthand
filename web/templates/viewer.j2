@@ -1,12 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <!-- Common Resources for all pages -->
-    <link rel="stylesheet" type="text/css" href="/css/shorthand-common.css">
-    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
-    <script type="text/javascript" src="/js/jquery-3.3.1.min.js"></script>
-    <script type="text/javascript" src="/js/shorthand-common.js" defer></script>
-    <script type="text/javascript" src="/js/bootstrap.js" defer></script>
+
+    {{ static_content['common_imports'] }}
 
     <!-- Markdown & LaTeX Rendering -->
     <link rel="stylesheet" href="/css/katex.min.css">
@@ -42,7 +38,7 @@
 <div class="row fullwrapper justify-content-center">
     <div class="render-pagewrapper">
 
-        {{ header }}
+        {{ static_content['header_html'] }}
 
         <div class="row">
             <div class="col-md-10">
@@ -66,7 +62,7 @@
     </div>
 </div>
 
-{{ error_modal }}
+{{ static_content['error_modal'] }}
 
 <script>
 // Render main markdown content

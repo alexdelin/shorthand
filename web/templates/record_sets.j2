@@ -1,12 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <!-- Common Resources for all pages -->
-    <link rel="stylesheet" type="text/css" href="/css/shorthand-common.css">
-    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
-    <script type="text/javascript" src="/js/jquery-3.3.1.min.js"></script>
-    <script type="text/javascript" src="/js/shorthand-common.js" defer></script>
-    <script type="text/javascript" src="/js/bootstrap.js" defer></script>
+
+    {{ static_content['common_imports'] }}
 
     <!-- Helpers for this page -->
     <script type="text/javascript" src="/js/underscore-min.js"></script>
@@ -27,7 +23,7 @@
 
     <div class="col-md-10 pagewrapper" style="min-height: 1000px;">
 
-        {{ header }}
+        {{ static_content['header_html'] }}
 
         <div class="row">
             <div class="col-md-12">
@@ -75,7 +71,7 @@
     <div class="col-md-1 gutter"></div>
 </div>
 
-{{ error_modal }}
+{{ static_content['error_modal'] }}
 
 </body>
 </html>

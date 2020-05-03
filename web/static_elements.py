@@ -49,3 +49,16 @@ ERROR_MODAL = '''<div id="errorWrapper">
     </div>
   </div>
 </div>'''
+
+COMMON_IMPORTS = '''<!-- Common Resources for all pages -->
+    <link rel="stylesheet" type="text/css" href="/css/shorthand-common.css">
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+    <script type="text/javascript" src="/js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="/js/shorthand-common.js" defer></script>
+    <script type="text/javascript" src="/js/bootstrap.js" defer></script>'''
+
+static_content = {
+    'error_modal': ERROR_MODAL,
+    'header_html': HEADER_HTML,
+    'common_imports': COMMON_IMPORTS
+}
