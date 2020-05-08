@@ -76,12 +76,12 @@ def show_home_page():
     todos = get_todos(notes_directory=SHORTHAND_CONFIG['notes_directory'],
                       todo_status='incomplete',
                       directory_filter=default_directory,
-                      grep_path=SHORTHAND_CONFIG.get('grep_path'))
+                      grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
     questions = get_questions(
                     notes_directory=SHORTHAND_CONFIG['notes_directory'],
                     question_status='unanswered',
                     directory_filter=default_directory,
-                    grep_path=SHORTHAND_CONFIG.get('grep_path'))
+                    grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
     summary = get_calendar(SHORTHAND_CONFIG['notes_directory'])
     events = []
     for year, year_data in summary.items():
@@ -113,7 +113,7 @@ def show_todos_page():
             all_directories.append(subdir_path)
     default_directory = SHORTHAND_CONFIG.get('default_directory')
     tags = get_tags(SHORTHAND_CONFIG['notes_directory'],
-                    grep_path=SHORTHAND_CONFIG.get('grep_path'))
+                    grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
 
     log.info('Showing the home page')
     return render_template('todos.j2', all_directories=all_directories,
@@ -135,7 +135,7 @@ def show_questions():
             all_directories.append(subdir_path)
     default_directory = SHORTHAND_CONFIG.get('default_directory')
     tags = get_tags(SHORTHAND_CONFIG['notes_directory'],
-                    grep_path=SHORTHAND_CONFIG.get('grep_path'))
+                    grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
 
     log.info('Showing the questions search page')
     return render_template('questions.j2', all_directories=all_directories,
@@ -147,7 +147,7 @@ def show_questions():
 def show_databases():
     record_sets = get_record_sets(
                     notes_directory=SHORTHAND_CONFIG['notes_directory'],
-                    grep_path=SHORTHAND_CONFIG.get('grep_path'))
+                    grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
     return render_template('record_sets.j2', record_sets=record_sets,
                            static_content=static_content)
 
@@ -169,7 +169,7 @@ def get_current_todos():
     todos = get_todos(notes_directory=SHORTHAND_CONFIG['notes_directory'],
                       todo_status=status, directory_filter=directory_filter,
                       query_string=query_string, sort_by=sort_by,
-                      suppress_future=True, tag=tag, grep_path=SHORTHAND_CONFIG.get('grep_path'))
+                      suppress_future=True, tag=tag, grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
     log.info(f'Returning {len(todos)} todo results')
     return json.dumps(todos)
 
@@ -186,7 +186,7 @@ def fetch_questions():
     questions = get_questions(
                     notes_directory=SHORTHAND_CONFIG['notes_directory'],
                     question_status=status, directory_filter=directory_filter,
-                    grep_path=SHORTHAND_CONFIG.get('grep_path'))
+                    grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
     log.info(f'Returning {len(questions)} question results')
     return json.dumps(questions)
 
@@ -201,7 +201,7 @@ def fetch_tags():
     return json.dumps(get_tags(
                 notes_directory=SHORTHAND_CONFIG['notes_directory'],
                 directory_filter=directory_filter,
-                grep_path=SHORTHAND_CONFIG.get('grep_path')))
+                grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep')))
 
 
 @app.route('/get_calendar', methods=['GET'])
@@ -214,7 +214,7 @@ def fetch_calendar():
     return json.dumps(get_calendar(
                 notes_directory=SHORTHAND_CONFIG['notes_directory'],
                 directory_filter=directory_filter),
-                grep_path=SHORTHAND_CONFIG.get('grep_path'))
+                grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
 
 
 @app.route('/glossary', methods=['GET'])
@@ -230,7 +230,7 @@ def show_glossary():
             all_directories.append(subdir_path)
     default_directory = SHORTHAND_CONFIG.get('default_directory')
     tags = get_tags(SHORTHAND_CONFIG['notes_directory'],
-                    grep_path=SHORTHAND_CONFIG.get('grep_path'))
+                    grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
 
     log.info('Showing the Definitions search page')
     return render_template('glossary.j2',
@@ -249,7 +249,7 @@ def fetch_definitions():
     return json.dumps(get_definitions(
                 notes_directory=SHORTHAND_CONFIG['notes_directory'],
                 directory_filter=directory_filter,
-                grep_path=SHORTHAND_CONFIG.get('grep_path')))
+                grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep')))
 
 
 @app.route('/get_record_sets', methods=['GET'])
@@ -262,7 +262,7 @@ def fetch_record_sets():
     return json.dumps(get_record_sets(
                 notes_directory=SHORTHAND_CONFIG['notes_directory'],
                 directory_filter=None),
-                grep_path=SHORTHAND_CONFIG.get('grep_path'))
+                grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
 
 
 @app.route('/get_record_set', methods=['GET'])
@@ -310,7 +310,7 @@ def get_search_results():
                 notes_directory=SHORTHAND_CONFIG['notes_directory'],
                 query_string=query_string,
                 case_sensitive=case_sensitive,
-                grep_path=SHORTHAND_CONFIG.get('grep_path')))
+                grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep')))
 
 
 @app.route('/get_context', methods=['GET'])
@@ -428,7 +428,7 @@ def stamp():
     return stamp_notes(
                 notes_directory=SHORTHAND_CONFIG['notes_directory'],
                 stamp_todos=True, stamp_today=True,
-                grep_path=SHORTHAND_CONFIG.get('grep_path'))
+                grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
 
 
 if __name__ == "__main__":
