@@ -28,21 +28,21 @@ HEADER_HTML = '''<div class="row top-gutter">
         <!-- Options Bar -->
         <div class="row options-bar collapse" id="optionsBar">
             <div class="col-md-10"></div>
-            <div class="col-md-1 icon-wrapper"><a href="#"><img class="svg-icon" src="/img/sync-24.svg"></a></div>
+            <div class="col-md-1 icon-wrapper"><a id="syncIcon" href="#"><img class="svg-icon" src="/img/sync-24.svg"></a></div>
             <div class="col-md-1 icon-wrapper"><a href="#"><img class="svg-icon" src="/img/settings-24.svg"></a></div>
         </div>'''
 
-ERROR_MODAL = '''<div id="errorWrapper">
-  <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+MODAL_BLOCK = '''<div id="modalWrapper">
+  <div class="modal fade" id="shorthandModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLongTitle">Server Error</h5>
+          <h5 class="modal-title" id="modalTitle">Server Error</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
-        <div id="errorDescription" class="modal-body">
+        <div id="modalDescription" class="modal-body">
           placeholder
         </div>
       </div>
@@ -58,7 +58,7 @@ COMMON_IMPORTS = '''<!-- Common Resources for all pages -->
     <script type="text/javascript" src="/js/bootstrap.js" defer></script>'''
 
 static_content = {
-    'error_modal': ERROR_MODAL,
+    'modal_block': MODAL_BLOCK,
     'header_html': HEADER_HTML,
     'common_imports': COMMON_IMPORTS
 }

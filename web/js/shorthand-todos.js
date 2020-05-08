@@ -41,7 +41,7 @@ $("#todoSearch").click( function() {
         },
         error: function(responseData) {
             var loadedResponse = JSON.parse(responseData.responseText)
-            renderError(loadedResponse.error)
+            showModal(loadedResponse.error)
         }
     });
 });

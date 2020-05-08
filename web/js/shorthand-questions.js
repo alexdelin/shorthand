@@ -34,7 +34,7 @@ $("#questionSearch").click(function() {
         },
         error: function(responseData) {
             var loadedResponse = JSON.parse(responseData.responseText)
-            renderError(loadedResponse.error)
+            showModal(loadedResponse.error)
         }
     });
 });
@@ -91,7 +91,7 @@ function setQuestionResultActions() {
             },
             error: function(responseData) {
                 var loadedResponse = JSON.parse(responseData.responseText)
-                renderError(loadedResponse.error)
+                showModal(loadedResponse.error)
             }
         });
     });

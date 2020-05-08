@@ -26,6 +26,7 @@ from shorthand.utils.logging import setup_logging
 from shorthand.utils.render import get_file_content, get_rendered_markdown
 from shorthand.utils.typeahead import get_typeahead_suggestions
 from shorthand.utils.paths import get_relative_path, get_display_path
+from shorthand.utils.git import pull_repo
 
 from static_elements import static_content
 
@@ -62,6 +63,11 @@ def send_css(path):
 @app.route('/img/<path:path>', methods=['GET', 'POST'])
 def send_img(path):
     return send_from_directory('img', path)
+
+
+@app.route('/pull', methods=['GET', 'POST'])
+def pull_notes_repo():
+    return pull_repo(SHORTHAND_CONFIG['notes_directory'])
 
 
 @app.route('/', methods=['GET'])

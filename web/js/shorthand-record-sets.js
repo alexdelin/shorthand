@@ -31,7 +31,7 @@ $('.showRec').click( function (ev) {
         },
         error: function(responseData) {
             var loadedResponse = JSON.parse(responseData.responseText)
-            renderError(loadedResponse.error)
+            showModal(loadedResponse.error)
         }
     });
 })
@@ -55,7 +55,7 @@ $('.getCsv').click( function (ev) {
         },
         error: function(responseData) {
             var loadedResponse = JSON.parse(responseData.responseText)
-            renderError(loadedResponse.error)
+            showModal(loadedResponse.error)
         }
     });
 })

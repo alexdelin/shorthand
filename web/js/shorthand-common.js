@@ -16,22 +16,39 @@ function setCount(count) {
 $("#stampNotes").click(function() {
     console.log( "Handler for stamp notes called." );
     $.ajax({
-        url: 'stamp',
+        url: '/stamp',
         data: {},
         success: function(responseData){
-            alert('Stamped Notes!')
+            showModal(message='Stamped Notes!', title='Updated Notes')
         },
         error: function(responseData) {
             var loadedResponse = JSON.parse(responseData.responseText)
-            renderError(loadedResponse.error)
+            showModal(loadedResponse.error)
         }
     });
 });
 
+$('#syncIcon').click(function() {
+    $.ajax({
+        url: '/pull',
+        type: 'GET',
+        data: {},
+        success: function(responseData) {
+            var htmlMessage = '<div class="alert alert-success" role="alert">' + responseData + '</div>'
+            showModal(message=htmlMessage, title='Updated Notes')
+        },
+        error: function(responseData) {
+            var loadedResponse = JSON.parse(responseData.responseText)
+            showModal(loadedResponse.error)
+        }
+    })
+})
+
 // Utility function to render an error in a modal
-function renderError(errorText='None') {
-    $('#errorDescription').text(errorText)
-    $('#errorModal').modal()
+function showModal(message='None', title='Server Error') {
+    $('#modalDescription').html(message)
+    $('#shorthandModal').modal()
+    $('#modalTitle').text(title)
 }
 
 // Collapse elements bar in the navigation
