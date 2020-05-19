@@ -194,15 +194,15 @@ contexts:
         - include: list-paragraph
     - match: '(\$\$(?!\$))([^\$]+)(\$\$)[ \n,.?!]'
       captures:
-        1: markup.latex.start.markdown
-        2: markup.latex.markdown
-        3: markup.latex.end.markdown
+        1: comment # the `$` Character before an inline latex expression
+        2: string # an inline latex expression
+        3: comment # the `$` Character after an inline latex expression
     - match: '^([ ]{0,3})(\[ \]|\[\])(?=\s)'
       captures:
         1: markup.list.unnumbered.markdown
-        2: markup.list.todo.incomplete.start.markdown
+        2: constant.language.markdown # The `[]` or `[ ]` at the beginning of an incomplete todo
       push:
-        - meta_content_scope: markup.list.todo.incomplete.content.markdown
+        - meta_content_scope: entity.name.markdown # The incomplete todo content
         - match: ^(?=\S)
           pop: true
         - match: \n
@@ -370,7 +370,7 @@ contexts:
       scope: meta.other.valid-ampersand.markdown
   timestamp:
     - match: \b(-?(?:[1-9][0-9]*)?[0-9]{4})-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9])\b
-      scope: markup.timestamp.markdown
+      scope: variable.function.markdown
   block-quote:
     - match: '[ ]{,3}(>)[ ]?'
       comment: |
@@ -798,7 +798,7 @@ contexts:
     - match: '(:+)(?![\s\d])(?!:)'
       scope: shorthand.metadata-tag.begin
       push:
-        - meta_scope: shorthand.metadata-tag
+        - meta_scope: constant.language # The actual metadata tag
         - match: ':+'
           scope: shorthand.metadata-tag.end
           pop: true
@@ -1012,10 +1012,10 @@ contexts:
         - match: '([ ]*)(\[ \]|\[\])(?=\s)'
           captures:
             1: markup.list.unnumbered.markdown
-            2: markup.list.todo.incomplete.start.markdown
+            2: constant.language.markdown # The `[]` or `[ ]` at the beginning of an incomplete todo
           push:
             - clear_scopes: 1
-            - meta_content_scope: markup.list.todo.incomplete.content.markdown
+            - meta_content_scope: entity.name.markdown # The incomplete todo content
             - include: list-content
         - match: '([ ]*)(\[X\])(?=\s)'
           captures:
@@ -1504,15 +1504,15 @@ contexts:
   latex-span-single:
     - match: '[^\$](\$(?!\$))([^\$]+)(\$)[ \n,.?!]'
       captures:
-        1: markup.latex.start.markdown
-        2: markup.latex.markdown
-        3: markup.latex.end.markdown
+        1: comment # the `$` Character before an inline latex expression
+        2: string # an inline latex expression
+        3: comment # the `$` Character after an inline latex expression
   latex-span-double:
     - match: '[^\$](\$\$(?!\$))([^\$]+)(\$\$)[ \n,.?!]'
       captures:
-        1: markup.latex.start.markdown
-        2: source.latex.markdown
-        3: markup.latex.end.markdown
+        1: comment # the `$$` Characters before a latex block
+        2: string # an inline latex expression
+        3: comment # the `$$` Characters after a latex block
   raw:
     - match: ^(?={{fenced_code_block_start}})
       push:

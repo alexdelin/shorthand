@@ -36,21 +36,21 @@
             "background": "color(var(white) alpha(0.094))",
             "foreground": "var(purple)"
         },
-        {
-            "name": "LaTeX Start",
-            "scope": "markup.latex.start.markdown",
-            "foreground": "var(grey3)"
-        },
-        {
-            "name": "LaTeX End",
-            "scope": "markup.latex.end.markdown",
-            "foreground": "var(grey3)"
-        },
-        {
-            "name": "LaTeX Content",
-            "scope": "markup.latex.markdown",
-            "foreground": "var(green3)"
-        },
+        // {
+        //     "name": "LaTeX Start",
+        //     "scope": "markup.latex.start.markdown",
+        //     "foreground": "var(grey3)"
+        // },
+        // {
+        //     "name": "LaTeX End",
+        //     "scope": "markup.latex.end.markdown",
+        //     "foreground": "var(grey3)"
+        // },
+        // {
+        //     "name": "LaTeX Content",
+        //     "scope": "markup.latex.markdown",
+        //     "foreground": "var(green3)"
+        // },
         {
             "name": "Definition Term",
             "scope": "shorthand.definition.term",
@@ -61,11 +61,11 @@
             "scope": "shorthand.definition.definition",
             "foreground": "var(orange)"
         },
-        {
-            "name": "Metadata Tag",
-            "scope": "shorthand.metadata-tag",
-            "foreground": "var(red)"
-        },
+        // {
+        //     "name": "Metadata Tag",
+        //     "scope": "shorthand.metadata-tag",
+        //     "foreground": "var(red)"
+        // },
         {
             "name": "Quote Content",
             "scope": "markup.quote",
@@ -116,16 +116,16 @@
             "scope": "markup.list.todo.skipped.content",
             "foreground": "var(grey3)"
         },
-        {
-            "name": "markup todo incomplete start",
-            "scope": "markup.list.todo.incomplete.start",
-            "foreground": "var(red)"
-        },
-        {
-            "name": "todo incomplete content",
-            "scope": "markup.list.todo.incomplete.content",
-            "foreground": "var(yellow)"
-        },
+        // {
+        //     "name": "markup todo incomplete start",
+        //     "scope": "markup.list.todo.incomplete.start",
+        //     "foreground": "var(red)"
+        // },
+        // {
+        //     "name": "todo incomplete content",
+        //     "scope": "markup.list.todo.incomplete.content",
+        //     "foreground": "var(yellow)"
+        // },
         {
             "name": "markup todo complete start",
             "scope": "markup.list.todo.complete.start",
@@ -151,11 +151,11 @@
             "scope": "punctuation.definition.strikethrough.end",
             "foreground": "var(brown)"
         },
-        {
-            "name": "markup timestamp",
-            "scope": "markup.timestamp",
-            "foreground": "var(blue5)"
-        },
+        // {
+        //     "name": "markup timestamp",
+        //     "scope": "markup.timestamp",
+        //     "foreground": "var(blue5)"
+        // },
         // Brighter section titles
         {
             "name": "section title",
