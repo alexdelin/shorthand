@@ -244,9 +244,9 @@ contexts:
     - match: '^([ ]{0,3})(\[X\])(?=\s)'
       captures:
         1: markup.list.unnumbered.markdown
-        2: markup.list.todo.complete.start.markdown
+        2: variable.function.shorthand # The `[X]` at the beginning of a complete todo
       push:
-        - meta_content_scope: markup.list.todo.complete.content.markdown
+        - meta_content_scope: constant.character.shorthand # The content of a completed Todo
         - match: ^(?=\S)
           pop: true
         - include: list-paragraph
@@ -370,7 +370,7 @@ contexts:
       scope: meta.other.valid-ampersand.markdown
   timestamp:
     - match: \b(-?(?:[1-9][0-9]*)?[0-9]{4})-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9])\b
-      scope: variable.function.markdown
+      scope: variable.function.shorthand # An isoformat date stamp
   block-quote:
     - match: '[ ]{,3}(>)[ ]?'
       comment: |
@@ -786,7 +786,7 @@ contexts:
     - match: '(~+)(?![\s\d])(?!~)'
       scope: punctuation.definition.strikethrough.begin.markdown
       push:
-        - meta_scope: markup.strikethrough.markdown-gfm
+        - meta_scope: comment.shorthand # The text that is struck out
         - match: ~+
           scope: punctuation.definition.strikethrough.end.markdown
           pop: true
@@ -796,11 +796,11 @@ contexts:
         - include: bold-italic-trailing
   metadata-tag:
     - match: '(:+)(?![\s\d])(?!:)'
-      scope: keyword.operator.shorthand # The leading `:` in a tag
+      scope: comment.shorthand # The leading `:` in a tag
       push:
         - meta_scope: keyword.operator.shorthand # The actual metadata tag
         - match: ':+'
-          scope: keyword.operator.shorthand # The ending `:` in a tag
+          scope: comment.shorthand # The ending `:` in a tag
           pop: true
         - include: inline
         - include: bold
@@ -1020,10 +1020,10 @@ contexts:
         - match: '([ ]*)(\[X\])(?=\s)'
           captures:
             1: markup.list.unnumbered.markdown
-            2: markup.list.todo.complete.start.markdown
+            2: variable.function.shorthand # The `[X]` at the beginning of a complete todo
           push:
             - clear_scopes: 1
-            - meta_content_scope: markup.list.todo.complete.content.markdown
+            - meta_content_scope: constant.character.shorthand # The content of a completed Todo
             - include: list-content
         - match: '([ ]*)(\[S\])(?=\s)'
           captures:
