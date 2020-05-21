@@ -192,11 +192,11 @@ contexts:
         - match: ^(?=\S)
           pop: true
         - include: list-paragraph
-    - match: '(\$\$(?!\$))([^\$]+)(\$\$)[ \n,.?!]'
-      captures:
-        1: comment.shorthand # the `$` Character before an inline latex expression
-        2: string.shorthand # an inline latex expression
-        3: comment.shorthand # the `$` Character after an inline latex expression
+    # - match: '(\$\$(?!\$))([^\$]+)(\$\$)[ \n,.?!]'
+    #   captures:
+    #     1: comment.shorthand # the `$` Character before an inline latex expression
+    #     2: string.shorthand # an inline latex expression
+    #     3: comment.shorthand # the `$` Character after an inline latex expression
     - match: '^([ ]{0,3})(\[ \]|\[\])(?=\s)'
       captures:
         1: markup.list.unnumbered.markdown
@@ -208,10 +208,12 @@ contexts:
         - match: \n
           pop: true
         - include: list-paragraph
-    - match: '^([ ]{0,3})(\{.*\})(?=\s)'
+    - match: '^([ ]{0,3})(\{)(.*?)(\})(?=\s)'
       captures:
         1: markup.list.unnumbered.markdown
-        2: variable.language.shorthand # The definition term
+        2: comment.shorthand # the leading `{` before the definition term
+        3: variable.language.shorthand # The definition term
+        4: comment.shorthand # the trailing `}` after the definition term
       push:
         - meta_content_scope: entity.name.markdown.shorthand # The definition text
         - match: ^(?=\S)
@@ -739,7 +741,8 @@ contexts:
     - include: link-ref-literal
     - include: link-ref
     - include: link-ref-footnote
-    - include: latex-span-double
+    - include: latex-inline
+    # - include: latex-span-double
   inline-bold-italic:
     - include: inline
     - include: bold
@@ -796,11 +799,11 @@ contexts:
         - include: bold-italic-trailing
   metadata-tag:
     - match: '(:+)(?![\s\d])(?!:)'
-      scope: comment.shorthand # The leading `:` in a tag
+      scope: punctuation.definition.string.end.shorthand # The leading `:` in a tag
       push:
         - meta_scope: keyword.operator.shorthand # The actual metadata tag
         - match: ':+'
-          scope: comment.shorthand # The ending `:` in a tag
+          scope: punctuation.definition.string.end.shorthand # The ending `:` in a tag
           pop: true
         - include: inline
         - include: bold
@@ -1033,10 +1036,12 @@ contexts:
             - clear_scopes: 1
             - meta_content_scope: comment.shorthand # the content of a skipped todo
             - include: list-content
-        - match: '([ ]*)(\{.*\})(?=\s)'
+        - match: '([ ]*)(\{)(.*?)(\})(?=\s)'
           captures:
             1: markup.list.unnumbered.markdown
-            2: variable.language.shorthand # The definition term
+            2: comment.shorthand # The leading `{` before the definition term
+            3: variable.language.shorthand # The definition term
+            4: comment.shorthand # The trailing `}` after the definition term
           push:
             - clear_scopes: 1
             - meta_content_scope: entity.name.markdown.shorthand # The definition text
@@ -1501,18 +1506,49 @@ contexts:
         - match: ^\s*$\n?
           scope: invalid.illegal.non-terminated.raw.markdown
           pop: true
-  latex-span-single:
-    - match: '[^\$](\$(?!\$))([^\$]+)(\$)[ \n,.?!]'
-      captures:
-        1: comment # the `$` Character before an inline latex expression
-        2: string # an inline latex expression
-        3: comment # the `$` Character after an inline latex expression
-  latex-span-double:
-    - match: '[^\$](\$\$(?!\$))([^\$]+)(\$\$)[ \n,.?!]'
-      captures:
-        1: comment # the `$$` Characters before a latex block
-        2: string # an inline latex expression
-        3: comment # the `$$` Characters after a latex block
+  # latex-span-single:
+  #   - match: '[^\$](\$(?!\$))([^\$]+)(\$)[ \n,.?!]'
+  #     captures:
+  #       1: comment # the `$` Character before an inline latex expression
+  #       2: string # an inline latex expression
+  #       3: comment # the `$` Character after an inline latex expression
+  # latex-span-double:
+  #   - match: '[^\$](\$\$(?!\$))([^\$]+)(\$\$)[ \n,.?!]'
+  #     captures:
+  #       1: comment # the `$$` Characters before a latex block
+  #       2: string # an inline latex expression
+  #       3: comment # the `$$` Characters after a latex block
+  latex-inline:
+    - match: \\\$
+    - match: |-
+        (?x)
+        (\$)(?=\S)
+        (?=
+          (?:
+            \\\\
+            |\\\$
+            |[^\$]
+          )*?
+          \S\$(?:[^a-zA-Z0-9]|$)
+        )
+      scope: string.other.math.latex punctuation.definition.string.begin.latex
+      push:
+        - meta_scope: text.tex.latex meta.environment.math.latex
+        - include: scope:text.tex.latex#macros
+        - include: scope:text.tex.latex#math-content
+        - match: \$
+          scope: string.other.math.latex punctuation.definition.string.end.latex
+          pop: true
+  latex-display:
+    - match: \$\$
+      scope: string.other.math.latex punctuation.definition.string.begin.latex
+      push:
+        - meta_scope: text.tex.latex meta.environment.math.latex
+        - include: scope:text.tex.latex#macros
+        - include: scope:text.tex.latex#math-content
+        - match: \$\$
+          scope: string.other.math.latex punctuation.definition.string.end.latex
+          pop: true
   raw:
     - match: ^(?={{fenced_code_block_start}})
       push:
@@ -1520,8 +1556,9 @@ contexts:
           pop: true
         - include: fenced-code-block
     - include: code-span
-    - include: latex-span-single
-    - include: latex-span-double
+    - include: latex-display
+    # - include: latex-span-single
+    # - include: latex-span-double
   thematic-break:
     - match: '(?={{thematic_break}})'
       push:
