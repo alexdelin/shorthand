@@ -1,0 +1,34 @@
+# Shorthand Custom Scope List
+
+## Todos
+### Incomplete
+- `storage.shorthand.todo.incomplete.begin`: The `[]` or `[ ]` At the beginning of an incomplete todo
+- `entity.name.shorthand.todo.incomplete`: The content of an incomplete todo
+
+### Skipped
+- `comment.shorthand.todo.skipped.begin`: The `[S]` At the beginning of a skipped todo
+- `comment.shorthand.todo.skipped`: The content of a skipped todo
+
+### Completed
+- `variable.function.shorthand.todo.complete.begin`: The `[X]` At the beginning of a completed todo
+- `constant.character.shorthand.todo.complete`: The content of a completed todo
+
+## Definitions
+- `comment.shorthand.definition.border`: The `{}` characters around a defined term
+- `variable.language.shorthand.definition.term`: The term being defined
+- `entity.name.markdown.shorthand.definition.content`: The definition of the term
+
+## Questions & Answers
+- `entity.name.shorthand.question.begin`: The `?` at the beginning of a question
+- `constant.character.shorthand.question`: The content of a question
+- `punctuation.definition.shorthand.answer.begin`: The `@` at the beginning of an answer
+- `string.shorthand.answer`: The content of an answer
+
+## Date Stamps
+- `string.shorthand.date.arrow`: The date arrow between a start and end date stamp in a skipped or completed todo
+- `variable.function.shorthand.date.stamp`: A date stamp of the format `YYYY-MM-DD`
+- `string.shorthand.date.boundary`: The parentheses around a date stamp in a stamped todo
+
+## Tags
+- `punctuation.definition.string.end.shorthand.tag.border`: The bordering colons surrounding a tag
+- `keyword.operator.shorthand.tag`: The tag itself
