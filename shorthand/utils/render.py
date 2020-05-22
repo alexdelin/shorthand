@@ -34,6 +34,17 @@ def get_rendered_markdown(markdown_content):
             rec_data_lines.append(markdown_line)
             continue
 
+        # Special handling for diagram blocks
+        if is_diagram_block and '```' not in markdown_line:
+            if not markdown_line.strip():
+                 # Skip empty lines
+                continue
+            else:
+                # Get rid of any indentation so it doesn't trip up the
+                # Markdown parser into creating new paragraphs
+                html_content_lines.append(markdown_line.strip())
+                continue
+
         # Handle empty or pseudo-empty lines
         if not markdown_line.strip():
             html_content_lines.append(markdown_line)
