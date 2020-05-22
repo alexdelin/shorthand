@@ -1,9 +1,16 @@
 #!/usr/bin/env/python
 
 import argparse
+import logging
 
 from shorthand.utils.config import get_notes_config
+from shorthand.utils.logging import setup_logging
 from shorthand.todo_tools import stamp_notes, get_todos
+
+
+SHORTHAND_CONFIG = get_notes_config()
+setup_logging(SHORTHAND_CONFIG)
+log = logging.getLogger(__name__)
 
 
 def run():
@@ -19,8 +26,10 @@ def main(args):
     notes_directory = notes_config['notes_directory']
 
     if args.action == 'stamp':
+        log.info('Stamping Notes')
         print(stamp_notes(notes_directory))
     elif args.action == 'list':
+        log.info('Listing Todos')
         print(get_todos(notes_directory, args.status))
 
 

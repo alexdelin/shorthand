@@ -39,9 +39,25 @@
 
 %size: 37
 
-# A size constraint with a range
+# A size constraint with a less than range
 
 %size: < 75
+
+# A size constraint with a less than or equal to range
+
+%size: <= 41
+
+# A size constraint with a greater than range
+
+%size: > 82
+
+# A size constraint with a greater than or equal to range
+
+%size: >= 907
+
+# A size constraint with a hexadecimal value
+
+%size: <= 0x7C2
 
 # Fields to sort by
 
@@ -91,6 +107,239 @@
 %typedef: real_type real
 %type: Foo,Bar real_type
 
+# A field directly typed line
+
+%type: Foo line
+
+# Multiple fields directly typed line
+
+%type: Foo,Bar line
+
+# A custom type that maps to line
+
+%typedef: line_type line
+
+# A field using a custom type that maps to line
+
+%typedef: line_type line
+%type: Foo line_type
+
+# Multiple fields using a custom type that maps to line
+
+%typedef: line_type line
+%type: Foo,Bar line_type
+
+# A field directly typed bool
+
+%type: Foo bool
+
+# Multiple fields directly typed bool
+
+%type: Foo,Bar bool
+
+# A custom type that maps to bool
+
+%typedef: bool_type bool
+
+# A field using a custom type that maps to bool
+
+%typedef: bool_type bool
+%type: Foo bool_type
+
+# Multiple fields using a custom type that maps to bool
+
+%typedef: bool_type bool
+%type: Foo,Bar bool_type
+
+# A field directly typed date
+
+%type: Foo date
+
+# Multiple fields directly typed date
+
+%type: Foo,Bar date
+
+# A custom type that maps to date
+
+%typedef: date_type date
+
+# A field using a custom type that maps to date
+
+%typedef: date_type date
+%type: Foo date_type
+
+# Multiple fields using a custom type that maps to date
+
+%typedef: date_type date
+%type: Foo,Bar date_type
+
+# A field directly typed range
+
+%type: Foo range MIN 7
+
+# A field directly typed range (with negative values)
+
+%type: Foo range -17 -2
+
+# Multiple fields directly typed range
+
+%type: Foo,Bar range 0x7A
+
+# A custom type that maps to range
+
+%typedef: range_type range 5 MAX
+
+# A field using a custom type that maps to range
+
+%typedef: range_type range 71
+%type: Foo range_type
+
+# Multiple fields using a custom type that maps to range
+
+%typedef: range_type range -0x8E MAX
+%type: Foo,Bar range_type
+
+# A field directly typed enum
+
+%type: Foo enum foo bar baz
+
+# Multiple fields directly typed enum (with comments)
+
+%type: Foo,Bar enum
++ foo (The first option)
++ bar (The second option)
++ baz (The third option)
+
+# A custom type that maps to enum (multiline)
+
+%typedef: enum_type enum foo
++ bar
++ baz
+
+# A field using a custom type that maps to enum
+
+%typedef: enum_type enum foo bar baz
+%type: Foo enum_type
+
+# Multiple fields using a custom type that maps to enum (with comments)
+
+%typedef: enum_type enum
++ foo (The first option)
++ bar (The second option)
++ baz (The third option)
+%type: Foo,Bar enum_type
+
+# A field directly typed regexp
+
+%type: Foo regexp /[0-9]{5}/
+
+# A regexp pattern using different border characters
+
+%type: Foo regexp /[0-9]{5}/
+%type: Bar regexp *[0-9]{5}*
+%type: Baz regexp |[0-9]{5}|
+%type: Bam regexp +[0-9]{5}+
+%type: Zam regexp `[0-9]{5}`
+
+# Multiple fields directly typed regexp
+
+%type: Foo,Bar regexp /[a-zA-Z]{7}/
+
+# A custom type that maps to regexp
+
+%typedef: regexp_type regexp /[a-zA-Z0-9_]{13}/
+
+# A field using a custom type that maps to regexp
+
+%typedef: regexp_type regexp /[0-9]{8}-[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{12}/
+%type: Foo regexp_type
+
+# Multiple fields using a custom type that maps to regexp
+
+%typedef: regexp_type regexp /[0-9]{3}-[0-9]{2}-[0-9]{4}/
+%type: Foo,Bar regexp_type
+
+# A field directly typed uuid
+
+%type: Foo uuid
+
+# Multiple fields directly typed uuid
+
+%type: Foo,Bar uuid
+
+# A custom type that maps to uuid
+
+%typedef: uuid_type uuid
+
+# A field using a custom type that maps to uuid
+
+%typedef: uuid_type uuid
+%type: Foo uuid_type
+
+# Multiple fields using a custom type that maps to uuid
+
+%typedef: uuid_type uuid
+%type: Foo,Bar uuid_type
+
+# Link multiple levels of custom types together
+
+%typedef: custom_type_1 int
+%typedef: custom_type_2 custom_type_1
+%typedef: custom_type_3 custom_type_2
+%typedef: custom_type_4 custom_type_3
+%typedef: custom_type_5 custom_type_4
+%typedef: custom_type_6 custom_type_5
+%typedef: custom_type_7 custom_type_6
+%typedef: custom_type_8 custom_type_7
+%typedef: custom_type_9 custom_type_8
+%type: Foo custom_type_9
+
+# Auto-Generate an int field typed directly
+
+%type: Foo int
+%auto: Foo
+
+# Auto-Generate an int field typed indirectly
+
+%typedef: foo_type int
+%type: Foo foo_type
+%auto: Foo
+
+# Auto-Generate a uuid field typed directly
+
+%type: Foo uuid
+%auto: Foo
+
+# Auto-Generate a uuid field typed indirectly
+
+%typedef: foo_type uuid
+%type: Foo foo_type
+%auto: Foo
+
+# Auto-Generate a date field typed directly
+
+%type: Foo date
+%auto: Foo
+
+# Auto-Generate a date field typed indirectly
+
+%typedef: foo_type date
+%type: Foo foo_type
+%auto: Foo
+
+# Auto-generate multiple fields
+
+%type: IntDirect int
+%typedef: int_type int
+%type: IntIndirect int_type
+%type: UuidDirect uuid
+%typedef: uuid_type uuid
+%type: UuidIndirect uuid_type
+%type: DateDirect date
+%typedef: date_type date
+%type: DateIndirect date_type
+%auto: IntDirect IntIndirect UuidDirect UuidIndirect DateDirect DateIndirect
+
 # A full example
 
 %rec: Book
@@ -124,7 +373,7 @@
 %type: WasGood was_good_type
 %typedef: book_id_type regexp /[0-9]{9}[a-zA-Z]/
 %type: BookId book_id_type
-%auto: DateAcquired Id
+%auto: DateAcquired
 %sort: Author Title
 %doc: Each record in this record set represents
 + a book in my personal collection.

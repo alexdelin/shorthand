@@ -1,24 +1,29 @@
-#ml-logo {
-    display: inline;
+#title-wrapper {
+    vertical-align: middle;
+    padding: 15px;
 }
 
-#notes-title {
-    display: inline;
-    vertical-align: middle;
-    padding-left: 10px;
-    vertical-align: middle;
-    line-height: 4rem;
-}
-
-.material-icons.nav-icon {
-    font-size: 4rem;
+.svg-icon {
+    height: 4rem;
     line-height: 4rem;
     vertical-align: middle;
-    color: white;
+    fill: white;
+    stroke: white;
 }
 
-.actionButtons {
-    min-width: 230px;
+.homepage-info {
+    text-align: center;
+    margin-top: 60px;
+}
+
+.actionButtons img {
+    vertical-align: middle;
+    height: 2.5rem;
+    line-height: 2.5rem;
+}
+
+.tag-badge {
+    margin-left: 5px;
 }
 
 .material-icons.action-button {
@@ -39,16 +44,43 @@ pre {
     max-width: 900px;
 }
 
+.top-gutter {
+    background-color: #999;
+    height: 15px;
+}
+
 .title-bar {
     background-color: #999;
     color: white;
-    padding-top: 15px;
-    padding-bottom: 15px;
+}
+
+.icon-wrapper {
+    padding: 15px;
+    text-align: center;
+     border-radius: 10px 10px 0px 0px;
+}
+
+.open-subicons {
+    background-color: #bbb;
+}
+
+.elements-bar {
+    text-align: right;
+    background-color: #bbb;
+}
+
+.options-bar {
+    text-align: right;
+    background-color: #bbb;
 }
 
 .search-input {
     padding: 5px;
     margin-bottom: 20px;
+}
+
+.record-set-data {
+    display: none;
 }
 
 .gutter {

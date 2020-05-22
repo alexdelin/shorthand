@@ -1,11 +1,15 @@
 import os
+import logging
 
-from shorthand.tag_tools import get_tags
+from shorthand.tag_tools import get_tags, extract_tags
+from shorthand.utils.logging import setup_logging
 
 from utils import setup_environment
 
 
 CONFIG = setup_environment()
+setup_logging(CONFIG)
+log = logging.getLogger(__name__)
 
 
 class TestTags(object):
@@ -17,4 +21,12 @@ class TestTags(object):
         assert os.path.exists(test_dir)
 
     def test_get_tags(self):
-        pass
+        all_tags = ['baking', 'bar', 'baz', 'foo', 'food', 'future', 'nested',
+                    'philosophy', 'pointless', 'software', 'topic']
+        assert set(get_tags(CONFIG['notes_directory'])) == set(all_tags)
+
+    def test_extract_tags(self):
+        input_text = 'This is some text with tags :first: :second: :third:'
+        tags, clean_text = extract_tags(input_text)
+        assert set(tags) == set(['first', 'second', 'third'])
+        assert clean_text == 'This is some text with tags'

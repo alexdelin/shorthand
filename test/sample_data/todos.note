@@ -40,3 +40,16 @@ Every possible type of todo is included here
     b) Second element
         [X] A more specific todo :nested:
     c) A third element
+
+## Invalid
+These are malformed todos
+
+[ Maybe something
+
+] Nothing at all
+
+[  ] Too many spaces
+
+This is an empty Todo
+
+[]

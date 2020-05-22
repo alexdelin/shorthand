@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    {{ static_content['common_imports'] }}
+
+    <!-- Helpers for this page -->
+    <script type="text/javascript" src="/js/underscore-min.js"></script>
+    <script type="text/javascript" src="/js/shorthand-record-sets.js" defer></script>
+
+    <!-- Data Table Rendering -->
+    <script src="/js/jquery.dataTables.min.js"></script>
+    <script src="/js/dataTables.bootstrap4.min.js"></script>
+
+    <meta charset='utf-8'>
+    <title>Notes</title>
+</head>
+<body>
+
+<div class="row fullwrapper">
+
+    <div class="col-md-1 gutter"></div>
+
+    <div class="col-md-10 pagewrapper" style="min-height: 1000px;">
+
+        {{ static_content['header_html'] }}
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h2>Record Sets</h2>
+                    </div>
+                </div>
+
+                {% for record_set in record_sets %}
+                <div class="alert alert-primary" role="alert">
+                    <div class="row">
+                        <div class="col-md-8">
+                            Record set in: <a href="/render?path={{ record_set['file_path'] }}">{{ record_set['display_path'] }}</a>
+                            <br>
+                            line
+                            <span class="lineNumber">{{ record_set['line_number'] }}</span>
+                            <span class="filePath" style="display: none;">{{ record_set['file_path'] }}</span>
+                        </div>
+                        <div class="col-md-4" style="text-align: right;">
+                            <a class="btn btn-primary showRec" data-toggle="collapse" href="#collapseExample{{ loop.index }}" role="button" aria-expanded="false" aria-controls="collapseExample">
+                                View Contents
+                            </a>
+                            <a class="btn btn-warning getCsv" role="button">
+                                Download CSV
+                            </a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="collapse" id="collapseExample{{ loop.index }}" style="width: 100%">
+                            <div class="card card-body" style="width:80%; margin: auto;">
+                                <table id="record-set-table{{ loop.index }}" class="table table-striped table-bordered record-set-table" style="width:100%;">
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                {% endfor %}
+
+            </div>
+        </div>
+
+    </div>
+    <div class="col-md-1 gutter"></div>
+</div>
+
+{{ static_content['modal_block'] }}
+
+</body>
+</html>

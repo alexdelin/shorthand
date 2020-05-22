@@ -1,12 +1,15 @@
 import re
+import json
 import logging
 import codecs
 
 from shorthand.todo_tools import parse_todo
 from shorthand.tag_tools import extract_tags
-from shorthand.utils.patterns import DEFINITION_PATTERN
+from shorthand.utils.rec import load_from_string
+from shorthand.utils.patterns import DEFINITION_PATTERN, INTERNAL_LINK_PATTERN
 
 definition_regex = re.compile(DEFINITION_PATTERN)
+internal_link_regex = re.compile(INTERNAL_LINK_PATTERN)
 
 
 log = logging.getLogger(__name__)
@@ -22,7 +25,14 @@ def get_rendered_markdown(markdown_content):
     markdown_content_lines = markdown_content.split('\n')
     is_fenced_code_block = False
     is_diagram_block = False
+    is_rec_data_block = False
+    rec_data_lines = []
     for markdown_line in markdown_content_lines:
+
+        # Grab everything for record sets
+        if markdown_line.strip()[:3] != '```' and is_rec_data_block:
+            rec_data_lines.append(markdown_line)
+            continue
 
         # Handle empty or pseudo-empty lines
         if not markdown_line.strip():
@@ -42,6 +52,26 @@ def get_rendered_markdown(markdown_content):
                 html_content_lines.append('</div>')
                 continue
 
+            # Special handling for record sets
+            if markdown_line.strip()[:11] == '```rec-data':
+                is_rec_data_block = True
+                continue
+            elif is_rec_data_block:
+                is_rec_data_block = False
+                record_set = load_from_string('\n'.join(rec_data_lines))
+                record_set_data = json.dumps(list(record_set.all()))
+                column_config = [{'title': field, 'data': field, 'defaultContent': ''} for field in record_set.get_fields()]
+                record_set_name = record_set.get_config().get('rec', {}).get('name')
+                if record_set_name:
+                    html_content_lines.append(f'##### Record Set: {record_set_name}')
+                html_content_lines.append(f'<div><div class="record-set-data">{record_set_data}'
+                                          f'</div><table class="table table-striped table-bordered '
+                                          f'record-set-table" style="width:100%" data-rec=\''
+                                          f'\' data-cols=\''
+                                          f'{json.dumps(column_config)}\'></table></div>')
+                rec_data_lines = []
+                continue
+
             is_fenced_code_block = not is_fenced_code_block
             html_content_lines.append(markdown_line)
             continue
@@ -50,6 +80,11 @@ def get_rendered_markdown(markdown_content):
         if is_fenced_code_block:
             html_content_lines.append(markdown_line)
             continue
+
+        # Process internal links
+        markdown_line = internal_link_regex.sub(
+            '\\g<1>/render?path=\\g<2>\\g<3>',
+            markdown_line)
 
         # Process All to-dos
         if len(markdown_line) >= 4:

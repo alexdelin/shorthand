@@ -11,39 +11,45 @@ contexts:
     - match: '#.+'
       scope: comment.recfile
 
-    - match: '(%mandatory|%unique|%auto|%sort|%prohibit|%allowed|%key): (.+)'
+    - match: '(%)(mandatory|unique|auto|sort|prohibit|allowed|key|encrypted): (.+)'
       captures:
-        1: keyword.record-set-property.recfile
-        2: entity.name.function.field-name.recfile
+        1: constant.numeric.rec-config.recfile
+        2: keyword.record-set-property.recfile
+        3: entity.name.function.field-name.recfile
 
-    - match: '(%rec): (.+)'
+    - match: '(%)(rec): (\w+)( .+)?'
       captures:
-        1: keyword.record-type.recfile
-        2: constant.language.record-type-name.recfile
+        1: constant.numeric.rec-config.recfile
+        2: keyword.record-type.recfile
+        3: constant.language.record-type-name.recfile
+        4: comment.rec-type-link.recfile
 
-    - match: '(%typedef): (\w+) '
+    - match: '(%)(typedef): (\w+) '
       captures:
-        1: keyword.type-def-keyword.recfile
-        2: variable.function.custom-type.recfile
+        1: constant.numeric.rec-config.recfile
+        2: keyword.type-def-keyword.recfile
+        3: variable.function.custom-type.recfile
       push: typedef
 
-    - match: '(%type): ([\w,]+) (int$|real$|bool$|line$|date$)?(\w+$)?'
+    - match: '(%)(type): ([\w,]+) '
       captures:
-        1: keyword.type-keyword.recfile
-        2: entity.name.function.field-name.recfile
-        3: storage.type.builtin-type.recfile
-        4: variable.function.custom-type.recfile
+        1: constant.numeric.rec-config.recfile
+        2: keyword.type-keyword.recfile
+        3: entity.name.function.field-name.recfile
+      push: typedef
 
-    - match: '(%doc): '
+    - match: '(%)(doc): '
       captures:
-        1: keyword.doc-keyword.recfile
+        1: constant.numeric.rec-config.recfile
+        2: keyword.doc-keyword.recfile
       push: documentation
 
-    - match: '(%size): ([<>=]+)?( )?(\d+)'
+    - match: '(%)(size): ([<>=]+)?( )?((0x)?[\dA-F]+)'
       captures:
-        1: keyword.size-keyword.recfile
-        2: constant.language.size-restriction.recfile
-        4: constant.numeric.size-value.recfile
+        1: constant.numeric.rec-config.recfile
+        2: keyword.size-keyword.recfile
+        3: constant.language.size-restriction.recfile
+        5: constant.numeric.size-value.recfile
 
     - match: '^(\w+):'
       scope: entity.name.function.custom-type.recfile
@@ -69,7 +75,7 @@ contexts:
       set: main
 
   typedef:
-    - match: '(int|real|bool|line|date)'
+    - match: '(int\b|real\b|bool\b|line\b|date\b|uuid\b)'
       scope: storage.type.recfile
       pop: true
 
@@ -79,12 +85,10 @@ contexts:
         2: constant.numeric.recfile
       pop: true
 
-    - match: '(range) (MIN|0x[\dA-F]+|\d+)( )?(MAX|0x[\dA-F]+|\d+)?'
+    - match: '(range\b)'
       captures:
         1: storage.type.recfile
-        2: constant.numeric.recfile
-        4: constant.numeric.recfile
-      pop: true
+      push: range
 
     - match: '(enum\b)'
       captures:
@@ -104,6 +108,17 @@ contexts:
     - match: '.+'
       scope: string.recfile
       pop: true
+
+  range:
+
+    - match: ' (MIN|-?0x[\dA-F]+|-?\d+)( )?(MAX|-?0x[\dA-F]+|-?\d+)?'
+      captures:
+        1: constant.numeric.recfile
+        3: constant.numeric.recfile
+      set: main
+
+    - match: '.*'
+      set: main
 
   enum:
 

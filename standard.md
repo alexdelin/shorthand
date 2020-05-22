@@ -48,18 +48,18 @@ The markdown syntax for text emphasis is by far the most common, but org mode ha
 
 #### Bold
 ```notes
-
+Something **bold**
 ```
 #### Italics
 ```notes
-
+Something _italicized_
 ```
 #### Underline
 Not supported
 
 #### Strikethrough
 ```notes
-
+~~Text struck through~~
 ```
 
 ### Lists

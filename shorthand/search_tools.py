@@ -6,8 +6,8 @@ from subprocess import Popen, PIPE
 log = logging.getLogger(__name__)
 
 
-def search_notes(notes_directory, query_string,
-                 type=None, case_sensitive=False):
+def search_notes(notes_directory, query_string, type=None,
+                 case_sensitive=False, grep_path='grep'):
     '''Search through all notes and return
     matching lines with metadata
 
@@ -39,13 +39,16 @@ def search_notes(notes_directory, query_string,
         grep_mode += 'i'
         grep_filter_mode += ' -i'
 
-    grep_command = 'grep {mode} "{pattern}" {dir} | grep -v "\\.git"'.format(
+    grep_command = '{grep_path} {mode} "{pattern}" {dir} | ' \
+                   '{grep_path} -v "\\.git"'.format(
+                        grep_path=grep_path,
                         mode=grep_mode,
                         pattern=query_components[0],
                         dir=notes_directory)
 
     for additional_filter in query_components[1:]:
-        new_filter = ' | grep{mode} "{pattern}"'.format(
+        new_filter = ' | {grep_path}{mode} "{pattern}"'.format(
+                        grep_path=grep_path,
                         mode=grep_filter_mode,
                         pattern=additional_filter)
         grep_command = grep_command + new_filter

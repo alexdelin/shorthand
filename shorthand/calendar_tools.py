@@ -14,7 +14,7 @@ dated_heading_regex = re.compile(DATED_HEADING_PATTERN)
 log = logging.getLogger(__name__)
 
 
-def get_calendar(notes_directory, directory_filter=None):
+def get_calendar(notes_directory, directory_filter=None, grep_path='grep'):
 
     events = []
     calendar = {}
@@ -25,7 +25,8 @@ def get_calendar(notes_directory, directory_filter=None):
             search_directory += '/'
         search_directory += directory_filter
 
-    grep_command = 'grep -rn "{pattern}" {dir} | grep -v "\\.git"'.format(
+    grep_command = '{grep_path} -rn "{pattern}" {dir} | {grep_path} -v "\\.git"'.format(
+            grep_path=grep_path,
             pattern=escape_for_grep(DATED_HEADING_PATTERN),
             dir=search_directory)
 
