@@ -155,7 +155,7 @@ def show_databases():
 @app.route('/get_todos', methods=['GET'])
 def get_current_todos():
 
-    status = request.args.get('status')
+    status = request.args.get('status', 'incomplete')
     directory_filter = request.args.get('directory_filter')
     query_string = request.args.get('query_string')
     sort_by = request.args.get('sort_by')

@@ -333,7 +333,50 @@ def get_todos(notes_directory, todo_status='incomplete', directory_filter=None,
     log.info(f'returning {len(todo_items)} todos')
     return {
         "items": todo_items,
-        "count": len(todo_items)
+        "count": len(todo_items),
+        "meta": analyze_todos(todo_items)
+    }
+
+
+def analyze_todos(todos):
+    '''Analyze todos and generate basic statistics
+    '''
+
+    # Aggregate and count tags
+    tag_counts = {}
+    for todo in todos:
+        for tag in todo.get('tags', []):
+            if tag not in tag_counts.keys():
+                tag_counts[tag] = 1
+            else:
+                tag_counts[tag] += 1
+
+    # Aggregate and count months
+    month_counts = {}
+    for todo in todos:
+        date = todo.get('start_date')
+        month = date[:7]
+        if month not in month_counts.keys():
+            month_counts[month] = 1
+        else:
+            month_counts[month] += 1
+
+    # Make dataset for timeline
+    timeline_data = []
+    for month_string, month_count in month_counts.items():
+        timeline_data.append([
+            int(datetime.strptime(
+                f'{month_string}-01T12:00:00',
+                '%Y-%m-%dT%H:%M:%S').strftime("%s")) * 1000,
+            month_count
+        ])
+
+    # Aggregate and count subdirectories
+
+    return {
+        'tag_counts': tag_counts,
+        'month_counts': month_counts,
+        'timeline_data': timeline_data
     }
 
 

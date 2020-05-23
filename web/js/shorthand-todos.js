@@ -80,6 +80,21 @@ function renderTodoResults(todoData) {
         md = markdownit({html:true}).use(tm,{delimiters:'dollars',macros:{"\\RR": "\\mathbb{R}"}});
         targetElem.innerHTML = md.render(todoMd);
     });
+
+    // Render the month timeline
+    console.log(loadedData['meta']['timeline_data'])
+    Highcharts.chart('timelineChart', {
+        chart: {type: 'column'},
+        title: {text: 'Todo Age'},
+        subtitle: {text: 'Distribution of Todos by creation date'},
+        tooltip: {valueDecimals: 2},
+        xAxis: {type: 'datetime'},
+        series: [{
+            data: loadedData['meta']['timeline_data'],
+            lineWidth: 1,
+            name: 'Todos per month'
+        }]
+    });
 }
 
 // Wire up action buttons on results
