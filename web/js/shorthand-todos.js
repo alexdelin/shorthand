@@ -95,6 +95,36 @@ function renderTodoResults(todoData) {
             name: 'Todos per month'
         }]
     });
+
+    // Transform data for tag pie chart
+    var tagSeriesData = [];
+    _.each(_.keys(loadedData['meta']['tag_counts']), function(tag){
+        tagSeriesData.push({
+            name: tag,
+            y: loadedData['meta']['tag_counts'][tag]
+        })
+    })
+
+    // Render the tag pie chart
+    Highcharts.chart('tagChart', {
+        chart: {type: 'pie'},
+        title: {text: 'Tags'},
+        tooltip: {pointFormat: 'Todos: <b>{point.y}</b>'},
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true,
+                    format: '<b>{point.name}</b>: {point.y}'
+                }
+            }
+        },
+        series: [{
+            data: tagSeriesData,
+            name: 'Todos per tag'
+        }]
+    });
 }
 
 // Wire up action buttons on results
