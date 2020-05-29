@@ -122,7 +122,27 @@ function renderTodoResults(todoData) {
         },
         series: [{
             data: tagSeriesData,
-            name: 'Todos per tag'
+            name: 'Todos per tag',
+            events: {
+                click: function (event) {
+                    // Get the name of the clicked data point
+                    var tagValue = event.point.name;
+                    // Get the current tag filter value from the dropdown
+                    var currentTag = $('#tagFilter').val();
+                    if (currentTag == tagValue) {
+                        // If you clicked on a tag that is already selected
+                        // as the filter, clear the tag filter
+                        $('#tagFilter').val('ALL');
+                    } else {
+                        // If you clicked on a tag that is not currently selected
+                        // for filtering, set the value of the tag dropdown to be
+                        // the clicked tag
+                        $('#tagFilter').val(tagValue);
+                    }
+                    // Refresh the search results
+                    $('#todoSearch').click();
+                }
+            }
         }]
     });
 }
@@ -201,3 +221,9 @@ function setTodoResultActions() {
     });
 
 }
+
+// Click handler for the show stats button
+$("#showStats").click( function() {
+    console.log('Show Stats clicked!')
+    $('#statsContainer').toggleClass('hidden')
+});
