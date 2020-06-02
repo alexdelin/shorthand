@@ -373,11 +373,21 @@ def show_calendar():
                     ])
 
                 for event in day_data:
-                    events.append({
+                    formatted_event = {
                             'title': event['event'],
                             'start': f'{year}-{month}-{day}',
-                            'url': f'/render?path={event["file_path"]}#{event["element_id"]}'
-                        })
+                            'url': f'/render?path={event["file_path"]}#{event["element_id"]}',
+                            'type': event['type']
+                        }
+                    if formatted_event['type'] == 'section':
+                        formatted_event['color'] = 'blue'
+                    elif formatted_event['type'] == 'completed_todo':
+                        formatted_event['color'] = 'red'
+                    elif formatted_event['type'] == 'skipped_todo':
+                        formatted_event['color'] = 'grey'
+                    elif formatted_event['type'] == 'answered_question':
+                        formatted_event['color'] = 'green'
+                    events.append(formatted_event)
 
     timeline_data = sorted(timeline_data, key=lambda x: x[0])
 

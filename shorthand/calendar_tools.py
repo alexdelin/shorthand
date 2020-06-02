@@ -5,6 +5,7 @@ from datetime import datetime
 from subprocess import Popen, PIPE
 import shlex
 
+from shorthand.todo_tools import get_todos
 from shorthand.utils.patterns import DATED_HEADING_PATTERN, escape_for_grep
 
 
@@ -66,10 +67,42 @@ def get_calendar(notes_directory, directory_filter=None, grep_path='grep'):
             "line_number": line_number,
             "event": heading_text,
             "date": date,
-            "element_id": element_id
+            "element_id": element_id,
+            "type": "section"
         }
 
         events.append(parsed_heading)
+
+    # Add Completed Todos to the calendar view
+    completed_todos = get_todos(notes_directory=notes_directory,
+                      todo_status='complete', directory_filter=None,
+                      query_string=None, grep_path=grep_path)
+    for todo in completed_todos['items']:
+        parsed_todo = {
+            "file_path": todo['file_path'],
+            "line_number": todo['line_number'],
+            "event": todo['todo_text'],
+            "date": todo['end_date'],
+            "element_id": "",
+            "type": "completed_todo"
+        }
+        events.append(parsed_todo)
+
+
+    # Add Skipped Todos to the calendar view
+    skipped_todos = get_todos(notes_directory=notes_directory,
+                      todo_status='skipped', directory_filter=None,
+                      query_string=None, grep_path=grep_path)
+    for todo in skipped_todos['items']:
+        parsed_todo = {
+            "file_path": todo['file_path'],
+            "line_number": todo['line_number'],
+            "event": todo['todo_text'],
+            "date": todo['end_date'],
+            "element_id": "",
+            "type": "skipped_todo"
+        }
+        events.append(parsed_todo)
 
     # Create Calendar from events
     for event in events:
