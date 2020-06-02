@@ -213,8 +213,8 @@ def fetch_calendar():
 
     return json.dumps(get_calendar(
                 notes_directory=SHORTHAND_CONFIG['notes_directory'],
-                directory_filter=directory_filter),
-                grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
+                directory_filter=directory_filter,
+                grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep')))
 
 
 @app.route('/glossary', methods=['GET'])
