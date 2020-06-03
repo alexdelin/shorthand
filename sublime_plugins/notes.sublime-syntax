@@ -372,6 +372,10 @@ contexts:
         2: string.shorthand.date.boundary # the `(` before a start timestamp
         3: variable.function.shorthand.date.stamp # An isoformat date stamp
         7: string.shorthand.date.boundary # the `)` after an end timestamp
+  today-placeholder:
+    - match: '(\\today)'
+      captures:
+        1: constant.language.shorthand.today.placeholder
   block-quote:
     - match: '[ ]{,3}(>)[ ]?'
       comment: |
@@ -730,6 +734,7 @@ contexts:
     - include: escape
     - include: ampersand
     - include: timestamp
+    - include: today-placeholder
     - include: bracket
     - include: raw
     - include: image-inline
