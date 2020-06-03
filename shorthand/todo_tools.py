@@ -331,11 +331,7 @@ def get_todos(notes_directory, todo_status='incomplete', directory_filter=None,
 
     # Wrap Results
     log.info(f'returning {len(todo_items)} todos')
-    return {
-        "items": todo_items,
-        "count": len(todo_items),
-        "meta": analyze_todos(todo_items)
-    }
+    return todo_items
 
 
 def analyze_todos(todos):

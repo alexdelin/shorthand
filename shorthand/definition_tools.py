@@ -69,7 +69,4 @@ def get_definitions(notes_directory, directory_filter=None, grep_path='grep'):
 
         definitions.append(parsed_definition)
 
-    return {
-        'items': definitions,
-        'count': len(definitions)
-    }
+    return definitions

@@ -13,7 +13,7 @@ from datetime import datetime
 from werkzeug.exceptions import HTTPException
 from flask import Flask, request, render_template, send_from_directory, abort
 
-from shorthand.todo_tools import get_todos, mark_todo, stamp_notes
+from shorthand.todo_tools import get_todos, mark_todo, stamp_notes, analyze_todos
 from shorthand.search_tools import search_notes, get_context, get_note
 from shorthand.question_tools import get_questions
 from shorthand.definition_tools import get_definitions
@@ -27,6 +27,7 @@ from shorthand.utils.render import get_file_content, get_rendered_markdown
 from shorthand.utils.typeahead import get_typeahead_suggestions
 from shorthand.utils.paths import get_relative_path, get_display_path
 from shorthand.utils.git import pull_repo
+from shorthand.utils.api import wrap_response_data
 
 from static_elements import static_content
 
@@ -93,8 +94,8 @@ def show_home_page():
                             'start': f'{year}-{month}-{day}',
                             'url': f'/render?path={event["file_path"]}#{event["element_id"]}'
                         })
-    return render_template('home.j2', num_todos=todos['count'],
-                           num_questions=questions['count'],
+    return render_template('home.j2', num_todos=len(todos),
+                           num_questions=len(questions),
                            events=json.dumps(events),
                            static_content=static_content)
 
@@ -171,7 +172,10 @@ def get_current_todos():
                       query_string=query_string, sort_by=sort_by,
                       suppress_future=True, tag=tag, grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
     log.info(f'Returning {len(todos)} todo results')
-    return json.dumps(todos)
+
+    wrapped_response = wrap_response_data(todos)
+    wrapped_response['meta'] = analyze_todos(todos)
+    return json.dumps(wrapped_response)
 
 
 @app.route('/get_questions', methods=['GET'])
@@ -188,7 +192,7 @@ def fetch_questions():
                     question_status=status, directory_filter=directory_filter,
                     grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
     log.info(f'Returning {len(questions)} question results')
-    return json.dumps(questions)
+    return json.dumps(wrap_response_data(questions))
 
 
 @app.route('/get_tags', methods=['GET'])
@@ -198,10 +202,11 @@ def fetch_tags():
     if directory_filter == 'ALL':
         directory_filter = None
 
-    return json.dumps(get_tags(
+    tags = get_tags(
                 notes_directory=SHORTHAND_CONFIG['notes_directory'],
                 directory_filter=directory_filter,
-                grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep')))
+                grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
+    return json.dumps(wrap_response_data(tags))
 
 
 @app.route('/get_calendar', methods=['GET'])
@@ -211,10 +216,11 @@ def fetch_calendar():
     if directory_filter == 'ALL':
         directory_filter = None
 
-    return json.dumps(get_calendar(
+    calendar = get_calendar(
                 notes_directory=SHORTHAND_CONFIG['notes_directory'],
                 directory_filter=directory_filter,
-                grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep')))
+                grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
+    return json.dumps(calendar)
 
 
 @app.route('/glossary', methods=['GET'])
@@ -246,10 +252,11 @@ def fetch_definitions():
     if directory_filter == 'ALL':
         directory_filter = None
 
-    return json.dumps(get_definitions(
+    definitions = get_definitions(
                 notes_directory=SHORTHAND_CONFIG['notes_directory'],
                 directory_filter=directory_filter,
-                grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep')))
+                grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
+    return json.dumps(wrap_response_data(definitions))
 
 
 @app.route('/get_record_sets', methods=['GET'])
@@ -259,10 +266,11 @@ def fetch_record_sets():
     if directory_filter == 'ALL':
         directory_filter = None
 
-    return json.dumps(get_record_sets(
+    record_sets = get_record_sets(
                 notes_directory=SHORTHAND_CONFIG['notes_directory'],
-                directory_filter=None),
+                directory_filter=None,
                 grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
+    return json.dumps(wrap_response_data(record_sets))
 
 
 @app.route('/get_record_set', methods=['GET'])
@@ -306,11 +314,12 @@ def get_search_results():
     query_string = request.args.get('query_string')
     case_sensitive = request.args.get('case_sensitive')
 
-    return json.dumps(search_notes(
+    search_results = search_notes(
                 notes_directory=SHORTHAND_CONFIG['notes_directory'],
                 query_string=query_string,
                 case_sensitive=case_sensitive,
-                grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep')))
+                grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
+    return json.dumps(wrap_response_data(search_results))
 
 
 @app.route('/get_context', methods=['GET'])

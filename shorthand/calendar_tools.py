@@ -77,7 +77,7 @@ def get_calendar(notes_directory, directory_filter=None, grep_path='grep'):
     completed_todos = get_todos(notes_directory=notes_directory,
                       todo_status='complete', directory_filter=None,
                       query_string=None, grep_path=grep_path)
-    for todo in completed_todos['items']:
+    for todo in completed_todos:
         parsed_todo = {
             "file_path": todo['file_path'],
             "line_number": todo['line_number'],
@@ -93,7 +93,7 @@ def get_calendar(notes_directory, directory_filter=None, grep_path='grep'):
     skipped_todos = get_todos(notes_directory=notes_directory,
                       todo_status='skipped', directory_filter=None,
                       query_string=None, grep_path=grep_path)
-    for todo in skipped_todos['items']:
+    for todo in skipped_todos:
         parsed_todo = {
             "file_path": todo['file_path'],
             "line_number": todo['line_number'],

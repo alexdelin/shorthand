@@ -108,7 +108,4 @@ def get_questions(notes_directory, question_status='all',
             elif question_status == 'unanswered' and not is_answer:
                 parsed_questions.append(parsed_question)
 
-    return {
-        "items": parsed_questions,
-        "count": len(parsed_questions)
-    }
+    return parsed_questions
