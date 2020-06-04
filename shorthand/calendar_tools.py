@@ -6,6 +6,7 @@ from subprocess import Popen, PIPE
 import shlex
 
 from shorthand.todo_tools import get_todos
+from shorthand.question_tools import get_questions
 from shorthand.utils.patterns import DATED_HEADING_PATTERN, escape_for_grep
 
 
@@ -75,7 +76,7 @@ def get_calendar(notes_directory, directory_filter=None, grep_path='grep'):
 
     # Add Completed Todos to the calendar view
     completed_todos = get_todos(notes_directory=notes_directory,
-                      todo_status='complete', directory_filter=None,
+                      todo_status='complete', directory_filter=directory_filter,
                       query_string=None, grep_path=grep_path)
     for todo in completed_todos:
         parsed_todo = {
@@ -91,7 +92,7 @@ def get_calendar(notes_directory, directory_filter=None, grep_path='grep'):
 
     # Add Skipped Todos to the calendar view
     skipped_todos = get_todos(notes_directory=notes_directory,
-                      todo_status='skipped', directory_filter=None,
+                      todo_status='skipped', directory_filter=directory_filter,
                       query_string=None, grep_path=grep_path)
     for todo in skipped_todos:
         parsed_todo = {
@@ -103,6 +104,33 @@ def get_calendar(notes_directory, directory_filter=None, grep_path='grep'):
             "type": "skipped_todo"
         }
         events.append(parsed_todo)
+
+    # Add opened questions and answers to calendar view
+    questions = get_questions(
+        notes_directory=notes_directory,
+        question_status='ALL', directory_filter=directory_filter,
+        grep_path=grep_path)
+    for question in questions:
+        if question.get('question_date'):
+            parsed_question = {
+                "file_path": question['file_path'],
+                "line_number": question['line_number'],
+                "event": question['question'],
+                "date": question['question_date'],
+                "element_id": "",
+                "type": "question"
+            }
+            events.append(parsed_question)
+        if question.get('answer_date'):
+            parsed_answer = {
+                "file_path": question['file_path'],
+                "line_number": str(int(question['line_number']) + 1),
+                "event": question['answer'],
+                "date": question['answer_date'],
+                "element_id": "",
+                "type": "answer"
+            }
+            events.append(parsed_answer)
 
     # Create Calendar from events
     for event in events:

@@ -398,7 +398,9 @@ def show_calendar():
                         formatted_event['color'] = 'red'
                     elif formatted_event['type'] == 'skipped_todo':
                         formatted_event['color'] = 'grey'
-                    elif formatted_event['type'] == 'answered_question':
+                    elif formatted_event['type'] == 'question':
+                        formatted_event['color'] = 'purple'
+                    elif formatted_event['type'] == 'answer':
                         formatted_event['color'] = 'green'
                     events.append(formatted_event)
 
