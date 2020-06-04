@@ -243,7 +243,7 @@ contexts:
         1: markup.list.unnumbered.markdown
         2: variable.function.shorthand.todo.complete.begin # The `[X]` at the beginning of a complete todo
       push:
-        - meta_content_scope: constant.character.shorthand.todo.complete # The content of a completed Todo
+        - meta_content_scope: entity.name.function.shorthand.todo.complete # The content of a completed Todo
         - match: ^(?=\S)
           pop: true
         - include: list-paragraph
@@ -1029,7 +1029,7 @@ contexts:
             2: variable.function.shorthand.todo.complete.begin # The `[X]` at the beginning of a complete todo
           push:
             - clear_scopes: 1
-            - meta_content_scope: constant.character.shorthand.todo.complete # The content of a completed Todo
+            - meta_content_scope: entity.name.function.shorthand.todo.complete # The content of a completed Todo
             - include: list-content
         - match: '([ ]*)(\[S\])(?=\s)'
           captures:
