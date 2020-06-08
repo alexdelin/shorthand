@@ -10,36 +10,49 @@
     <!-- Editor Code -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.3.1/ace.js"></script>
 
+    <!-- Helpers for this page -->
+    <script type="text/javascript" src="/js/shorthand-editor.js" defer></script>
+
     <meta charset='utf-8'>
     <title>Notes</title>
 
 <style type="text/css" media="screen">
     #out {
         position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
+        width: 1000px;
+        height: 1000px;
     }
 </style>
 
 </head>
 <body>
 
+<!-- Metadata -->
+<div id="meta-file-path" style="display: none;">{{ file_path }}</div>
+
 <div class="row fullwrapper justify-content-center">
     <div class="render-pagewrapper">
 
         {{ static_content['header_html'] }}
 
+        <div class="row">
+            <div class="col-auto">
+                <!-- Reload Button -->
+                <div id="reloadNote" class="btn btn-outline-success">Reload</div>
+            </div>
+            <div class="col-auto">
+                <!-- Save Button -->
+                <div id="saveNote" class="btn btn-outline-danger">Save</div>
+            </div>
+        </div>
+
         <div class="row content">
-            <div class="note-content">
-                <div id="out"># This is a sample note
-It has lots of additional content included
-                </div>
+            <div class="note-content" style="width: 1000px; padding-left: 0px; height: 1000px;">
+                <div id="out">{{file_content}}</div>
             </div>
         </div>
         <div class="row footer-bar">
-            <div class="col-md-12"></div>
+            <div class="col-md-12" style="height: 50px; background: #999"></div>
         </div>
     </div>
 </div>
@@ -49,7 +62,7 @@ It has lots of additional content included
 <script>
 // Draw Editor
 var editor = ace.edit("out");
-editor.setTheme("ace/theme/monokai");
+// editor.setTheme("ace/theme/monokai");
 editor.session.setMode("ace/mode/markdown");
 </script>
 

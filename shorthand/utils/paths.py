@@ -13,21 +13,44 @@ def get_relative_path(notes_directory, path):
     if not path:
         raise ValueError('No Path provided!')
 
-    # Always work with paths that start with slashes, and
-    # Directory filters that start with slashes and do not end
-    # with slashes
+    # Always work with paths that start with slashes
+    # and do not end with slashes
     if path[0] != '/':
         path = '/' + path
-
-    # Remove notes directory location from the start of the path
     if notes_directory[0] != '/':
         notes_directory = '/' + notes_directory
     if notes_directory[-1] == '/':
         notes_directory = notes_directory[:-1]
+
+    # Remove notes directory location from the start of the path
     if notes_directory == path[:len(notes_directory)]:
         path = path[len(notes_directory):]
 
     return path
+
+
+def get_full_path(notes_directory, relative_path):
+    '''Get a full path on the local filesystem from a
+    relative path
+    '''
+
+    if not relative_path:
+        raise ValueError('No path provided!')
+
+    if notes_directory in relative_path:
+        # We already have a full path
+        return relative_path
+
+    # Always work with paths that start with slashes
+    # and do not end with slashes
+    if notes_directory[0] != '/':
+        notes_directory = '/' + notes_directory
+    if notes_directory[-1] == '/':
+        notes_directory = notes_directory[:-1]
+    if relative_path[0] != '/':
+        relative_path = '/' + relative_path
+
+    return notes_directory + relative_path
 
 
 def get_display_path(path, directory_filter=None):

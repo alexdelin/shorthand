@@ -29,6 +29,7 @@ from shorthand.utils.typeahead import get_typeahead_suggestions
 from shorthand.utils.paths import get_relative_path, get_display_path
 from shorthand.utils.git import pull_repo
 from shorthand.utils.api import wrap_response_data
+from shorthand.utils.edit import update_note
 
 from static_elements import static_content
 
@@ -345,10 +346,22 @@ def get_full_note():
 
     path = request.args.get('path')
 
+    #TODO - remove this and use the path utility
     if SHORTHAND_CONFIG['notes_directory'] not in path:
         path = SHORTHAND_CONFIG['notes_directory'] + path
 
     return get_note(path)
+
+
+@app.route('/update_note', methods=['POST'])
+def write_updated_note():
+
+    path = request.args.get('path')
+    request.get_data()
+    content = request.data.decode('utf-8')
+
+    update_note(SHORTHAND_CONFIG['notes_directory'], path, content)
+    return 'Note Updated'
 
 
 @app.route('/render', methods=['GET'])
@@ -370,7 +383,11 @@ def send_rendered_note():
 
 @app.route('/editor', methods=['GET'])
 def show_editor():
-    return render_template('editor.j2', static_content=static_content)
+    file_path = SHORTHAND_CONFIG['notes_directory'] + request.args.get('path')
+    file_content = get_file_content(file_path)
+    return render_template('editor.j2', file_content=file_content,
+                           file_path=request.args.get('path'),
+                           static_content=static_content)
 
 
 @app.route('/calendar', methods=['GET'])
