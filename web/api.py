@@ -368,6 +368,11 @@ def send_rendered_note():
                            static_content=static_content)
 
 
+@app.route('/editor', methods=['GET'])
+def show_editor():
+    return render_template('editor.j2', static_content=static_content)
+
+
 @app.route('/calendar', methods=['GET'])
 def show_calendar():
 

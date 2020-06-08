@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    {{ static_content['common_imports'] }}
+
+    <!-- Materialize Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!-- Editor Code -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.3.1/ace.js"></script>
+
+    <meta charset='utf-8'>
+    <title>Notes</title>
+
+<style type="text/css" media="screen">
+    #out {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+    }
+</style>
+
+</head>
+<body>
+
+<div class="row fullwrapper justify-content-center">
+    <div class="render-pagewrapper">
+
+        {{ static_content['header_html'] }}
+
+        <div class="row content">
+            <div class="note-content">
+                <div id="out"># This is a sample note
+It has lots of additional content included
+                </div>
+            </div>
+        </div>
+        <div class="row footer-bar">
+            <div class="col-md-12"></div>
+        </div>
+    </div>
+</div>
+
+{{ static_content['modal_block'] }}
+
+<script>
+// Draw Editor
+var editor = ace.edit("out");
+editor.setTheme("ace/theme/monokai");
+editor.session.setMode("ace/mode/markdown");
+</script>
+
+</body>
+</html>
