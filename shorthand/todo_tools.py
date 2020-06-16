@@ -11,7 +11,10 @@ from shorthand.utils.patterns import INCOMPLETE_PREFIX_GREP, \
     VALID_INCOMPLETE_PATTERN, VALID_COMPLETE_PATTERN, \
     UNFINISHED_UNSTAMPED_PATTERN, FINISHED_START_STAMPED_PATTERN, \
     FINISHED_UNSTAMPED_PATTERN, START_STAMP_ONLY_PATTERN, \
-    START_END_STAMP_ONLY_PATTERN, TODAY_GREP, TODAY_LINE_PATTERN, escape_for_grep
+    START_END_STAMP_ONLY_PATTERN, TODAY_GREP, TODAY_LINE_PATTERN, \
+    ALL_QUESTIONS_GREP, UNSTAMPED_QUESTION, STAMPED_QUESTION, \
+    ANSWER_PATTERN, UNSTAMPED_ANSWER, STAMPED_ANSWER, \
+    escape_for_grep
 
 # Set up Regexes to use for finding files to process with `grep`
 PATTERN_MAPPING = {
@@ -26,9 +29,49 @@ SUPPORTED_SORT_FIELDS = ['start_date']
 log = logging.getLogger(__name__)
 
 
-def stamp_notes(notes_directory, stamp_todos=True, stamp_today=True, grep_path='grep'):
+def stamp_notes(notes_directory, stamp_todos=True, stamp_today=True,
+                stamp_questions=True, stamp_answers=True,
+                grep_path='grep'):
+    '''Stamp notes for the purpose of inserting date stamps
+    as a convenience feature. This function makes the following
+    replacements:
+
+    --- Incomplete Todos ---
+        [] This is a sample :tag:
+        [ ] (2020-01-01) This is a sample :tag:
+        --or--
+        [ ] This is a sample :tag:
+        [ ] (2020-01-01) This is a sample :tag:
+
+    --- Complete Todos ---
+        [X] (2020-01-01) This is a sample :tag:
+        [X] (2020-01-01 -> 2020-01-02) This is a sample :tag:
+        --or--
+        [X] This is a sample :tag:
+        [X] (2020-01-02 -> 2020-01-02) This is a sample :tag:
+
+    --- Skipped Todos ---
+        [S] (2020-01-01) This is a sample :tag:
+        [S] (2020-01-01 -> 2020-01-02) This is a sample :tag:
+        --or--
+        [S] This is a sample :tag:
+        [S] (2020-01-02 -> 2020-01-02) This is a sample :tag:
+
+    --- Date Placeholders ---
+        ## This is a subsection \today
+        ## This is a subsection 2020-01-01
+
+    --- Questions ---
+        ? This is a sample
+        ? (2020-01-01) This is a sample
+
+    --- Answers ---
+        @ This is a sample
+        @ (2020-01-01) This is a sample
+    '''
 
     log.info('Stamping notes')
+
     # Stamp start and end dates for todo elements
     if stamp_todos:
         grep_command = '{grep_path} -r "{pattern}" {directory} | '\
@@ -139,6 +182,102 @@ def stamp_notes(notes_directory, stamp_todos=True, stamp_today=True, grep_path='
                                 timestamp=datetime.now().isoformat()[:10]),
                             line)
                         log.info(f'Replaced today placeholder "{line}"')
+                        stamped_content.append(line)
+                    else:
+                        # no today placeholders
+                        stamped_content.append(line)
+
+            with open(filename, 'w') as write_file_object:
+                log.debug(f'Saving changes in file {filename}')
+                write_file_object.write(''.join(stamped_content))
+
+    # Stamp Questions
+    if stamp_questions:
+
+        unstamped_questions_grep_command = '{grep_path} -r "{question_pattern}" {directory} | '\
+                       '{grep_path} -v "{stamped_question_pattern}" | '\
+                       '{grep_path} -v "\\.git"'.format(
+                            grep_path=grep_path,
+                            question_pattern=escape_for_grep(ALL_QUESTIONS_GREP),
+                            stamped_question_pattern=escape_for_grep(STAMPED_QUESTION),
+                            directory=notes_directory)
+
+        log.debug(f'running grep command "{unstamped_questions_grep_command}" to get unstamped questions')
+        questions_proc = Popen(unstamped_questions_grep_command,
+                               stdout=PIPE, stderr=PIPE,
+                               shell=True)
+
+        questions_output, err = questions_proc.communicate()
+        questions_output_lines = questions_output.decode().split('\n')
+        questions_matched_filenames = [line.split(':')[0] for line in questions_output_lines if line.strip()]
+        questions_matched_filenames = list(set(questions_matched_filenames))
+
+        unstamped_question_regex = re.compile(UNSTAMPED_QUESTION)
+
+        for filename in questions_matched_filenames:
+            log.info(f'Stamping questions in {filename}')
+            with open(filename, 'r') as file_object:
+
+                stamped_content = []
+
+                for line in file_object:
+
+                    if unstamped_question_regex.match(line):
+                        # unstamped question
+                        log.info(f'Found unstamped question "{line}"')
+                        line = unstamped_question_regex.sub(
+                            '\\g<1>? ({timestamp}) '.format(
+                                timestamp=datetime.now().isoformat()[:10]),
+                            line)
+                        log.info(f'Writing stamped question "{line.rstrip()}"')
+                        stamped_content.append(line)
+                    else:
+                        # no today placeholders
+                        stamped_content.append(line)
+
+            with open(filename, 'w') as write_file_object:
+                log.debug(f'Saving changes in file {filename}')
+                write_file_object.write(''.join(stamped_content))
+
+    # Stamp Answers
+    if stamp_answers:
+
+        unstamped_answers_grep_command = '{grep_path} -r "{answer_pattern}" {directory} | '\
+                       '{grep_path} -v "{stamped_answer_pattern}" | '\
+                       '{grep_path} -v "\\.git"'.format(
+                            grep_path=grep_path,
+                            answer_pattern=escape_for_grep(ANSWER_PATTERN),
+                            stamped_answer_pattern=escape_for_grep(STAMPED_ANSWER),
+                            directory=notes_directory)
+
+        log.debug(f'running grep command "{unstamped_answers_grep_command}" to get unstamped answers')
+        answers_proc = Popen(unstamped_answers_grep_command,
+                               stdout=PIPE, stderr=PIPE,
+                               shell=True)
+
+        answers_output, err = answers_proc.communicate()
+        answers_output_lines = answers_output.decode().split('\n')
+        answers_matched_filenames = [line.split(':')[0] for line in answers_output_lines if line.strip()]
+        answers_matched_filenames = list(set(answers_matched_filenames))
+
+        unstamped_answer_regex = re.compile(UNSTAMPED_ANSWER)
+
+        for filename in answers_matched_filenames:
+            log.info(f'Stamping answers in {filename}')
+            with open(filename, 'r') as file_object:
+
+                stamped_content = []
+
+                for line in file_object:
+
+                    if unstamped_answer_regex.match(line):
+                        # unstamped answer
+                        log.info(f'Found unstamped answer "{line}"')
+                        line = unstamped_answer_regex.sub(
+                            '\\g<1>@ ({timestamp}) '.format(
+                                timestamp=datetime.now().isoformat()[:10]),
+                            line)
+                        log.info(f'Writing stamped answer "{line.rstrip()}"')
                         stamped_content.append(line)
                     else:
                         # no today placeholders
@@ -351,6 +490,8 @@ def analyze_todos(todos):
     month_counts = {}
     for todo in todos:
         date = todo.get('start_date')
+        if not date:
+            continue
         month = date[:7]
         if month not in month_counts.keys():
             month_counts[month] = 1

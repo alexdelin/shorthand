@@ -2,6 +2,8 @@ import shlex
 import logging
 from subprocess import Popen, PIPE
 
+from shorthand.utils.paths import get_full_path
+
 
 log = logging.getLogger(__name__)
 
@@ -119,9 +121,16 @@ def get_context(filename, line_number, width):
     }
 
 
-def get_note(path):
+def get_note(notes_directory, path):
+    '''Get the full raw content of a note as a string
+    given its path, which can be either a relative path
+    within the notes directory or a full path on the
+    filesystem
+    '''
 
-    with open(path, 'r') as note_file_object:
+    full_path = get_full_path(notes_directory, path)
+
+    with open(full_path, 'r') as note_file_object:
         note_content = note_file_object.read()
 
     return note_content

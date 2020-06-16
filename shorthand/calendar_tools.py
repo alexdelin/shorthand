@@ -135,6 +135,8 @@ def get_calendar(notes_directory, directory_filter=None, grep_path='grep'):
     # Create Calendar from events
     for event in events:
         event_date = event['date']
+        if not event_date:
+            continue
 
         event_year = event_date[:4]
         event_month = event_date[5:7]

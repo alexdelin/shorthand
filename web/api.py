@@ -345,12 +345,7 @@ def get_line_context():
 def get_full_note():
 
     path = request.args.get('path')
-
-    #TODO - remove this and use the path utility
-    if SHORTHAND_CONFIG['notes_directory'] not in path:
-        path = SHORTHAND_CONFIG['notes_directory'] + path
-
-    return get_note(path)
+    return get_note(SHORTHAND_CONFIG['notes_directory'], path)
 
 
 @app.route('/update_note', methods=['POST'])
