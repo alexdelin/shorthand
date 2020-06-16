@@ -68,9 +68,30 @@ def stamp_notes(notes_directory, stamp_todos=True, stamp_today=True,
     --- Answers ---
         @ This is a sample
         @ (2020-01-01) This is a sample
+
+    This function returns a changes object of the form:
+    {
+        "/file/path/1": [
+            {
+                "type": "incomplete_todo",
+                "line_number": 51,
+                "before": "[] This is a sample",
+                "after": "[ ] (2020-01-01) This is a sample",
+            }
+        ],
+        "/file/path/2": [
+            {
+                "type": "date_placeholder",
+                "line_number": 37,
+                "before": "## Section \today",
+                "after": "## Section 2020-01-01",
+            }
+        ]
+    }
     '''
 
     log.info('Stamping notes')
+    changes = {}
 
     # Stamp start and end dates for todo elements
     if stamp_todos:
@@ -107,37 +128,65 @@ def stamp_notes(notes_directory, stamp_todos=True, stamp_today=True,
 
                 stamped_content = []
 
-                for line in file_object:
+                for line_number, line in enumerate(file_object):
 
                     if unfinished_unstamped_regex.match(line):
                         # unfinished unstamped
                         log.info(f'Found unstamped unfinished todo "{line}"')
-                        line = unfinished_unstamped_regex.sub(
+                        new_line = unfinished_unstamped_regex.sub(
                             '\\g<1>[ ] ({timestamp}) '.format(
                                 timestamp=datetime.now().isoformat()[:10]),
                             line)
-                        log.info(f'Writing stamped unfinished todo "{line}"')
-                        stamped_content.append(line)
+                        log.info(f'Writing stamped unfinished todo "{new_line.rstrip()}"')
+                        stamped_content.append(new_line)
+
+                        change_details = {
+                            "type": "incomplete_todo",
+                            "line_number": line_number + 1,
+                            "before": line.rstrip(),
+                            "after": new_line.rstrip(),
+                        }
+                        changes.setdefault(filename, [])
+                        changes[filename].append(change_details)
 
                     elif finished_start_stamped_regex.match(line):
                         # finished with start stamped
                         log.info(f'Found unstamped finished todo "{line}"')
-                        line = finished_start_stamped_regex.sub(
+                        new_line = finished_start_stamped_regex.sub(
                             '\\g<1>[\\g<3>] (\\g<6> -> {timestamp_2}) '.format(
                                 timestamp_2=datetime.now().isoformat()[:10]),
                             line)
-                        log.info(f'Writing stamped finished todo "{line}"')
-                        stamped_content.append(line)
+                        log.info(f'Writing stamped finished todo "{new_line.rstrip()}"')
+                        stamped_content.append(new_line)
+
+                        change_details = {
+                            "type": "finished_todo",
+                            "line_number": line_number + 1,
+                            "before": line.rstrip(),
+                            "after": new_line.rstrip(),
+                        }
+                        changes.setdefault(filename, [])
+                        changes[filename].append(change_details)
 
                     elif finished_unstamped_regex.match(line):
                         # finished unstamped
                         log.info(f'Found unstamped finished todo "{line}"')
-                        line = finished_unstamped_regex.sub(
+                        new_line = finished_unstamped_regex.sub(
                             '\\g<1>[\\g<3>] ({timestamp} -> {timestamp}) '.format(
                                 timestamp=datetime.now().isoformat()[:10]),
                             line)
-                        log.info(f'Writing stamped finished todo "{line}"')
-                        stamped_content.append(line)
+                        log.info(f'Writing stamped finished todo "{new_line.rstrip()}"')
+                        stamped_content.append(new_line)
+
+                        change_details = {
+                            "type": "finished_todo",
+                            "line_number": line_number + 1,
+                            "before": line.rstrip(),
+                            "after": new_line.rstrip(),
+                        }
+                        changes.setdefault(filename, [])
+                        changes[filename].append(change_details)
+
                     else:
                         # no to-dos -or- correctly formatted already
                         stamped_content.append(line)
@@ -172,17 +221,27 @@ def stamp_notes(notes_directory, stamp_todos=True, stamp_today=True,
 
                 stamped_content = []
 
-                for line in file_object:
+                for line_number, line in enumerate(file_object):
 
                     if today_placeholder_regex.match(line):
                         # Today placeholder
                         log.info(f'Found today placeholder "{line}"')
-                        line = today_placeholder_regex.sub(
+                        new_line = today_placeholder_regex.sub(
                             '\\g<1>{timestamp}\\g<3>'.format(
                                 timestamp=datetime.now().isoformat()[:10]),
                             line)
-                        log.info(f'Replaced today placeholder "{line}"')
-                        stamped_content.append(line)
+                        log.info(f'Replaced today placeholder "{new_line.rstrip()}"')
+                        stamped_content.append(new_line)
+
+                        change_details = {
+                            "type": "date_placeholder",
+                            "line_number": line_number + 1,
+                            "before": line.rstrip(),
+                            "after": new_line.rstrip(),
+                        }
+                        changes.setdefault(filename, [])
+                        changes[filename].append(change_details)
+
                     else:
                         # no today placeholders
                         stamped_content.append(line)
@@ -220,17 +279,27 @@ def stamp_notes(notes_directory, stamp_todos=True, stamp_today=True,
 
                 stamped_content = []
 
-                for line in file_object:
+                for line_number, line in enumerate(file_object):
 
                     if unstamped_question_regex.match(line):
                         # unstamped question
                         log.info(f'Found unstamped question "{line}"')
-                        line = unstamped_question_regex.sub(
+                        new_line = unstamped_question_regex.sub(
                             '\\g<1>? ({timestamp}) '.format(
                                 timestamp=datetime.now().isoformat()[:10]),
                             line)
-                        log.info(f'Writing stamped question "{line.rstrip()}"')
-                        stamped_content.append(line)
+                        log.info(f'Writing stamped question "{new_line.rstrip()}"')
+                        stamped_content.append(new_line)
+
+                        change_details = {
+                            "type": "question",
+                            "line_number": line_number + 1,
+                            "before": line.rstrip(),
+                            "after": new_line.rstrip(),
+                        }
+                        changes.setdefault(filename, [])
+                        changes[filename].append(change_details)
+
                     else:
                         # no today placeholders
                         stamped_content.append(line)
@@ -268,17 +337,27 @@ def stamp_notes(notes_directory, stamp_todos=True, stamp_today=True,
 
                 stamped_content = []
 
-                for line in file_object:
+                for line_number, line in enumerate(file_object):
 
                     if unstamped_answer_regex.match(line):
                         # unstamped answer
                         log.info(f'Found unstamped answer "{line}"')
-                        line = unstamped_answer_regex.sub(
+                        new_line = unstamped_answer_regex.sub(
                             '\\g<1>@ ({timestamp}) '.format(
                                 timestamp=datetime.now().isoformat()[:10]),
                             line)
-                        log.info(f'Writing stamped answer "{line.rstrip()}"')
-                        stamped_content.append(line)
+                        log.info(f'Writing stamped answer "{new_line.rstrip()}"')
+                        stamped_content.append(new_line)
+
+                        change_details = {
+                            "type": "answer",
+                            "line_number": line_number + 1,
+                            "before": line.rstrip(),
+                            "after": new_line.rstrip(),
+                        }
+                        changes.setdefault(filename, [])
+                        changes[filename].append(change_details)
+
                     else:
                         # no today placeholders
                         stamped_content.append(line)
@@ -287,7 +366,7 @@ def stamp_notes(notes_directory, stamp_todos=True, stamp_today=True,
                 log.debug(f'Saving changes in file {filename}')
                 write_file_object.write(''.join(stamped_content))
 
-    return 'Done!'
+    return changes
 
 
 def parse_todo(todo_line):

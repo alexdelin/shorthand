@@ -27,7 +27,16 @@ def main(args):
 
     if args.action == 'stamp':
         log.info('Stamping Notes')
-        print(stamp_notes(notes_directory))
+        changes = stamp_notes(notes_directory)
+        for file in changes.keys():
+            print(f'<<--{file}-->>')
+            for change in changes[file]:
+                print('    {line_num}(old):{old}'.format(
+                    line_num=change['line_number'], old=change['before']))
+                print('    {line_num}(new):{new}'.format(
+                    line_num=change['line_number'], new=change['after']))
+
+
     elif args.action == 'list':
         log.info('Listing Todos')
         print(get_todos(notes_directory, args.status))
