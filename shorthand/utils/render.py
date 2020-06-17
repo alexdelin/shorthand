@@ -27,11 +27,16 @@ def get_rendered_markdown(markdown_content):
     is_diagram_block = False
     is_rec_data_block = False
     rec_data_lines = []
-    for markdown_line in markdown_content_lines:
+
+    for idx, markdown_line in enumerate(markdown_content_lines):
+
+        line_number = idx + 1
+        line_span = f'<span id="line-number-{line_number}"></span>'
 
         # Grab everything for record sets
         if markdown_line.strip()[:3] != '```' and is_rec_data_block:
             rec_data_lines.append(markdown_line)
+            html_content_lines.append(line_span)
             continue
 
         # Special handling for diagram blocks
@@ -41,12 +46,15 @@ def get_rendered_markdown(markdown_content):
                 continue
             else:
                 # Get rid of any indentation so it doesn't trip up the
-                # Markdown parser into creating new paragraphs
+                # Markdown parser into creating new paragraphs which
+                # mess up mermaid
                 html_content_lines.append(markdown_line.strip())
                 continue
 
         # Handle empty or pseudo-empty lines
         if not markdown_line.strip():
+            if not is_fenced_code_block:
+                html_content_lines.append(line_span)
             html_content_lines.append(markdown_line)
             continue
 
@@ -56,6 +64,7 @@ def get_rendered_markdown(markdown_content):
             # Special handling for diagram blocks
             if markdown_line.strip()[:10] == '```mermaid':
                 is_diagram_block = True
+                html_content_lines.append(line_span)
                 html_content_lines.append('<div class="mermaid">')
                 continue
             elif is_diagram_block:
@@ -80,6 +89,7 @@ def get_rendered_markdown(markdown_content):
                                           f'record-set-table" style="width:100%" data-rec=\''
                                           f'\' data-cols=\''
                                           f'{json.dumps(column_config)}\'></table></div>')
+                html_content_lines.append(line_span)
                 rec_data_lines = []
                 continue
 
@@ -100,6 +110,7 @@ def get_rendered_markdown(markdown_content):
         # Process All to-dos
         if len(markdown_line) >= 4:
             if markdown_line.strip()[:4] in ['[ ] ', '[X] ', '[S] '] or markdown_line.strip()[:3] == '[] ':
+                html_content_lines.append(line_span)
                 todo_element = get_todo_element(markdown_line)
                 html_content_lines.append(todo_element)
                 continue
@@ -107,6 +118,7 @@ def get_rendered_markdown(markdown_content):
         # Process Questions & Answers
         if len(markdown_line) >= 2:
             if markdown_line.strip()[:2] in ['? ', '@ ']:
+                html_content_lines.append(line_span)
                 question_element = get_question_element(markdown_line)
                 html_content_lines.append(question_element)
                 continue
@@ -114,6 +126,7 @@ def get_rendered_markdown(markdown_content):
         # Process Definitions
         definition_match = definition_regex.match(markdown_line)
         if definition_match:
+            html_content_lines.append(line_span)
             definition_element = get_definition_element(definition_match, markdown_line)
             html_content_lines.append(definition_element)
             continue
@@ -125,12 +138,21 @@ def get_rendered_markdown(markdown_content):
             element_id = split_heading[1].replace(' ', '-')
             heading_html_line = f'{markdown_line}<div id="{element_id}"></div>'
             toc_markdown_line = f'{"  " * (heading_level - 1)}- [{split_heading[1]}](#{element_id})'
+            html_content_lines.append(line_span)
             html_content_lines.append(heading_html_line)
             toc_content_lines.append(toc_markdown_line)
             continue
 
-        # Catch-all for everything else
-        html_content_lines.append(markdown_line)
+        # Special handling for display style equations
+        if markdown_line.strip()[:2] == '$$' and markdown_line.strip()[-2:] == '$$':
+            html_content_lines.append(line_span)
+            html_content_lines.append('')
+            html_content_lines.append(markdown_line)
+            html_content_lines.append('')
+        else:
+            # Catch-all for everything else
+            html_content_lines.append(line_span)
+            html_content_lines.append(markdown_line)
 
     html_content = '\n'.join(html_content_lines)
     toc_content = '\n'.join(toc_content_lines)

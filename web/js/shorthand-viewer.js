@@ -23,6 +23,8 @@ $(document).ready(function() {
         });
     });
 
+    $('blockquote').addClass('blockquote text-center');
+
 });
 
 hljs.initHighlightingOnLoad();

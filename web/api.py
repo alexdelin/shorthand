@@ -13,8 +13,8 @@ from datetime import datetime
 from werkzeug.exceptions import HTTPException
 from flask import Flask, request, render_template, send_from_directory, abort
 
-from shorthand.todo_tools import get_todos, mark_todo, stamp_notes, \
-    analyze_todos
+from shorthand.todo_tools import get_todos, mark_todo, analyze_todos
+from shorthand.stamping import stamp_notes
 from shorthand.search_tools import search_notes, get_context, get_note
 from shorthand.question_tools import get_questions
 from shorthand.definition_tools import get_definitions
@@ -92,12 +92,24 @@ def show_home_page():
         for month, month_data in year_data.items():
             for day, day_data in month_data.items():
                 for event in day_data:
-                    events.append({
+                    formatted_event = {
                         'title': event['event'],
                         'start': f'{year}-{month}-{day}',
-                        'url': f'/render?path={event["file_path"]}#'
-                               f'{event["element_id"]}'
-                    })
+                        'url': f'/render?path={event["file_path"]}#line-number-{event["line_number"]}',
+                        'type': event['type']
+                    }
+                    if formatted_event['type'] == 'section':
+                        formatted_event['color'] = 'blue'
+                    elif formatted_event['type'] == 'completed_todo':
+                        formatted_event['color'] = 'red'
+                    elif formatted_event['type'] == 'skipped_todo':
+                        formatted_event['color'] = 'grey'
+                    elif formatted_event['type'] == 'question':
+                        formatted_event['color'] = 'purple'
+                    elif formatted_event['type'] == 'answer':
+                        formatted_event['color'] = 'green'
+                    events.append(formatted_event)
+
     return render_template('home.j2', num_todos=len(todos),
                            num_questions=len(questions),
                            events=json.dumps(events),
@@ -373,7 +385,8 @@ def send_rendered_note():
     toc_content = toc_content.replace("'", "\\'")
     return render_template('viewer.j2', file_content=file_content,
                            toc_content=toc_content,
-                           static_content=static_content)
+                           static_content=static_content,
+                           file_path=request.args.get('path'))
 
 
 @app.route('/editor', methods=['GET'])
@@ -406,7 +419,7 @@ def show_calendar():
                     formatted_event = {
                         'title': event['event'],
                         'start': f'{year}-{month}-{day}',
-                        'url': f'/render?path={event["file_path"]}#{event["element_id"]}',
+                        'url': f'/render?path={event["file_path"]}#line-number-{event["line_number"]}',
                         'type': event['type']
                     }
                     if formatted_event['type'] == 'section':

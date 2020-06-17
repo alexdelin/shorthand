@@ -20,7 +20,7 @@
     #out {
         position: absolute;
         width: 1000px;
-        height: 1000px;
+        height: 800px;
     }
 </style>
 
@@ -35,7 +35,7 @@
 
         {{ static_content['header_html'] }}
 
-        <div class="row">
+        <div class="row" style="padding: 10px;">
             <div class="col-auto">
                 <!-- Reload Button -->
                 <div id="reloadNote" class="btn btn-outline-success">Reload</div>
@@ -44,11 +44,17 @@
                 <!-- Save Button -->
                 <div id="saveNote" class="btn btn-outline-danger">Save</div>
             </div>
+            <div class="col-auto">
+                <!-- Save Button -->
+                <a href="/render?path={{ file_path }}" class="btn btn-outline-warning">View</a>
+            </div>
         </div>
 
         <div class="row content">
-            <div class="note-content" style="width: 1000px; padding-left: 0px; height: 1000px;">
-                <div id="out">{{file_content}}</div>
+            <div class="col-md-12">
+                <div class="note-content" style="width: 1000px; padding-left: 0px; height: 800px;">
+                    <div id="out">{{file_content}}</div>
+                </div>
             </div>
         </div>
         <div class="row footer-bar">

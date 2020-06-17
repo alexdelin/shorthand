@@ -5,7 +5,8 @@ import logging
 
 from shorthand.utils.config import get_notes_config
 from shorthand.utils.logging import setup_logging
-from shorthand.todo_tools import stamp_notes, get_todos
+from shorthand.todo_tools import get_todos
+from shorthand.stamping import stamp_notes
 
 
 SHORTHAND_CONFIG = get_notes_config()
@@ -29,7 +30,7 @@ def main(args):
         log.info('Stamping Notes')
         changes = stamp_notes(notes_directory)
         for file in changes.keys():
-            print(f'<<--{file}-->>')
+            print(f'\n<<--{file}-->>')
             for change in changes[file]:
                 print('    {line_num}(old):{old}'.format(
                     line_num=change['line_number'], old=change['before']))

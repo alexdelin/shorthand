@@ -2,7 +2,7 @@
 function getTodoElement(text, filePath, displayPath, startDate, endDate, line, tags, idx) {
     return '<tr><td class="todoText"><div id="todo-' + idx + '">' + text + getTagsElements(tags) +
            '</div></td><td class="filePath" path="' + filePath + '">' +
-           '<a href="/render?path=' + filePath + '">' + displayPath + '</a>' +
+           '<a href="/render?path=' + filePath + '#line-number-' + line + '">' + displayPath + '</a>' +
            '</td><td>' + startDate +
            '</td><td>' + endDate +
            '</td><td class="lineNumber">' + line +
