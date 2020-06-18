@@ -16,14 +16,6 @@
     <meta charset='utf-8'>
     <title>Notes</title>
 
-<style type="text/css" media="screen">
-    #out {
-        position: absolute;
-        width: 1000px;
-        height: 800px;
-    }
-</style>
-
 </head>
 <body>
 
@@ -53,7 +45,7 @@
         <div class="row content">
             <div class="col-md-12">
                 <div class="note-content" style="width: 1000px; padding-left: 0px; height: 800px;">
-                    <div id="out">{{file_content}}</div>
+                    <div id="editor" style="position: absolute; width: 1000px; height: 800px;">{{file_content}}</div>
                 </div>
             </div>
         </div>
@@ -67,7 +59,7 @@
 
 <script>
 // Draw Editor
-var editor = ace.edit("out");
+var editor = ace.edit("editor");
 // editor.setTheme("ace/theme/monokai");
 editor.session.setMode("ace/mode/markdown");
 </script>
