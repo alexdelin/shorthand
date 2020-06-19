@@ -27,7 +27,7 @@ $("#todoSearch").click( function() {
     // Search To-Dos
     console.log('searching To-Dos');
     $.ajax({
-        url: '/get_todos',
+        url: '/api/v1/todos',
         type: 'GET',
         data: {
             status: todoFilter,
@@ -157,24 +157,36 @@ function setTodoResultActions() {
         filePath = $(rowElement).find('.filePath')[0].innerText
         lineNumber = $(rowElement).find('.lineNumber')[0].innerText
         var contextElement = '<pre><code class="markdown">'
-        $.get('get_context', {filename: filePath, line_number: lineNumber}, function(contextResponse) {
-            var loadedContext = JSON.parse(contextResponse)
-            console.log(loadedContext)
-            _.each(loadedContext['before'], function (beforeLine) {
-                contextElement += beforeLine + '\n'
-            });
-            contextElement += loadedContext['line'] + '\n'
-            _.each(loadedContext['after'], function (afterLine) {
-                contextElement += afterLine + '\n'
-            });
-            contextElement += '</code></pre>'
-            console.log(contextElement)
-            if (resultType == 'todo') {
-                $(rowElement).find('.todoText')[0].innerHTML = contextElement
-            } else if (resultType == 'search') {
-                $(rowElement).find('.searchResult')[0].innerHTML = contextElement
-            } else if (resultType == 'question') {
-                $(rowElement).find('.questionText')[0].innerHTML = contextElement
+        $.ajax({
+            url: '/api/v1/context',
+            type: 'GET',
+            data: {
+                filename: filePath,
+                line_number: lineNumber
+            },
+            success: function(contextResponse) {
+                var loadedContext = JSON.parse(contextResponse)
+                console.log(loadedContext)
+                _.each(loadedContext['before'], function (beforeLine) {
+                    contextElement += beforeLine + '\n'
+                });
+                contextElement += loadedContext['line'] + '\n'
+                _.each(loadedContext['after'], function (afterLine) {
+                    contextElement += afterLine + '\n'
+                });
+                contextElement += '</code></pre>'
+                console.log(contextElement)
+                if (resultType == 'todo') {
+                    $(rowElement).find('.todoText')[0].innerHTML = contextElement
+                } else if (resultType == 'search') {
+                    $(rowElement).find('.searchResult')[0].innerHTML = contextElement
+                } else if (resultType == 'question') {
+                    $(rowElement).find('.questionText')[0].innerHTML = contextElement
+                }
+            },
+            error: function(responseData) {
+                var loadedResponse = JSON.parse(responseData.responseText)
+                showModal(loadedResponse.error)
             }
         });
     });
@@ -185,15 +197,21 @@ function setTodoResultActions() {
         rowElement = ev.currentTarget.parentElement.parentElement;
         todoFile = $(rowElement).find('.filePath')[0].getAttribute('path');
         todoLine = $(rowElement).find('.lineNumber')[0].innerText;
-        $.get(
-            'mark_todo',
-            {
+        $.ajax({
+            url: '/api/v1/mark_todo',
+            type: 'GET',
+            data: {
                 filename: todoFile,
                 line_number: todoLine,
                 status: 'complete'
             },
-            function(contextResponse) {
+            success: function(markTodoResponse) {
                 $("#todoSearch").click();
+            },
+            error: function(responseData) {
+                var loadedResponse = JSON.parse(responseData.responseText)
+                showModal(loadedResponse.error)
+            }
         });
     });
 
@@ -203,15 +221,17 @@ function setTodoResultActions() {
         rowElement = ev.currentTarget.parentElement.parentElement
         todoFile = $(rowElement).find('.filePath')[0].getAttribute('path')
         todoLine = $(rowElement).find('.lineNumber')[0].innerText
-        $.get(
-            'mark_todo',
-            {
+        $.ajax({
+            url: '/api/v1/mark_todo',
+            type: 'GET',
+            data: {
                 filename: todoFile,
                 line_number: todoLine,
                 status: 'skipped'
             },
-            function(contextResponse) {
+            success: function(contextResponse) {
                 $("#todoSearch").click();
+            }
         });
     });
 

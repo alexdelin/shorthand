@@ -68,7 +68,7 @@ def send_img(path):
     return send_from_directory('img', path)
 
 
-@app.route('/pull', methods=['GET', 'POST'])
+@app.route('/api/v1/pull', methods=['GET', 'POST'])
 def pull_notes_repo():
     return pull_repo(SHORTHAND_CONFIG['notes_directory'])
 
@@ -169,7 +169,7 @@ def show_databases():
                            static_content=static_content)
 
 
-@app.route('/get_todos', methods=['GET'])
+@app.route('/api/v1/todos', methods=['GET'])
 def get_current_todos():
 
     status = request.args.get('status', 'incomplete')
@@ -195,7 +195,21 @@ def get_current_todos():
     return json.dumps(wrapped_response)
 
 
-@app.route('/get_questions', methods=['GET'])
+@app.route('/api/v1/mark_todo', methods=['GET'])
+def mark_todo_status():
+
+    filename = request.args.get('filename')
+    line_number = int(request.args.get('line_number'))
+    status = request.args.get('status')
+
+    # Allow Relative paths within notes dir to be specified
+    if SHORTHAND_CONFIG['notes_directory'] not in filename:
+        filename = SHORTHAND_CONFIG['notes_directory'] + filename
+
+    return mark_todo(filename, line_number, status)
+
+
+@app.route('/api/v1/questions', methods=['GET'])
 def fetch_questions():
 
     status = request.args.get('status', 'all')
@@ -212,7 +226,7 @@ def fetch_questions():
     return json.dumps(wrap_response_data(questions))
 
 
-@app.route('/get_tags', methods=['GET'])
+@app.route('/api/v1/tags', methods=['GET'])
 def fetch_tags():
 
     directory_filter = request.args.get('directory_filter')
@@ -226,7 +240,7 @@ def fetch_tags():
     return json.dumps(wrap_response_data(tags))
 
 
-@app.route('/get_calendar', methods=['GET'])
+@app.route('/api/v1/calendar', methods=['GET'])
 def fetch_calendar():
 
     directory_filter = request.args.get('directory_filter')
@@ -262,7 +276,7 @@ def show_glossary():
                            static_content=static_content)
 
 
-@app.route('/get_definitions', methods=['GET'])
+@app.route('/api/v1/definitions', methods=['GET'])
 def fetch_definitions():
 
     directory_filter = request.args.get('directory_filter')
@@ -276,7 +290,7 @@ def fetch_definitions():
     return json.dumps(wrap_response_data(definitions))
 
 
-@app.route('/get_record_sets', methods=['GET'])
+@app.route('/api/v1/record_sets', methods=['GET'])
 def fetch_record_sets():
 
     directory_filter = request.args.get('directory_filter')
@@ -290,7 +304,7 @@ def fetch_record_sets():
     return json.dumps(wrap_response_data(record_sets))
 
 
-@app.route('/get_record_set', methods=['GET'])
+@app.route('/api/v1/record_set', methods=['GET'])
 def fetch_record_set():
 
     file_path = request.args.get('file_path')
@@ -325,7 +339,7 @@ def show_search_page():
                            static_content=static_content)
 
 
-@app.route('/search_notes', methods=['GET'])
+@app.route('/api/v1/search', methods=['GET'])
 def get_search_results():
 
     query_string = request.args.get('query_string')
@@ -339,7 +353,7 @@ def get_search_results():
     return json.dumps(wrap_response_data(search_results))
 
 
-@app.route('/get_context', methods=['GET'])
+@app.route('/api/v1/context', methods=['GET'])
 def get_line_context():
 
     filename = request.args.get('filename')
@@ -353,14 +367,14 @@ def get_line_context():
     return json.dumps(get_context(filename, line_number, width))
 
 
-@app.route('/get_note', methods=['GET'])
+@app.route('/api/v1/note', methods=['GET'])
 def get_full_note():
 
     path = request.args.get('path')
     return get_note(SHORTHAND_CONFIG['notes_directory'], path)
 
 
-@app.route('/update_note', methods=['POST'])
+@app.route('/api/v1/note', methods=['POST'])
 def write_updated_note():
 
     path = request.args.get('path')
@@ -441,7 +455,7 @@ def show_calendar():
                            static_content=static_content)
 
 
-@app.route('/toc', methods=['GET'])
+@app.route('/api/v1/toc', methods=['GET'])
 def get_toc_data():
     return json.dumps(get_toc(SHORTHAND_CONFIG['notes_directory']))
 
@@ -453,21 +467,7 @@ def show_browse_page():
                            static_content=static_content)
 
 
-@app.route('/mark_todo', methods=['GET'])
-def mark_todo_status():
-
-    filename = request.args.get('filename')
-    line_number = int(request.args.get('line_number'))
-    status = request.args.get('status')
-
-    # Allow Relative paths within notes dir to be specified
-    if SHORTHAND_CONFIG['notes_directory'] not in filename:
-        filename = SHORTHAND_CONFIG['notes_directory'] + filename
-
-    return mark_todo(filename, line_number, status)
-
-
-@app.route('/typeahead', methods=['GET'])
+@app.route('/api/v1/typeahead', methods=['GET'])
 def get_typeahead():
 
     query_string = request.args.get('query')
@@ -477,7 +477,7 @@ def get_typeahead():
         query_string))
 
 
-@app.route('/stamp', methods=['GET'])
+@app.route('/api/v1/stamp', methods=['GET'])
 def stamp():
 
     return stamp_notes(

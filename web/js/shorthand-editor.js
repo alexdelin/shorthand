@@ -3,7 +3,7 @@ function saveNote() {
     var filePath = $('#meta-file-path').text()
     var noteContent = editor.getValue()
     $.ajax({
-        url: 'update_note?path=' + filePath,
+        url: '/api/v1/note?path=' + filePath,
         type: 'POST',
         contentType: 'text/plain',
         data: noteContent,
@@ -23,7 +23,7 @@ function saveNote() {
 function reloadNote() {
     var filePath = $('#meta-file-path').text()
     $.ajax({
-        url: 'get_note',
+        url: '/api/v1/note',
         type: 'GET',
         data: {
             path: filePath

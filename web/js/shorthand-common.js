@@ -16,7 +16,7 @@ function setCount(count) {
 $("#stampNotes").click(function() {
     console.log( "Handler for stamp notes called." );
     $.ajax({
-        url: '/stamp',
+        url: '/api/v1/stamp',
         data: {},
         success: function(responseData){
             showModal(message='Stamped Notes!', title='Updated Notes')
@@ -30,7 +30,7 @@ $("#stampNotes").click(function() {
 
 $('#syncIcon').click(function() {
     $.ajax({
-        url: '/pull',
+        url: '/api/v1/pull',
         type: 'GET',
         data: {},
         success: function(responseData) {

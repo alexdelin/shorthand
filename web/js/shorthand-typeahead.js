@@ -3,7 +3,7 @@ var searchNotes = new Bloodhound({
   datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
   queryTokenizer: Bloodhound.tokenizers.whitespace,
   remote: {
-    url: '/typeahead?query=%QUERY',
+    url: '/api/v1/typeahead?query=%QUERY',
     wildcard: '%QUERY'
   }
 });

@@ -1,5 +1,3 @@
-
-
 // Wire click events for show / hide TOC button
 $("#showTOC").click(function(){
   $(".toc-content").toggleClass("hidden");

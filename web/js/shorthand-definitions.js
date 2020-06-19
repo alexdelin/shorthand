@@ -22,7 +22,7 @@ $("#definitionSearch").click(function() {
     // Search Definitions
     console.log('searching Definitions');
     $.ajax({
-        url: 'get_definitions',
+        url: '/api/v1/definitions',
         type: 'GET',
         data: {
             directory_filter: directoryFilter

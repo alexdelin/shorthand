@@ -23,7 +23,7 @@ $("#questionSearch").click(function() {
     // Search Questions
     console.log('searching Questions');
     $.ajax({
-        url: 'get_questions',
+        url: '/api/v1/questions',
         type: 'GET',
         data: {
             status: questionFilter,
@@ -72,7 +72,8 @@ function setQuestionResultActions() {
         lineNumber = $(rowElement).find('.lineNumber')[0].innerText
         var contextElement = '<pre><code class="markdown">'
         $.ajax({
-            url: '/get_context',
+            url: '/api/v1/context',
+            type: 'GET',
             data: {
                 filename: filePath,
                 line_number: lineNumber
