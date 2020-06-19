@@ -6,7 +6,7 @@ function getDefinitionElement(term, file, display, line, definition) {
            display + '</a>' + '</td><td class="lineNumber">' + line +
            '</td><td>' + definition +
            '</td><td class="actionButtons">' +
-               '<span class="getContext">🔎</span> ' +
+               '<span class="editButton">Edit - Placeholder</span> ' +
            '</td></tr>';
 };
 

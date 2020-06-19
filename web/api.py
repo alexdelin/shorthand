@@ -15,7 +15,7 @@ from flask import Flask, request, render_template, send_from_directory, abort
 
 from shorthand.todo_tools import get_todos, mark_todo, analyze_todos
 from shorthand.stamping import stamp_notes
-from shorthand.search_tools import search_notes, get_context, get_note
+from shorthand.search_tools import search_notes, get_note
 from shorthand.question_tools import get_questions
 from shorthand.definition_tools import get_definitions
 from shorthand.tag_tools import get_tags
@@ -351,20 +351,6 @@ def get_search_results():
         case_sensitive=case_sensitive,
         grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
     return json.dumps(wrap_response_data(search_results))
-
-
-@app.route('/api/v1/context', methods=['GET'])
-def get_line_context():
-
-    filename = request.args.get('filename')
-    line_number = int(request.args.get('line_number'))
-    width = int(request.args.get('width', 5))
-
-    # Allow Relative paths within notes dir to be specified
-    if SHORTHAND_CONFIG['notes_directory'] not in filename:
-        filename = SHORTHAND_CONFIG['notes_directory'] + filename
-
-    return json.dumps(get_context(filename, line_number, width))
 
 
 @app.route('/api/v1/note', methods=['GET'])

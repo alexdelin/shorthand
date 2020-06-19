@@ -7,7 +7,6 @@ function getTodoElement(text, filePath, displayPath, startDate, endDate, line, t
            '</td><td>' + endDate +
            '</td><td class="lineNumber">' + line +
            '</td><td class="actionButtons">' +
-                '<span class="getContext"><img src="/img/eye-24.svg"></span> ' +
                 '<span class="markComlete"><img src="/img/check-circle-24.svg"></span> ' +
                 '<span class="markSkipped"><img src="/img/skip-24.svg"></span> ' +
                 '<span class="editContent"><img src="/img/pencil-24.svg"></span>' +
@@ -149,47 +148,6 @@ function renderTodoResults(todoData) {
 
 // Wire up action buttons on results
 function setTodoResultActions() {
-
-    // Wire up show context button
-    $(".getContext").click(function(ev) {
-        console.log('Showing Context')
-        rowElement = ev.currentTarget.parentElement.parentElement
-        filePath = $(rowElement).find('.filePath')[0].innerText
-        lineNumber = $(rowElement).find('.lineNumber')[0].innerText
-        var contextElement = '<pre><code class="markdown">'
-        $.ajax({
-            url: '/api/v1/context',
-            type: 'GET',
-            data: {
-                filename: filePath,
-                line_number: lineNumber
-            },
-            success: function(contextResponse) {
-                var loadedContext = JSON.parse(contextResponse)
-                console.log(loadedContext)
-                _.each(loadedContext['before'], function (beforeLine) {
-                    contextElement += beforeLine + '\n'
-                });
-                contextElement += loadedContext['line'] + '\n'
-                _.each(loadedContext['after'], function (afterLine) {
-                    contextElement += afterLine + '\n'
-                });
-                contextElement += '</code></pre>'
-                console.log(contextElement)
-                if (resultType == 'todo') {
-                    $(rowElement).find('.todoText')[0].innerHTML = contextElement
-                } else if (resultType == 'search') {
-                    $(rowElement).find('.searchResult')[0].innerHTML = contextElement
-                } else if (resultType == 'question') {
-                    $(rowElement).find('.questionText')[0].innerHTML = contextElement
-                }
-            },
-            error: function(responseData) {
-                var loadedResponse = JSON.parse(responseData.responseText)
-                showModal(loadedResponse.error)
-            }
-        });
-    });
 
     // Wire up mark complete button
     $(".markComlete").click(function(ev) {

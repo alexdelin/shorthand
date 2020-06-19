@@ -16,7 +16,7 @@ function renderSearchResults(searchData) {
                             '</td><td class="filePath">' + file +
                             '</td><td class="lineNumber">' + line +
                             '</td><td class="actionButtons">' +
-                                '<span class="getContext">🔎</span> ' +
+                                '<span class="editButton">Edit - Placeholder</span> ' +
                             '</td></tr>'
         searchResultElement = searchResultElement + newRowElement
     })
