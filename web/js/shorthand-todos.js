@@ -247,3 +247,35 @@ $("#showStats").click( function() {
     console.log('Show Stats clicked!')
     $('#statsContainer').toggleClass('hidden')
 });
+
+// Update list of tags whenever the directory filter is changed
+$("#directoryFilter").change(function () {
+    var newDirectory = $(this).val();
+    $.ajax({
+        url: '/api/v1/tags',
+        type: 'GET',
+        data: {
+            directory_filter: newDirectory
+        },
+        success: function(response) {
+            var tagData = JSON.parse(response)
+            // Remove old options
+            $("#tagFilter option").remove();
+            // Add options for tags
+            $("select#tagFilter").append( $("<option>")
+                .val('ALL')
+                .html('ALL')
+            );
+            _.each(tagData['items'], function(item){
+                $("select#tagFilter").append( $("<option>")
+                    .val(item)
+                    .html(item)
+                );
+            });
+        },
+        error: function(responseData) {
+            var loadedResponse = JSON.parse(responseData.responseText)
+            showModal(loadedResponse.error)
+        }
+    });
+});
