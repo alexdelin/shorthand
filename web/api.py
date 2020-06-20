@@ -326,6 +326,7 @@ def fetch_record_set():
     parse_format = request.args.get('parse_format', 'json')
 
     return get_record_set(
+        notes_directory=SHORTHAND_CONFIG['notes_directory'],
         file_path=file_path,
         line_number=line_number,
         parse=parse,
