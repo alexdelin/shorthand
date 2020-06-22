@@ -74,6 +74,10 @@ class ShorthandModel(object):
                     if not todo['end_date']:
                         todo['end_date'] = datetime.now().isoformat()[:10]
 
+        # Add display path
+        for todo in todos:
+            todo['display_path'] = get_display_path(todo['file_path'], directory_filter)
+
         return todos
 
     def search_questions(self, question_status='all', directory_filter=None):

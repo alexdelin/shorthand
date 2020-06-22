@@ -151,37 +151,58 @@ ALL_QUESTIONS = {
             'answer': 'Granny Smith',
             'file_path': '/section/mixed.note',
             'line_number': '20',
-            'question': 'Which kind of apples make the best apple pie :baking:'
+            'question': 'Which kind of apples make the best apple pie',
+            'tags': ['baking'],
+            'question_date': None,
+            'answer_date': None
         }, {
             'answer': '42',
             'file_path': '/questions.note',
             'line_number': '6',
-            'question': 'What is the meaning of life :philosophy:'
+            'question': 'What is the meaning of life',
+            'tags': ['philosophy'],
+            'question_date': None,
+            'answer_date': None
         }, {
             'answer': 'blue',
             'file_path': '/questions.note',
             'line_number': '8',
-            'question': 'What color is the sky'
+            'question': 'What color is the sky',
+            'tags': [],
+            'question_date': None,
+            'answer_date': None
         }, {
             'answer': 'To get to the other side',
             'file_path': '/questions.note',
             'line_number': '12',
-            'question': 'Why did the chicken cross the road'
+            'question': 'Why did the chicken cross the road',
+            'tags': [],
+            'question_date': None,
+            'answer_date': None
         }, {
             'answer': None,
             'file_path': '/questions.note',
             'line_number': '16',
-            'question': 'Is the world eternal'
+            'question': 'Is the world eternal',
+            'tags': [],
+            'question_date': None,
+            'answer_date': None
         }, {
             'answer': None,
             'file_path': '/questions.note',
             'line_number': '17',
-            'question': 'What is the best kind of cereal :food:'
+            'question': 'What is the best kind of cereal',
+            'tags': ['food'],
+            'question_date': None,
+            'answer_date': None
         }, {
             'answer': None,
             'file_path': '/questions.note',
             'line_number': '21',
-            'question': 'How do you write software with no bugs :software:'
+            'question': 'How do you write software with no bugs',
+            'tags': ['software'],
+            'question_date': None,
+            'answer_date': None
         }
     ]
 }
