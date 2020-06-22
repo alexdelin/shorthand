@@ -21,6 +21,8 @@ def get_question_results(question_status='all', directory_filter=None):
 class TestQuestions(unittest.TestCase):
     """Test basic search functionality of the library"""
 
+    maxDiff = None
+
     def test_setup(self):
 
         test_dir = CONFIG['notes_directory']
@@ -30,7 +32,12 @@ class TestQuestions(unittest.TestCase):
         args = {
             'question_status': 'unanswered'
         }
-        self.assertCountEqual(get_question_results(**args), MODEL.search_questions(**args))
+        library_results = get_question_results(**args)
+        model_results = MODEL.search_questions(**args)
+        # Some extra tests to make debugging easier
+        assert set(library_results[0].keys()) == set(model_results[0].keys())
+        assert len(library_results) == len(model_results)
+        self.assertCountEqual(library_results, model_results)
 
         args = {
             'question_status': 'unanswered',
