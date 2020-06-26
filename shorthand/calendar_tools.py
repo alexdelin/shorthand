@@ -74,6 +74,21 @@ def get_calendar(notes_directory, directory_filter=None, grep_path='grep'):
 
         events.append(parsed_heading)
 
+    # Add Incomplet Todos to the calendar view
+    completed_todos = get_todos(notes_directory=notes_directory,
+                      todo_status='incomplete', directory_filter=directory_filter,
+                      query_string=None, grep_path=grep_path)
+    for todo in completed_todos:
+        parsed_todo = {
+            "file_path": todo['file_path'],
+            "line_number": todo['line_number'],
+            "event": todo['todo_text'],
+            "date": todo['start_date'],
+            "element_id": "",
+            "type": "incomplete_todo"
+        }
+        events.append(parsed_todo)
+
     # Add Completed Todos to the calendar view
     completed_todos = get_todos(notes_directory=notes_directory,
                       todo_status='complete', directory_filter=directory_filter,

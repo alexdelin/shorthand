@@ -99,9 +99,11 @@ def show_home_page():
                         'type': event['type']
                     }
                     if formatted_event['type'] == 'section':
-                        formatted_event['color'] = 'blue'
-                    elif formatted_event['type'] == 'completed_todo':
+                        formatted_event['color'] = 'black'
+                    elif formatted_event['type'] == 'incomplete_todo':
                         formatted_event['color'] = 'red'
+                    elif formatted_event['type'] == 'completed_todo':
+                        formatted_event['color'] = 'blue'
                     elif formatted_event['type'] == 'skipped_todo':
                         formatted_event['color'] = 'grey'
                     elif formatted_event['type'] == 'question':
@@ -424,9 +426,11 @@ def show_calendar():
                         'type': event['type']
                     }
                     if formatted_event['type'] == 'section':
-                        formatted_event['color'] = 'blue'
-                    elif formatted_event['type'] == 'completed_todo':
+                        formatted_event['color'] = 'black'
+                    elif formatted_event['type'] == 'incomplete_todo':
                         formatted_event['color'] = 'red'
+                    elif formatted_event['type'] == 'completed_todo':
+                        formatted_event['color'] = 'blue'
                     elif formatted_event['type'] == 'skipped_todo':
                         formatted_event['color'] = 'grey'
                     elif formatted_event['type'] == 'question':
