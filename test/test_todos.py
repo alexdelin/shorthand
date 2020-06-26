@@ -85,7 +85,7 @@ class TestUnstampedTodos(unittest.TestCase):
         self.assertCountEqual(get_todo_results(**args), MODEL.search_todos(**args))
 
 
-class TestTodoStamping(object):
+class TestTodoStamping(unittest.TestCase):
     """Test stamping functionality of the library"""
 
     def test_stamp(self):

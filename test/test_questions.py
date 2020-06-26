@@ -68,3 +68,5 @@ class TestQuestions(unittest.TestCase):
             'directory_filter': 'section'
         }
         self.assertCountEqual(get_question_results(**args), MODEL.search_questions(**args))
+
+

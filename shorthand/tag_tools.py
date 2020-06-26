@@ -69,5 +69,6 @@ def extract_tags(text):
         tags = [item.strip().strip(':') for item in list(set(raw_tags))]
         # Only keep tags with at least one letter
         tags = [item for item in tags if any(char.isalpha() for char in item)]
+        tags.sort()
         clean_text = re.sub(tag_regex, '', text).strip()
         return tags, clean_text
