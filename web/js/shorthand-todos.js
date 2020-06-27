@@ -18,10 +18,10 @@ $("#todoSearch").click( function() {
     console.log('Todo Search clicked!')
 
     // Dropdown filter elements
-    var todoFilter = $('#todoType')[0].value;
-    var directoryFilter = $('#directoryFilter')[0].value;
-    var searchFilter = $('#searchFilter')[0].value
-    var tagFilter = $('#tagFilter')[0].value
+    var todoFilter = $('#todoType').val();
+    var directoryFilter = $('#directoryFilter').val();
+    var searchFilter = $('#searchFilter').val();
+    var tagFilter = $('#tagFilter').val();
 
     // Search To-Dos
     console.log('searching To-Dos');
@@ -73,7 +73,7 @@ function renderTodoResults(todoData) {
     setTodoResultActions()
     // Render markdown in todos returned
     _.each($('.todoText'), function (elem) {
-        var todoMd = $(elem).find('div')[0].innerHTML
+        var todoMd = $(elem).find('div').html();
         var targetElem = $(elem).find('div')[0]
         const tm = texmath.use(katex);
         md = markdownit({html:true}).use(tm,{delimiters:'dollars',macros:{"\\RR": "\\mathbb{R}"}});
@@ -153,8 +153,8 @@ function setTodoResultActions() {
     $(".markComlete").click(function(ev) {
         console.log('Marking Complete');
         rowElement = ev.currentTarget.parentElement.parentElement;
-        todoFile = $(rowElement).find('.filePath')[0].getAttribute('path');
-        todoLine = $(rowElement).find('.lineNumber')[0].innerText;
+        todoFile = $(rowElement).find('.filePath').attr('path');
+        todoLine = $(rowElement).find('.lineNumber').text();
         $.ajax({
             url: '/api/v1/mark_todo',
             type: 'GET',
@@ -177,8 +177,8 @@ function setTodoResultActions() {
     $(".markSkipped").click(function(ev) {
         console.log('Marking Skipped')
         rowElement = ev.currentTarget.parentElement.parentElement
-        todoFile = $(rowElement).find('.filePath')[0].getAttribute('path')
-        todoLine = $(rowElement).find('.lineNumber')[0].innerText
+        todoFile = $(rowElement).find('.filePath').attr('path');
+        todoLine = $(rowElement).find('.lineNumber').text();
         $.ajax({
             url: '/api/v1/mark_todo',
             type: 'GET',
@@ -206,7 +206,8 @@ $("#showStats").click( function() {
     $('#statsContainer').toggleClass('hidden')
 });
 
-// Update list of tags whenever the directory filter is changed
+// Update list of tags whenever the directory filter is changed,
+// so that it only includes tags present within that directory
 $("#directoryFilter").change(function () {
     var newDirectory = $(this).val();
     $.ajax({

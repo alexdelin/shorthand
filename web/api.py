@@ -403,46 +403,18 @@ def show_editor():
 
 @app.route('/calendar', methods=['GET'])
 def show_calendar():
-
-    summary = get_calendar(SHORTHAND_CONFIG['notes_directory'])
-    events = []
-    timeline_data = []
-    for year, year_data in summary.items():
-        for month, month_data in year_data.items():
-            for day, day_data in month_data.items():
-
-                timeline_data.append([
-                    int(datetime.strptime(
-                        f'{year}-{month}-{day}T12:00:00',
-                        '%Y-%m-%dT%H:%M:%S').strftime("%s")) * 1000,
-                    len(day_data)
-                ])
-
-                for event in day_data:
-                    formatted_event = {
-                        'title': event['event'],
-                        'start': f'{year}-{month}-{day}',
-                        'url': f'/render?path={event["file_path"]}#line-number-{event["line_number"]}',
-                        'type': event['type']
-                    }
-                    if formatted_event['type'] == 'section':
-                        formatted_event['color'] = 'black'
-                    elif formatted_event['type'] == 'incomplete_todo':
-                        formatted_event['color'] = 'red'
-                    elif formatted_event['type'] == 'completed_todo':
-                        formatted_event['color'] = 'blue'
-                    elif formatted_event['type'] == 'skipped_todo':
-                        formatted_event['color'] = 'grey'
-                    elif formatted_event['type'] == 'question':
-                        formatted_event['color'] = 'purple'
-                    elif formatted_event['type'] == 'answer':
-                        formatted_event['color'] = 'green'
-                    events.append(formatted_event)
-
-    timeline_data = sorted(timeline_data, key=lambda x: x[0])
-
-    return render_template('calendar.j2', events=json.dumps(events),
-                           summary=json.dumps(timeline_data),
+    all_directories = ['ALL']
+    for subdir in os.walk(SHORTHAND_CONFIG['notes_directory']):
+        subdir_path = subdir[0][len(SHORTHAND_CONFIG['notes_directory']) + 1:]
+        if '.git' in subdir_path or not subdir_path:
+            continue
+        elif len(subdir_path.split('/')) > 2:
+            continue
+        else:
+            all_directories.append(subdir_path)
+    default_directory = SHORTHAND_CONFIG.get('default_directory')
+    return render_template('calendar.j2', all_directories=all_directories,
+                           default_directory=default_directory,
                            static_content=static_content)
 
 

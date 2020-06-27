@@ -13,6 +13,9 @@
     <!-- Highcharts -->
     <script src="/js/highcharts.js"></script>
 
+    <!-- Helpers for this page -->
+    <script src="/js/shorthand-calendar.js"></script>
+
     <meta charset='utf-8'>
     <title>Notes</title>
 </head>
@@ -23,6 +26,20 @@
     <div class="col-md-8 pagewrapper">
 
         {{ static_content['header_html'] }}
+
+        <div class="row" style="padding-top: 15px;">
+          <div class="col-auto">
+            <!-- Directory Filter -->
+            <select id="directoryFilter" class="form-control">
+              {% if default_directory %}
+                <option>{{ default_directory }}</option>
+              {% endif %}
+              {% for sub_directory in all_directories %}
+                <option>{{ sub_directory }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
 
         <div class="row content">
           <div class="col-md-12 calendar-content">
@@ -40,33 +57,6 @@
   </div>
 
   {{ static_content['modal_block'] }}
-
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      var calendarEl = document.getElementById('calendar');
-
-      var calendar = new FullCalendar.Calendar(calendarEl, {
-        plugins: [ 'dayGrid' ],
-        events: {{events}}
-      });
-      calendar.render();
-    });
-  </script>
-
-  <script type="text/javascript">
-    Highcharts.chart('productivityChart', {
-        chart: {zoomType: 'x'},
-        title: {text: 'Daily Productivity'},
-        subtitle: {text: 'Meetings / sections created per day'},
-        tooltip: {valueDecimals: 2},
-        xAxis: {type: 'datetime'},
-        series: [{
-            data: {{summary}},
-            lineWidth: 0.5,
-            name: 'Sections per day'
-        }]
-    });
-  </script>
 
 </body>
 </html>
