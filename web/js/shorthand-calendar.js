@@ -55,9 +55,8 @@ function parseCalendarResponse(responseData) {
                         textColor: 'black'
                     };
                     if (formattedEvent['type'] == 'section') {
-                        formattedEvent['color'] = '#abeeff'
+                        formattedEvent['color'] = '#abeeff' // Light Blue
                         formattedEvent['textColor'] = 'black'
-                        formattedEvent['description'] = 'test'
                     } else if (formattedEvent['type'] == 'incomplete_todo') {
                         formattedEvent['color'] = '#ffb2ab' // Red
                     } else if (formattedEvent['type'] == 'completed_todo') {
@@ -69,6 +68,7 @@ function parseCalendarResponse(responseData) {
                     } else if (formattedEvent['type'] == 'answer') {
                         formattedEvent['color'] = '#afffa3' // Green
                     };
+                    formattedEvent['description'] = formattedEvent['type'] + ' in ' + event['file_path'] + '<br /><br />' + formattedEvent['title']
                     eventData.push(formattedEvent);
                 }
             }
@@ -83,13 +83,27 @@ function parseCalendarResponse(responseData) {
 
 
 function drawCalendar(eventData) {
+
     // Clear out the existing calendar
     $('#calendar').html('')
 
     // Draw Calendar
     var calendarEl = document.getElementById('calendar');
     var calendar = new FullCalendar.Calendar(calendarEl, {
-        plugins: [ 'dayGrid' ],
+        initialView: 'dayGridMonth',
+        eventDidMount: function(info) {
+            var tooltip = new Tooltip(info.el, {
+                title: info.event.extendedProps.description,
+                html: true,
+                delay: {
+                    show: 1000,
+                    hide: 100
+                },
+                placement: 'top',
+                trigger: 'hover',
+                container: 'body'
+            });
+        },
         events: eventData
     });
     calendar.render();
