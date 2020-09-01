@@ -1139,6 +1139,21 @@ contexts:
     - match: |-
          (?x)
           {{fenced_code_block_start}}
+          ((?i:guitar))
+          \s*$\n?          # any whitespace until EOL
+      captures:
+        0: meta.code-fence.definition.begin.guitar.markdown-gfm
+        2: punctuation.definition.raw.code-fence.begin.markdown
+        3: constant.other.language-name.markdown
+      embed: scope:text.tablature
+      embed_scope: markup.raw.code-fence.guitar.markdown-gfm
+      escape: '{{code_fence_escape}}'
+      escape_captures:
+        0: meta.code-fence.definition.end.guitar.markdown-gfm
+        1: punctuation.definition.raw.code-fence.end.markdown
+    - match: |-
+         (?x)
+          {{fenced_code_block_start}}
           ((?i:haskell|hs))
           \s*$\n?          # any whitespace until EOL
       captures:
