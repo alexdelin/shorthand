@@ -1,6 +1,8 @@
 import os
+import logging
 import unittest
 
+from shorthand.utils.logging import setup_logging
 from shorthand.search_tools import search_notes
 
 from utils import setup_environment
@@ -10,6 +12,8 @@ from results_unstamped import EMPTY_RESULTS, SEARCH_RESULTS_FOOD, \
 
 
 CONFIG = setup_environment()
+setup_logging(CONFIG)
+log = logging.getLogger(__name__)
 
 
 # Define helper to make the rest of the code cleaner
@@ -33,14 +37,17 @@ class TestSearch(unittest.TestCase):
 
         # Test single keyword search
         search_results = get_search_results('Food', False)
+        assert search_results['count'] == SEARCH_RESULTS_FOOD['count']
         self.assertCountEqual(search_results, SEARCH_RESULTS_FOOD)
 
         # Test case-sensitive single keyword search
         search_results = get_search_results('Food', True)
+        assert search_results['count'] == SEARCH_RESULTS_FOOD_SENSITIVE['count']
         self.assertCountEqual(search_results, SEARCH_RESULTS_FOOD_SENSITIVE)
 
         # Test quoted expression search
         search_results = get_search_results('"balanced diet"', False)
+        assert search_results['count'] == SEARCH_RESULTS_BALANCED_DIET['count']
         self.assertCountEqual(search_results, SEARCH_RESULTS_BALANCED_DIET)
 
         # Test case-sensitive quoted expression search

@@ -1,5 +1,6 @@
 import os
 import logging
+import unittest
 
 from shorthand.tag_tools import get_tags, extract_tags
 from shorthand.utils.logging import setup_logging

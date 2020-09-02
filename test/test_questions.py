@@ -1,6 +1,8 @@
 import os
+import logging
 import unittest
 
+from shorthand.utils.logging import setup_logging
 from shorthand.question_tools import get_questions
 
 from utils import setup_environment
@@ -8,6 +10,8 @@ from model import ShorthandModel
 
 
 CONFIG = setup_environment()
+setup_logging(CONFIG)
+log = logging.getLogger(__name__)
 MODEL = ShorthandModel()
 
 

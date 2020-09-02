@@ -1,7 +1,9 @@
 import os
+import logging
 import unittest
 from datetime import datetime
 
+from shorthand.utils.logging import setup_logging
 from shorthand.todo_tools import get_todos
 from shorthand.stamping import stamp_notes
 
@@ -10,6 +12,8 @@ from model import ShorthandModel
 
 
 CONFIG = setup_environment()
+setup_logging(CONFIG)
+log = logging.getLogger(__name__)
 MODEL = ShorthandModel()
 
 

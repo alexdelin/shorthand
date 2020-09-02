@@ -89,6 +89,8 @@ def get_record_sets(notes_directory, directory_filter=None, grep_path='grep'):
                         pattern=escape_for_grep(RECORD_SET_PATTERN),
                         dir=search_directory)
 
+    log.debug(f'Running grep command {grep_command} to get record sets')
+
     proc = Popen(
         grep_command,
         stdout=PIPE, stderr=PIPE,

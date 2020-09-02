@@ -24,7 +24,7 @@ def get_locations(notes_directory, directory_filter=None, grep_path='grep'):
             search_directory += '/'
         search_directory += directory_filter
 
-    grep_command = 'ggrep -Prn "{pattern}" {dir} | {grep_path} -v "\\.git"'.format(
+    grep_command = '{grep_path} -Prn "{pattern}" {dir} | {grep_path} -v "\\.git"'.format(
             grep_path=grep_path,
             pattern=GPS_PATTERN,
             dir=search_directory)

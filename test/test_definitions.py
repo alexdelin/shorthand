@@ -1,9 +1,15 @@
 import os
+import logging
+import unittest
+
+from shorthand.utils.logging import setup_logging
 
 from utils import setup_environment
 
 
 CONFIG = setup_environment()
+setup_logging(CONFIG)
+log = logging.getLogger(__name__)
 
 
 class TestDefinitions(object):
