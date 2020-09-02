@@ -160,7 +160,7 @@ Priority is represented by a single digit number `1-9` with `1` being the highes
 ```
 
 ### Tags
-Tags are meteadata fields that can be applied to any item for easier retireval later on
+Tags are metadata fields that can be applied to any item for easier retireval later on
 ```notes
 Somethings that I want to find in the future :topic:
 ```

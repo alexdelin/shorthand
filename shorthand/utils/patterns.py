@@ -63,6 +63,8 @@ RECORD_SET_PATTERN = r'^```rec-data$'
 LINK_PATTERN = r'\[.*?\]\(.*?\)'
 INTERNAL_LINK_PATTERN = r'(\[[^\[]*?\]\()(\/.*?)(\))'
 
+GPS_PATTERN = r"(GPS\[)(-?1?\d{1,2}\.\d{6})(, )(-?1?\d{1,2}\.\d{6})(, )?([\w ]+)?(\])"
+
 CHARS_TO_ESCAPE = ['(', ')', '{', '}', '+', '|', '?', '`', '=']
 
 
