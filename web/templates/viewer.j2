@@ -25,7 +25,7 @@
     <script src="/js/shorthand-viewer.js" defer></script>
 
     <!-- Mermaid Diagram Rendering -->
-    <script src="https://cdn.jsdelivr.net/npm/mermaid@8.4.0/dist/mermaid.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@8.5.1/dist/mermaid.min.js"></script>
 
     <!-- Materialize Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -41,7 +41,7 @@
         {{ static_content['header_html'] }}
 
         <div class="row">
-            <div class="col-md-10">
+            <div class="col-md-8">
                 <div class="toc-content hidden">
                     <h3>Table of Contents</h3>
                     <div id="toc"></div>
@@ -49,6 +49,9 @@
             </div>
             <div class="toc-button col-md-2">
                 <div id="showTOC" class="btn btn-primary">Show ToC</div>
+            </div>
+            <div class="toc-button col-md-2">
+                <a href="/editor?path={{ file_path }}" class="btn btn-warning">Edit</a>
             </div>
         </div>
         <div class="row content">

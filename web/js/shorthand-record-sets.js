@@ -6,7 +6,7 @@ $('.showRec').click( function (ev) {
     ev.currentTarget.remove()
     $.ajax({
         type: 'GET',
-        url: '/get_record_set',
+        url: '/api/v1/record_set',
         data: {
             file_path: filePath,
             line_number: lineNumber,
@@ -43,7 +43,7 @@ $('.getCsv').click( function (ev) {
     var filePath = parentElement.find('.filePath').text()
     $.ajax({
         type: 'GET',
-        url: '/get_record_set',
+        url: '/api/v1/record_set',
         data: {
             file_path: filePath,
             line_number: lineNumber,

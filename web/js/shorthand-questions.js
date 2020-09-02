@@ -6,7 +6,7 @@ function getQuestionElement(text, file, display, line, answer) {
            display + '</a>' + '</td><td class="lineNumber">' + line +
            '</td><td>' + answer +
            '</td><td class="actionButtons">' +
-               '<span class="getContext">🔎</span> ' +
+               '<span class="editButton">Edit - Placeholder</span> ' +
            '</td></tr>';
 };
 
@@ -23,7 +23,7 @@ $("#questionSearch").click(function() {
     // Search Questions
     console.log('searching Questions');
     $.ajax({
-        url: 'get_questions',
+        url: '/api/v1/questions',
         type: 'GET',
         data: {
             status: questionFilter,
@@ -63,38 +63,6 @@ function renderQuestionResults(questionData) {
 
 // Wire up action buttons on results
 function setQuestionResultActions() {
-
-    // Wire up show context button
-    $(".getContext").click(function(ev) {
-        console.log('Showing Context')
-        rowElement = ev.currentTarget.parentElement.parentElement
-        filePath = $(rowElement).find('.filePath')[0].innerText
-        lineNumber = $(rowElement).find('.lineNumber')[0].innerText
-        var contextElement = '<pre><code class="markdown">'
-        $.ajax({
-            url: '/get_context',
-            data: {
-                filename: filePath,
-                line_number: lineNumber
-            },
-            success: function(contextResponse) {
-                var loadedContext = JSON.parse(contextResponse)
-                _.each(loadedContext['before'], function (beforeLine) {
-                    contextElement += beforeLine + '\n'
-                });
-                contextElement += loadedContext['line'] + '\n'
-                _.each(loadedContext['after'], function (afterLine) {
-                    contextElement += afterLine + '\n'
-                });
-                contextElement += '</code></pre>'
-                $(rowElement).find('.questionText')[0].innerHTML = contextElement
-            },
-            error: function(responseData) {
-                var loadedResponse = JSON.parse(responseData.responseText)
-                showModal(loadedResponse.error)
-            }
-        });
-    });
 
     // Wire up edit button
     $(".editContent").click(function() {

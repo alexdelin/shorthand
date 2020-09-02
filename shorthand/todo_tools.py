@@ -7,11 +7,9 @@ import shlex
 from shorthand.tag_tools import extract_tags
 from shorthand.utils.paths import get_relative_path, get_display_path
 from shorthand.utils.patterns import INCOMPLETE_PREFIX_GREP, \
-    COMPLETE_PREFIX_GREP, SKIPPED_PREFIX_GREP, CATCH_ALL_PATTERN, \
-    VALID_INCOMPLETE_PATTERN, VALID_COMPLETE_PATTERN, \
-    UNFINISHED_UNSTAMPED_PATTERN, FINISHED_START_STAMPED_PATTERN, \
-    FINISHED_UNSTAMPED_PATTERN, START_STAMP_ONLY_PATTERN, \
-    START_END_STAMP_ONLY_PATTERN, TODAY_GREP, TODAY_LINE_PATTERN, escape_for_grep
+    COMPLETE_PREFIX_GREP, SKIPPED_PREFIX_GREP, \
+    START_STAMP_ONLY_PATTERN, START_END_STAMP_ONLY_PATTERN, \
+    escape_for_grep
 
 # Set up Regexes to use for finding files to process with `grep`
 PATTERN_MAPPING = {
@@ -24,131 +22,6 @@ SUPPORTED_SORT_FIELDS = ['start_date']
 
 
 log = logging.getLogger(__name__)
-
-
-def stamp_notes(notes_directory, stamp_todos=True, stamp_today=True, grep_path='grep'):
-
-    log.info('Stamping notes')
-    # Stamp start and end dates for todo elements
-    if stamp_todos:
-        grep_command = '{grep_path} -r "{pattern}" {directory} | '\
-                       '{grep_path} -v "\\.git" | '\
-                       '{grep_path} -v "{filter_1}" | '\
-                       '{grep_path} -v "{filter_2}"'.format(
-                            grep_path=grep_path,
-                            pattern=escape_for_grep(CATCH_ALL_PATTERN),
-                            directory=notes_directory,
-                            filter_1=escape_for_grep(VALID_INCOMPLETE_PATTERN),
-                            filter_2=escape_for_grep(VALID_COMPLETE_PATTERN))
-
-        log.debug(f'running grep command "{grep_command}" to get todos to stamp')
-
-        proc = Popen(grep_command,
-                     stdout=PIPE, stderr=PIPE,
-                     shell=True)
-        output, err = proc.communicate()
-
-        output_lines = output.decode().split('\n')
-        matched_filenames = [line.split(':')[0] for line in output_lines if line.strip()]
-        matched_filenames = list(set(matched_filenames))
-        log.info(f'Found unstamped todos in files {", ".join(matched_filenames)}')
-
-        # Compile regexes for replacing lines
-        unfinished_unstamped_regex = re.compile(UNFINISHED_UNSTAMPED_PATTERN)
-        finished_start_stamped_regex = re.compile(FINISHED_START_STAMPED_PATTERN)
-        finished_unstamped_regex = re.compile(FINISHED_UNSTAMPED_PATTERN)
-
-        for filename in matched_filenames:
-            log.debug(f'Stamping todos in file {filename}')
-            with open(filename, 'r') as file_object:
-
-                stamped_content = []
-
-                for line in file_object:
-
-                    if unfinished_unstamped_regex.match(line):
-                        # unfinished unstamped
-                        log.info(f'Found unstamped unfinished todo "{line}"')
-                        line = unfinished_unstamped_regex.sub(
-                            '\\g<1>[ ] ({timestamp}) '.format(
-                                timestamp=datetime.now().isoformat()[:10]),
-                            line)
-                        log.info(f'Writing stamped unfinished todo "{line}"')
-                        stamped_content.append(line)
-
-                    elif finished_start_stamped_regex.match(line):
-                        # finished with start stamped
-                        log.info(f'Found unstamped finished todo "{line}"')
-                        line = finished_start_stamped_regex.sub(
-                            '\\g<1>[\\g<3>] (\\g<6> -> {timestamp_2}) '.format(
-                                timestamp_2=datetime.now().isoformat()[:10]),
-                            line)
-                        log.info(f'Writing stamped finished todo "{line}"')
-                        stamped_content.append(line)
-
-                    elif finished_unstamped_regex.match(line):
-                        # finished unstamped
-                        log.info(f'Found unstamped finished todo "{line}"')
-                        line = finished_unstamped_regex.sub(
-                            '\\g<1>[\\g<3>] ({timestamp} -> {timestamp}) '.format(
-                                timestamp=datetime.now().isoformat()[:10]),
-                            line)
-                        log.info(f'Writing stamped finished todo "{line}"')
-                        stamped_content.append(line)
-                    else:
-                        # no to-dos -or- correctly formatted already
-                        stamped_content.append(line)
-
-            with open(filename, 'w') as write_file_object:
-                log.debug(f'Saving changes in file {filename}')
-                write_file_object.write(''.join(stamped_content))
-
-    # Replace placeholders for `\today` helper
-    if stamp_today:
-        today_grep_command = '{grep_path} -r {pattern} {directory} | '\
-                       '{grep_path} -v "\\.git"'.format(
-                            grep_path=grep_path,
-                            pattern=TODAY_GREP,
-                            directory=notes_directory)
-
-        log.debug(f'running grep command "{grep_command}" to get `\\today`s to replace')
-        today_proc = Popen(today_grep_command,
-                     stdout=PIPE, stderr=PIPE,
-                     shell=True)
-        today_output, err = today_proc.communicate()
-
-        today_output_lines = today_output.decode().split('\n')
-        today_matched_filenames = [line.split(':')[0] for line in today_output_lines if line.strip()]
-        today_matched_filenames = list(set(today_matched_filenames))
-
-        today_placeholder_regex = re.compile(TODAY_LINE_PATTERN)
-
-        for filename in today_matched_filenames:
-            log.debug(f'Replacing today placeholder in {filename}')
-            with open(filename, 'r') as file_object:
-
-                stamped_content = []
-
-                for line in file_object:
-
-                    if today_placeholder_regex.match(line):
-                        # Today placeholder
-                        log.info(f'Found today placeholder "{line}"')
-                        line = today_placeholder_regex.sub(
-                            '\\g<1>{timestamp}\\g<3>'.format(
-                                timestamp=datetime.now().isoformat()[:10]),
-                            line)
-                        log.info(f'Replaced today placeholder "{line}"')
-                        stamped_content.append(line)
-                    else:
-                        # no today placeholders
-                        stamped_content.append(line)
-
-            with open(filename, 'w') as write_file_object:
-                log.debug(f'Saving changes in file {filename}')
-                write_file_object.write(''.join(stamped_content))
-
-    return 'Done!'
 
 
 def parse_todo(todo_line):
@@ -331,9 +204,50 @@ def get_todos(notes_directory, todo_status='incomplete', directory_filter=None,
 
     # Wrap Results
     log.info(f'returning {len(todo_items)} todos')
+    return todo_items
+
+
+def analyze_todos(todos):
+    '''Analyze todos and generate basic statistics
+    '''
+
+    # Aggregate and count tags
+    tag_counts = {}
+    for todo in todos:
+        for tag in todo.get('tags', []):
+            if tag not in tag_counts.keys():
+                tag_counts[tag] = 1
+            else:
+                tag_counts[tag] += 1
+
+    # Aggregate and count months
+    month_counts = {}
+    for todo in todos:
+        date = todo.get('start_date')
+        if not date:
+            continue
+        month = date[:7]
+        if month not in month_counts.keys():
+            month_counts[month] = 1
+        else:
+            month_counts[month] += 1
+
+    # Make dataset for timeline
+    timeline_data = []
+    for month_string, month_count in month_counts.items():
+        timeline_data.append([
+            int(datetime.strptime(
+                f'{month_string}-01T12:00:00',
+                '%Y-%m-%dT%H:%M:%S').strftime("%s")) * 1000,
+            month_count
+        ])
+
+    # Aggregate and count subdirectories
+
     return {
-        "items": todo_items,
-        "count": len(todo_items)
+        'tag_counts': tag_counts,
+        'month_counts': month_counts,
+        'timeline_data': timeline_data
     }
 
 

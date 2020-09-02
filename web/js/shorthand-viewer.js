@@ -1,5 +1,3 @@
-
-
 // Wire click events for show / hide TOC button
 $("#showTOC").click(function(){
   $(".toc-content").toggleClass("hidden");
@@ -22,6 +20,8 @@ $(document).ready(function() {
             columns: columns
         });
     });
+
+    $('blockquote').addClass('blockquote text-center');
 
 });
 

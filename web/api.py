@@ -13,8 +13,9 @@ from datetime import datetime
 from werkzeug.exceptions import HTTPException
 from flask import Flask, request, render_template, send_from_directory, abort
 
-from shorthand.todo_tools import get_todos, mark_todo, stamp_notes
-from shorthand.search_tools import search_notes, get_context, get_note
+from shorthand.todo_tools import get_todos, mark_todo, analyze_todos
+from shorthand.stamping import stamp_notes
+from shorthand.search_tools import search_notes, get_note
 from shorthand.question_tools import get_questions
 from shorthand.definition_tools import get_definitions
 from shorthand.tag_tools import get_tags
@@ -27,6 +28,8 @@ from shorthand.utils.render import get_file_content, get_rendered_markdown
 from shorthand.utils.typeahead import get_typeahead_suggestions
 from shorthand.utils.paths import get_relative_path, get_display_path
 from shorthand.utils.git import pull_repo
+from shorthand.utils.api import wrap_response_data
+from shorthand.utils.edit import update_note
 
 from static_elements import static_content
 
@@ -65,7 +68,7 @@ def send_img(path):
     return send_from_directory('img', path)
 
 
-@app.route('/pull', methods=['GET', 'POST'])
+@app.route('/api/v1/pull', methods=['GET', 'POST'])
 def pull_notes_repo():
     return pull_repo(SHORTHAND_CONFIG['notes_directory'])
 
@@ -73,28 +76,44 @@ def pull_notes_repo():
 @app.route('/', methods=['GET'])
 def show_home_page():
     default_directory = SHORTHAND_CONFIG.get('default_directory')
-    todos = get_todos(notes_directory=SHORTHAND_CONFIG['notes_directory'],
-                      todo_status='incomplete',
-                      directory_filter=default_directory,
-                      grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
+    todos = get_todos(
+        notes_directory=SHORTHAND_CONFIG['notes_directory'],
+        todo_status='incomplete',
+        directory_filter=default_directory,
+        grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
     questions = get_questions(
-                    notes_directory=SHORTHAND_CONFIG['notes_directory'],
-                    question_status='unanswered',
-                    directory_filter=default_directory,
-                    grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
+        notes_directory=SHORTHAND_CONFIG['notes_directory'],
+        question_status='unanswered',
+        directory_filter=default_directory,
+        grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
     summary = get_calendar(SHORTHAND_CONFIG['notes_directory'])
     events = []
     for year, year_data in summary.items():
         for month, month_data in year_data.items():
             for day, day_data in month_data.items():
                 for event in day_data:
-                    events.append({
-                            'title': event['event'],
-                            'start': f'{year}-{month}-{day}',
-                            'url': f'/render?path={event["file_path"]}#{event["element_id"]}'
-                        })
-    return render_template('home.j2', num_todos=todos['count'],
-                           num_questions=questions['count'],
+                    formatted_event = {
+                        'title': event['event'],
+                        'start': f'{year}-{month}-{day}',
+                        'url': f'/render?path={event["file_path"]}#line-number-{event["line_number"]}',
+                        'type': event['type']
+                    }
+                    if formatted_event['type'] == 'section':
+                        formatted_event['color'] = 'black'
+                    elif formatted_event['type'] == 'incomplete_todo':
+                        formatted_event['color'] = 'red'
+                    elif formatted_event['type'] == 'completed_todo':
+                        formatted_event['color'] = 'blue'
+                    elif formatted_event['type'] == 'skipped_todo':
+                        formatted_event['color'] = 'grey'
+                    elif formatted_event['type'] == 'question':
+                        formatted_event['color'] = 'purple'
+                    elif formatted_event['type'] == 'answer':
+                        formatted_event['color'] = 'green'
+                    events.append(formatted_event)
+
+    return render_template('home.j2', num_todos=len(todos),
+                           num_questions=len(questions),
                            events=json.dumps(events),
                            static_content=static_content)
 
@@ -152,10 +171,10 @@ def show_databases():
                            static_content=static_content)
 
 
-@app.route('/get_todos', methods=['GET'])
+@app.route('/api/v1/todos', methods=['GET'])
 def get_current_todos():
 
-    status = request.args.get('status')
+    status = request.args.get('status', 'incomplete')
     directory_filter = request.args.get('directory_filter')
     query_string = request.args.get('query_string')
     sort_by = request.args.get('sort_by')
@@ -169,12 +188,30 @@ def get_current_todos():
     todos = get_todos(notes_directory=SHORTHAND_CONFIG['notes_directory'],
                       todo_status=status, directory_filter=directory_filter,
                       query_string=query_string, sort_by=sort_by,
-                      suppress_future=True, tag=tag, grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
+                      suppress_future=True, tag=tag,
+                      grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
     log.info(f'Returning {len(todos)} todo results')
-    return json.dumps(todos)
+
+    wrapped_response = wrap_response_data(todos)
+    wrapped_response['meta'] = analyze_todos(todos)
+    return json.dumps(wrapped_response)
 
 
-@app.route('/get_questions', methods=['GET'])
+@app.route('/api/v1/mark_todo', methods=['GET'])
+def mark_todo_status():
+
+    filename = request.args.get('filename')
+    line_number = int(request.args.get('line_number'))
+    status = request.args.get('status')
+
+    # Allow Relative paths within notes dir to be specified
+    if SHORTHAND_CONFIG['notes_directory'] not in filename:
+        filename = SHORTHAND_CONFIG['notes_directory'] + filename
+
+    return mark_todo(filename, line_number, status)
+
+
+@app.route('/api/v1/questions', methods=['GET'])
 def fetch_questions():
 
     status = request.args.get('status', 'all')
@@ -184,37 +221,39 @@ def fetch_questions():
     log.info(f'Getting {status} questions in directory {directory_filter}')
 
     questions = get_questions(
-                    notes_directory=SHORTHAND_CONFIG['notes_directory'],
-                    question_status=status, directory_filter=directory_filter,
-                    grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
+        notes_directory=SHORTHAND_CONFIG['notes_directory'],
+        question_status=status, directory_filter=directory_filter,
+        grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
     log.info(f'Returning {len(questions)} question results')
-    return json.dumps(questions)
+    return json.dumps(wrap_response_data(questions))
 
 
-@app.route('/get_tags', methods=['GET'])
+@app.route('/api/v1/tags', methods=['GET'])
 def fetch_tags():
 
     directory_filter = request.args.get('directory_filter')
     if directory_filter == 'ALL':
         directory_filter = None
 
-    return json.dumps(get_tags(
-                notes_directory=SHORTHAND_CONFIG['notes_directory'],
-                directory_filter=directory_filter,
-                grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep')))
+    tags = get_tags(
+        notes_directory=SHORTHAND_CONFIG['notes_directory'],
+        directory_filter=directory_filter,
+        grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
+    return json.dumps(wrap_response_data(tags))
 
 
-@app.route('/get_calendar', methods=['GET'])
+@app.route('/api/v1/calendar', methods=['GET'])
 def fetch_calendar():
 
     directory_filter = request.args.get('directory_filter')
     if directory_filter == 'ALL':
         directory_filter = None
 
-    return json.dumps(get_calendar(
-                notes_directory=SHORTHAND_CONFIG['notes_directory'],
-                directory_filter=directory_filter),
-                grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
+    calendar = get_calendar(
+        notes_directory=SHORTHAND_CONFIG['notes_directory'],
+        directory_filter=directory_filter,
+        grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
+    return json.dumps(calendar)
 
 
 @app.route('/glossary', methods=['GET'])
@@ -239,33 +278,35 @@ def show_glossary():
                            static_content=static_content)
 
 
-@app.route('/get_definitions', methods=['GET'])
+@app.route('/api/v1/definitions', methods=['GET'])
 def fetch_definitions():
 
     directory_filter = request.args.get('directory_filter')
     if directory_filter == 'ALL':
         directory_filter = None
 
-    return json.dumps(get_definitions(
-                notes_directory=SHORTHAND_CONFIG['notes_directory'],
-                directory_filter=directory_filter,
-                grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep')))
+    definitions = get_definitions(
+        notes_directory=SHORTHAND_CONFIG['notes_directory'],
+        directory_filter=directory_filter,
+        grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
+    return json.dumps(wrap_response_data(definitions))
 
 
-@app.route('/get_record_sets', methods=['GET'])
+@app.route('/api/v1/record_sets', methods=['GET'])
 def fetch_record_sets():
 
     directory_filter = request.args.get('directory_filter')
     if directory_filter == 'ALL':
         directory_filter = None
 
-    return json.dumps(get_record_sets(
-                notes_directory=SHORTHAND_CONFIG['notes_directory'],
-                directory_filter=None),
-                grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
+    record_sets = get_record_sets(
+        notes_directory=SHORTHAND_CONFIG['notes_directory'],
+        directory_filter=None,
+        grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
+    return json.dumps(wrap_response_data(record_sets))
 
 
-@app.route('/get_record_set', methods=['GET'])
+@app.route('/api/v1/record_set', methods=['GET'])
 def fetch_record_set():
 
     file_path = request.args.get('file_path')
@@ -287,11 +328,12 @@ def fetch_record_set():
     parse_format = request.args.get('parse_format', 'json')
 
     return get_record_set(
-                file_path=file_path,
-                line_number=line_number,
-                parse=parse,
-                parse_format=parse_format,
-                include_config=include_config)
+        notes_directory=SHORTHAND_CONFIG['notes_directory'],
+        file_path=file_path,
+        line_number=line_number,
+        parse=parse,
+        parse_format=parse_format,
+        include_config=include_config)
 
 
 @app.route('/search', methods=['GET'])
@@ -300,42 +342,36 @@ def show_search_page():
                            static_content=static_content)
 
 
-@app.route('/search_notes', methods=['GET'])
+@app.route('/api/v1/search', methods=['GET'])
 def get_search_results():
 
     query_string = request.args.get('query_string')
     case_sensitive = request.args.get('case_sensitive')
 
-    return json.dumps(search_notes(
-                notes_directory=SHORTHAND_CONFIG['notes_directory'],
-                query_string=query_string,
-                case_sensitive=case_sensitive,
-                grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep')))
+    search_results = search_notes(
+        notes_directory=SHORTHAND_CONFIG['notes_directory'],
+        query_string=query_string,
+        case_sensitive=case_sensitive,
+        grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
+    return json.dumps(wrap_response_data(search_results))
 
 
-@app.route('/get_context', methods=['GET'])
-def get_line_context():
-
-    filename = request.args.get('filename')
-    line_number = int(request.args.get('line_number'))
-    width = int(request.args.get('width', 5))
-
-    # Allow Relative paths within notes dir to be specified
-    if SHORTHAND_CONFIG['notes_directory'] not in filename:
-        filename = SHORTHAND_CONFIG['notes_directory'] + filename
-
-    return json.dumps(get_context(filename, line_number, width))
-
-
-@app.route('/get_note', methods=['GET'])
+@app.route('/api/v1/note', methods=['GET'])
 def get_full_note():
 
     path = request.args.get('path')
+    return get_note(SHORTHAND_CONFIG['notes_directory'], path)
 
-    if SHORTHAND_CONFIG['notes_directory'] not in path:
-        path = SHORTHAND_CONFIG['notes_directory'] + path
 
-    return get_note(path)
+@app.route('/api/v1/note', methods=['POST'])
+def write_updated_note():
+
+    path = request.args.get('path')
+    request.get_data()
+    content = request.data.decode('utf-8')
+
+    update_note(SHORTHAND_CONFIG['notes_directory'], path, content)
+    return 'Note Updated'
 
 
 @app.route('/render', methods=['GET'])
@@ -352,41 +388,37 @@ def send_rendered_note():
     toc_content = toc_content.replace("'", "\\'")
     return render_template('viewer.j2', file_content=file_content,
                            toc_content=toc_content,
+                           static_content=static_content,
+                           file_path=request.args.get('path'))
+
+
+@app.route('/editor', methods=['GET'])
+def show_editor():
+    file_path = SHORTHAND_CONFIG['notes_directory'] + request.args.get('path')
+    file_content = get_file_content(file_path)
+    return render_template('editor.j2', file_content=file_content,
+                           file_path=request.args.get('path'),
                            static_content=static_content)
 
 
 @app.route('/calendar', methods=['GET'])
 def show_calendar():
-
-    summary = get_calendar(SHORTHAND_CONFIG['notes_directory'])
-    events = []
-    timeline_data = []
-    for year, year_data in summary.items():
-        for month, month_data in year_data.items():
-            for day, day_data in month_data.items():
-
-                timeline_data.append([
-                    int(datetime.strptime(
-                        f'{year}-{month}-{day}T12:00:00',
-                        '%Y-%m-%dT%H:%M:%S').strftime("%s")) * 1000,
-                    len(day_data)
-                    ])
-
-                for event in day_data:
-                    events.append({
-                            'title': event['event'],
-                            'start': f'{year}-{month}-{day}',
-                            'url': f'/render?path={event["file_path"]}#{event["element_id"]}'
-                        })
-
-    timeline_data = sorted(timeline_data, key=lambda x: x[0])
-
-    return render_template('calendar.j2', events=json.dumps(events),
-                           summary=json.dumps(timeline_data),
+    all_directories = ['ALL']
+    for subdir in os.walk(SHORTHAND_CONFIG['notes_directory']):
+        subdir_path = subdir[0][len(SHORTHAND_CONFIG['notes_directory']) + 1:]
+        if '.git' in subdir_path or not subdir_path:
+            continue
+        elif len(subdir_path.split('/')) > 2:
+            continue
+        else:
+            all_directories.append(subdir_path)
+    default_directory = SHORTHAND_CONFIG.get('default_directory')
+    return render_template('calendar.j2', all_directories=all_directories,
+                           default_directory=default_directory,
                            static_content=static_content)
 
 
-@app.route('/toc', methods=['GET'])
+@app.route('/api/v1/toc', methods=['GET'])
 def get_toc_data():
     return json.dumps(get_toc(SHORTHAND_CONFIG['notes_directory']))
 
@@ -398,21 +430,7 @@ def show_browse_page():
                            static_content=static_content)
 
 
-@app.route('/mark_todo', methods=['GET'])
-def mark_todo_status():
-
-    filename = request.args.get('filename')
-    line_number = int(request.args.get('line_number'))
-    status = request.args.get('status')
-
-    # Allow Relative paths within notes dir to be specified
-    if SHORTHAND_CONFIG['notes_directory'] not in filename:
-        filename = SHORTHAND_CONFIG['notes_directory'] + filename
-
-    return mark_todo(filename, line_number, status)
-
-
-@app.route('/typeahead', methods=['GET'])
+@app.route('/api/v1/typeahead', methods=['GET'])
 def get_typeahead():
 
     query_string = request.args.get('query')
@@ -422,13 +440,13 @@ def get_typeahead():
         query_string))
 
 
-@app.route('/stamp', methods=['GET'])
+@app.route('/api/v1/stamp', methods=['GET'])
 def stamp():
 
     return stamp_notes(
-                notes_directory=SHORTHAND_CONFIG['notes_directory'],
-                stamp_todos=True, stamp_today=True,
-                grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
+        notes_directory=SHORTHAND_CONFIG['notes_directory'],
+        stamp_todos=True, stamp_today=True,
+        grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
 
 
 if __name__ == "__main__":

@@ -10,6 +10,7 @@ from datetime import datetime
 
 from results_unstamped import ALL_INCOMPLETE_TODOS, ALL_SKIPPED_TODOS, \
                               ALL_COMPLETE_TODOS, ALL_QUESTIONS
+from shorthand.utils.paths import get_display_path
 
 
 class ShorthandModel(object):
@@ -73,13 +74,15 @@ class ShorthandModel(object):
                     if not todo['end_date']:
                         todo['end_date'] = datetime.now().isoformat()[:10]
 
+        # Add display path
+        for todo in todos:
+            todo['display_path'] = get_display_path(todo['file_path'], directory_filter)
 
-        formatted_todos = {
-            'count': len(todos),
-            'items': todos
-        }
+        # Sort tags
+        for todo in todos:
+            todo['tags'].sort()
 
-        return formatted_todos
+        return todos
 
     def search_questions(self, question_status='all', directory_filter=None):
 
@@ -110,8 +113,8 @@ class ShorthandModel(object):
                     filtered_questions.append(question)
             questions = filtered_questions
 
-        formatted_questions = {
-            'count': len(questions),
-            'items': questions
-        }
-        return formatted_questions
+        # Add display path
+        for question in questions:
+            question['display_path'] = get_display_path(question['file_path'], directory_filter)
+
+        return questions

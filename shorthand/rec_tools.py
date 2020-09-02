@@ -7,14 +7,15 @@ import json
 
 from shorthand.utils.patterns import RECORD_SET_PATTERN, escape_for_grep
 from shorthand.utils.rec import load_from_string
-from shorthand.utils.paths import get_relative_path, get_display_path
+from shorthand.utils.paths import get_relative_path, get_display_path, \
+                                  get_full_path
 
 
 log = logging.getLogger(__name__)
 
 
-def get_record_set(file_path, line_number, parse=True, parse_format='json',
-                   include_config=False):
+def get_record_set(notes_directory, file_path, line_number, parse=True,
+                   parse_format='json', include_config=False):
     '''Get the full contents of a record set
     If `parse` is set to False then the record set
         contents are returned as a string
@@ -27,6 +28,9 @@ def get_record_set(file_path, line_number, parse=True, parse_format='json',
     if parse and parse_format not in ['json', 'csv']:
         raise ValueError(f'Unknown parse format {parse_format}')
 
+    # Get full path if only a relative path is supplied
+    if notes_directory not in file_path:
+        file_path = get_full_path(notes_directory, file_path)
 
     record_set_lines = []
     is_content = False

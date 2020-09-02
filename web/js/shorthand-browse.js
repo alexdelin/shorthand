@@ -1,5 +1,5 @@
 $.ajax({
-  url: '/toc',
+  url: '/api/v1/toc',
   type: 'GET',
   success: function(responseData) {
     renderToc(JSON.parse(responseData))

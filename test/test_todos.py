@@ -2,7 +2,8 @@ import os
 import unittest
 from datetime import datetime
 
-from shorthand.todo_tools import get_todos, stamp_notes
+from shorthand.todo_tools import get_todos
+from shorthand.stamping import stamp_notes
 
 from utils import setup_environment
 from model import ShorthandModel
@@ -35,7 +36,11 @@ class TestUnstampedTodos(unittest.TestCase):
         args = {
             'todo_status': 'incomplete'
         }
-        self.assertCountEqual(get_todo_results(**args), MODEL.search_todos(**args))
+        library_results = get_todo_results(**args)
+        model_results = MODEL.search_todos(**args)
+        assert set(library_results[0].keys()) == set(model_results[0].keys())
+        assert len(library_results) == len(model_results)
+        self.assertCountEqual(library_results, model_results)
 
         # Test Directory filter
         args = {
@@ -80,12 +85,12 @@ class TestUnstampedTodos(unittest.TestCase):
         self.assertCountEqual(get_todo_results(**args), MODEL.search_todos(**args))
 
 
-class TestTodoStamping(object):
+class TestTodoStamping(unittest.TestCase):
     """Test stamping functionality of the library"""
 
     def test_stamp(self):
         response = stamp_notes(CONFIG['notes_directory'])
-        assert response == 'Done!'
+        assert response.keys()
 
     def test_today_replacement(self):
         # Have a list of lines in specific files to check

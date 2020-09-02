@@ -1,7 +1,10 @@
 import os
 import json
+import logging
+
 
 CONFIG_FILE_LOCATION = '/etc/shorthand/shorthand_config.json'
+log = logging.getLogger(__name__)
 
 
 def get_notes_config(config_location=CONFIG_FILE_LOCATION):

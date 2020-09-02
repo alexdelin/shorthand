@@ -36,11 +36,15 @@ START_STAMP_ONLY_PATTERN = r'(\()(' + DATE_STAMP_PATTERN + r')(\))( )(.*)'
 ## matches an end stamp and todo without the prefix
 START_END_STAMP_ONLY_PATTERN = r'(\()(' + DATE_STAMP_PATTERN + r')( -> )(' + DATE_STAMP_PATTERN + r')(\))( )(.*)'
 
-# Questions
+# Questions & Answers
 ## Matches a question
 ALL_QUESTIONS_GREP = r'(^\s*)(\? )'
+UNSTAMPED_QUESTION = r'(^\s*)(\? )(?!' + START_STAMP_PATTERN + r' )'
+STAMPED_QUESTION = r'\? ' + START_STAMP_PATTERN + r' '
 ## Matches an answer
 ANSWER_PATTERN = r'(^\s*)(@ )(.*)'
+UNSTAMPED_ANSWER = r'(^\s*)(@ )(?!' + START_STAMP_PATTERN + r' )'
+STAMPED_ANSWER = r'(@ )(\()' + DATE_STAMP_PATTERN + r'(\)) '
 
 TODAY_GREP = r'"\\\today"'
 TODAY_LINE_PATTERN = r'(.*)(\\today)(.*)'
@@ -48,8 +52,8 @@ TODAY_LINE_PATTERN = r'(.*)(\\today)(.*)'
 TAG_FILTER = r'( :\w+:)'
 TAG_PATTERN = r'( :\w+:)($|(?= ))'
 
-DEFINITION_PATTERN = r"^(\w*)(\{.*\} )(.*)"
-DEFINITION_GREP = r"^\(\\w*\)\({.*} \)\(.*\)"
+DEFINITION_PATTERN = r"^(\s*)(\{.*\} )(.*)"
+DEFINITION_GREP = r"^\(\\s*\)\({.*} \)\(.*\)"
 
 HEADING_PATTERN = r'^(#+)( )(.*)'
 DATED_HEADING_PATTERN = r'^(#+)( )(.*)(' + DATE_STAMP_PATTERN + r')'
@@ -59,7 +63,10 @@ RECORD_SET_PATTERN = r'^```rec-data$'
 LINK_PATTERN = r'\[.*?\]\(.*?\)'
 INTERNAL_LINK_PATTERN = r'(\[[^\[]*?\]\()(\/.*?)(\))'
 
+GPS_PATTERN = r"(GPS\[)(-?1?\d{1,2}\.\d{6})(, )(-?1?\d{1,2}\.\d{6})(, )?([\w ]+)?(\])"
+
 CHARS_TO_ESCAPE = ['(', ')', '{', '}', '+', '|', '?', '`', '=']
+
 
 def escape_for_grep(input_pattern):
     '''Patterns designed for the python `re` library need to be

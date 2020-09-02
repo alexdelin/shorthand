@@ -31,128 +31,128 @@
             "name": "markup code",
             "scope": "markup.raw.inline",
             "background": "color(var(blue2) alpha(0.5))",
-            "foreground": "var(pink)"
+            "foreground": "var(green)"
         },
-        {
-            "name": "LaTeX Start",
-            "scope": "markup.latex.start.markdown",
-            "foreground": "var(grey3)"
-        },
-        {
-            "name": "LaTeX End",
-            "scope": "markup.latex.end.markdown",
-            "foreground": "var(grey3)"
-        },
-        {
-            "name": "LaTeX Content",
-            "scope": "markup.latex.markdown",
-            "foreground": "var(green3)"
-        },
-        {
-            "name": "Definition Term",
-            "scope": "shorthand.definition.term",
-            "foreground": "var(yellow)"
-        },
-        {
-            "name": "Definition text",
-            "scope": "shorthand.definition.definition",
-            "foreground": "var(orange)"
-        },
-        {
-            "name": "Metadata Tag",
-            "scope": "shorthand.metadata-tag",
-            "foreground": "var(red)"
-        },
-        {
-            "name": "Quote Content",
-            "scope": "markup.quote",
-            "foreground": "var(grey2)"
-        },
-        {
-            "name": "Question Start",
-            "scope": "markup.list.question.start",
-            "foreground": "var(yellow)"
-        },
-        {
-            "name": "Question Content",
-            "scope": "markup.list.question.content",
-            "foreground": "var(pink2)"
-        },
-        {
-            "name": "Answer Start",
-            "scope": "markup.list.answer.start",
-            "foreground": "var(blue5)"
-        },
-        {
-            "name": "Answer Content",
-            "scope": "markup.list.answer.content",
-            "foreground": "var(green2)"
-        },
-        {
-            "name": "unnumbered list",
-            "scope": "markup.list.unnumbered",
-            "foreground": "var(white3)"
-        },
-        {
-            "name": "numbered list",
-            "scope": "markup.list.numbered",
-            "foreground": "var(white3)"
-        },
-        {
-            "name": "todo items",
-            "scope": "markup.list.todo",
-            "foreground": "var(yellow2)"
-        },
-        {
-            "name": "markup todo skipped start",
-            "scope": "markup.list.todo.skipped.start",
-            "foreground": "var(grey2)"
-        },
-        {
-            "name": "markup todo skipped content",
-            "scope": "markup.list.todo.skipped.content",
-            "foreground": "var(grey3)"
-        },
-        {
-            "name": "markup todo incomplete start",
-            "scope": "markup.list.todo.incomplete.start",
-            "foreground": "var(red)"
-        },
-        {
-            "name": "todo incomplete content",
-            "scope": "markup.list.todo.incomplete.content",
-            "foreground": "var(yellow2)"
-        },
-        {
-            "name": "markup todo complete start",
-            "scope": "markup.list.todo.complete.start",
-            "foreground": "var(blue)"
-        },
-        {
-            "name": "todo complete content",
-            "scope": "markup.list.todo.complete.content",
-            "foreground": "var(blue4)"
-        },
-        {
-            "name": "strikethrough",
-            "scope": "markup.strikethrough",
-            "foreground": "var(brown)"
-        },
-        {
-            "name": "strikethrough begin",
-            "scope": "punctuation.definition.strikethrough.begin",
-            "foreground": "var(brown)"
-        },
-        {
-            "name": "strikethrough end",
-            "scope": "punctuation.definition.strikethrough.end",
-            "foreground": "var(brown)"
-        },
-        {
-            "name": "markup timestamp",
-            "scope": "markup.timestamp",
-            "foreground": "var(blue5)"
-        },
+        // {
+        //     "name": "LaTeX Start",
+        //     "scope": "markup.latex.start.markdown",
+        //     "foreground": "var(grey3)"
+        // },
+        // {
+        //     "name": "LaTeX End",
+        //     "scope": "markup.latex.end.markdown",
+        //     "foreground": "var(grey3)"
+        // },
+        // {
+        //     "name": "LaTeX Content",
+        //     "scope": "markup.latex.markdown",
+        //     "foreground": "var(green3)"
+        // },
+        // {
+        //     "name": "Definition Term",
+        //     "scope": "shorthand.definition.term",
+        //     "foreground": "var(yellow)"
+        // },
+        // {
+        //     "name": "Definition text",
+        //     "scope": "shorthand.definition.definition",
+        //     "foreground": "var(orange)"
+        // },
+        // {
+        //     "name": "Metadata Tag",
+        //     "scope": "shorthand.metadata-tag",
+        //     "foreground": "var(red)"
+        // },
+        // {
+        //     "name": "Quote Content",
+        //     "scope": "markup.quote",
+        //     "foreground": "var(grey2)"
+        // },
+        // {
+        //     "name": "Question Start",
+        //     "scope": "markup.list.question.start",
+        //     "foreground": "var(yellow)"
+        // },
+        // {
+        //     "name": "Question Content",
+        //     "scope": "markup.list.question.content",
+        //     "foreground": "var(pink2)"
+        // },
+        // {
+        //     "name": "Answer Start",
+        //     "scope": "markup.list.answer.start",
+        //     "foreground": "var(blue5)"
+        // },
+        // {
+        //     "name": "Answer Content",
+        //     "scope": "markup.list.answer.content",
+        //     "foreground": "var(green2)"
+        // },
+        // {
+        //     "name": "unnumbered list",
+        //     "scope": "markup.list.unnumbered",
+        //     "foreground": "var(white3)"
+        // },
+        // {
+        //     "name": "numbered list",
+        //     "scope": "markup.list.numbered",
+        //     "foreground": "var(white3)"
+        // },
+        // {
+        //     "name": "todo items",
+        //     "scope": "markup.list.todo",
+        //     "foreground": "var(yellow2)"
+        // },
+        // {
+        //     "name": "markup todo skipped start",
+        //     "scope": "markup.list.todo.skipped.start",
+        //     "foreground": "var(grey2)"
+        // },
+        // {
+        //     "name": "markup todo skipped content",
+        //     "scope": "markup.list.todo.skipped.content",
+        //     "foreground": "var(grey3)"
+        // },
+        // {
+        //     "name": "markup todo incomplete start",
+        //     "scope": "markup.list.todo.incomplete.start",
+        //     "foreground": "var(red)"
+        // },
+        // {
+        //     "name": "todo incomplete content",
+        //     "scope": "markup.list.todo.incomplete.content",
+        //     "foreground": "var(yellow2)"
+        // },
+        // {
+        //     "name": "markup todo complete start",
+        //     "scope": "markup.list.todo.complete.start",
+        //     "foreground": "var(blue)"
+        // },
+        // {
+        //     "name": "todo complete content",
+        //     "scope": "markup.list.todo.complete.content",
+        //     "foreground": "var(blue4)"
+        // },
+        // {
+        //     "name": "strikethrough",
+        //     "scope": "markup.strikethrough",
+        //     "foreground": "var(brown)"
+        // },
+        // {
+        //     "name": "strikethrough begin",
+        //     "scope": "punctuation.definition.strikethrough.begin",
+        //     "foreground": "var(brown)"
+        // },
+        // {
+        //     "name": "strikethrough end",
+        //     "scope": "punctuation.definition.strikethrough.end",
+        //     "foreground": "var(brown)"
+        // },
+        // {
+        //     "name": "markup timestamp",
+        //     "scope": "markup.timestamp",
+        //     "foreground": "var(blue5)"
+        // },
         // Brighter section titles
         {
             "name": "section title",

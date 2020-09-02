@@ -19,6 +19,9 @@
     <script src="/js/typeahead.bundle.min.js"></script>
     <script type="text/javascript" src="/js/underscore-min.js"></script>
 
+    <!-- Highcharts -->
+    <script src="/js/highcharts.js"></script>
+
     <!-- Helpers for this page -->
     <script type="text/javascript" src="/js/shorthand-todos.js" defer></script>
 
@@ -84,17 +87,31 @@
                   <div id="todoSearch" class="btn btn-outline-success">Search</div>
                 </div>
 
+                <div class="col-auto align-self-end">
+                  <!-- Stats Button -->
+                  <div id="showStats" class="btn btn-outline-secondary">Show stats</div>
+                </div>
+
               </div>
             </form>
 
           </div>
         </div>
 
+        <div id="statsContainer" class="row hidden">
+            <div class="col-md-8">
+                <div id="timelineChart"></div>
+            </div>
+            <div class="col-md-4">
+                <div id="tagChart"></div>
+            </div>
+        </div>
+
         <div class="row">
             <div class="col-md-12" style="margin-left: 10px;">
-              <h3>Total: <span id="resultCount">0</span></h3>
+                <h3>Total: <span id="resultCount">0</span></h3>
             </div>
-          </div>
+        </div>
 
         <div id="resultWrapper" class="row">
             <div class="col-md-12">

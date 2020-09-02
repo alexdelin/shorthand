@@ -2,6 +2,8 @@ import shlex
 import logging
 from subprocess import Popen, PIPE
 
+from shorthand.utils.paths import get_full_path
+
 
 log = logging.getLogger(__name__)
 
@@ -90,38 +92,16 @@ def search_notes(notes_directory, query_string, type=None,
     }
 
 
-def get_context(filename, line_number, width):
-    '''Show the surrounding lines around a given line
+def get_note(notes_directory, path):
+    '''Get the full raw content of a note as a string
+    given its path, which can be either a relative path
+    within the notes directory or a full path on the
+    filesystem
     '''
-    with open(filename, 'r') as file_object:
-        file_content = file_object.read()
 
-    split_content = file_content.split('\n')
+    full_path = get_full_path(notes_directory, path)
 
-    before_start = line_number - 1 - width
-    if before_start < 0:
-        before_start = 0
-    before_end = line_number - 1
-    before_content = split_content[before_start:before_end]
-
-    line_content = split_content[line_number-1]
-
-    after_start = line_number
-    after_end = line_number + width
-    if after_end > len(split_content):
-        after_end = len(split_content)
-    after_content = split_content[after_start:after_end]
-
-    return {
-        "before": before_content,
-        "line": line_content,
-        "after": after_content
-    }
-
-
-def get_note(path):
-
-    with open(path, 'r') as note_file_object:
+    with open(full_path, 'r') as note_file_object:
         note_content = note_file_object.read()
 
     return note_content

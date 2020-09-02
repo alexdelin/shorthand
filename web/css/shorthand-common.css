@@ -11,6 +11,10 @@
     stroke: white;
 }
 
+div.tooltip {
+    opacity: 100%;
+}
+
 .homepage-info {
     text-align: center;
     margin-top: 60px;
@@ -32,7 +36,7 @@
     vertical-align: middle;
 }
 
-svg {
+.mermaid svg {
     max-width: 900px;
 }
 
@@ -149,7 +153,7 @@ pre {
 }
 
 .hidden {
-    display: none;
+    display: none !important;
 }
 
 .padded-top {

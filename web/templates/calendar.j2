@@ -4,17 +4,136 @@
 
     {{ static_content['common_imports'] }}
 
+    <!-- Tooltip pulgins -->
+    <script src='https://unpkg.com/popper.js@1.16.1/dist/umd/popper.min.js'></script>
+    <script src='https://unpkg.com/tooltip.js@1.3.3/dist/umd/tooltip.min.js'></script>
+
     <!-- FullCalendar & Daygrid plugin -->
     <link href='/css/calendar.css' rel='stylesheet' />
-    <link href='/css/daygrid.css' rel='stylesheet' />
+    <!-- <link href='/css/daygrid.css' rel='stylesheet' /> -->
     <script src='/js/calendar.js'></script>
-    <script src='/js/daygrid.js'></script>
+    <!-- <script src='/js/daygrid.js'></script> -->
 
     <!-- Highcharts -->
     <script src="/js/highcharts.js"></script>
 
+    <!-- Helpers for this page -->
+    <script src="/js/shorthand-calendar.js"></script>
+
     <meta charset='utf-8'>
     <title>Notes</title>
+
+    <style>
+
+  /*
+  i wish this required CSS was better documented :(
+  https://github.com/FezVrasta/popper.js/issues/674
+  derived from this CSS on this page: https://popper.js.org/tooltip-examples.html
+  */
+
+  .popper,
+  .tooltip {
+    position: absolute;
+    z-index: 9999;
+    background: #FFC107;
+    color: black;
+    /*width: 150px;*/
+    border-radius: 3px;
+    box-shadow: 0 0 2px rgba(0,0,0,0.5);
+    padding: 10px;
+    text-align: center;
+  }
+  .style5 .tooltip {
+    background: #1E252B;
+    color: #FFFFFF;
+    max-width: 200px;
+    width: auto;
+    font-size: .8rem;
+    padding: .5em 1em;
+  }
+  .tooltip-inner {
+    background: #FFC107;
+    color: black;
+  }
+  .popper .popper__arrow,
+  .tooltip .tooltip-arrow {
+    width: 0;
+    height: 0;
+    border-style: solid;
+    position: absolute;
+    margin: 5px;
+  }
+
+  .tooltip .tooltip-arrow,
+  .popper .popper__arrow {
+    border-color: #FFC107;
+  }
+  .style5 .tooltip .tooltip-arrow {
+    border-color: #1E252B;
+  }
+  .popper[x-placement^="top"],
+  .tooltip[x-placement^="top"] {
+    margin-bottom: 5px;
+  }
+  .popper[x-placement^="top"] .popper__arrow,
+  .tooltip[x-placement^="top"] .tooltip-arrow {
+    border-width: 5px 5px 0 5px;
+    border-left-color: transparent;
+    border-right-color: transparent;
+    border-bottom-color: transparent;
+    bottom: -5px;
+    left: calc(50% - 5px);
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  .popper[x-placement^="bottom"],
+  .tooltip[x-placement^="bottom"] {
+    margin-top: 5px;
+  }
+  .tooltip[x-placement^="bottom"] .tooltip-arrow,
+  .popper[x-placement^="bottom"] .popper__arrow {
+    border-width: 0 5px 5px 5px;
+    border-left-color: transparent;
+    border-right-color: transparent;
+    border-top-color: transparent;
+    top: -5px;
+    left: calc(50% - 5px);
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  .tooltip[x-placement^="right"],
+  .popper[x-placement^="right"] {
+    margin-left: 5px;
+  }
+  .popper[x-placement^="right"] .popper__arrow,
+  .tooltip[x-placement^="right"] .tooltip-arrow {
+    border-width: 5px 5px 5px 0;
+    border-left-color: transparent;
+    border-top-color: transparent;
+    border-bottom-color: transparent;
+    left: -5px;
+    top: calc(50% - 5px);
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .popper[x-placement^="left"],
+  .tooltip[x-placement^="left"] {
+    margin-right: 5px;
+  }
+  .popper[x-placement^="left"] .popper__arrow,
+  .tooltip[x-placement^="left"] .tooltip-arrow {
+    border-width: 5px 0 5px 5px;
+    border-top-color: transparent;
+    border-right-color: transparent;
+    border-bottom-color: transparent;
+    right: -5px;
+    top: calc(50% - 5px);
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+</style>
+
 </head>
 <body>
 
@@ -23,6 +142,20 @@
     <div class="col-md-8 pagewrapper">
 
         {{ static_content['header_html'] }}
+
+        <div class="row" style="padding-top: 15px;">
+          <div class="col-auto">
+            <!-- Directory Filter -->
+            <select id="directoryFilter" class="form-control">
+              {% if default_directory %}
+                <option>{{ default_directory }}</option>
+              {% endif %}
+              {% for sub_directory in all_directories %}
+                <option>{{ sub_directory }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
 
         <div class="row content">
           <div class="col-md-12 calendar-content">
@@ -40,33 +173,6 @@
   </div>
 
   {{ static_content['modal_block'] }}
-
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      var calendarEl = document.getElementById('calendar');
-
-      var calendar = new FullCalendar.Calendar(calendarEl, {
-        plugins: [ 'dayGrid' ],
-        events: {{events}}
-      });
-      calendar.render();
-    });
-  </script>
-
-  <script type="text/javascript">
-    Highcharts.chart('productivityChart', {
-        chart: {zoomType: 'x'},
-        title: {text: 'Daily Productivity'},
-        subtitle: {text: 'Meetings / sections created per day'},
-        tooltip: {valueDecimals: 2},
-        xAxis: {type: 'datetime'},
-        series: [{
-            data: {{summary}},
-            lineWidth: 0.5,
-            name: 'Sections per day'
-        }]
-    });
-  </script>
 
 </body>
 </html>
