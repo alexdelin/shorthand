@@ -64,36 +64,19 @@ INTERNAL_LINK_PATTERN = r'(\[[^\[]*?\]\()(\/.*?)(\))'
 
 GPS_PATTERN = r"(GPS\[)(-?1?\d{1,2}\.\d{6})(, )(-?1?\d{1,2}\.\d{6})(, )?([\w ]+)?(\])"
 
+
 CHARS_TO_ESCAPE = ['`']
 
 
-def escape_for_grep(input_pattern):
-    '''Patterns designed for the python `re` library need to be
-    escaped before being used with grep via the command line.
-
-    Note: The uses of backslashes as escape characters for
-    parentheses are flipped between the two implementations.
-        Python uses the backslash to escape the literal
-        parentheses character
-        Grep uses the backslask to escape parentheses around
-        capture groups
+def escape_for_cli(input_pattern):
+    '''Patterns which include special characters must
+    be escaped before being used on the command line
     '''
 
     clean_pattern = ''
 
     while input_pattern:
         next_char = input_pattern[0]
-        # if next_char == '\\':
-        #     next_two_chars = input_pattern[:2]
-        #     if next_two_chars in ['\\(', '\\)', '\\?']:
-        #         clean_pattern += next_two_chars[-1]
-        #         input_pattern = input_pattern[2:]
-        #     elif next_two_chars in ['\\[', '\\]']:
-        #         clean_pattern += next_two_chars
-        #         input_pattern = input_pattern[2:]
-        #     else:
-        #         clean_pattern += '\\\\'
-        #         input_pattern = input_pattern[1:]
         if next_char in CHARS_TO_ESCAPE:
             clean_pattern += '\\' + next_char
             input_pattern = input_pattern[1:]

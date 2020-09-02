@@ -5,7 +5,7 @@ import shlex
 import logging
 
 from shorthand.utils.paths import get_relative_path, get_display_path
-from shorthand.utils.patterns import escape_for_grep, GPS_PATTERN
+from shorthand.utils.patterns import GPS_PATTERN
 
 
 gps_regex = re.compile(GPS_PATTERN)
