@@ -7,7 +7,7 @@ import shlex
 
 from shorthand.todo_tools import get_todos
 from shorthand.question_tools import get_questions
-from shorthand.utils.patterns import DATED_HEADING_PATTERN, escape_for_grep
+from shorthand.utils.patterns import DATED_HEADING_PATTERN
 
 
 dated_heading_regex = re.compile(DATED_HEADING_PATTERN)
@@ -27,9 +27,9 @@ def get_calendar(notes_directory, directory_filter=None, grep_path='grep'):
             search_directory += '/'
         search_directory += directory_filter
 
-    grep_command = '{grep_path} -rn "{pattern}" {dir} | {grep_path} -v "\\.git"'.format(
+    grep_command = '{grep_path} -Prn "{pattern}" {dir} | {grep_path} -v "\\.git"'.format(
             grep_path=grep_path,
-            pattern=escape_for_grep(DATED_HEADING_PATTERN),
+            pattern=DATED_HEADING_PATTERN,
             dir=search_directory)
 
     proc = Popen(

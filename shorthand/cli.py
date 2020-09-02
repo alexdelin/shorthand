@@ -28,7 +28,7 @@ def main(args):
 
     if args.action == 'stamp':
         log.info('Stamping Notes')
-        changes = stamp_notes(notes_directory)
+        changes = stamp_notes(notes_directory, grep_path=notes_config['grep_path'])
         for file in changes.keys():
             print(f'\n<<--{file}-->>')
             for change in changes[file]:

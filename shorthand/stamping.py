@@ -8,9 +8,8 @@ from shorthand.utils.patterns import CATCH_ALL_PATTERN, \
     VALID_INCOMPLETE_PATTERN, VALID_COMPLETE_PATTERN, \
     UNFINISHED_UNSTAMPED_PATTERN, FINISHED_START_STAMPED_PATTERN, \
     FINISHED_UNSTAMPED_PATTERN, TODAY_GREP, TODAY_LINE_PATTERN, \
-    ALL_QUESTIONS_GREP, UNSTAMPED_QUESTION, STAMPED_QUESTION, \
-    ANSWER_PATTERN, UNSTAMPED_ANSWER, STAMPED_ANSWER, \
-    escape_for_grep
+    ALL_QUESTIONS, UNSTAMPED_QUESTION, STAMPED_QUESTION, \
+    ANSWER_PATTERN, UNSTAMPED_ANSWER, STAMPED_ANSWER
 
 
 log = logging.getLogger(__name__)
@@ -82,15 +81,15 @@ def stamp_notes(notes_directory, stamp_todos=True, stamp_today=True,
 
     # Stamp start and end dates for todo elements
     if stamp_todos:
-        grep_command = '{grep_path} -r "{pattern}" {directory} | '\
+        grep_command = '{grep_path} -Pr "{pattern}" {directory} | '\
                        '{grep_path} -v "\\.git" | '\
-                       '{grep_path} -v "{filter_1}" | '\
-                       '{grep_path} -v "{filter_2}"'.format(
+                       '{grep_path} -Pv "{filter_1}" | '\
+                       '{grep_path} -Pv "{filter_2}"'.format(
                             grep_path=grep_path,
-                            pattern=escape_for_grep(CATCH_ALL_PATTERN),
+                            pattern=CATCH_ALL_PATTERN,
                             directory=notes_directory,
-                            filter_1=escape_for_grep(VALID_INCOMPLETE_PATTERN),
-                            filter_2=escape_for_grep(VALID_COMPLETE_PATTERN))
+                            filter_1=VALID_INCOMPLETE_PATTERN,
+                            filter_2=VALID_COMPLETE_PATTERN)
 
         log.debug(f'running grep command "{grep_command}" to get todos to stamp')
 
@@ -240,12 +239,12 @@ def stamp_notes(notes_directory, stamp_todos=True, stamp_today=True,
     # Stamp Questions
     if stamp_questions:
 
-        unstamped_questions_grep_command = '{grep_path} -r "{question_pattern}" {directory} | '\
-                       '{grep_path} -v "{stamped_question_pattern}" | '\
+        unstamped_questions_grep_command = '{grep_path} -Pr "{question_pattern}" {directory} | '\
+                       '{grep_path} -Pv "{stamped_question_pattern}" | '\
                        '{grep_path} -v "\\.git"'.format(
                             grep_path=grep_path,
-                            question_pattern=escape_for_grep(ALL_QUESTIONS_GREP),
-                            stamped_question_pattern=escape_for_grep(STAMPED_QUESTION),
+                            question_pattern=ALL_QUESTIONS,
+                            stamped_question_pattern=STAMPED_QUESTION,
                             directory=notes_directory)
 
         log.debug(f'running grep command "{unstamped_questions_grep_command}" to get unstamped questions')
@@ -298,12 +297,12 @@ def stamp_notes(notes_directory, stamp_todos=True, stamp_today=True,
     # Stamp Answers
     if stamp_answers:
 
-        unstamped_answers_grep_command = '{grep_path} -r "{answer_pattern}" {directory} | '\
-                       '{grep_path} -v "{stamped_answer_pattern}" | '\
+        unstamped_answers_grep_command = '{grep_path} -Pr "{answer_pattern}" {directory} | '\
+                       '{grep_path} -Pv "{stamped_answer_pattern}" | '\
                        '{grep_path} -v "\\.git"'.format(
                             grep_path=grep_path,
-                            answer_pattern=escape_for_grep(ANSWER_PATTERN),
-                            stamped_answer_pattern=escape_for_grep(STAMPED_ANSWER),
+                            answer_pattern=ANSWER_PATTERN,
+                            stamped_answer_pattern=STAMPED_ANSWER,
                             directory=notes_directory)
 
         log.debug(f'running grep command "{unstamped_answers_grep_command}" to get unstamped answers')

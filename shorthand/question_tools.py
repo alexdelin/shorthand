@@ -3,8 +3,8 @@ import logging
 from subprocess import Popen, PIPE
 
 from shorthand.tag_tools import extract_tags
-from shorthand.utils.patterns import ALL_QUESTIONS_GREP, ANSWER_PATTERN, \
-                                     START_STAMP_ONLY_PATTERN, escape_for_grep
+from shorthand.utils.patterns import ALL_QUESTIONS, ANSWER_PATTERN, \
+                                     START_STAMP_ONLY_PATTERN
 from shorthand.utils.paths import get_relative_path, get_display_path
 
 
@@ -60,9 +60,9 @@ def get_questions(notes_directory, question_status='all',
         search_directory += directory_filter
 
     proc = Popen(
-        '{grep_path} -rn -A 1 "{pattern}" {dir}'.format(
+        '{grep_path} -Prn -A 1 "{pattern}" {dir}'.format(
             grep_path=grep_path,
-            pattern=escape_for_grep(ALL_QUESTIONS_GREP),
+            pattern=ALL_QUESTIONS,
             dir=search_directory),
         stdout=PIPE, stderr=PIPE,
         shell=True)

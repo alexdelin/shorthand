@@ -94,7 +94,10 @@ class TestTodoStamping(unittest.TestCase):
     """Test stamping functionality of the library"""
 
     def test_stamp(self):
-        response = stamp_notes(CONFIG['notes_directory'])
+        response = stamp_notes(CONFIG['notes_directory'],
+                stamp_todos=True, stamp_today=True,
+                stamp_questions=True, stamp_answers=True,
+                grep_path=CONFIG['grep_path'])
         assert response.keys()
 
     def test_today_replacement(self):

@@ -4,7 +4,7 @@ from subprocess import Popen, PIPE
 import shlex
 import logging
 
-from shorthand.utils.patterns import DEFINITION_PATTERN, DEFINITION_GREP
+from shorthand.utils.patterns import DEFINITION_PATTERN
 from shorthand.utils.paths import get_relative_path, get_display_path
 
 
@@ -24,9 +24,9 @@ def get_definitions(notes_directory, directory_filter=None, grep_path='grep'):
             search_directory += '/'
         search_directory += directory_filter
 
-    grep_command = '{grep_path} -rn "{pattern}" {dir} | {grep_path} -v "\\.git"'.format(
+    grep_command = '{grep_path} -Prn "{pattern}" {dir} | {grep_path} -v "\\.git"'.format(
             grep_path=grep_path,
-            pattern=DEFINITION_GREP,
+            pattern=DEFINITION_PATTERN,
             dir=search_directory)
 
     log.debug(f'Running grep command {grep_command} to get definitions')

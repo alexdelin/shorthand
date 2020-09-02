@@ -4,7 +4,7 @@ from subprocess import Popen, PIPE
 import shlex
 import logging
 
-from shorthand.utils.patterns import escape_for_grep, TAG_PATTERN, TAG_FILTER
+from shorthand.utils.patterns import TAG_PATTERN, TAG_FILTER
 
 
 tag_regex = re.compile(TAG_PATTERN)
@@ -23,9 +23,9 @@ def get_tags(notes_directory, directory_filter=None, grep_path='grep'):
             search_directory += '/'
         search_directory += directory_filter
 
-    grep_command = '{grep_path} -r "{pattern}" {dir} | {grep_path} -v "\\.git"'.format(
+    grep_command = '{grep_path} -Pr "{pattern}" {dir} | {grep_path} -v "\\.git"'.format(
             grep_path=grep_path,
-            pattern=escape_for_grep(TAG_FILTER),
+            pattern=TAG_FILTER,
             dir=search_directory)
     log.debug(f'Running grep command {grep_command} to get tags')
 

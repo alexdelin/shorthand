@@ -38,7 +38,7 @@ START_END_STAMP_ONLY_PATTERN = r'(\()(' + DATE_STAMP_PATTERN + r')( -> )(' + DAT
 
 # Questions & Answers
 ## Matches a question
-ALL_QUESTIONS_GREP = r'(^\s*)(\? )'
+ALL_QUESTIONS = r'(^\s*)(\? )'
 UNSTAMPED_QUESTION = r'(^\s*)(\? )(?!' + START_STAMP_PATTERN + r' )'
 STAMPED_QUESTION = r'\? ' + START_STAMP_PATTERN + r' '
 ## Matches an answer
@@ -52,8 +52,7 @@ TODAY_LINE_PATTERN = r'(.*)(\\today)(.*)'
 TAG_FILTER = r'( :\w+:)'
 TAG_PATTERN = r'( :\w+:)($|(?= ))'
 
-DEFINITION_PATTERN = r"^(\s*)(\{.*\} )(.*)"
-DEFINITION_GREP = r"^\(\\s*\)\({.*} \)\(.*\)"
+DEFINITION_PATTERN = r"^(\s*)(\{[-_+ \w]*?\} )(.*)"
 
 HEADING_PATTERN = r'^(#+)( )(.*)'
 DATED_HEADING_PATTERN = r'^(#+)( )(.*)(' + DATE_STAMP_PATTERN + r')'
@@ -65,7 +64,7 @@ INTERNAL_LINK_PATTERN = r'(\[[^\[]*?\]\()(\/.*?)(\))'
 
 GPS_PATTERN = r"(GPS\[)(-?1?\d{1,2}\.\d{6})(, )(-?1?\d{1,2}\.\d{6})(, )?([\w ]+)?(\])"
 
-CHARS_TO_ESCAPE = ['(', ')', '{', '}', '+', '|', '?', '`', '=']
+CHARS_TO_ESCAPE = ['`']
 
 
 def escape_for_grep(input_pattern):
@@ -84,18 +83,18 @@ def escape_for_grep(input_pattern):
 
     while input_pattern:
         next_char = input_pattern[0]
-        if next_char == '\\':
-            next_two_chars = input_pattern[:2]
-            if next_two_chars in ['\\(', '\\)', '\\?']:
-                clean_pattern += next_two_chars[-1]
-                input_pattern = input_pattern[2:]
-            elif next_two_chars in ['\\[', '\\]']:
-                clean_pattern += next_two_chars
-                input_pattern = input_pattern[2:]
-            else:
-                clean_pattern += '\\\\'
-                input_pattern = input_pattern[1:]
-        elif next_char in CHARS_TO_ESCAPE:
+        # if next_char == '\\':
+        #     next_two_chars = input_pattern[:2]
+        #     if next_two_chars in ['\\(', '\\)', '\\?']:
+        #         clean_pattern += next_two_chars[-1]
+        #         input_pattern = input_pattern[2:]
+        #     elif next_two_chars in ['\\[', '\\]']:
+        #         clean_pattern += next_two_chars
+        #         input_pattern = input_pattern[2:]
+        #     else:
+        #         clean_pattern += '\\\\'
+        #         input_pattern = input_pattern[1:]
+        if next_char in CHARS_TO_ESCAPE:
             clean_pattern += '\\' + next_char
             input_pattern = input_pattern[1:]
         else:
