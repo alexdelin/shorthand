@@ -56,6 +56,12 @@
             "background": "var(white)"
         },
         {
+            "name": "markup code",
+            "scope": "markup.raw.inline",
+            "background": "color(var(white3) alpha(0.5))",
+            "foreground": "var(green)"
+        },
+        {
             "name": "LaTeX Start",
             "scope": "markup.latex.start.markdown",
             "foreground": "var(grey3)"
