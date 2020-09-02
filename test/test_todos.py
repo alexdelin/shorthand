@@ -19,7 +19,8 @@ def get_todo_results(todo_status='incomplete', directory_filter=None, query_stri
     return get_todos(notes_directory=CONFIG['notes_directory'],
                      todo_status=todo_status, directory_filter=directory_filter,
                      query_string=query_string, sort_by=sort_by,
-                     suppress_future=suppress_future)
+                     suppress_future=suppress_future,
+                     grep_path=CONFIG['grep_path'])
 
 
 class TestUnstampedTodos(unittest.TestCase):

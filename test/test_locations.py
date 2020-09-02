@@ -13,6 +13,13 @@ setup_logging(CONFIG)
 log = logging.getLogger(__name__)
 
 
+# Helper function to make test code cleaner
+def fetch_locations(directory_filter=None):
+    return get_locations(CONFIG['notes_directory'],
+        directory_filter=directory_filter,
+        grep_path=CONFIG['grep_path'])
+
+
 class TestLocations(unittest.TestCase):
     """Test basic search functionality of the library"""
 
@@ -29,4 +36,4 @@ class TestLocations(unittest.TestCase):
             {'latitude': '48.858212', 'longitude': '2.294513', 'name': '', 'file_path': '/locations.note', 'display_path': 'locations.note', 'line_number': '7'}
         ]
         # Compare returned items ignoring the order
-        self.assertCountEqual(get_locations(CONFIG['notes_directory']), all_locations)
+        self.assertCountEqual(fetch_locations(), all_locations)

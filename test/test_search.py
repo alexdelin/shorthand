@@ -17,7 +17,8 @@ def get_search_results(query_string, case_sensitive):
     return search_notes(
                 notes_directory=CONFIG['notes_directory'],
                 query_string=query_string,
-                case_sensitive=case_sensitive)
+                case_sensitive=case_sensitive,
+                grep_path=CONFIG['grep_path'])
 
 
 class TestSearch(unittest.TestCase):
