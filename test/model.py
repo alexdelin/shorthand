@@ -78,6 +78,10 @@ class ShorthandModel(object):
         for todo in todos:
             todo['display_path'] = get_display_path(todo['file_path'], directory_filter)
 
+        # Sort tags
+        for todo in todos:
+            todo['tags'].sort()
+
         return todos
 
     def search_questions(self, question_status='all', directory_filter=None):
