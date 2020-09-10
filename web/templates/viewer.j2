@@ -25,15 +25,29 @@
     <script src="/js/shorthand-viewer.js" defer></script>
 
     <!-- Mermaid Diagram Rendering -->
-    <script src="https://cdn.jsdelivr.net/npm/mermaid@8.5.1/dist/mermaid.min.js"></script>
+    <script src="/js/mermaid.min.js"></script>
 
     <!-- Materialize Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!-- Map Plugin -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>
 
     <meta charset='utf-8'>
     <title>Notes</title>
 </head>
 <body>
+
+<style>
+    #mapModalMap {
+        width: 100%;
+        height: 600px;
+    }
+    .modal-dialog {
+        max-width: 800px;
+    }
+</style>
 
 <div class="row fullwrapper justify-content-center">
     <div class="render-pagewrapper">
@@ -66,6 +80,25 @@
 </div>
 
 {{ static_content['modal_block'] }}
+
+<!-- Map Modal -->
+<div id="modalWrapper">
+  <div class="modal fade" id="shorthandMapModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="mapModalTitle">Location Name</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div id="mapModalContent" class="modal-body">
+          <div id="mapModalMap"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script>
 // Render main markdown content
