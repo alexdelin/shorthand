@@ -1,15 +1,20 @@
 import os
 import re
 import json
+import logging
 import unittest
 
 import pytest
 
+from shorthand.utils.logging import setup_logging
+from shorthand.rec_tools import get_record_set, get_record_sets
 from shorthand.utils.rec import load_from_string
 from utils import setup_environment
 
 
 CONFIG = setup_environment()
+setup_logging(CONFIG)
+log = logging.getLogger(__name__)
 
 
 class TestRecConfig(unittest.TestCase):
@@ -185,3 +190,31 @@ class TestFiltering(object):
         query or expression
         '''
         pass
+
+
+class TestAPI(unittest.TestCase):
+    """Test the Shorthand API for working with record sets
+    embedded within notes
+    """
+
+    def test_list_record_sets(self):
+        '''Test listing all record sets within notes
+        '''
+        sets_found = get_record_sets(CONFIG['notes_directory'],
+                        directory_filter=None,
+                        grep_path=CONFIG['grep_path'])
+        all_sets = [{'display_path': 'rec.note', 'file_path': '/rec.note', 'line_number': '4'}]
+        # assert False
+        assert sets_found == all_sets
+
+    def test_get_record_set(self):
+        '''Test getting the contents of an individual record set
+        '''
+        loaded_record_set = get_record_set(CONFIG['notes_directory'],
+                file_path='/rec.note',
+                line_number=4,
+                parse=True,
+                parse_format='json',
+                include_config=False)
+        loaded_record_set = json.loads(loaded_record_set)
+        assert len(loaded_record_set) == 3

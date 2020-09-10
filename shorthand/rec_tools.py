@@ -5,7 +5,7 @@ import shlex
 import logging
 import json
 
-from shorthand.utils.patterns import RECORD_SET_PATTERN, escape_for_grep
+from shorthand.utils.patterns import RECORD_SET_PATTERN, escape_for_cli
 from shorthand.utils.rec import load_from_string
 from shorthand.utils.paths import get_relative_path, get_display_path, \
                                   get_full_path
@@ -83,11 +83,13 @@ def get_record_sets(notes_directory, directory_filter=None, grep_path='grep'):
             search_directory += '/'
         search_directory += directory_filter
 
-    grep_command = '{grep_path} -rn "{pattern}" {dir}' \
+    grep_command = '{grep_path} -Prn "{pattern}" {dir}' \
                    ' | {grep_path} -v "\\.git"'.format(
                         grep_path=grep_path,
-                        pattern=escape_for_grep(RECORD_SET_PATTERN),
+                        pattern=escape_for_cli(RECORD_SET_PATTERN),
                         dir=search_directory)
+
+    log.debug(f'Running grep command {grep_command} to get record sets')
 
     proc = Popen(
         grep_command,

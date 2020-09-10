@@ -55,6 +55,8 @@ def search_notes(notes_directory, query_string, type=None,
                         pattern=additional_filter)
         grep_command = grep_command + new_filter
 
+    log.debug(f'Running command {grep_command} to get search results')
+
     proc = Popen(
         grep_command,
         stdout=PIPE, stderr=PIPE,

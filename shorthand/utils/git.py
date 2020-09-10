@@ -10,6 +10,7 @@ def pull_repo(notes_directory, git_path='git'):
     '''pull the git repo containing the notes
     '''
     pull_command = f'cd {notes_directory} && {git_path} pull'
+    log.debug(f'Running command {pull_command} to pull new notes')
     proc = Popen(pull_command,
                  stdout=PIPE, stderr=PIPE,
                  shell=True)

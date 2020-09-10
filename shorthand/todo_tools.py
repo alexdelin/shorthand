@@ -8,8 +8,7 @@ from shorthand.tag_tools import extract_tags
 from shorthand.utils.paths import get_relative_path, get_display_path
 from shorthand.utils.patterns import INCOMPLETE_PREFIX_GREP, \
     COMPLETE_PREFIX_GREP, SKIPPED_PREFIX_GREP, \
-    START_STAMP_ONLY_PATTERN, START_END_STAMP_ONLY_PATTERN, \
-    escape_for_grep
+    START_STAMP_ONLY_PATTERN, START_END_STAMP_ONLY_PATTERN
 
 # Set up Regexes to use for finding files to process with `grep`
 PATTERN_MAPPING = {
@@ -96,9 +95,9 @@ def get_todos(notes_directory, todo_status='incomplete', directory_filter=None,
             search_directory += '/'
         search_directory += directory_filter
 
-    grep_command = '{grep_path} -rn "{pattern}" {dir} | {grep_path} -v "\\.git"'.format(
+    grep_command = '{grep_path} -Prn "{pattern}" {dir} | {grep_path} -v "\\.git"'.format(
             grep_path=grep_path,
-            pattern=escape_for_grep(PATTERN_MAPPING[todo_status]),
+            pattern=PATTERN_MAPPING[todo_status],
             dir=search_directory)
 
     if query_string:

@@ -9,7 +9,8 @@ LOG_PATH = os.path.dirname(os.path.realpath(__file__)) + '/test.log'
 TEST_CONFIG = {
     "notes_directory": TEMP_DIR,
     "log_file_path": LOG_PATH,
-    "log_level": "debug"
+    "log_level": "debug",
+    "grep_path": "/usr/local/bin/ggrep"
 }
 
 
