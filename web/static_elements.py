@@ -18,11 +18,12 @@ HEADER_HTML = '''<div class="row top-gutter">
 
         <!-- Elements Bar -->
         <div class="row title-bar elements-bar collapse" id="elementsBar">
-            <div class="col-md-8"></div>
+            <div class="col-md-7"></div>
             <div class="col-md-1 icon-wrapper"><a href="/todos"><img class="svg-icon" src="/img/tasklist-24.svg"></a></div>
             <div class="col-md-1 icon-wrapper"><a href="/questions"><img class="svg-icon" src="/img/question-24.svg"></a></div>
             <div class="col-md-1 icon-wrapper"><a href="/glossary"><img class="svg-icon" src="/img/book-24.svg"></a></div>
             <div class="col-md-1 icon-wrapper"><a href="/databases"><img class="svg-icon" src="/img/database-24.svg"></a></div>
+            <div class="col-md-1 icon-wrapper"><a href="/locations"><img class="svg-icon" src="/img/globe-24.svg"></a></div>
         </div>
 
         <!-- Options Bar -->

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    {{ static_content['common_imports'] }}
+
+    <!-- Leaflet Map library -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>
+
+    <!-- Helpers for this page -->
+    <script src="/js/shorthand-locations.js"></script>
+
+    <meta charset='utf-8'>
+    <title>Notes - Locations</title>
+
+</head>
+<body>
+
+  <div class="row fullwrapper">
+    <div class="col-md-2 gutter"></div>
+    <div class="col-md-8 pagewrapper">
+
+        {{ static_content['header_html'] }}
+
+        <div class="row" style="padding-top: 15px;">
+          <div class="col-md-12">
+            <!-- Directory Filter -->
+            Content Goes here!
+            <div id="shorthand-map"></div>
+          </div>
+        </div>
+
+        <div class="row footer-bar">
+          <div class="col-md-12"></div>
+        </div>
+    </div>
+    <div class="col-md-2 gutter"></div>
+  </div>
+
+  {{ static_content['modal_block'] }}
+
+</body>
+</html>

@@ -11,6 +11,24 @@
     stroke: white;
 }
 
+#shorthand-map {
+    height: 800px;
+    width: 100%;
+}
+
+.shorthand-mini-map {
+    height: 400px;
+    width: 400px;
+}
+
+span.location-coordinates {
+    color: grey;
+}
+
+span.location-name {
+    color: blue;
+}
+
 div.tooltip {
     opacity: 100%;
 }

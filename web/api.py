@@ -22,6 +22,7 @@ from shorthand.tag_tools import get_tags
 from shorthand.calendar_tools import get_calendar
 from shorthand.toc_tools import get_toc
 from shorthand.rec_tools import get_record_sets, get_record_set
+from shorthand.gps_tools import get_locations
 from shorthand.utils.config import get_notes_config
 from shorthand.utils.logging import setup_logging
 from shorthand.utils.render import get_file_content, get_rendered_markdown
@@ -170,6 +171,23 @@ def show_databases():
     return render_template('record_sets.j2', record_sets=record_sets,
                            static_content=static_content)
 
+
+@app.route('/locations', methods=['GET'])
+def show_locations():
+    return render_template('locations.j2', static_content=static_content)
+
+
+@app.route('/api/v1/locations', methods=['GET'])
+def get_gps_locations():
+
+    directory_filter = request.args.get('directory_filter')
+
+    locations = get_locations(notes_directory=SHORTHAND_CONFIG['notes_directory'],
+                         directory_filter=directory_filter,
+                         grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
+
+    wrapped_response = wrap_response_data(locations)
+    return json.dumps(wrapped_response)
 
 @app.route('/api/v1/todos', methods=['GET'])
 def get_current_todos():

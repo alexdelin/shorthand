@@ -376,6 +376,16 @@ contexts:
     - match: '(\\today)'
       captures:
         1: constant.language.shorthand.today.placeholder
+  location:
+    - match: (GPS\[)(-?1?\d{1,2}\.\d{3,6})(, ?)(-?1?\d{1,2}\.\d{3,6})(, ?)?([\w ]+)?(\])
+      captures:
+        1: entity.name.function.shorthand.location
+        2: constant.numeric.shorthand.location.latitude
+        3: punctuation.separator.shorthand.location
+        4: constant.numeric.shorthand.location.longitude
+        5: punctuation.separator.shorthand.location
+        6: string.shorthand.location.name
+        7: entity.name.function.shorthand.location
   block-quote:
     - match: '[ ]{,3}(>)[ ]?'
       comment: |
@@ -735,6 +745,7 @@ contexts:
     - include: ampersand
     - include: timestamp
     - include: today-placeholder
+    - include: location
     - include: bracket
     - include: raw
     - include: image-inline
