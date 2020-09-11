@@ -81,7 +81,7 @@ def stamp_notes(notes_directory, stamp_todos=True, stamp_today=True,
 
     # Stamp start and end dates for todo elements
     if stamp_todos:
-        grep_command = '{grep_path} -Pr "{pattern}" {directory} | '\
+        grep_command = '{grep_path} -Pr "{pattern}" {directory} --include=\\*.{{note}} | '\
                        '{grep_path} -v "\\.git" | '\
                        '{grep_path} -Pv "{filter_1}" | '\
                        '{grep_path} -Pv "{filter_2}"'.format(
@@ -183,7 +183,7 @@ def stamp_notes(notes_directory, stamp_todos=True, stamp_today=True,
 
     # Replace placeholders for `\today` helper
     if stamp_today:
-        today_grep_command = '{grep_path} -r {pattern} {directory} | '\
+        today_grep_command = '{grep_path} -r {pattern} {directory} --include=\\*.{{note}} | '\
                        '{grep_path} -v "\\.git"'.format(
                             grep_path=grep_path,
                             pattern=TODAY_GREP,
@@ -239,7 +239,7 @@ def stamp_notes(notes_directory, stamp_todos=True, stamp_today=True,
     # Stamp Questions
     if stamp_questions:
 
-        unstamped_questions_grep_command = '{grep_path} -Pr "{question_pattern}" {directory} | '\
+        unstamped_questions_grep_command = '{grep_path} -Pr "{question_pattern}" {directory} --include=\\*.{{note}} | '\
                        '{grep_path} -Pv "{stamped_question_pattern}" | '\
                        '{grep_path} -v "\\.git"'.format(
                             grep_path=grep_path,
@@ -297,7 +297,7 @@ def stamp_notes(notes_directory, stamp_todos=True, stamp_today=True,
     # Stamp Answers
     if stamp_answers:
 
-        unstamped_answers_grep_command = '{grep_path} -Pr "{answer_pattern}" {directory} | '\
+        unstamped_answers_grep_command = '{grep_path} -Pr "{answer_pattern}" {directory} --include=\\*.{{note}} | '\
                        '{grep_path} -Pv "{stamped_answer_pattern}" | '\
                        '{grep_path} -v "\\.git"'.format(
                             grep_path=grep_path,
