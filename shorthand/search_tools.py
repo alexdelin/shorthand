@@ -41,8 +41,8 @@ def search_notes(notes_directory, query_string, type=None,
         grep_mode += 'i'
         grep_filter_mode += ' -i'
 
-    grep_command = '{grep_path} {mode} "{pattern}" {dir} | ' \
-                   '{grep_path} -v "\\.git"'.format(
+    grep_command = '{grep_path} {mode} "{pattern}" '\
+                   '--include="*.note" {dir}'.format(
                         grep_path=grep_path,
                         mode=grep_mode,
                         pattern=query_components[0],

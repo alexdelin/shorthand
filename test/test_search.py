@@ -65,9 +65,11 @@ class TestSearch(unittest.TestCase):
         self.assertCountEqual(search_results, SEARCH_RESULTS_BALANCED_DIET)
         search_results = get_search_results('"essential part" food', False)
         self.assertCountEqual(search_results, SEARCH_RESULTS_BALANCED_DIET)
-        search_results = get_search_results('"essential part" "balanced diet"', False)
+        search_results = get_search_results(
+            '"essential part" "balanced diet"', False)
         self.assertCountEqual(search_results, SEARCH_RESULTS_BALANCED_DIET)
-        search_results = get_search_results('"essential part" "balanced diet" food', False)
+        search_results = get_search_results(
+            '"essential part" "balanced diet" food', False)
         self.assertCountEqual(search_results, SEARCH_RESULTS_BALANCED_DIET)
 
         # Test case-sensitive combination
@@ -79,13 +81,17 @@ class TestSearch(unittest.TestCase):
         self.assertCountEqual(search_results, SEARCH_RESULTS_BALANCED_DIET)
         search_results = get_search_results('"essential part" food', True)
         self.assertCountEqual(search_results, EMPTY_RESULTS)
-        search_results = get_search_results('"essential part" "balanced diet"', True)
+        search_results = get_search_results(
+            '"essential part" "balanced diet"', True)
         self.assertCountEqual(search_results, SEARCH_RESULTS_BALANCED_DIET)
-        search_results = get_search_results('"essential pArt" "balanced diet"', True)
+        search_results = get_search_results(
+            '"essential pArt" "balanced diet"', True)
         self.assertCountEqual(search_results, EMPTY_RESULTS)
-        search_results = get_search_results('"essential part" "balanced diet" Food', True)
+        search_results = get_search_results(
+            '"essential part" "balanced diet" Food', True)
         self.assertCountEqual(search_results, SEARCH_RESULTS_BALANCED_DIET)
-        search_results = get_search_results('"essential part" "balanced diet" food', True)
+        search_results = get_search_results(
+            '"essential part" "balanced diet" food', True)
         self.assertCountEqual(search_results, EMPTY_RESULTS)
 
-        #TODO- Test directory filter
+        # TODO- Test directory filter

@@ -28,7 +28,8 @@ def main(args):
 
     if args.action == 'stamp':
         log.info('Stamping Notes')
-        changes = stamp_notes(notes_directory, grep_path=notes_config['grep_path'])
+        changes = stamp_notes(notes_directory,
+                              grep_path=notes_config['grep_path'])
         for file in changes.keys():
             print(f'\n<<--{file}-->>')
             for change in changes[file]:
@@ -36,7 +37,6 @@ def main(args):
                     line_num=change['line_number'], old=change['before']))
                 print('    {line_num}(new):{new}'.format(
                     line_num=change['line_number'], new=change['after']))
-
 
     elif args.action == 'list':
         log.info('Listing Todos')

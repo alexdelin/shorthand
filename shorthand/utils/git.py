@@ -16,8 +16,10 @@ def pull_repo(notes_directory, git_path='git'):
                  shell=True)
     output, err = proc.communicate()
     if err:
-        log.error(f'Unable to pull notes directory {notes_directory}. Got Error: {err}')
-        raise ValueError(f'Got error when attempting to pull notes directory {err}')
+        log.error(f'Unable to pull notes directory {notes_directory}. '
+                  f'Got Error: {err}')
+        raise ValueError(f'Got error when attempting to '
+                         f'pull notes directory {err}')
     else:
         log.info(f'Successfully pulled notes directory {notes_directory}')
         return f'Successfully pulled notes directory {notes_directory}'

@@ -1,9 +1,6 @@
-import json
 import re
 import logging
-from datetime import datetime
 from subprocess import Popen, PIPE
-import shlex
 
 from shorthand.todo_tools import get_todos
 from shorthand.question_tools import get_questions
@@ -27,10 +24,11 @@ def get_calendar(notes_directory, directory_filter=None, grep_path='grep'):
             search_directory += '/'
         search_directory += directory_filter
 
-    grep_command = '{grep_path} -Prn "{pattern}" {dir} | {grep_path} -v "\\.git"'.format(
-            grep_path=grep_path,
-            pattern=DATED_HEADING_PATTERN,
-            dir=search_directory)
+    grep_command = '{grep_path} -Prn "{pattern}" '\
+                   '--include="*.note" {dir}'.format(
+                        grep_path=grep_path,
+                        pattern=DATED_HEADING_PATTERN,
+                        dir=search_directory)
 
     proc = Popen(
         grep_command,
@@ -76,8 +74,9 @@ def get_calendar(notes_directory, directory_filter=None, grep_path='grep'):
 
     # Add Incomplet Todos to the calendar view
     completed_todos = get_todos(notes_directory=notes_directory,
-                      todo_status='incomplete', directory_filter=directory_filter,
-                      query_string=None, grep_path=grep_path)
+                                todo_status='incomplete',
+                                directory_filter=directory_filter,
+                                query_string=None, grep_path=grep_path)
     for todo in completed_todos:
         parsed_todo = {
             "file_path": todo['file_path'],
@@ -91,8 +90,9 @@ def get_calendar(notes_directory, directory_filter=None, grep_path='grep'):
 
     # Add Completed Todos to the calendar view
     completed_todos = get_todos(notes_directory=notes_directory,
-                      todo_status='complete', directory_filter=directory_filter,
-                      query_string=None, grep_path=grep_path)
+                                todo_status='complete',
+                                directory_filter=directory_filter,
+                                query_string=None, grep_path=grep_path)
     for todo in completed_todos:
         parsed_todo = {
             "file_path": todo['file_path'],
@@ -104,11 +104,11 @@ def get_calendar(notes_directory, directory_filter=None, grep_path='grep'):
         }
         events.append(parsed_todo)
 
-
     # Add Skipped Todos to the calendar view
     skipped_todos = get_todos(notes_directory=notes_directory,
-                      todo_status='skipped', directory_filter=directory_filter,
-                      query_string=None, grep_path=grep_path)
+                              todo_status='skipped',
+                              directory_filter=directory_filter,
+                              query_string=None, grep_path=grep_path)
     for todo in skipped_todos:
         parsed_todo = {
             "file_path": todo['file_path'],

@@ -1,7 +1,5 @@
 import re
-from datetime import datetime
 from subprocess import Popen, PIPE
-import shlex
 import logging
 
 from shorthand.utils.patterns import DEFINITION_PATTERN
@@ -24,10 +22,11 @@ def get_definitions(notes_directory, directory_filter=None, grep_path='grep'):
             search_directory += '/'
         search_directory += directory_filter
 
-    grep_command = '{grep_path} -Prn "{pattern}" {dir} | {grep_path} -v "\\.git"'.format(
-            grep_path=grep_path,
-            pattern=DEFINITION_PATTERN,
-            dir=search_directory)
+    grep_command = '{grep_path} -Prn "{pattern}" '\
+                   '--include="*.note" {dir}'.format(
+                        grep_path=grep_path,
+                        pattern=DEFINITION_PATTERN,
+                        dir=search_directory)
 
     log.debug(f'Running grep command {grep_command} to get definitions')
     proc = Popen(
@@ -56,7 +55,7 @@ def get_definitions(notes_directory, directory_filter=None, grep_path='grep'):
             log.debug(f'No definition match found for line {line}')
         else:
             term = definition_match.group(2)
-            term = term.strip().strip('{}')
+            term = term.strip().strip(r'{}')
             definition_text = definition_match.group(3)
 
         parsed_definition = {

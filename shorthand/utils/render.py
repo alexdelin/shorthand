@@ -6,8 +6,8 @@ import codecs
 from shorthand.todo_tools import parse_todo
 from shorthand.tag_tools import extract_tags
 from shorthand.utils.rec import load_from_string
-from shorthand.utils.patterns import DEFINITION_PATTERN, INTERNAL_LINK_PATTERN, \
-                                     GPS_PATTERN
+from shorthand.utils.patterns import DEFINITION_PATTERN, \
+                                     INTERNAL_LINK_PATTERN, GPS_PATTERN
 
 definition_regex = re.compile(DEFINITION_PATTERN)
 internal_link_regex = re.compile(INTERNAL_LINK_PATTERN)
@@ -44,7 +44,7 @@ def get_rendered_markdown(markdown_content):
         # Special handling for diagram blocks
         if is_diagram_block and '```' not in markdown_line:
             if not markdown_line.strip():
-                 # Skip empty lines
+                # Skip empty lines
                 continue
             else:
                 # Get rid of any indentation so it doesn't trip up the
@@ -82,15 +82,24 @@ def get_rendered_markdown(markdown_content):
                 is_rec_data_block = False
                 record_set = load_from_string('\n'.join(rec_data_lines))
                 record_set_data = json.dumps(list(record_set.all()))
-                column_config = [{'title': field, 'data': field, 'defaultContent': ''} for field in record_set.get_fields()]
-                record_set_name = record_set.get_config().get('rec', {}).get('name')
+                column_config = [{'title': field,
+                                  'data': field,
+                                  'defaultContent': ''}
+                                 for field in record_set.get_fields()]
+                record_set_name = record_set.get_config().get(
+                    'rec', {}).get('name')
                 if record_set_name:
-                    html_content_lines.append(f'##### Record Set: {record_set_name}')
-                html_content_lines.append(f'<div><div class="record-set-data">{record_set_data}'
-                                          f'</div><table class="table table-striped table-bordered '
-                                          f'record-set-table" style="width:100%" data-rec=\''
-                                          f'\' data-cols=\''
-                                          f'{json.dumps(column_config)}\'></table></div>')
+                    html_content_lines.append(f'##### Record Set: '
+                                              f'{record_set_name}')
+                record_set_html = f'<div><div class="record-set-data">'\
+                                  f'{record_set_data}'\
+                                  f'</div><table class="table table-striped '\
+                                  f'table-bordered record-set-table" '\
+                                  f'style="width:100%" data-rec=\'\' '\
+                                  f'data-cols='\
+                                  f'\'{json.dumps(column_config)}\'>'\
+                                  f'</table></div>'
+                html_content_lines.append(record_set_html)
                 html_content_lines.append(line_span)
                 rec_data_lines = []
                 continue
@@ -111,12 +120,16 @@ def get_rendered_markdown(markdown_content):
 
         if gps_regex.search(markdown_line):
             markdown_line = gps_regex.sub(
-                '<location lat="\\g<2>" lon="\\g<4>"><span class="location-name">\\g<6></span>(<span class="location-coordinates">\\g<2>, \\g<4></span>)</location>',
+                '<location lat="\\g<2>" lon="\\g<4>">'
+                '<span class="location-name">\\g<6></span>'
+                '(<span class="location-coordinates">\\g<2>, \\g<4></span>)'
+                '</location>',
                 markdown_line)
 
         # Process All to-dos
         if len(markdown_line) >= 4:
-            if markdown_line.strip()[:4] in ['[ ] ', '[X] ', '[S] '] or markdown_line.strip()[:3] == '[] ':
+            if markdown_line.strip()[:4] in ['[ ] ', '[X] ', '[S] '] or \
+                    markdown_line.strip()[:3] == '[] ':
                 html_content_lines.append(line_span)
                 todo_element = get_todo_element(markdown_line)
                 html_content_lines.append(todo_element)
@@ -134,7 +147,8 @@ def get_rendered_markdown(markdown_content):
         definition_match = definition_regex.match(markdown_line)
         if definition_match:
             html_content_lines.append(line_span)
-            definition_element = get_definition_element(definition_match, markdown_line)
+            definition_element = get_definition_element(definition_match,
+                                                        markdown_line)
             html_content_lines.append(definition_element)
             continue
 
@@ -144,14 +158,16 @@ def get_rendered_markdown(markdown_content):
             heading_level = len(split_heading[0])
             element_id = split_heading[1].replace(' ', '-')
             heading_html_line = f'{markdown_line}<div id="{element_id}"></div>'
-            toc_markdown_line = f'{"  " * (heading_level - 1)}- [{split_heading[1]}](#{element_id})'
+            toc_markdown_line = f'{"  " * (heading_level - 1)}- '\
+                                f'[{split_heading[1]}](#{element_id})'
             html_content_lines.append(line_span)
             html_content_lines.append(heading_html_line)
             toc_content_lines.append(toc_markdown_line)
             continue
 
         # Special handling for display style equations
-        if markdown_line.strip()[:2] == '$$' and markdown_line.strip()[-2:] == '$$':
+        if markdown_line.strip()[:2] == '$$' and \
+                markdown_line.strip()[-2:] == '$$':
             html_content_lines.append(line_span)
             html_content_lines.append('')
             html_content_lines.append(markdown_line)
@@ -179,7 +195,8 @@ def get_todo_element(raw_todo):
     start = todo['start_date']
     end = todo['end_date']
     tags = todo['tags']
-    tag_elements = ''.join([f'<span class="badge badge-secondary">{tag}</span>' for tag in tags])
+    tag_elements = ''.join([f'<span class="badge badge-secondary">{tag}</span>'
+                            for tag in tags])
     if status == 'incomplete':
         icon = '<i class="material-icons">check_box_outline_blank</i>'
     elif status == 'complete':
@@ -187,11 +204,12 @@ def get_todo_element(raw_todo):
     else:
         icon = '<i class="material-icons">indeterminate_check_box</i>'
 
-    todo_element = f'- <span style="display: none;">a</span>' \
-                   f'<div class="row todo-element todo-{status}">' \
-                   f'<div class="col-md-1">{icon}</div>' \
-                   f'<div class="col-md-7">{text}</div>' \
-                   f'<div class="col-md-4 todo-meta">{tag_elements}<br />{start} -> {end}</div>' \
+    todo_element = f'- <span style="display: none;">a</span>'\
+                   f'<div class="row todo-element todo-{status}">'\
+                   f'<div class="col-md-1">{icon}</div>'\
+                   f'<div class="col-md-7">{text}</div>'\
+                   f'<div class="col-md-4 todo-meta">{tag_elements}<br />'\
+                   f'{start} -> {end}</div>'\
                    f'</div>'
 
     todo_element = (' ' * leading_spaces) + todo_element
@@ -211,17 +229,17 @@ def get_question_element(raw_question):
 
     text = raw_question.strip()[2:]
     tags, text = extract_tags(text)
-    tag_elements = ''.join([f'<span class="badge badge-secondary">{tag}</span>' for tag in tags])
+    tag_elements = ''.join([f'<span class="badge badge-secondary">{tag}</span>'
+                            for tag in tags])
 
     leading_spaces = len(raw_question) - len(raw_question.lstrip(' '))
 
-    # question_element = f'- <div class="qa-element">{element_type}: {}</div>'
-    question_element = f'- <span style="display: none;">a</span>' \
-                       f'<div class="row qa-element qa-{element_type}">' \
-                       f'<div class="col-md-1">{icon}</div>' \
-                       f'<div class="col-md-9">{text}</div>' \
-                       f'<div class="col-md-2 question-meta">{tag_elements}</div>' \
-                       f'</div>'
+    question_element = f'- <span style="display: none;">a</span>'\
+                       f'<div class="row qa-element qa-{element_type}">'\
+                       f'<div class="col-md-1">{icon}</div>'\
+                       f'<div class="col-md-9">{text}</div>'\
+                       f'<div class="col-md-2 question-meta">{tag_elements}'\
+                       f'</div></div>'
 
     question_element = (' ' * leading_spaces) + question_element
     return question_element
@@ -235,8 +253,9 @@ def get_definition_element(definition_match, markdown_line):
     leading_spaces = len(markdown_line) - len(markdown_line.lstrip(' '))
 
     element = f'- <div class="row definition-element">'\
-              f'<div class="col-md-2 definition-term">{term}</div>' \
-              f'<div class="col-md-10 definition-text">{definition}</div></div>'
+              f'<div class="col-md-2 definition-term">{term}</div>'\
+              f'<div class="col-md-10 definition-text">{definition}'\
+              f'</div></div>'
 
     element = (' ' * leading_spaces) + element
     return element
@@ -251,4 +270,3 @@ def get_file_content(file_path):
         file_content = file_object.read()
 
     return file_content
-

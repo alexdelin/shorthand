@@ -11,7 +11,8 @@ from dateutil import parser
 from shorthand.utils.rec_lib import get_hex_int
 
 
-UUID_PATTERN = r'^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$'
+UUID_PATTERN = r'^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-'\
+               r'[89AB][0-9A-F]{3}-[0-9A-F]{12}$'
 
 ALL_TYPES = [
     "int", "line", "date", "bool", "real", "uuid",
@@ -46,11 +47,14 @@ class RecordSet(object):
             next_type = config.get('custom_types').get(custom_type)
             while True:
                 if link_depth > 10:
-                    raise ValueError(f'Exceeded custom type link threshold of 10 for custom type {custom_type}')
+                    raise ValueError(f'Exceeded custom type link threshold '
+                                     f'of 10 for custom type {custom_type}')
                 if not next_type:
-                    raise ValueError(f'custom type {custom_type} is not defined')
+                    raise ValueError(f'custom type {custom_type} '
+                                     f'is not defined')
                 elif next_type.get('type') == 'custom':
-                    next_type = config.get('custom_types').get(next_type['name'])
+                    next_type = config.get('custom_types').get(
+                        next_type['name'])
                     link_depth += 1
                     continue
                 elif next_type.get('type') in ALL_TYPES:
@@ -74,44 +78,62 @@ class RecordSet(object):
 
         if config.get('mandatory'):
             for mandatory_field in config.get('mandatory', []):
-                if has_prohibited_fields and mandatory_field in prohibited_fields:
-                    raise ValueError(f'Prohibited field {mandatory_field} specified as mandatory')
-                if has_allowed_fields and mandatory_field not in allowed_fields:
-                    raise ValueError(f'Non-allowed field {mandatory_field} specified as mandatory')
+                if has_prohibited_fields and \
+                        mandatory_field in prohibited_fields:
+                    raise ValueError(f'Prohibited field {mandatory_field} '
+                                     f'specified as mandatory')
+                if has_allowed_fields and \
+                        mandatory_field not in allowed_fields:
+                    raise ValueError(f'Non-allowed field {mandatory_field} '
+                                     f'specified as mandatory')
 
         if config.get('unique'):
             for unique_field in config.get('unique', []):
                 if has_prohibited_fields and unique_field in prohibited_fields:
-                    raise ValueError(f'Prohibited field {unique_field} specified as unique')
+                    raise ValueError(f'Prohibited field {unique_field} '
+                                     f'specified as unique')
                 if has_allowed_fields and unique_field not in allowed_fields:
-                    raise ValueError(f'Non-allowed field {unique_field} specified as unique')
+                    raise ValueError(f'Non-allowed field {unique_field} '
+                                     f'specified as unique')
 
         if config.get('key'):
             key_field = config.get('key', [])
             if has_prohibited_fields and key_field in prohibited_fields:
-                raise ValueError(f'Prohibited field {key_field} specified as prmary key')
+                raise ValueError(f'Prohibited field {key_field} '
+                                 f'specified as prmary key')
             if has_allowed_fields and key_field not in allowed_fields:
-                raise ValueError(f'Non-allowed field {key_field} specified as primary key')
+                raise ValueError(f'Non-allowed field {key_field} '
+                                 f'specified as primary key')
             if key_field in config.get('auto', []):
-                raise ValueError(f'Primary key field "{key_field}" cannot be auto-generated')
+                raise ValueError(f'Primary key field "{key_field}" '
+                                 f'cannot be auto-generated')
 
         if config.get('field_types', {}).keys():
             for typed_field in config.get('field_types', {}).keys():
                 if has_prohibited_fields and typed_field in prohibited_fields:
-                    raise ValueError(f'Prohibited field {typed_field} has a type defined')
+                    raise ValueError(f'Prohibited field {typed_field} '
+                                     f'has a type defined')
                 if has_allowed_fields and typed_field not in allowed_fields:
-                    raise ValueError(f'Non-allowed field {typed_field} has a type defined')
+                    raise ValueError(f'Non-allowed field {typed_field} '
+                                     f'has a type defined')
 
         if config.get('sort'):
             for sort_field in config.get('sort', []):
                 if has_prohibited_fields and sort_field in prohibited_fields:
-                    raise ValueError(f'Prohibited field {sort_field} specified as sort')
+                    raise ValueError(f'Prohibited field {sort_field} '
+                                     f'specified as sort')
                 if has_allowed_fields and sort_field not in allowed_fields:
-                    raise ValueError(f'Non-allowed field {sort_field} specified as sort')
+                    raise ValueError(f'Non-allowed field {sort_field} '
+                                     f'specified as sort')
 
         # check that regexp types are valid
-        regexp_types = [type_def for type_def in config.get('custom_types', {}).values() if type_def['type'] == 'regexp']
-        regexp_types.extend([type_def for type_def in config.get('field_types', {}).values() if type_def['type'] == 'regexp'])
+        regexp_types = [type_def
+                        for type_def in config.get('custom_types', {}).values()
+                        if type_def['type'] == 'regexp']
+        regexp_types.extend([type_def
+                             for type_def in config.get('field_types',
+                                                        {}).values()
+                             if type_def['type'] == 'regexp'])
         for regexp_type in regexp_types:
             re_pattern = regexp_type.get('pattern')
             is_valid = True
@@ -122,50 +144,76 @@ class RecordSet(object):
             except re.error:
                 is_valid = False
             if not is_valid:
-                raise ValueError(f'Regex pattern "{regexp_type.get("pattern")}" is invalid')
+                raise ValueError(f'Regex pattern '
+                                 f'"{regexp_type.get("pattern")}"'
+                                 f' is invalid')
 
         # check that range types are valid
-        range_types = [type_def for type_def in config.get('custom_types', {}).values() if type_def['type'] == 'range']
-        range_types.extend([type_def for type_def in config.get('field_types', {}).values() if type_def['type'] == 'range'])
+        range_types = [type_def
+                       for type_def in config.get('custom_types', {}).values()
+                       if type_def['type'] == 'range']
+        range_types.extend([type_def
+                            for type_def in config.get('field_types',
+                                                       {}).values()
+                            if type_def['type'] == 'range'])
         for range_type in range_types:
 
             max_value = range_type.get('max')
             min_value = range_type.get('min')
             if isinstance(min_value, int) and isinstance(max_value, int):
                 if min_value >= max_value:
-                    raise ValueError(f"Invalid range with maximum value {max_value} and minimum value {min_value}")
-            elif not isinstance(min_value, (int, type(None))) and not isinstance(max_value, (int, type(None))):
-                raise ValueError(f'Invalid range type {range_type}. Max and min must be either integers or None')
+                    raise ValueError(f"Invalid range with maximum value "
+                                     f"{max_value} and minimum value "
+                                     f"{min_value}")
+            elif not isinstance(min_value, (int, type(None))) and \
+                    not isinstance(max_value, (int, type(None))):
+                raise ValueError(f'Invalid range type {range_type}. Max '
+                                 f'and min must be either integers or None')
 
         # check that size types are valid
-        size_types = [type_def for type_def in config.get('custom_types', {}).values() if type_def['type'] == 'size']
-        size_types.extend([type_def for type_def in config.get('field_types', {}).values() if type_def['type'] == 'size'])
+        size_types = [type_def
+                      for type_def in config.get('custom_types', {}).values()
+                      if type_def['type'] == 'size']
+        size_types.extend([type_def
+                           for type_def in config.get('field_types',
+                                                      {}).values()
+                           if type_def['type'] == 'size'])
         for size_type in size_types:
             if not size_type.get('limit') > 0:
-                raise ValueError(f'Size types must have a limit greater than zero')
+                raise ValueError('Size types must have a limit '
+                                 'greater than zero')
 
         # check that enum types are valid
-        enum_types = [type_def for type_def in config.get('custom_types', {}).values() if type_def['type'] == 'enum']
-        enum_types.extend([type_def for type_def in config.get('field_types', {}).values() if type_def['type'] == 'enum'])
+        enum_types = [type_def
+                      for type_def in config.get('custom_types', {}).values()
+                      if type_def['type'] == 'enum']
+        enum_types.extend([type_def
+                           for type_def in config.get('field_types',
+                                                      {}).values()
+                           if type_def['type'] == 'enum'])
         for enum_type in enum_types:
             if not enum_type.get('values'):
-                raise ValueError(f'Enum types must specify all allowed values')
+                raise ValueError('Enum types must specify all allowed values')
 
         # check that size constraints for the record set are valid
         if config.get('size'):
 
             if config.get('size', {})['amount'] <= 0:
-                raise ValueError('Size limit for a record set must be greater than zero')
+                raise ValueError('Size limit for a record set must '
+                                 'be greater than zero')
 
         # check all auto-generated fields have a supported type
         for auto_field in config.get('auto', []):
 
             auto_field_type = config.get('field_types', {}).get(auto_field, {})
             if auto_field_type.get('type') == 'custom':
-                auto_field_type = config.get('custom_types', {}).get(auto_field_type['name'])
+                auto_field_type = config.get('custom_types', {}).get(
+                    auto_field_type['name'])
 
             if auto_field_type.get('type') not in ['date', 'int', 'uuid']:
-                raise ValueError(f'Cannot auto-generate a value for field {auto_field} of type {auto_field_type.get("type")}')
+                raise ValueError(f'Cannot auto-generate a value for '
+                                 f'field {auto_field} of type '
+                                 f'{auto_field_type.get("type")}')
 
         # If we have not found any issues
         return True
@@ -186,9 +234,9 @@ class RecordSet(object):
             if not processed_record.get(primary_key_field):
                 return f'Missing primary key field {primary_key_field}', None
             if len(processed_record.get(primary_key_field)) > 1:
-                return f'Primary key field {primary_key_field} can only have a single value per record', None
-            # if self.primary_keys.get(processed_record.get(primary_key_field, [None])[0]):
-            #     return f'Primary key value {processed_record.get(primary_key_field, [None])[0]} already exists for field {primary_key_field}', None
+                error_message = f'Primary key field {primary_key_field} '\
+                                f'can only have a single value per record'
+                return error_message, None
 
         # Validate types of all specified fields
         for field_name, field_values in record.items():
@@ -196,7 +244,8 @@ class RecordSet(object):
 
             # Get the full type definition if it is a custom type
             if field_type.get('type') == 'custom':
-                field_type = self.config.get('custom_types', {}).get(field_type['name'])
+                field_type = self.config.get('custom_types', {}).get(
+                    field_type['name'])
 
             # Validate int field
             if field_type.get('type') == 'int':
@@ -209,13 +258,19 @@ class RecordSet(object):
                             num_value = int(field_value)
                         processed_record[field_name].append(num_value)
                     except ValueError:
-                        return f"can't convert value \"{field_value}\" of field \"{field_name}\" to an int", None
+                        error_message = f"can't convert value "\
+                                        f"\"{field_value}\" of field "\
+                                        f"\"{field_name}\" to an int"
+                        return error_message, None
 
             # Validate line field
             if field_type.get('type') == 'line':
                 for field_value in field_values:
                     if '\n' in field_value:
-                        return f'value "{field_value}" of line type field "{field_name}" contains a newline character', None
+                        error_message = f'value "{field_value}" of line type '\
+                                        f'field "{field_name}" contains a '\
+                                        f'newline character'
+                        return error_message, None
 
             # Validate date field
             if field_type.get('type') == 'date':
@@ -223,13 +278,19 @@ class RecordSet(object):
                     try:
                         _ = parser.parse(field_value)
                     except:
-                        return f'cannot parse date value "{field_value}" of field "{field_name}"', None
+                        error_message = f'cannot parse date value '\
+                                        f'"{field_value}" of field '\
+                                        f'"{field_name}"'
+                        return error_message, None
 
             # Validate bool field
             if field_type.get('type') == 'bool':
                 for field_value in field_values:
-                    if field_value not in ['0', '1', 'true', 'false', 'yes', 'no']:
-                        return f'Value {field_value} for bool field {field_name} is not allowed', None
+                    if field_value not in ['0', '1', 'true',
+                                           'false', 'yes', 'no']:
+                        error_message = f'Value {field_value} for bool '\
+                                        f'field {field_name} is not allowed'
+                        return error_message, None
 
             # Validate real field
             if field_type.get('type') == 'real':
@@ -239,7 +300,10 @@ class RecordSet(object):
                         num_value = float(field_value)
                         processed_record[field_name].append(num_value)
                     except ValueError:
-                        return f"can't convert value \"{field_value}\" of field \"{field_name}\" to a float", None
+                        error_message = f'can\'t convert value '\
+                                        f'\"{field_value}\" of field '\
+                                        f'\"{field_name}\" to a float'
+                        return error_message, None
 
             # Validate range field
             if field_type.get('type') == 'range':
@@ -255,38 +319,60 @@ class RecordSet(object):
                             num_value = int(field_value)
                             processed_record[field_name].append(num_value)
                     except ValueError:
-                        return f"can't convert value \"{field_value}\" of field \"{field_name}\" to a float", None
+                        error_message = f"can't convert value "\
+                                        f"\"{field_value}\" of field "\
+                                        f"\"{field_name}\" to a float"
+                        return error_message, None
                     if isinstance(max_value, int) and num_value > max_value:
-                        return f'Value {field_value} of field {field_name} exceeds the maximum range value {max_value}', None
-                    if isinstance(min_value, int)  and num_value < min_value:
-                        return f'Value {field_value} of field {field_name} is below the minimum range value {min_value}', None
+                        error_message = f'Value {field_value} of field '\
+                                        f'{field_name} exceeds the maximum '\
+                                        f'range value {max_value}'
+                        return error_message, None
+                    if isinstance(min_value, int) and num_value < min_value:
+                        error_message = f'Value {field_value} of field '\
+                                        f'{field_name} is below the minimum '\
+                                        f'range value {min_value}'
+                        return error_message, None
 
             # Validate enum field
             if field_type.get('type') == 'enum':
                 allowed_values = field_type.get('values', [])
                 for field_value in field_values:
                     if field_value not in allowed_values:
-                        return f'value {field_value} of field {field_name} is not in allowed values {allowed_values}', None
+                        error_message = f'value {field_value} of field '\
+                                        f'{field_name} is not in allowed '\
+                                        f'values {allowed_values}'
+                        return error_message, None
 
             # Validate size field
             if field_type.get('type') == 'size':
                 size_limit = field_type['limit']
                 for field_value in field_values:
                     if len(field_value) > size_limit:
-                        return f'Value {field_value} of field {field_name} is above the field\'s size limit of {size_limit} characters', None
+                        error_message = f'Value {field_value} of field '\
+                                        f'{field_name} is above the field\'s '\
+                                        f'size limit of {size_limit} '\
+                                        f'characters'
+                        return error_message, None
 
             # Validate regexp field
             if field_type.get('type') == 'regexp':
                 pattern = field_type['pattern']
                 for field_value in field_values:
                     if not re.match(pattern, field_value):
-                        return f'value "{field_value}" of field {field_name} does not match regex {pattern}', None
+                        error_message = f'value "{field_value}" of field '\
+                                        f'{field_name} does not match '\
+                                        f'regex {pattern}'
+                        return error_message, None
 
             # Validate uuid field
             if field_type.get('type') == 'uuid':
                 for field_value in field_values:
                     if not re.match(UUID_PATTERN, field_value):
-                        return f'value "{field_value}" of uuid field {field_name} is not a valid UUID4', None
+                        error_message = f'value "{field_value}" of uuid '\
+                                        f'field {field_name} is not a '\
+                                        f'valid UUID4'
+                        return error_message, None
 
             # Auto-generate field values if needed
             for auto_field in self.config.get('auto', []):
@@ -294,25 +380,31 @@ class RecordSet(object):
                 # Only auto-generate a field value if one doesn't already exist
                 if not record.get(auto_field):
 
-                    auto_field_type = self.config.get('field_types', {}).get(auto_field)
+                    auto_field_type = self.config.get('field_types', {}).get(
+                        auto_field)
                     if auto_field_type.get('type') == 'custom':
-                        auto_field_type = self.config.get('custom_types', {}).get(auto_field_type['name'])
+                        auto_field_type = self.config.get(
+                            'custom_types', {}).get(auto_field_type['name'])
 
                     if auto_field_type.get('type') == 'date':
                         timestamp = datetime.now().strftime('%Y-%m-%d')
                         processed_record[auto_field] = [timestamp]
 
                     elif auto_field_type.get('type') == 'int':
-                        max_field_value = max([max(r[auto_field]) for r in self.records])
+                        max_field_value = max([max(r[auto_field])
+                                               for r in self.records])
                         new_value = max_field_value + 1
                         processed_record[auto_field] = [new_value]
 
                     elif auto_field_type.get('type') == 'uuid':
-                        new_uuid == uuid.uuid4()
+                        new_uuid = uuid.uuid4()
                         processed_record[auto_field] = [new_uuid]
 
                     else:
-                        return f'Cannot auto-generate a value for field {auto_field} of type {auto_field_type.get("type")}', None
+                        error_message = f'Cannot auto-generate a value for '\
+                                        f'field {auto_field} of type '\
+                                        f'{auto_field_type.get("type")}'
+                        return error_message, None
 
         # Validate Mandatory Fields
         for mandatory_field in self.config.get('mandatory', []):
@@ -322,29 +414,39 @@ class RecordSet(object):
         # Validate Unique Fields
         for unique_field in self.config.get('unique', []):
             if len(processed_record.get(unique_field, [])) > 1:
-                return f'More than 1 value found for unique field {unique_field}', None
+                error_message = f'More than 1 value found for '\
+                                f'unique field {unique_field}'
+                return error_message, None
 
         # Validate Allowed Fields
         allowed_fields = self.config.get('allowed')
         if allowed_fields:
             for field_name in processed_record.keys():
                 if field_name not in allowed_fields:
-                    return f'field {field_name} not in allowed fields {allowed_fields}', None
+                    error_message = f'field {field_name} not in allowed '\
+                                    f'fields {allowed_fields}'
+                    return error_message, None
 
         # Validate Prohibited Fields
         prohibited_fields = self.config.get('prohibit', [])
         for prohibited_field in prohibited_fields:
             if prohibited_field in processed_record.keys():
-                return f'prohibited field {prohibited_field} present in record', None
+                error_message = f'prohibited field {prohibited_field} '\
+                                f'present in record'
+                return error_message, None
 
-        # validate record set size constraint only if it is a less than or less than or equal to constraint
+        # validate record set size constraint only if it is a less than or
+        # less than or equal to constraint
         size_condition = self.config.get('size', {}).get('condition')
         if size_condition in ['<', '<=']:
             size_limit = self.config.get('size', {}).get('amount')
             if size_condition == '<=':
                 size_limit = size_limit + 1
             if len(self.records) > size_limit:
-                return f'adding another record will exceed the size limit of {size_limit} in the record set', None
+                error_message = f'adding another record will exceed '\
+                                f'the size limit of {size_limit} '\
+                                f'in the record set'
+                return error_message, None
 
         for field_name, field_values in processed_record.items():
             # Add a new field to the field list
@@ -360,16 +462,28 @@ class RecordSet(object):
         constraint_condition = size_constraint.get('condition')
         current_length = len(self.records)
         constraint_amount = size_constraint.get('amount')
-        if constraint_condition == '==' and current_length != constraint_amount:
-            raise ValueError(f'Record set must have {constraint_amount} records but has {current_length}')
-        elif constraint_condition == '<' and current_length >= constraint_amount:
-            raise ValueError(f'Record set must have less than {constraint_amount} records but has {current_length}')
-        elif constraint_condition == '<=' and current_length > constraint_amount:
-            raise ValueError(f'Record set must have {constraint_amount} records or less but has {current_length}')
-        elif constraint_condition == '>' and current_length <= constraint_amount:
-            raise ValueError(f'Record set must have more than {constraint_amount} records but has {current_length}')
-        elif constraint_condition == '>=' and current_length < constraint_amount:
-            raise ValueError(f'Record set must have {constraint_amount} records or more but has {current_length}')
+        if constraint_condition == '==' and \
+                current_length != constraint_amount:
+            raise ValueError(f'Record set must have {constraint_amount} '
+                             f'records but has {current_length}')
+        elif constraint_condition == '<' and \
+                current_length >= constraint_amount:
+            raise ValueError(f'Record set must have less than '
+                             f'{constraint_amount} records but has '
+                             f'{current_length}')
+        elif constraint_condition == '<=' and \
+                current_length > constraint_amount:
+            raise ValueError(f'Record set must have {constraint_amount} '
+                             f'records or less but has {current_length}')
+        elif constraint_condition == '>' and \
+                current_length <= constraint_amount:
+            raise ValueError(f'Record set must have more than '
+                             f'{constraint_amount} records but has '
+                             f'{current_length}')
+        elif constraint_condition == '>=' and \
+                current_length < constraint_amount:
+            raise ValueError(f'Record set must have {constraint_amount} '
+                             f'records or more but has {current_length}')
 
     def insert(self, records):
         '''Insert raw dictionaries into the record set
@@ -379,7 +493,8 @@ class RecordSet(object):
             error_message, processed_record = self.validate_record(record)
             if not error_message:
                 primary_key_field = self.config.get('key')
-                primary_key_value = str(processed_record.get(primary_key_field, [None])[0])
+                primary_key_value = str(processed_record.get(
+                    primary_key_field, [None])[0])
                 if primary_key_field:
                     self.records[primary_key_value] = processed_record
                 else:
@@ -389,7 +504,8 @@ class RecordSet(object):
                         primary_key_value = 1
                     self.records[primary_key_value] = processed_record
             else:
-                raise ValueError(f'Validation Error: {error_message} in record {record}')
+                raise ValueError(f'Validation Error: {error_message} '
+                                 f'in record {record}')
 
         # Check that size constraints are still met
         self.validate_size_constraint()
@@ -435,7 +551,9 @@ class RecordSet(object):
         for record in self.records.values():
             processed_record = {}
             for key, values in record.items():
-                processed_record[key] = value_separator.join([str(value) for value in values])
+                processed_record[key] = value_separator.join(
+                    [str(value)
+                     for value in values])
             writer.writerow(processed_record)
         return csv_string.getvalue()
 
@@ -466,17 +584,22 @@ class RecordSet(object):
         '''
         records = json.loads(json_data)
         if not isinstance(records, list):
-            raise ValueError(f'Records added in JSON format must be submitted as an array of objects, not as {type(records)}')
+            raise ValueError(f'Records added in JSON format must be '
+                             f'submitted as an array of objects, '
+                             f'not as {type(records)}')
         clean_records = []
         for record in records:
             clean_record = {}
             if not isinstance(record, dict):
-                raise ValueError(f'Each record added must be a JSON object. Object of type {type(record)} found: {record}')
+                raise ValueError(f'Each record added must be a JSON object. '
+                                 f'Object of type {type(record)} found: '
+                                 f'{record}')
             for key, value in record.items():
                 if isinstance(value, list):
                     clean_record[key] = value
                 elif not isinstance(key, str) or not isinstance(value, str):
-                    raise ValueError(f'All keys and values in JSON imported data must be provided as strings')
+                    raise ValueError('All keys and values in JSON imported '
+                                     'data must be provided as strings')
                 else:
                     clean_record[key] = [value]
             clean_records.append(clean_record)

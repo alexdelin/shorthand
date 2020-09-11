@@ -15,7 +15,10 @@ def get_notes_config(config_location=CONFIG_FILE_LOCATION):
     with open(config_location, 'r') as env_config_file:
         notes_config = json.load(env_config_file)
 
+    # TODO - Validate contents of notes config
+
     # Ensure that the notes directory path has no trailing `/`
-    notes_config['notes_directory'] = notes_config['notes_directory'].rstrip('/')
+    notes_dir = notes_config['notes_directory']
+    notes_config['notes_directory'] = notes_dir.rstrip('/')
 
     return notes_config

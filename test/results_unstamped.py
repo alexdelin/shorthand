@@ -251,3 +251,53 @@ SEARCH_RESULTS_BALANCED_DIET = {
         }
     ]
 }
+
+ALL_DEFINITIONS = [
+    {'definition': 'A formal meaning attached to a specific term',
+     'display_path': 'definitions.note',
+     'file_path': '/definitions.note',
+     'line_number': '5',
+     'term': 'definition'},
+    {'definition': 'A tool you can use to make your life easier and better',
+     'display_path': 'definitions.note',
+     'file_path': '/definitions.note',
+     'line_number': '6',
+     'term': 'software'},
+    {'definition': 'Something that you eat when you are hungry',
+     'display_path': 'definitions.note',
+     'file_path': '/definitions.note',
+     'line_number': '7',
+     'term': 'food'},
+    {'definition': 'The flaky part at the bottom of the pie :baking:',
+     'display_path': 'section → mixed.note',
+     'file_path': '/section/mixed.note',
+     'line_number': '9',
+     'term': 'crust'}
+]
+
+ALL_LOCATIONS = [
+    {'latitude': '40.757898',
+     'longitude': '-73.985502',
+     'name': 'Times Square',
+     'file_path': '/locations.note',
+     'display_path': 'locations.note',
+     'line_number': '4'},
+    {'latitude': '29.978938',
+     'longitude': '31.134116',
+     'name': 'The Great Pyramid',
+     'file_path': '/locations.note',
+     'display_path': 'locations.note',
+     'line_number': '5'},
+    {'latitude': '36.193521',
+     'longitude': '-112.048667',
+     'name': 'The Grand Canyon',
+     'file_path': '/locations.note',
+     'display_path': 'locations.note',
+     'line_number': '6'},
+    {'latitude': '48.858212',
+     'longitude': '2.294513',
+     'name': '',
+     'file_path': '/locations.note',
+     'display_path': 'locations.note',
+     'line_number': '7'}
+]

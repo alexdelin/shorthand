@@ -77,15 +77,16 @@ def get_todos(notes_directory, todo_status='incomplete', directory_filter=None,
     '''Get a specified set of todos using grep on the filesystem
     '''
 
-    log.info(f'Getting {todo_status} todos in directory {directory_filter}' \
+    log.info(f'Getting {todo_status} todos in directory {directory_filter}'
              f' with query string "{query_string}" sorted by {sort_by}')
 
     todo_status = todo_status.lower()
 
     if todo_status not in PATTERN_MAPPING.keys():
         log.error(f'Got invalid todo type {todo_status}')
-        raise ValueError(f'Invalid todo type {todo_status} specified. ' \
-                         f'Valid options are: {", ".join(PATTERN_MAPPING.keys())}')
+        raise ValueError(f'Invalid todo type {todo_status} specified. '
+                         f'Valid options are: '
+                         f'{", ".join(PATTERN_MAPPING.keys())}')
 
     todo_items = []
 
@@ -95,10 +96,11 @@ def get_todos(notes_directory, todo_status='incomplete', directory_filter=None,
             search_directory += '/'
         search_directory += directory_filter
 
-    grep_command = '{grep_path} -Prn "{pattern}" {dir} | {grep_path} -v "\\.git"'.format(
-            grep_path=grep_path,
-            pattern=PATTERN_MAPPING[todo_status],
-            dir=search_directory)
+    grep_command = '{grep_path} -Prn "{pattern}" '\
+                   '--include="*.note" {dir}'.format(
+                        grep_path=grep_path,
+                        pattern=PATTERN_MAPPING[todo_status],
+                        dir=search_directory)
 
     if query_string:
         query_components = shlex.split(query_string)
@@ -199,7 +201,9 @@ def get_todos(notes_directory, todo_status='incomplete', directory_filter=None,
     if sort_by:
         if sort_by not in SUPPORTED_SORT_FIELDS:
             raise ValueError('Invalid sort field {}'.format(sort_by))
-        todo_items = sorted(todo_items, key=lambda k: k[sort_by] if k[sort_by] else '', reverse=True)
+        todo_items = sorted(todo_items,
+                            key=lambda k: k[sort_by] if k[sort_by] else '',
+                            reverse=True)
 
     # Wrap Results
     log.info(f'returning {len(todo_items)} todos')
@@ -278,5 +282,3 @@ def mark_todo(filename, line_number, status):
         file_object.write('\n'.join(split_content))
 
     return line_content
-
-

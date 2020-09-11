@@ -5,13 +5,11 @@ Shorthand Web API
 '''
 
 import os
-import time
 import json
 import logging
-from datetime import datetime
 
 from werkzeug.exceptions import HTTPException
-from flask import Flask, request, render_template, send_from_directory, abort
+from flask import Flask, request, render_template, send_from_directory
 
 from shorthand.todo_tools import get_todos, mark_todo, analyze_todos
 from shorthand.stamping import stamp_notes
@@ -27,7 +25,6 @@ from shorthand.utils.config import get_notes_config
 from shorthand.utils.logging import setup_logging
 from shorthand.utils.render import get_file_content, get_rendered_markdown
 from shorthand.utils.typeahead import get_typeahead_suggestions
-from shorthand.utils.paths import get_relative_path, get_display_path
 from shorthand.utils.git import pull_repo
 from shorthand.utils.api import wrap_response_data
 from shorthand.utils.edit import update_note
@@ -96,7 +93,8 @@ def show_home_page():
                     formatted_event = {
                         'title': event['event'],
                         'start': f'{year}-{month}-{day}',
-                        'url': f'/render?path={event["file_path"]}#line-number-{event["line_number"]}',
+                        'url': f'/render?path={event["file_path"]}'
+                               f'#line-number-{event["line_number"]}',
                         'type': event['type']
                     }
                     if formatted_event['type'] == 'section':
@@ -182,12 +180,14 @@ def get_gps_locations():
 
     directory_filter = request.args.get('directory_filter')
 
-    locations = get_locations(notes_directory=SHORTHAND_CONFIG['notes_directory'],
-                         directory_filter=directory_filter,
-                         grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
+    locations = get_locations(
+        notes_directory=SHORTHAND_CONFIG['notes_directory'],
+        directory_filter=directory_filter,
+        grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
 
     wrapped_response = wrap_response_data(locations)
     return json.dumps(wrapped_response)
+
 
 @app.route('/api/v1/todos', methods=['GET'])
 def get_current_todos():
@@ -335,14 +335,16 @@ def fetch_record_set():
     elif parse.lower() == 'false':
         parse = False
     else:
-        raise ValueError(f'Argument parse must be either "true" or "false", found "{parse}"')
+        raise ValueError(f'Argument parse must be either "true" or "false", '
+                         f'found "{parse}"')
     include_config = request.args.get('include_config', 'false')
     if include_config.lower() == 'true':
         include_config = True
     elif include_config.lower() == 'false':
         include_config = False
     else:
-        raise ValueError(f'Argument include_config must be either "true" or "false", found "{include_config}"')
+        raise ValueError(f'Argument include_config must be either "true" or '
+                         f'"false", found "{include_config}"')
     parse_format = request.args.get('parse_format', 'json')
 
     return get_record_set(

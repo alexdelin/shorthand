@@ -13,8 +13,8 @@ FORBIDDEN_CHARS = [
     '[', ']', '(', ')', '\\', '/', '.', ',',
     '?', '!', '@', '#', '$', '`', "'", '"',
     '-', '_', '=', '+', '*']
-    
-    
+
+
 log = logging.getLogger(__name__)
 
 
@@ -38,13 +38,16 @@ def get_typeahead_suggestions(ngram_db_dir, query_string, limit=10):
         if num_words_in_term > 3:
             return []
         elif num_words_in_term == 3:
-            matches = search_ngram_db(ngram_db_dir + '/trigrams.txt', current_term, limit)
+            matches = search_ngram_db(ngram_db_dir + '/trigrams.txt',
+                                      current_term, limit)
             return [previous_query + '"' + match + '"' for match in matches]
         elif num_words_in_term == 2:
-            matches = search_ngram_db(ngram_db_dir + '/bigrams.txt', current_term, limit)
+            matches = search_ngram_db(ngram_db_dir + '/bigrams.txt',
+                                      current_term, limit)
             return [previous_query + '"' + match + '"' for match in matches]
         elif num_words_in_term == 1:
-            matches = search_ngram_db(ngram_db_dir + '/unigrams.txt', current_term, limit)
+            matches = search_ngram_db(ngram_db_dir + '/unigrams.txt',
+                                      current_term, limit)
             return [previous_query + '"' + match + '"' for match in matches]
 
     else:
@@ -54,7 +57,8 @@ def get_typeahead_suggestions(ngram_db_dir, query_string, limit=10):
         current_term = split_terms[-1]
         previous_query = ' '.join(split_terms[:-1])
 
-        matches = search_ngram_db(ngram_db_dir + '/unigrams.txt', current_term, limit)
+        matches = search_ngram_db(ngram_db_dir + '/unigrams.txt',
+                                  current_term, limit)
         clean = []
         for match in matches:
             try:
@@ -63,7 +67,8 @@ def get_typeahead_suggestions(ngram_db_dir, query_string, limit=10):
                 print(previous_query)
                 print(match)
                 raise
-        return [unicode(previous_query + ' ' + match.decode('utf-8')) for match in matches]
+        return [unicode(previous_query + ' ' + match.decode('utf-8'))
+                for match in matches]
 
 
 def search_ngram_db(database_file, search_string, limit):
@@ -124,7 +129,8 @@ def update_ngram_database(notes_directory, ngram_db_dir):
         if not note_file:
             continue
 
-        with codecs.open(note_file, mode="r", encoding="utf-8") as note_file_object:
+        with codecs.open(note_file, mode="r", encoding="utf-8") \
+                as note_file_object:
             note_file_content = note_file_object.read()
 
         note_file_content = note_file_content.lower()
@@ -182,7 +188,7 @@ def update_ngram_database(notes_directory, ngram_db_dir):
             if not weighted_tokens.get(single_token):
                 weighted_tokens[single_token] = 1
             else:
-                weighted_tokens[single_token] = weighted_tokens[single_token] + 1
+                weighted_tokens[single_token] = weighted_tokens[single_token]+1
 
         tokens[token_type] = OrderedDict(sorted(
             weighted_tokens.iteritems(),
@@ -194,7 +200,8 @@ def update_ngram_database(notes_directory, ngram_db_dir):
     unigrams_text_file_path = ngram_db_dir + '/unigrams.txt'
     with open(unigrams_json_file_path, 'w') as unigrams_json_file_object:
         json.dump(tokens['unigrams'], unigrams_json_file_object)
-    with codecs.open(unigrams_text_file_path, mode="w", encoding="utf-8") as unigrams_text_file_object:
+    with codecs.open(unigrams_text_file_path, mode="w", encoding="utf-8") \
+            as unigrams_text_file_object:
         for unigram, frequency in tokens['unigrams'].iteritems():
             unigrams_text_file_object.write(unigram + '\n')
 
@@ -203,7 +210,8 @@ def update_ngram_database(notes_directory, ngram_db_dir):
     bigrams_text_file_path = ngram_db_dir + '/bigrams.txt'
     with open(bigrams_json_file_path, 'w') as bigrams_json_file_object:
         json.dump(tokens['bigrams'], bigrams_json_file_object)
-    with codecs.open(bigrams_text_file_path, mode="w", encoding="utf-8") as bigrams_text_file_object:
+    with codecs.open(bigrams_text_file_path, mode="w", encoding="utf-8") \
+            as bigrams_text_file_object:
         for bigram, frequency in tokens['bigrams'].iteritems():
             bigrams_text_file_object.write(bigram + '\n')
 
@@ -212,8 +220,7 @@ def update_ngram_database(notes_directory, ngram_db_dir):
     trigrams_text_file_path = ngram_db_dir + '/trigrams.txt'
     with open(trigrams_json_file_path, 'w') as trigrams_json_file_object:
         json.dump(tokens['trigrams'], trigrams_json_file_object)
-    with codecs.open(trigrams_text_file_path, mode="w", encoding="utf-8") as trigrams_text_file_object:
+    with codecs.open(trigrams_text_file_path, mode="w", encoding="utf-8") \
+            as trigrams_text_file_object:
         for trigram, frequency in tokens['trigrams'].iteritems():
             trigrams_text_file_object.write(trigram + '\n')
-
-# update_ngram_database('/Users/alexdelin/notes', '/Users/alexdelin/Desktop/ngram_db')

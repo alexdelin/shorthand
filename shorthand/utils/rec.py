@@ -82,8 +82,8 @@ def process_type_definition(definition_string):
 
         else:
             # We have either no values specified for the range or more than 2
-            raise ValueError(f'range type definition must specify either '
-                             f'a max value or max and min value')
+            raise ValueError('range type definition must specify either '
+                             'a max value or max and min value')
 
         return {
             'type': 'range',
@@ -101,7 +101,8 @@ def process_type_definition(definition_string):
 
     elif linked_type_name == 'size':
         if len(extra_params) != 1:
-            raise ValueError('Only a single size limit can be specified for a size type')
+            raise ValueError('Only a single size limit can be '
+                             'specified for a size type')
         else:
             size_limit = extra_params[0]
             if size_limit[:2] == '0x':
@@ -151,7 +152,6 @@ def load_from_string(input_string):
     }
     # Loop through all lines until we reach the end of the field config
     config_start = False
-    field_config_item = None
     for idx, line in enumerate(split_lines):
 
         if not line.strip():
@@ -176,7 +176,7 @@ def load_from_string(input_string):
             # processing the line above
             continue
 
-        #TODO - switch over to using a regex
+        # TODO - switch over to using a regex
         if line[0] == '%':
             config_start = True
             if len(line.split(':', 1)) < 2:
@@ -199,7 +199,8 @@ def load_from_string(input_string):
                     break
 
             if not value.strip():
-                raise ValueError(f'Record set config entry {line} is incomplete')
+                raise ValueError(f'Record set config entry '
+                                 f'{line} is incomplete')
 
             if key not in ALLOWED_CONFIG_KEYS:
                 raise ValueError(f'unknown config key {key} specified')
@@ -207,7 +208,8 @@ def load_from_string(input_string):
             if key == 'rec':
                 # Check that the record set name is not already defined
                 if record_set_config.get('rec'):
-                    raise ValueError('Record set name cannot be defined more than once')
+                    raise ValueError('Record set name cannot be '
+                                     'defined more than once')
                 split_value = value.strip().split(' ')
                 if len(split_value) == 1:
                     record_set_name = split_value[0]
@@ -215,9 +217,12 @@ def load_from_string(input_string):
                 elif len(split_value) == 2:
                     record_set_name = split_value[0]
                     record_set_link = split_value[1]
-                    record_set_config[key] = {'name': record_set_name, 'link': record_set_link}
+                    record_set_config[key] = {
+                        'name': record_set_name,
+                        'link': record_set_link}
                 else:
-                    raise ValueError(f'Invalid Record Set name definition "{line}"')
+                    raise ValueError(f'Invalid Record Set name '
+                                     f'definition "{line}"')
 
             if key in FIELD_LIST_FIELDS:
                 # keep a list of fields
@@ -226,21 +231,25 @@ def load_from_string(input_string):
             if key == 'doc':
                 # Check that the documentation is not already set
                 if record_set_config.get('doc'):
-                    raise ValueError('Record set documentation cannot be defined more than once')
+                    raise ValueError('Record set documentation cannot '
+                                     'be defined more than once')
                 record_set_config[key] = value.strip()
 
             if key == 'key':
                 # Check that the primary key is not already set
                 if record_set_config.get('key'):
-                    raise ValueError('Record set primary key cannot be defined more than once')
+                    raise ValueError('Record set primary key cannot '
+                                     'be defined more than once')
                 if len(value.strip().split(' ')) > 1:
-                    raise ValueError('Only a single field can be specified as a primary key')
+                    raise ValueError('Only a single field can be '
+                                     'specified as a primary key')
                 record_set_config[key] = value.strip()
 
             if key == 'size':
                 # Check that a size constraint is not already set
                 if record_set_config.get('size'):
-                    raise ValueError('Record sets cannot have more than one size constraint')
+                    raise ValueError('Record sets cannot have more than '
+                                     'one size constraint')
 
                 split_value = value.strip().split(' ')
                 if len(split_value) == 1:
@@ -255,7 +264,8 @@ def load_from_string(input_string):
                     # A condition and number of records is specified
                     condition = split_value[0]
                     if condition not in ['==', '<', '>', '<=', '>=']:
-                        raise ValueError(f'Unknown condition {condition} specified')
+                        raise ValueError(f'Unknown condition '
+                                         f'{condition} specified')
                     limit = split_value[1]
                     if limit[:2] == '0x':
                         amount = get_hex_int(limit)
@@ -263,21 +273,25 @@ def load_from_string(input_string):
                         try:
                             amount = int(limit)
                         except ValueError:
-                            raise ValueError(f'cannot convert size limit {limit} to an integer')
+                            raise ValueError(f'cannot convert size limit '
+                                             f'{limit} to an integer')
                     record_set_config[key] = {
                         'amount': amount,
                         'condition': condition
                     }
 
                 else:
-                    raise ValueError(f'Invalid size condition "{value}" specified')
+                    raise ValueError(f'Invalid size condition '
+                                     f'"{value}" specified')
 
             if key == 'typedef':
                 split_value = value.split(' ')
                 custom_type_name = split_value[0]
                 type_definition_string = ' '.join(split_value[1:])
-                type_definition = process_type_definition(type_definition_string)
-                record_set_config['custom_types'][custom_type_name] = type_definition
+                type_definition = process_type_definition(
+                                        type_definition_string)
+                record_set_config['custom_types'][custom_type_name] = \
+                    type_definition
 
             if key == 'type':
                 '''
@@ -302,17 +316,21 @@ def load_from_string(input_string):
                             'name': type_name
                         }
                         for field_name in field_names:
-                            record_set_config['field_types'][field_name] = type_definition
+                            record_set_config['field_types'][field_name] = \
+                                type_definition
                     elif type_name in ALL_TYPES:
                         # We are referencing a builtin type
                         type_definition_string = ' '.join(split_value[1:])
-                        type_definition = process_type_definition(type_definition_string)
+                        type_definition = process_type_definition(
+                                                type_definition_string)
                         for field_name in field_names:
-                            record_set_config['field_types'][field_name] = type_definition
+                            record_set_config['field_types'][field_name] = \
+                                type_definition
                     else:
                         # We are referencing a custom type that doesn't exist
-                        raise ValueError(f'Undefined type {type_name} specified '
-                                         f'for field(s) {split_value[0]}')
+                        raise ValueError(f'Undefined type {type_name} '
+                                         f'specified for field(s) '
+                                         f'{split_value[0]}')
 
     log.debug(f'Got rec config: {json.dumps(record_set_config)}')
 
