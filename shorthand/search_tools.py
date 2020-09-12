@@ -2,15 +2,63 @@ import shlex
 import logging
 from subprocess import Popen, PIPE
 
-from shorthand.utils.paths import get_full_path
+from shorthand.utils.paths import get_full_path, get_relative_path
 
 
 log = logging.getLogger(__name__)
 
 
+def filename_search(notes_directory, prefer_recent_files=True,
+                    cache_directory=None, query_string=None,
+                    case_sensitive=False, grep_path='grep'):
+    '''Search for a note file in the notes directory
+
+    "prefer_recent_files" if true, will bump the most rectly
+        accessed files to appear at the very top of the list
+    "query_string" is a string containing one or more search
+        terms. This DOES NOT support multi-word terms like the
+        full-text search api does
+    "case_sensitive" toggles whether the search terms should be
+        matched case-sensitive
+    '''
+
+    if prefer_recent_files:
+        recent_files_path = cache_directory + '/recent_files.txt '
+    else:
+        recent_files_path = ''
+
+    find_command = 'find {notes_dir} -name "*.note" | '\
+                   'cat -n {recent_files}- | '\
+                   'sort -uk2 | sort -nk1 | cut -f2-'.format(
+                        notes_dir=notes_directory,
+                        recent_files=recent_files_path)
+
+    grep_filter_mode = ''
+    if not case_sensitive:
+        grep_filter_mode += ' -i'
+
+    if query_string:
+        query_components = query_string.strip().split(' ')
+        for component in query_components:
+            new_filter = ' | {grep_path}{mode} "{pattern}"'.format(
+                            grep_path=grep_path,
+                            mode=grep_filter_mode,
+                            pattern=component)
+            find_command = find_command + new_filter
+    log.debug(f'Running command {find_command} to find notes files')
+    proc = Popen(find_command, stdout=PIPE, stderr=PIPE, shell=True)
+    output, err = proc.communicate()
+    output_lines = output.decode().split('\n')
+
+    results = [get_relative_path(notes_directory, line.strip())
+               for line in output_lines
+               if line.strip()]
+    return results
+
+
 def search_notes(notes_directory, query_string, type=None,
                  case_sensitive=False, grep_path='grep'):
-    '''Search through all notes and return
+    '''Perform a full-text search through all notes and return
     matching lines with metadata
 
     "query_string" is a string of words which are searched for

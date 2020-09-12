@@ -301,3 +301,13 @@ ALL_LOCATIONS = [
      'display_path': 'locations.note',
      'line_number': '7'}
 ]
+
+ALL_FILES = [
+    '/bugs.note',
+    '/definitions.note',
+    '/section/mixed.note',
+    '/todos.note',
+    '/locations.note',
+    '/rec.note',
+    '/questions.note'
+]

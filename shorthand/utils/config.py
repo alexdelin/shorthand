@@ -17,8 +17,12 @@ def get_notes_config(config_location=CONFIG_FILE_LOCATION):
 
     # TODO - Validate contents of notes config
 
-    # Ensure that the notes directory path has no trailing `/`
+    # Ensure that the notes directory and cache directory
+    # paths have no trailing `/`
     notes_dir = notes_config['notes_directory']
     notes_config['notes_directory'] = notes_dir.rstrip('/')
+    cache_dir = notes_config.get('cache_directory', '')
+    if cache_dir:
+        notes_config['cache_directory'] = cache_dir.rstrip('/')
 
     return notes_config
