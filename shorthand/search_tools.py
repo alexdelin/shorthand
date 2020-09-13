@@ -74,6 +74,8 @@ def filename_search(notes_directory, prefer_recent_files=True,
         grep_filter_mode += ' -i'
 
     if query_string:
+        query_string = query_string.replace('"', '')
+        query_string = query_string.replace("'", '')
         query_components = query_string.strip().split(' ')
         for component in query_components:
             new_filter = ' | {grep_path}{mode} "{pattern}"'.format(

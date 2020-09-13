@@ -13,7 +13,7 @@ from flask import Flask, request, render_template, send_from_directory
 
 from shorthand.todo_tools import get_todos, mark_todo, analyze_todos
 from shorthand.stamping import stamp_notes
-from shorthand.search_tools import search_notes, get_note
+from shorthand.search_tools import search_notes, get_note, filename_search
 from shorthand.question_tools import get_questions
 from shorthand.definition_tools import get_definitions
 from shorthand.tag_tools import get_tags
@@ -186,6 +186,37 @@ def get_gps_locations():
         grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
 
     wrapped_response = wrap_response_data(locations)
+    return json.dumps(wrapped_response)
+
+
+@app.route('/api/v1/files', methods=['GET'])
+def get_files():
+
+    query_string = request.args.get('query_string', None)
+    prefer_recent = request.args.get('prefer_recent', 'True')
+    if prefer_recent.lower() == 'false':
+        prefer_recent = False
+    elif prefer_recent.lower() == 'true':
+        prefer_recent = True
+    else:
+        raise ValueError(f'Invalid value {prefer_recent} for `prefer_recent`')
+    case_sensitive = request.args.get('case_sensitive', 'True')
+    if case_sensitive.lower() == 'false':
+        case_sensitive = False
+    elif case_sensitive.lower() == 'true':
+        case_sensitive = True
+    else:
+        raise ValueError(f'Invalid value {case_sensitive} '
+                         f'for `case_sensitive`')
+
+    files = filename_search(
+                notes_directory=SHORTHAND_CONFIG['notes_directory'],
+                prefer_recent_files=prefer_recent,
+                cache_directory=SHORTHAND_CONFIG['cache_directory'],
+                query_string=query_string, case_sensitive=case_sensitive,
+                grep_path=SHORTHAND_CONFIG['grep_path'])
+
+    wrapped_response = wrap_response_data(files)
     return json.dumps(wrapped_response)
 
 
