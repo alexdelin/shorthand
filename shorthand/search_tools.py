@@ -8,6 +8,42 @@ from shorthand.utils.paths import get_full_path, get_relative_path
 log = logging.getLogger(__name__)
 
 
+def record_file_view(cache_directory, relative_path, history_limit=100):
+    '''Record a note being viewed, so that it can be preferred in
+    future search results.
+    '''
+
+    history_file = cache_directory + '/recent_files.txt'
+    with open(history_file, 'r') as history_file_object:
+        history_data = history_file_object.read()
+
+    history_data = [line.strip()
+                    for line in history_data.split('\n')
+                    if line.strip()]
+
+    if len(history_data) == 0:
+        # There is no history yet
+        history_data = [relative_path]
+    else:
+        if relative_path == history_data[0]:
+            # The viewed file is already the most recently viewed file
+            return
+        elif relative_path in history_data:
+            # The viewed file is in the history file, but
+            # is not the most recently viewed file
+            history_data.remove(relative_path)
+            history_data.insert(0, relative_path)
+        else:
+            # The viewed file is not in the history file
+            history_data.insert(0, relative_path)
+            if len(history_data) > history_limit:
+                history_data = history_data[-history_limit:]
+
+    history_string = '\n'.join(history_data) + '\n'
+    with open(history_file, 'w') as history_file_object:
+        history_file_object.write(history_string)
+
+
 def filename_search(notes_directory, prefer_recent_files=True,
                     cache_directory=None, query_string=None,
                     case_sensitive=False, grep_path='grep'):
@@ -27,8 +63,8 @@ def filename_search(notes_directory, prefer_recent_files=True,
     else:
         recent_files_path = ''
 
-    find_command = 'find {notes_dir} -name "*.note" | '\
-                   'cat -n {recent_files}- | '\
+    find_command = 'gfind {notes_dir} -name "*.note" -printf "/%P\\n" | '\
+                   'cat {recent_files}- | cat -n - | '\
                    'sort -uk2 | sort -nk1 | cut -f2-'.format(
                         notes_dir=notes_directory,
                         recent_files=recent_files_path)

@@ -3,7 +3,8 @@ import logging
 import unittest
 
 from shorthand.utils.logging import setup_logging
-from shorthand.search_tools import search_notes, filename_search
+from shorthand.search_tools import search_notes, filename_search, \
+                                   record_file_view
 
 from utils import setup_environment
 from results_unstamped import EMPTY_RESULTS, SEARCH_RESULTS_FOOD, \
@@ -107,10 +108,100 @@ class TestSearch(unittest.TestCase):
 
         # TODO- Test directory filter
 
-    def test_find_file(self):
-        '''Test finding notes files
+
+class TestFileFinder(unittest.TestCase):
+
+    def search_helper(self, query_string, case_sensitive=False):
+        '''A sort-of model to test the implementation against
+        '''
+        all_files_found = ALL_FILES
+        if not case_sensitive:
+            query_string = query_string.lower()
+            all_files_found = [file.lower() for file in all_files_found]
+
+        return [file
+                for file in all_files_found
+                if all([query_component in file
+                        for query_component in query_string.split(' ')])
+                ]
+
+    def test_find_all_files(self):
+        '''Test finding all notes files
         '''
         all_files_found = get_file_search_results(prefer_recent=True,
                                                   query_string=None,
                                                   case_sensitive=False)
         assert all_files_found == ALL_FILES
+
+    def test_file_search(self):
+        '''Test searching for files via substrings (non case sensitive)
+        '''
+
+        test_queries = [
+            'foo',  # Should have no results
+            'note',  # Matches Everything
+            'foo note',  # Matches Everything
+            'todos',  # Should have one result
+            'section mix',  # Query string with multiple components
+            'sample'  # Part of the parent dirname
+        ]
+        for query_string in test_queries:
+            expected_results = self.search_helper(query_string,
+                                                  case_sensitive=False)
+            real_results = get_file_search_results(prefer_recent=False,
+                                                   query_string=query_string,
+                                                   case_sensitive=False)
+            assert expected_results == real_results
+
+    def test_file_search_case_sensitive(self):
+        '''Test searching for files via substrings (case sensitive)
+        '''
+
+        test_queries = [
+            'foo',  # Should have no results
+            'note',  # Matches Everything
+            'todos',  # Should have one result
+            'Todos',  # Should have one result
+            'section mix',  # Query string with multiple components
+            'section Mix',  # Query string with multiple components
+            'sample'  # Part of the parent dirname
+        ]
+        for query_string in test_queries:
+            expected_results = self.search_helper(query_string,
+                                                  case_sensitive=True)
+            real_results = get_file_search_results(prefer_recent=False,
+                                                   query_string=query_string,
+                                                   case_sensitive=True)
+            assert expected_results == real_results
+
+    def test_recent_file_preference(self):
+        '''Test that the implementation prefers recently accessed files
+        '''
+
+        # Test that the history file starts off empty
+        history_file = CONFIG['cache_directory'] + '/recent_files.txt'
+        with open(history_file, 'r') as history_file_object:
+            history_data = history_file_object.read()
+        assert len(history_data) == 0
+
+        # Verify that most recent views get bumped to the top
+        for _ in range(5):
+            # View the last file returned
+            all_files_found = get_file_search_results(prefer_recent=True,
+                                                      query_string=None,
+                                                      case_sensitive=False)
+            last_file = all_files_found[-1]
+            record_file_view(CONFIG['cache_directory'],
+                             last_file, history_limit=100)
+
+            # Verify that the view was recorded in the history file
+            with open(history_file, 'r') as history_file_object:
+                history_data = history_file_object.read()
+            assert len(history_data) > 0
+            assert last_file in history_data
+
+            # Verify that the viewed file now shows up first
+            file_search_results = get_file_search_results(prefer_recent=True,
+                                                          query_string='note',
+                                                          case_sensitive=False)
+            assert file_search_results[0] == last_file
