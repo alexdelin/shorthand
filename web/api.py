@@ -13,7 +13,8 @@ from flask import Flask, request, render_template, send_from_directory
 
 from shorthand.todo_tools import get_todos, mark_todo, analyze_todos
 from shorthand.stamping import stamp_notes
-from shorthand.search_tools import search_notes, get_note, filename_search
+from shorthand.search_tools import search_notes, get_note, filename_search, \
+                                   record_file_view
 from shorthand.question_tools import get_questions
 from shorthand.definition_tools import get_definitions
 from shorthand.tag_tools import get_tags
@@ -39,16 +40,16 @@ setup_logging(SHORTHAND_CONFIG)
 log = logging.getLogger(__name__)
 
 
-# @app.errorhandler(Exception)
-# def handle_exception(e):
-#     '''This method is a catch-all for all errors thrown by the server
-#     '''
+@app.errorhandler(Exception)
+def handle_exception(e):
+    '''This method is a catch-all for all errors thrown by the server
+    '''
 
-#     # pass through HTTP errors
-#     if isinstance(e, HTTPException):
-#         return e
+    # pass through HTTP errors
+    if isinstance(e, HTTPException):
+        return e
 
-#     return json.dumps({'error': str(e)}), 500
+    return json.dumps({'error': str(e)}), 500
 
 
 @app.route('/js/<path:path>', methods=['GET', 'POST'])
@@ -200,7 +201,7 @@ def get_files():
         prefer_recent = True
     else:
         raise ValueError(f'Invalid value {prefer_recent} for `prefer_recent`')
-    case_sensitive = request.args.get('case_sensitive', 'True')
+    case_sensitive = request.args.get('case_sensitive', 'False')
     if case_sensitive.lower() == 'false':
         case_sensitive = False
     elif case_sensitive.lower() == 'true':
@@ -214,10 +215,24 @@ def get_files():
                 prefer_recent_files=prefer_recent,
                 cache_directory=SHORTHAND_CONFIG['cache_directory'],
                 query_string=query_string, case_sensitive=case_sensitive,
-                grep_path=SHORTHAND_CONFIG['grep_path'])
+                grep_path=SHORTHAND_CONFIG['grep_path'],
+                find_path=SHORTHAND_CONFIG.get('find_path', 'find'))
 
-    wrapped_response = wrap_response_data(files)
-    return json.dumps(wrapped_response)
+    # wrapped_response = wrap_response_data(files)
+    return json.dumps(files)
+
+
+@app.route('/api/v1/record_view', methods=['POST'])
+def record_file_view_api():
+
+    relative_path = request.args.get('relative_path')
+    if not relative_path:
+        raise ValueError('No Relative Path Provided')
+    record_file_view(cache_directory=SHORTHAND_CONFIG['cache_directory'],
+                     relative_path=relative_path,
+                     history_limit=SHORTHAND_CONFIG.get('view_history_limit',
+                                                        100))
+    return 'ack'
 
 
 @app.route('/api/v1/todos', methods=['GET'])

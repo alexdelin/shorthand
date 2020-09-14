@@ -161,9 +161,9 @@ class TestFileFinder(unittest.TestCase):
             'foo',  # Should have no results
             'note',  # Matches Everything
             'todos',  # Should have one result
-            'Todos',  # Should have one result
+            'Todos',  # Should have no results
             'section mix',  # Query string with multiple components
-            'section Mix',  # Query string with multiple components
+            'section Mix',  # no results
             'sample'  # Part of the parent dirname
         ]
         for query_string in test_queries:

@@ -303,11 +303,11 @@ ALL_LOCATIONS = [
 ]
 
 ALL_FILES = [
-    '/bugs.note',
-    '/definitions.note',
-    '/section/mixed.note',
-    '/todos.note',
-    '/locations.note',
+    '/questions.note',
     '/rec.note',
-    '/questions.note'
+    '/locations.note',
+    '/todos.note',
+    '/section/mixed.note',
+    '/definitions.note',
+    '/bugs.note'
 ]

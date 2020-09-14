@@ -11,8 +11,13 @@ log = logging.getLogger(__name__)
 def record_file_view(cache_directory, relative_path, history_limit=100):
     '''Record a note being viewed, so that it can be preferred in
     future search results.
+
+    The file that stores the most recent file views stores the
+        most recent view at the END of the file
     '''
 
+    # TODO - validate that the relative path provided is
+    # A valid path to a note file
     history_file = cache_directory + '/recent_files.txt'
     with open(history_file, 'r') as history_file_object:
         history_data = history_file_object.read()
@@ -25,17 +30,17 @@ def record_file_view(cache_directory, relative_path, history_limit=100):
         # There is no history yet
         history_data = [relative_path]
     else:
-        if relative_path == history_data[0]:
+        if relative_path == history_data[-1]:
             # The viewed file is already the most recently viewed file
             return
         elif relative_path in history_data:
             # The viewed file is in the history file, but
             # is not the most recently viewed file
             history_data.remove(relative_path)
-            history_data.insert(0, relative_path)
+            history_data.append(relative_path)
         else:
             # The viewed file is not in the history file
-            history_data.insert(0, relative_path)
+            history_data.append(relative_path)
             if len(history_data) > history_limit:
                 history_data = history_data[-history_limit:]
 
@@ -46,7 +51,8 @@ def record_file_view(cache_directory, relative_path, history_limit=100):
 
 def filename_search(notes_directory, prefer_recent_files=True,
                     cache_directory=None, query_string=None,
-                    case_sensitive=False, grep_path='grep'):
+                    case_sensitive=False, grep_path='grep',
+                    find_path='find'):
     '''Search for a note file in the notes directory
 
     "prefer_recent_files" if true, will bump the most rectly
@@ -58,40 +64,64 @@ def filename_search(notes_directory, prefer_recent_files=True,
         matched case-sensitive
     '''
 
-    if prefer_recent_files:
-        recent_files_path = cache_directory + '/recent_files.txt '
-    else:
-        recent_files_path = ''
+    find_command = '{find_path} {notes_dir} -name "*.note"'.format(
+                        find_path=find_path,
+                        notes_dir=notes_directory)
 
-    find_command = 'gfind {notes_dir} -name "*.note" -printf "/%P\\n" | '\
-                   'cat {recent_files}- | cat -n - | '\
-                   'sort -uk2 | sort -nk1 | cut -f2-'.format(
-                        notes_dir=notes_directory,
-                        recent_files=recent_files_path)
-
-    grep_filter_mode = ''
-    if not case_sensitive:
-        grep_filter_mode += ' -i'
-
-    if query_string:
-        query_string = query_string.replace('"', '')
-        query_string = query_string.replace("'", '')
-        query_components = query_string.strip().split(' ')
-        for component in query_components:
-            new_filter = ' | {grep_path}{mode} "{pattern}"'.format(
-                            grep_path=grep_path,
-                            mode=grep_filter_mode,
-                            pattern=component)
-            find_command = find_command + new_filter
-    log.debug(f'Running command {find_command} to find notes files')
+    log.debug(f'Running command {find_command} to find all notes files')
     proc = Popen(find_command, stdout=PIPE, stderr=PIPE, shell=True)
     output, err = proc.communicate()
     output_lines = output.decode().split('\n')
 
-    results = [get_relative_path(notes_directory, line.strip())
-               for line in output_lines
-               if line.strip()]
-    return results
+    find_results = [get_relative_path(notes_directory, line.strip())
+                    for line in output_lines
+                    if line.strip()]
+
+    ordered_notes = find_results
+
+    if prefer_recent_files:
+        # Re-order the list of all notes based on which
+        # were accessed most recently
+        recent_files_path = cache_directory + '/recent_files.txt'
+        with open(recent_files_path, 'r') as recent_files_object:
+            recent_files_data = recent_files_object.read()
+        recent_files = [file.strip()
+                        for file in recent_files_data.split('\n')
+                        if file.strip()]
+        for recent_file in recent_files:
+            if recent_file not in ordered_notes:
+                continue
+            else:
+                ordered_notes.remove(recent_file)
+                ordered_notes.append(recent_file)
+
+    # Filter results based on query_string
+    if query_string:
+        if not case_sensitive:
+            query_string = query_string.lower()
+        query_string = query_string.replace('"', '')
+        query_string = query_string.replace("'", '')
+        if case_sensitive:
+            search_results = [file
+                              for file in ordered_notes
+                              if all([query_component in file
+                                      for query_component in
+                                      query_string.split(' ')])
+                              ]
+        else:
+            search_results = [file
+                              for file in ordered_notes
+                              if all([query_component in file.lower()
+                                      for query_component in
+                                      query_string.split(' ')])
+                              ]
+    else:
+        search_results = ordered_notes
+
+    # Bring most recently accessed matching notes to
+    # the front of the list
+    search_results.reverse()
+    return search_results
 
 
 def search_notes(notes_directory, query_string, type=None,
