@@ -33,7 +33,7 @@ HEADER_HTML = '''<div class="row top-gutter">
             <div class="col-md-1 icon-wrapper"><a href="#"><img class="svg-icon" src="/img/settings-24.svg"></a></div>
         </div>'''
 
-MODAL_BLOCK = '''<div id="modalWrapper">
+ERROR_MODAL = '''<div id="modalWrapper">
   <div class="modal fade" id="shorthandModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
@@ -51,15 +51,41 @@ MODAL_BLOCK = '''<div id="modalWrapper">
   </div>
 </div>'''
 
+FILE_FINDER_MODAL = '''<!-- File Finder Modal -->
+<div id="fileModalWrapper">
+  <div class="modal fade" id="shorthandFileModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered mw-100 w-50" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="fileModalTitle">Search for Notes</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div id="fileModalContent" class="modal-body">
+          <div class="input-group">
+            <input type="text" id="fileModalSearchBar" class="form-control form-control-lg typeahead" placeholder="Search Files" aria-label="Search" aria-describedby="button-addon2">
+            <div class="input-group-append">
+              <button class="btn btn-primary" type="button" id="goToNote">Go</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>'''
+
 COMMON_IMPORTS = '''<!-- Common Resources for all pages -->
     <link rel="stylesheet" type="text/css" href="/css/shorthand-common.css">
     <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
     <script type="text/javascript" src="/js/jquery-3.3.1.min.js"></script>
     <script type="text/javascript" src="/js/shorthand-common.js" defer></script>
-    <script type="text/javascript" src="/js/bootstrap.js" defer></script>'''
+    <script type="text/javascript" src="/js/bootstrap.js" defer></script>
+    <script type="text/javascript" src="/js/typeahead.bundle.min.js"></script>'''
 
 static_content = {
-    'modal_block': MODAL_BLOCK,
+    'error_modal': ERROR_MODAL,
+    'file_finder_modal': FILE_FINDER_MODAL,
     'header_html': HEADER_HTML,
     'common_imports': COMMON_IMPORTS
 }

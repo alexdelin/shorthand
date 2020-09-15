@@ -1,37 +1,113 @@
-#title-wrapper {
-    vertical-align: middle;
-    padding: 15px;
-}
+/*Top Navigation*/
+    #title-wrapper {
+        vertical-align: middle;
+        padding: 15px;
+    }
 
-.svg-icon {
-    height: 4rem;
-    line-height: 4rem;
-    vertical-align: middle;
-    fill: white;
-    stroke: white;
-}
+    .svg-icon {
+        height: 4rem;
+        line-height: 4rem;
+        vertical-align: middle;
+        fill: white;
+        stroke: white;
+    }
 
-#fileModalSearchBar {
-    width: 100%;
-}
+    .actionButtons img {
+        vertical-align: middle;
+        height: 2.5rem;
+        line-height: 2.5rem;
+    }
 
-#shorthand-map {
-    height: 800px;
-    width: 100%;
-}
+    .material-icons.action-button {
+        font-size: 2.5rem;
+        line-height: 2.5rem;
+        vertical-align: middle;
+    }
 
-.shorthand-mini-map {
-    height: 400px;
-    width: 400px;
-}
+/*Twitter Typeahead Styles*/
+    .twitter-typeahead, .tt-hint, .tt-input, .tt-menu { width: 100%; }
 
-span.location-coordinates {
-    color: grey;
-}
+    .tt-hint {
+        color: #999
+    }
 
-span.location-name {
-    color: blue;
-}
+    .tt-menu {
+        padding: 8px 0;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        border: 1px solid rgba(0, 0, 0, 0.2);
+        -webkit-border-radius: 8px;
+        -moz-border-radius: 8px;
+        border-radius: 8px;
+        -webkit-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+        -moz-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+        box-shadow: 0 5px 10px rgba(0,0,0,.2);
+    }
+
+    .tt-suggestion {
+        padding: 3px 20px;
+        font-size: 18px;
+        line-height: 24px;
+    }
+
+    .tt-suggestion:hover {
+        cursor: pointer;
+        color: #fff;
+        background-color: #0097cf;
+    }
+
+    .tt-suggestion.tt-cursor {
+        color: #fff;
+        background-color: #0097cf;
+    }
+
+    .tt-suggestion p {
+        margin: 0;
+    }
+
+    /*Twitter Typeahead and Bootstrap 4 Input groups don't
+    work together out of the box, so this is needed to make
+    the inputs display correctly.
+    See: https://github.com/bassjobsen/typeahead.js-bootstrap4-css/issues/1#issuecomment-395792024*/
+    .input-group>.twitter-typeahead {
+         position: relative;
+         -ms-flex: 1 1 auto;
+         -webkit-box-flex: 1;
+         flex: 1 1 auto;
+         width: 1%;
+         margin-bottom: 0;
+     }
+     .input-group>.twitter-typeahead:not(:last-child) {
+         border-top-right-radius: 0;
+         border-bottom-right-radius: 0;
+     }
+     .input-group>.twitter-typeahead>.tt-input {
+         border-top-right-radius: 0;
+         border-bottom-right-radius: 0;
+     }
+     .form-control.tt-input:focus {
+         z-index: 3
+     }
+
+/*Map page*/
+    #shorthand-map {
+        height: 800px;
+        width: 100%;
+    }
+
+/*Note Viewer*/
+    .shorthand-mini-map {
+        height: 400px;
+        width: 400px;
+    }
+
+    span.location-coordinates {
+        color: grey;
+    }
+
+    span.location-name {
+        color: blue;
+    }
 
 div.tooltip {
     opacity: 100%;
@@ -42,20 +118,8 @@ div.tooltip {
     margin-top: 60px;
 }
 
-.actionButtons img {
-    vertical-align: middle;
-    height: 2.5rem;
-    line-height: 2.5rem;
-}
-
 .tag-badge {
     margin-left: 5px;
-}
-
-.material-icons.action-button {
-    font-size: 2.5rem;
-    line-height: 2.5rem;
-    vertical-align: middle;
 }
 
 .mermaid svg {
@@ -107,9 +171,6 @@ pre {
 
 .record-set-data {
     display: none;
-}
-
-.gutter {
 }
 
 .pagewrapper {
@@ -244,45 +305,4 @@ pre {
 
 .mermaid {
     text-align: center;
-}
-
-.tt-hint {
-    color: #999
-}
-
-.tt-menu {
-    width: 422px;
-    margin: 12px 0;
-    padding: 8px 0;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    -webkit-border-radius: 8px;
-    -moz-border-radius: 8px;
-    border-radius: 8px;
-    -webkit-box-shadow: 0 5px 10px rgba(0,0,0,.2);
-    -moz-box-shadow: 0 5px 10px rgba(0,0,0,.2);
-    box-shadow: 0 5px 10px rgba(0,0,0,.2);
-}
-
-.tt-suggestion {
-    padding: 3px 20px;
-    font-size: 18px;
-    line-height: 24px;
-}
-
-.tt-suggestion:hover {
-    cursor: pointer;
-    color: #fff;
-    background-color: #0097cf;
-}
-
-.tt-suggestion.tt-cursor {
-    color: #fff;
-    background-color: #0097cf;
-
-}
-
-.tt-suggestion p {
-    margin: 0;
 }

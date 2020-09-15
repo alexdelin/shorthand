@@ -67,6 +67,11 @@ def send_img(path):
     return send_from_directory('img', path)
 
 
+@app.route('/api/v1/config', methods=['GET'])
+def get_server_config():
+    return json.dumps(SHORTHAND_CONFIG)
+
+
 @app.route('/api/v1/pull', methods=['GET', 'POST'])
 def pull_notes_repo():
     return pull_repo(SHORTHAND_CONFIG['notes_directory'])
@@ -218,7 +223,6 @@ def get_files():
                 grep_path=SHORTHAND_CONFIG['grep_path'],
                 find_path=SHORTHAND_CONFIG.get('find_path', 'find'))
 
-    # wrapped_response = wrap_response_data(files)
     return json.dumps(files)
 
 
