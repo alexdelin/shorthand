@@ -23,12 +23,11 @@ $("#questionSearch").click(function() {
     // Search Questions
     console.log('searching Questions');
     $.ajax({
-        url: '/api/v1/questions',
-        type: 'GET',
-        data: {
+        url: '/api/v1/questions?' + $.param({
             status: questionFilter,
             directory_filter: directoryFilter
-        },
+        }),
+        type: 'GET',
         success: function(questionData){
             renderQuestionResults(questionData)
         },

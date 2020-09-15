@@ -6,14 +6,13 @@ $('.showRec').click( function (ev) {
     ev.currentTarget.remove()
     $.ajax({
         type: 'GET',
-        url: '/api/v1/record_set',
-        data: {
+        url: '/api/v1/record_set?' + $.param({
             file_path: filePath,
             line_number: lineNumber,
             parse: 'true',
             parse_format: 'json',
             include_config: 'true'
-        },
+        }),
         tableElement: tableElement,
         success: function(responseData) {
             // var loadedData = JSON.parse(responseData)
@@ -43,13 +42,12 @@ $('.getCsv').click( function (ev) {
     var filePath = parentElement.find('.filePath').text()
     $.ajax({
         type: 'GET',
-        url: '/api/v1/record_set',
-        data: {
+        url: '/api/v1/record_set?' + $.param({
             file_path: filePath,
             line_number: lineNumber,
             parse: 'true',
             parse_format: 'csv'
-        },
+        }),
         success: function(responseData) {
             downloadFile('record_set.csv', responseData)
         },

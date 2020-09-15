@@ -17,7 +17,6 @@ $("#stampNotes").click(function() {
     console.log( "Handler for stamp notes called." );
     $.ajax({
         url: '/api/v1/stamp',
-        data: {},
         success: function(responseData){
             showModal(message='Stamped Notes!', title='Updated Notes')
         },
@@ -32,7 +31,6 @@ $('#syncIcon').click(function() {
     $.ajax({
         url: '/api/v1/pull',
         type: 'GET',
-        data: {},
         success: function(responseData) {
             var htmlMessage = '<div class="alert alert-success" role="alert">' + responseData + '</div>'
             showModal(message=htmlMessage, title='Updated Notes')

@@ -26,15 +26,14 @@ $("#todoSearch").click( function() {
     // Search To-Dos
     console.log('searching To-Dos');
     $.ajax({
-        url: '/api/v1/todos',
-        type: 'GET',
-        data: {
+        url: '/api/v1/todos?' + $.param({
             status: todoFilter,
             directory_filter: directoryFilter,
             query_string: searchFilter,
             sort_by: 'start_date',
             tag: tagFilter
-        },
+        }),
+        type: 'GET',
         success: function(todoData) {
             renderTodoResults(todoData)
         },
@@ -156,13 +155,12 @@ function setTodoResultActions() {
         todoFile = $(rowElement).find('.filePath').attr('path');
         todoLine = $(rowElement).find('.lineNumber').text();
         $.ajax({
-            url: '/api/v1/mark_todo',
-            type: 'GET',
-            data: {
+            url: '/api/v1/mark_todo?' + $.param({
                 filename: todoFile,
                 line_number: todoLine,
                 status: 'complete'
-            },
+            }),
+            type: 'GET',
             success: function(markTodoResponse) {
                 $("#todoSearch").click();
             },
@@ -180,13 +178,12 @@ function setTodoResultActions() {
         todoFile = $(rowElement).find('.filePath').attr('path');
         todoLine = $(rowElement).find('.lineNumber').text();
         $.ajax({
-            url: '/api/v1/mark_todo',
-            type: 'GET',
-            data: {
+            url: '/api/v1/mark_todo?' + $.param({
                 filename: todoFile,
                 line_number: todoLine,
                 status: 'skipped'
-            },
+            }),
+            type: 'GET',
             success: function(contextResponse) {
                 $("#todoSearch").click();
             }
@@ -211,11 +208,10 @@ $("#showStats").click( function() {
 $("#directoryFilter").change(function () {
     var newDirectory = $(this).val();
     $.ajax({
-        url: '/api/v1/tags',
-        type: 'GET',
-        data: {
+        url: '/api/v1/tags?' + $.param({
             directory_filter: newDirectory
-        },
+        }),
+        type: 'GET',
         success: function(response) {
             var tagData = JSON.parse(response)
             // Remove old options

@@ -15,7 +15,6 @@ document.addEventListener('DOMContentLoaded', function() {
     $.ajax({
         url: '/api/v1/locations',
         type: 'GET',
-        data: {},
         success: function(responseData) {
             loadedResponse = JSON.parse(responseData);
             console.log(loadedResponse);

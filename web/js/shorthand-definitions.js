@@ -22,11 +22,8 @@ $("#definitionSearch").click(function() {
     // Search Definitions
     console.log('searching Definitions');
     $.ajax({
-        url: '/api/v1/definitions',
+        url: '/api/v1/definitions?' + $.param({directory_filter: directoryFilter}),
         type: 'GET',
-        data: {
-            directory_filter: directoryFilter
-        },
         success: function(definitionData){
             renderDefinitionResults(definitionData)
         },
