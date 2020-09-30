@@ -72,7 +72,7 @@ $('#optionsCollapser').click(function () {
 // Support for the File Finder Modal
 function showFileFinder() {
     $('#shorthandFileModal').modal();
-    var taTest = new Bloodhound({
+    var fileSearch = new Bloodhound({
         datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
         queryTokenizer: Bloodhound.tokenizers.whitespace,
         remote: {
@@ -85,7 +85,7 @@ function showFileFinder() {
         name: 'notes-files',
         highlight: true,
         limit: 10,
-        source: taTest,
+        source: fileSearch,
     });
 
     // Click Handler for the goto note button
@@ -127,6 +127,7 @@ function showFileFinder() {
 function KeyPress(e) {
     var evtobj = window.event? event : e
     if (evtobj.keyCode == 84 && evtobj.ctrlKey) {
+        // Show the file finder when Ctrl + T is pressed
         showFileFinder();
     };
 }

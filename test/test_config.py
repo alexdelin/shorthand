@@ -6,7 +6,8 @@ import unittest
 from shorthand.utils.logging import setup_logging
 from shorthand.utils.config import clean_and_validate_config, \
     DEFAULT_CACHE_DIR, DEFAULT_LOG_FILE, DEFAULT_LOG_LEVEL, \
-    DEFAULT_GREP_PATH, DEFAULT_FIND_PATH, DEFAULT_FRONTEND_CONFIG
+    DEFAULT_GREP_PATH, DEFAULT_FIND_PATH, DEFAULT_FRONTEND_CONFIG, \
+    DEFAULT_CONFIG
 
 from utils import setup_environment
 
@@ -14,11 +15,6 @@ from utils import setup_environment
 ORIGINAL_CONFIG = setup_environment()
 setup_logging(ORIGINAL_CONFIG)
 log = logging.getLogger(__name__)
-
-CONFIG_FIELDS = ['notes_directory', 'cache_directory', 'default_directory',
-                 'log_file_path', 'log_level', 'grep_path', 'find_path',
-                 'frontend']
-FRONTEND_CONFIG_FIELDS = ['view_history_limit', 'map_tileserver_url']
 
 
 class TestConfig(unittest.TestCase):
@@ -35,16 +31,18 @@ class TestConfig(unittest.TestCase):
         assert isinstance(cleaned_config, dict)
         assert len(cleaned_config.keys()) > 0
         # Ensure all expected top-level fields are present
-        assert all([field in cleaned_config for field in CONFIG_FIELDS])
+        assert all([field in cleaned_config
+                    for field in DEFAULT_CONFIG.keys()])
         # Ensure no extra top-level fields are included
-        assert all([field in CONFIG_FIELDS for field in cleaned_config])
+        assert all([field in DEFAULT_CONFIG.keys()
+                    for field in cleaned_config])
 
         frontend_config = cleaned_config.get('frontend')
         # Ensure all expected frontend fields are present
         assert all([field in frontend_config
-                    for field in FRONTEND_CONFIG_FIELDS])
+                    for field in DEFAULT_FRONTEND_CONFIG.keys()])
         # Ensure no extra frontend fields are included
-        assert all([field in FRONTEND_CONFIG_FIELDS
+        assert all([field in DEFAULT_FRONTEND_CONFIG.keys()
                     for field in frontend_config])
 
     def test_required_config_fields(self):
@@ -178,7 +176,7 @@ class TestConfig(unittest.TestCase):
 
         # Test that if only a single field is included, the rest are
         # added with defaults
-        for field in FRONTEND_CONFIG_FIELDS:
+        for field in DEFAULT_FRONTEND_CONFIG.keys():
             cleaned_config = clean_and_validate_config({
                 "notes_directory": ORIGINAL_CONFIG['notes_directory'],
                 "frontend": {
@@ -189,7 +187,8 @@ class TestConfig(unittest.TestCase):
                 DEFAULT_FRONTEND_CONFIG[field]
             frontend_config = cleaned_config.get('frontend')
             # Ensure all expected frontend fields are present
-            assert set(frontend_config.keys()) == set(FRONTEND_CONFIG_FIELDS)
+            assert set(frontend_config.keys()) == \
+                set(DEFAULT_FRONTEND_CONFIG.keys())
 
         # Test an integer view history limit
         _ = clean_and_validate_config({
@@ -198,6 +197,7 @@ class TestConfig(unittest.TestCase):
                 "view_history_limit": 5
             }
         })
+
         # Test a string view history limit
         _ = clean_and_validate_config({
             "notes_directory": ORIGINAL_CONFIG['notes_directory'],
@@ -205,6 +205,7 @@ class TestConfig(unittest.TestCase):
                 "view_history_limit": '37'
             }
         })
+
         # Test an invalid view history limit
         with pytest.raises(ValueError) as e:
             _ = clean_and_validate_config({

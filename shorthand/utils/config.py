@@ -14,6 +14,20 @@ DEFAULT_FRONTEND_CONFIG = {
     'map_tileserver_url': 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
 }
 
+DEFAULT_CONFIG = {
+    "notes_directory": None,
+    "cache_directory": DEFAULT_CACHE_DIR,
+    "default_directory": None,
+    "log_file_path": DEFAULT_LOG_FILE,
+    "log_level": DEFAULT_LOG_LEVEL,
+    "grep_path": DEFAULT_GREP_PATH,
+    "find_path": DEFAULT_FIND_PATH,
+    "frontend": DEFAULT_FRONTEND_CONFIG
+}
+
+REQUIRED_FIELDS = ['notes_directory']
+
+
 log = logging.getLogger(__name__)
 
 
@@ -36,17 +50,23 @@ def get_notes_config(config_location=CONFIG_FILE_LOCATION):
     return notes_config
 
 
+def write_config(config_location, config):
+    raise NotImplementedError
+
+
 def clean_and_validate_config(config):
     '''Clean and validate values from the config file as needed
     Return the config if there are no issues, and raise an error
     if an issue is found
     '''
 
-    # TODO - Ensure that no unknown fields are present in the config
+    # Ensure that no unknown fields are present in the config
+    for field in config.keys():
+        if field not in DEFAULT_CONFIG.keys():
+            raise ValueError(f'Config includes unknown field "{field}"')
 
     # Ensure that required fields are present in the config
-    required_fields = ['notes_directory']
-    for field in required_fields:
+    for field in REQUIRED_FIELDS:
         if field not in config.keys():
             raise ValueError(f'Missing required field "{field}"')
 
@@ -163,7 +183,7 @@ def clean_and_validate_config(config):
             raise ValueError(f'Find executable specified as {find_path} '
                              f'could not be located')
 
-    # TODO - Validate frontend config
+    # Validate frontend config
     frontend_config = config.get('frontend')
     if 'frontend' not in config.keys():
         # Frontend config is missing completely
