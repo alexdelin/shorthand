@@ -9,13 +9,11 @@ from shorthand.utils.config import clean_and_validate_config, \
     DEFAULT_GREP_PATH, DEFAULT_FIND_PATH, DEFAULT_FRONTEND_CONFIG
 
 from utils import setup_environment
-from model import ShorthandModel
 
 
 ORIGINAL_CONFIG = setup_environment()
 setup_logging(ORIGINAL_CONFIG)
 log = logging.getLogger(__name__)
-MODEL = ShorthandModel()
 
 CONFIG_FIELDS = ['notes_directory', 'cache_directory', 'default_directory',
                  'log_file_path', 'log_level', 'grep_path', 'find_path',
@@ -40,6 +38,14 @@ class TestConfig(unittest.TestCase):
         assert all([field in cleaned_config for field in CONFIG_FIELDS])
         # Ensure no extra top-level fields are included
         assert all([field in CONFIG_FIELDS for field in cleaned_config])
+
+        frontend_config = cleaned_config.get('frontend')
+        # Ensure all expected frontend fields are present
+        assert all([field in frontend_config
+                    for field in FRONTEND_CONFIG_FIELDS])
+        # Ensure no extra frontend fields are included
+        assert all([field in FRONTEND_CONFIG_FIELDS
+                    for field in frontend_config])
 
     def test_required_config_fields(self):
 
@@ -95,8 +101,8 @@ class TestConfig(unittest.TestCase):
         assert 'Invalid log level' in str(e.value)
 
         # Test that all valid log levels are respected
-        for level in ['NOTSET', 'DEBUG', 'INFO',
-                      'WARNING', 'ERROR', 'CRITICAL']:
+        for level in ['DEBUG', 'INFO', 'WARNING',
+                      'ERROR', 'CRITICAL']:
             cleaned_config = clean_and_validate_config({
                 "notes_directory": ORIGINAL_CONFIG['notes_directory'],
                 "log_level": level
@@ -162,4 +168,59 @@ class TestConfig(unittest.TestCase):
         assert 'could not be located' in str(e.value)
 
     def test_frontend_config(self):
-        pass
+
+        # Test Passing Valid config
+        cleaned_config = clean_and_validate_config({
+            "notes_directory": ORIGINAL_CONFIG['notes_directory'],
+            "frontend": DEFAULT_FRONTEND_CONFIG
+        })
+        assert cleaned_config['frontend'] == DEFAULT_FRONTEND_CONFIG
+
+        # Test that if only a single field is included, the rest are
+        # added with defaults
+        for field in FRONTEND_CONFIG_FIELDS:
+            cleaned_config = clean_and_validate_config({
+                "notes_directory": ORIGINAL_CONFIG['notes_directory'],
+                "frontend": {
+                    field: DEFAULT_FRONTEND_CONFIG[field]
+                }
+            })
+            assert cleaned_config['frontend'][field] == \
+                DEFAULT_FRONTEND_CONFIG[field]
+            frontend_config = cleaned_config.get('frontend')
+            # Ensure all expected frontend fields are present
+            assert set(frontend_config.keys()) == set(FRONTEND_CONFIG_FIELDS)
+
+        # Test an integer view history limit
+        _ = clean_and_validate_config({
+            "notes_directory": ORIGINAL_CONFIG['notes_directory'],
+            "frontend": {
+                "view_history_limit": 5
+            }
+        })
+        # Test a string view history limit
+        _ = clean_and_validate_config({
+            "notes_directory": ORIGINAL_CONFIG['notes_directory'],
+            "frontend": {
+                "view_history_limit": '37'
+            }
+        })
+        # Test an invalid view history limit
+        with pytest.raises(ValueError) as e:
+            _ = clean_and_validate_config({
+                "notes_directory": ORIGINAL_CONFIG['notes_directory'],
+                "frontend": {
+                    "view_history_limit": "foo"
+                }
+            })
+        assert 'Can\'t convert view history limit value of' in str(e.value)
+
+        # Test an invalid map tileserver URL
+        with pytest.raises(ValueError) as e:
+            _ = clean_and_validate_config({
+                "notes_directory": ORIGINAL_CONFIG['notes_directory'],
+                "frontend": {
+                    "map_tileserver_url": "foo"
+                }
+            })
+        assert 'Map Tileserver URL must be a valid URL' == str(e.value)

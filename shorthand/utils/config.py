@@ -9,7 +9,10 @@ DEFAULT_LOG_FILE = '/var/log/shorthand/shorthand.log'
 DEFAULT_LOG_LEVEL = 'INFO'
 DEFAULT_GREP_PATH = 'grep'
 DEFAULT_FIND_PATH = 'find'
-DEFAULT_FRONTEND_CONFIG = {}
+DEFAULT_FRONTEND_CONFIG = {
+    'view_history_limit': 100,
+    'map_tileserver_url': 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+}
 
 log = logging.getLogger(__name__)
 
@@ -81,8 +84,8 @@ def clean_and_validate_config(config):
 
     log_level = config.get('log_level')
     if log_level:
-        if log_level.upper() not in ['NOTSET', 'DEBUG', 'INFO',
-                                     'WARNING', 'ERROR', 'CRITICAL']:
+        if log_level.upper() not in ['DEBUG', 'INFO', 'WARNING',
+                                     'ERROR', 'CRITICAL']:
             raise ValueError(f'Invalid log level "{log_level}" specified')
         config['log_level'] = log_level.upper()
     else:
@@ -162,10 +165,49 @@ def clean_and_validate_config(config):
 
     # TODO - Validate frontend config
     frontend_config = config.get('frontend')
-    if not frontend_config:
+    if 'frontend' not in config.keys():
+        # Frontend config is missing completely
         config['frontend'] = DEFAULT_FRONTEND_CONFIG
+
+    elif not isinstance(frontend_config, dict):
+        raise ValueError('Frontend config must be specified as a dict')
+
     else:
-        if not isinstance(frontend_config, dict):
-            raise ValueError('Frontend config must be specified as a dict')
+        # Check that there are no extra / unexpected fields
+        # in the frontend config
+        for field in frontend_config:
+            if field not in DEFAULT_FRONTEND_CONFIG.keys():
+                raise ValueError(f'Unknown field "{field}" in frontend config')
+
+        # Validate the view history limit
+        view_history_limit = frontend_config.get('view_history_limit')
+        if 'view_history_limit' not in frontend_config.keys():
+            config['frontend']['view_history_limit'] = \
+                DEFAULT_FRONTEND_CONFIG['view_history_limit']
+        else:
+            if isinstance(view_history_limit, int):
+                if view_history_limit < 0:
+                    raise ValueError('View History Limit must be '
+                                     'at least zero')
+            else:
+                try:
+                    config['frontend']['view_history_limit'] = \
+                        int(view_history_limit)
+                except ValueError:
+                    raise ValueError(f"Can't convert view history limit "
+                                     f'value of "{view_history_limit}" to an '
+                                     f'integer')
+
+        # Validate the map tileserver URL
+        map_tileserver_url = frontend_config.get('map_tileserver_url')
+        if 'map_tileserver_url' not in frontend_config.keys():
+            config['frontend']['map_tileserver_url'] = \
+                DEFAULT_FRONTEND_CONFIG['map_tileserver_url']
+        else:
+            if not isinstance(map_tileserver_url, str):
+                raise ValueError('Map Tileserver URL must be a string')
+            if map_tileserver_url[:7] != 'http://' and \
+                    map_tileserver_url[:8] != 'https://':
+                raise ValueError('Map Tileserver URL must be a valid URL')
 
     return config
