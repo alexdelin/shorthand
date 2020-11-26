@@ -5,9 +5,9 @@ import unittest
 
 from shorthand.utils.logging import setup_logging
 from shorthand.utils.config import clean_and_validate_config, \
-    DEFAULT_CACHE_DIR, DEFAULT_LOG_FILE, DEFAULT_LOG_LEVEL, \
-    DEFAULT_GREP_PATH, DEFAULT_FIND_PATH, DEFAULT_FRONTEND_CONFIG, \
-    DEFAULT_CONFIG
+    modify_config, DEFAULT_CACHE_DIR, DEFAULT_LOG_FILE, \
+    DEFAULT_LOG_LEVEL, DEFAULT_GREP_PATH, DEFAULT_FIND_PATH, \
+    DEFAULT_FRONTEND_CONFIG, DEFAULT_CONFIG
 
 from utils import setup_environment
 
@@ -225,3 +225,37 @@ class TestConfig(unittest.TestCase):
                 }
             })
         assert 'Map Tileserver URL must be a valid URL' == str(e.value)
+
+    def test_valid_config_updates(self):
+
+        config = clean_and_validate_config(ORIGINAL_CONFIG)
+        updates = {
+            'log_level': 'WARNING',
+            'frontend': {
+                'view_history_limit': 500,
+                'map_tileserver_url': 'https://{s}.site.com/{z}/{x}/{y}.png'
+            }
+        }
+        config = modify_config(config, updates)
+        assert config['log_level'] == updates['log_level']
+        assert config['frontend'] == updates['frontend']
+
+    def test_invalid_config_updates(self):
+
+        config = clean_and_validate_config(ORIGINAL_CONFIG)
+
+        updates = {
+            'log_level': 'INVALID'
+        }
+        with pytest.raises(ValueError) as e:
+            _ = modify_config(config, updates)
+        assert str(e.value)
+
+        updates = {
+            'frontend': {
+                'view_history_limit': 'foo'
+            }
+        }
+        with pytest.raises(ValueError) as e:
+            _ = modify_config(config, updates)
+        assert str(e.value)

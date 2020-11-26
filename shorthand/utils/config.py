@@ -1,4 +1,5 @@
 import os
+import copy
 import json
 import logging
 
@@ -51,7 +52,59 @@ def get_notes_config(config_location=CONFIG_FILE_LOCATION):
 
 
 def write_config(config_location, config):
-    raise NotImplementedError
+    '''Write the specified config into a config file
+    '''
+
+    # Check that the config is valid
+    clean_config = clean_and_validate_config(config)
+
+    # Check that the parent directory exists
+    parent_dir = os.path.dirname(config_location)
+    if not os.path.exists(parent_dir):
+        log.warning(f'Config directory {parent_dir} '
+                    f'does not exist, creating it')
+        os.makedirs(parent_dir)
+
+    with open(config_location, 'w') as config_file_object:
+        json.dump(clean_config, config_file_object)
+
+
+def modify_config(config, updates):
+    '''Update one or more fields in the config
+       Takes an original config and a dictionary of updates to make
+       The updates have the same form as the regular config but
+       only includes a subset of the fields
+    '''
+
+    if not isinstance(updates, dict):
+        raise ValueError('Config updates must be provided as a dictionary')
+
+    new_config = copy.deepcopy(config)
+    for key, value in updates.items():
+        if key == 'frontend':
+            continue
+        elif key not in DEFAULT_CONFIG.keys():
+            raise ValueError(f'Config Update has unknown field {key}')
+        else:
+            new_config[key] = value
+
+    if updates.get('frontend'):
+        # Validate Provided frontend updates
+        if not isinstance(updates['frontend'], dict):
+            raise ValueError('Frontend config must be provided '
+                             'as a dictionary')
+        for key in updates['frontend'].keys():
+            if key not in DEFAULT_FRONTEND_CONFIG.keys():
+                raise ValueError(f'Config update has unknown frontend '
+                                 f'config key {key}')
+        if new_config.get('frontend'):
+            new_config['frontend'].update(updates['frontend'])
+        else:
+            new_config['frontend'] = updates['frontend']
+
+    new_config = clean_and_validate_config(new_config)
+
+    return new_config
 
 
 def clean_and_validate_config(config):
@@ -96,7 +149,7 @@ def clean_and_validate_config(config):
         log_file_dir = os.path.dirname(log_file_path)
         if not os.path.exists(log_file_dir):
             log.warn(f'Directory {log_file_dir} does not exist, creating it')
-            os.mkdirs(log_file_path)
+            os.makedirs(log_file_path)
     else:
         log.info(f'No log file path specified, falling back to '
                  f'default of "{DEFAULT_LOG_FILE}"')
