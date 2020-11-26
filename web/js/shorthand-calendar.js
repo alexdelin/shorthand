@@ -8,11 +8,8 @@ document.addEventListener('DOMContentLoaded', function() {
 function reloadCalendar() {
     var selectedDir = $('#directoryFilter').val()
     $.ajax({
-        url: '/api/v1/calendar',
+        url: '/api/v1/calendar?' + $.param({directory_filter: selectedDir}),
         type: 'GET',
-        data: {
-            directory_filter: selectedDir
-        },
         success: function(responseData) {
             parseCalendarResponse(responseData);
         },

@@ -1,9 +1,5 @@
-import re
-from datetime import datetime
 from subprocess import Popen, PIPE
-import shlex
 import logging
-import json
 
 from shorthand.utils.patterns import RECORD_SET_PATTERN, escape_for_cli
 from shorthand.utils.rec import load_from_string
@@ -83,8 +79,8 @@ def get_record_sets(notes_directory, directory_filter=None, grep_path='grep'):
             search_directory += '/'
         search_directory += directory_filter
 
-    grep_command = '{grep_path} -Prn "{pattern}" {dir}' \
-                   ' | {grep_path} -v "\\.git"'.format(
+    grep_command = '{grep_path} -Prn "{pattern}" '\
+                   '--include="*.note" {dir}'.format(
                         grep_path=grep_path,
                         pattern=escape_for_cli(RECORD_SET_PATTERN),
                         dir=search_directory)

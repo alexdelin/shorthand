@@ -13,7 +13,7 @@ setup_logging(CONFIG)
 log = logging.getLogger(__name__)
 
 
-class TestTags(object):
+class TestTags(unittest.TestCase):
     """Test basic search functionality of the library"""
 
     def test_setup(self):
@@ -24,7 +24,9 @@ class TestTags(object):
     def test_get_tags(self):
         all_tags = ['baking', 'bar', 'baz', 'foo', 'food', 'future', 'nested',
                     'philosophy', 'pointless', 'software', 'topic']
-        assert set(get_tags(CONFIG['notes_directory'], grep_path=CONFIG['grep_path'])) == set(all_tags)
+        tags_found = set(get_tags(CONFIG['notes_directory'],
+                                  grep_path=CONFIG['grep_path']))
+        assert tags_found == set(all_tags)
 
     def test_extract_tags(self):
         input_text = 'This is some text with tags :first: :second: :third:'

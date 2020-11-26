@@ -5,28 +5,27 @@ Shorthand Web API
 '''
 
 import os
-import time
 import json
 import logging
-from datetime import datetime
 
 from werkzeug.exceptions import HTTPException
-from flask import Flask, request, render_template, send_from_directory, abort
+from flask import Flask, request, render_template, send_from_directory
 
 from shorthand.todo_tools import get_todos, mark_todo, analyze_todos
 from shorthand.stamping import stamp_notes
-from shorthand.search_tools import search_notes, get_note
+from shorthand.search_tools import search_notes, get_note, filename_search, \
+                                   record_file_view
 from shorthand.question_tools import get_questions
 from shorthand.definition_tools import get_definitions
 from shorthand.tag_tools import get_tags
 from shorthand.calendar_tools import get_calendar
 from shorthand.toc_tools import get_toc
 from shorthand.rec_tools import get_record_sets, get_record_set
+from shorthand.gps_tools import get_locations
 from shorthand.utils.config import get_notes_config
 from shorthand.utils.logging import setup_logging
 from shorthand.utils.render import get_file_content, get_rendered_markdown
 from shorthand.utils.typeahead import get_typeahead_suggestions
-from shorthand.utils.paths import get_relative_path, get_display_path
 from shorthand.utils.git import pull_repo
 from shorthand.utils.api import wrap_response_data
 from shorthand.utils.edit import update_note
@@ -41,16 +40,16 @@ setup_logging(SHORTHAND_CONFIG)
 log = logging.getLogger(__name__)
 
 
-# @app.errorhandler(Exception)
-# def handle_exception(e):
-#     '''This method is a catch-all for all errors thrown by the server
-#     '''
+@app.errorhandler(Exception)
+def handle_exception(e):
+    '''This method is a catch-all for all errors thrown by the server
+    '''
 
-#     # pass through HTTP errors
-#     if isinstance(e, HTTPException):
-#         return e
+    # pass through HTTP errors
+    if isinstance(e, HTTPException):
+        return e
 
-#     return json.dumps({'error': str(e)}), 500
+    return json.dumps({'error': str(e)}), 500
 
 
 @app.route('/js/<path:path>', methods=['GET', 'POST'])
@@ -66,6 +65,11 @@ def send_css(path):
 @app.route('/img/<path:path>', methods=['GET', 'POST'])
 def send_img(path):
     return send_from_directory('img', path)
+
+
+@app.route('/api/v1/config', methods=['GET'])
+def get_server_config():
+    return json.dumps(SHORTHAND_CONFIG)
 
 
 @app.route('/api/v1/pull', methods=['GET', 'POST'])
@@ -95,7 +99,8 @@ def show_home_page():
                     formatted_event = {
                         'title': event['event'],
                         'start': f'{year}-{month}-{day}',
-                        'url': f'/render?path={event["file_path"]}#line-number-{event["line_number"]}',
+                        'url': f'/render?path={event["file_path"]}'
+                               f'#line-number-{event["line_number"]}',
                         'type': event['type']
                     }
                     if formatted_event['type'] == 'section':
@@ -169,6 +174,69 @@ def show_databases():
                     grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
     return render_template('record_sets.j2', record_sets=record_sets,
                            static_content=static_content)
+
+
+@app.route('/locations', methods=['GET'])
+def show_locations():
+    return render_template('locations.j2', static_content=static_content)
+
+
+@app.route('/api/v1/locations', methods=['GET'])
+def get_gps_locations():
+
+    directory_filter = request.args.get('directory_filter')
+
+    locations = get_locations(
+        notes_directory=SHORTHAND_CONFIG['notes_directory'],
+        directory_filter=directory_filter,
+        grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
+
+    wrapped_response = wrap_response_data(locations)
+    return json.dumps(wrapped_response)
+
+
+@app.route('/api/v1/files', methods=['GET'])
+def get_files():
+
+    query_string = request.args.get('query_string', None)
+    prefer_recent = request.args.get('prefer_recent', 'True')
+    if prefer_recent.lower() == 'false':
+        prefer_recent = False
+    elif prefer_recent.lower() == 'true':
+        prefer_recent = True
+    else:
+        raise ValueError(f'Invalid value {prefer_recent} for `prefer_recent`')
+    case_sensitive = request.args.get('case_sensitive', 'False')
+    if case_sensitive.lower() == 'false':
+        case_sensitive = False
+    elif case_sensitive.lower() == 'true':
+        case_sensitive = True
+    else:
+        raise ValueError(f'Invalid value {case_sensitive} '
+                         f'for `case_sensitive`')
+
+    files = filename_search(
+                notes_directory=SHORTHAND_CONFIG['notes_directory'],
+                prefer_recent_files=prefer_recent,
+                cache_directory=SHORTHAND_CONFIG['cache_directory'],
+                query_string=query_string, case_sensitive=case_sensitive,
+                grep_path=SHORTHAND_CONFIG['grep_path'],
+                find_path=SHORTHAND_CONFIG.get('find_path', 'find'))
+
+    return json.dumps(files)
+
+
+@app.route('/api/v1/record_view', methods=['POST'])
+def record_file_view_api():
+
+    relative_path = request.args.get('relative_path')
+    if not relative_path:
+        raise ValueError('No Relative Path Provided')
+    record_file_view(cache_directory=SHORTHAND_CONFIG['cache_directory'],
+                     relative_path=relative_path,
+                     history_limit=SHORTHAND_CONFIG.get('view_history_limit',
+                                                        100))
+    return 'ack'
 
 
 @app.route('/api/v1/todos', methods=['GET'])
@@ -317,14 +385,16 @@ def fetch_record_set():
     elif parse.lower() == 'false':
         parse = False
     else:
-        raise ValueError(f'Argument parse must be either "true" or "false", found "{parse}"')
+        raise ValueError(f'Argument parse must be either "true" or "false", '
+                         f'found "{parse}"')
     include_config = request.args.get('include_config', 'false')
     if include_config.lower() == 'true':
         include_config = True
     elif include_config.lower() == 'false':
         include_config = False
     else:
-        raise ValueError(f'Argument include_config must be either "true" or "false", found "{include_config}"')
+        raise ValueError(f'Argument include_config must be either "true" or '
+                         f'"false", found "{include_config}"')
     parse_format = request.args.get('parse_format', 'json')
 
     return get_record_set(

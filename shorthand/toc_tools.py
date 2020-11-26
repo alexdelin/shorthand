@@ -1,5 +1,4 @@
 import os
-import json
 import logging
 
 
@@ -19,7 +18,9 @@ def get_toc(notes_directory, directory_filter=None):
         if notes_directory in dir_path:
             dir_path = dir_path[len(notes_directory):]
 
-        notes_filenames = [filename for filename in filenames if filename[-5:] == '.note']
+        notes_filenames = [filename
+                           for filename in filenames
+                           if filename[-5:] == '.note']
 
         fs_lookup[dir_path] = {
             'files': notes_filenames,
@@ -43,10 +44,7 @@ def get_toc(notes_directory, directory_filter=None):
 
         fs_lookup[dir_path]['dirs'] = populated_subdirs
 
-        # Modify format to test a frontend library
-        # fs_lookup[dir_path]['files'] = [{'text': file, 'icon': 'jstree-file', 'a_attr': {'href': '/render?path=' + dir_path + '/' + file}} for file in fs_lookup[dir_path]['files']]
-        # fs_lookup[dir_path]['children'] = fs_lookup[dir_path]['dirs'] + fs_lookup[dir_path]['files']
-        # del fs_lookup[dir_path]['dirs']
-        # del fs_lookup[dir_path]['files']
+    # Everything ends up nested under an empty key
+    toc = fs_lookup['']
 
-    return fs_lookup['']
+    return toc

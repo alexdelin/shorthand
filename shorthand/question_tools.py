@@ -60,7 +60,7 @@ def get_questions(notes_directory, question_status='all',
         search_directory += directory_filter
 
     proc = Popen(
-        '{grep_path} -Prn -A 1 "{pattern}" {dir}'.format(
+        '{grep_path} -Prn -A 1 "{pattern}" --include="*.note" {dir}'.format(
             grep_path=grep_path,
             pattern=ALL_QUESTIONS,
             dir=search_directory),
@@ -114,7 +114,7 @@ def get_questions(notes_directory, question_status='all',
             # If the next line is an answer line, add the answer
             # text as metadata to the question
             if idx < len(output_lines) - 1:
-                is_answer, answer_content = is_answer_line(output_lines[idx + 1])
+                is_answer, answer_content = is_answer_line(output_lines[idx+1])
                 if is_answer:
 
                     # Extract the date stamp from the answer if present

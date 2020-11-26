@@ -28,4 +28,5 @@ def wrap_response_data(response_data):
             "items": response_data
         }
     else:
-        raise ValueError(f'Invalid Response data of type {type(response_data)} received')
+        raise ValueError(f'Invalid Response data of type '
+                         f'{type(response_data)} received')

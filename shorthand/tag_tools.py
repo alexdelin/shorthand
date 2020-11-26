@@ -1,7 +1,5 @@
 import re
-from datetime import datetime
 from subprocess import Popen, PIPE
-import shlex
 import logging
 
 from shorthand.utils.patterns import TAG_PATTERN, TAG_FILTER
@@ -23,10 +21,11 @@ def get_tags(notes_directory, directory_filter=None, grep_path='grep'):
             search_directory += '/'
         search_directory += directory_filter
 
-    grep_command = '{grep_path} -Pr "{pattern}" {dir} | {grep_path} -v "\\.git"'.format(
-            grep_path=grep_path,
-            pattern=TAG_FILTER,
-            dir=search_directory)
+    grep_command = '{grep_path} -Pr "{pattern}" '\
+                   '--include="*.note" {dir}'.format(
+                        grep_path=grep_path,
+                        pattern=TAG_FILTER,
+                        dir=search_directory)
     log.debug(f'Running grep command {grep_command} to get tags')
 
     proc = Popen(
@@ -51,7 +50,9 @@ def get_tags(notes_directory, directory_filter=None, grep_path='grep'):
     log.debug(tag_items)
     tag_items = [item.strip().strip(':') for item in list(set(tag_items))]
     # Only keep tags with at least one letter
-    tag_items = [item for item in tag_items if any(char.isalpha() for char in item)]
+    tag_items = [item
+                 for item in tag_items
+                 if any(char.isalpha() for char in item)]
     tag_items.sort()
     return tag_items
 

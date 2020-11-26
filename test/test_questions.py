@@ -48,30 +48,33 @@ class TestQuestions(unittest.TestCase):
             'question_status': 'unanswered',
             'directory_filter': 'section'
         }
-        self.assertCountEqual(get_question_results(**args), MODEL.search_questions(**args))
+        self.assertCountEqual(get_question_results(**args),
+                              MODEL.search_questions(**args))
 
     def test_get_answered_questions(self):
         args = {
             'question_status': 'answered'
         }
-        self.assertCountEqual(get_question_results(**args), MODEL.search_questions(**args))
+        self.assertCountEqual(get_question_results(**args),
+                              MODEL.search_questions(**args))
 
         args = {
             'question_status': 'answered',
             'directory_filter': 'section'
         }
-        self.assertCountEqual(get_question_results(**args), MODEL.search_questions(**args))
+        self.assertCountEqual(get_question_results(**args),
+                              MODEL.search_questions(**args))
 
     def test_get_all_questions(self):
         args = {
             'question_status': 'all'
         }
-        self.assertCountEqual(get_question_results(**args), MODEL.search_questions(**args))
+        self.assertCountEqual(get_question_results(**args),
+                              MODEL.search_questions(**args))
 
         args = {
             'question_status': 'all',
             'directory_filter': 'section'
         }
-        self.assertCountEqual(get_question_results(**args), MODEL.search_questions(**args))
-
-
+        self.assertCountEqual(get_question_results(**args),
+                              MODEL.search_questions(**args))

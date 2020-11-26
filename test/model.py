@@ -2,7 +2,8 @@
 A model to use for testing shorthand functionality
 This model works by computing _expected_ results for test runs
     which can then be compared to the results returned by the system
-This model relies on the raw structured elements in the file `results_unstamped.py`
+This model relies on the raw structured elements in the file
+`results_unstamped.py`
 '''
 
 import shlex
@@ -46,13 +47,16 @@ class ShorthandModel(object):
             components = shlex.split(query_string)
             filtered_todos = []
             for todo in todos:
-                if all([component in todo['todo_text'] for component in components]):
+                if all([component in todo['todo_text']
+                        for component in components]):
                     filtered_todos.append(todo)
             todos = filtered_todos
 
         # Apply sort
         if sort_by:
-            todos = sorted(todos, key=lambda k: k[sort_by] if k[sort_by] else '', reverse=True)
+            todos = sorted(todos,
+                           key=lambda k: k[sort_by] if k[sort_by] else '',
+                           reverse=True)
 
         # Apply suppress future
         if suppress_future:
@@ -76,7 +80,8 @@ class ShorthandModel(object):
 
         # Add display path
         for todo in todos:
-            todo['display_path'] = get_display_path(todo['file_path'], directory_filter)
+            todo['display_path'] = get_display_path(todo['file_path'],
+                                                    directory_filter)
 
         # Sort tags
         for todo in todos:
@@ -115,6 +120,7 @@ class ShorthandModel(object):
 
         # Add display path
         for question in questions:
-            question['display_path'] = get_display_path(question['file_path'], directory_filter)
+            question['display_path'] = get_display_path(question['file_path'],
+                                                        directory_filter)
 
         return questions

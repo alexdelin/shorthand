@@ -61,7 +61,7 @@ def get_display_path(path, directory_filter=None):
 
     if isinstance(directory_filter, str):
         if not directory_filter.strip('/'):
-            raise ValueError(f'Invalid directory filter '\
+            raise ValueError(f'Invalid directory filter '
                              f'{directory_filter} specified')
 
     # Always work with paths that start with slashes, and

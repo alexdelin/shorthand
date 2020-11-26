@@ -1,7 +1,5 @@
 import re
-from datetime import datetime
 from subprocess import Popen, PIPE
-import shlex
 import logging
 
 from shorthand.utils.paths import get_relative_path, get_display_path
@@ -24,10 +22,11 @@ def get_locations(notes_directory, directory_filter=None, grep_path='grep'):
             search_directory += '/'
         search_directory += directory_filter
 
-    grep_command = '{grep_path} -Prn "{pattern}" {dir} | {grep_path} -v "\\.git"'.format(
-            grep_path=grep_path,
-            pattern=GPS_PATTERN,
-            dir=search_directory)
+    grep_command = '{grep_path} -Prn "{pattern}" '\
+                   '--include="*.note" {dir}'.format(
+                        grep_path=grep_path,
+                        pattern=GPS_PATTERN,
+                        dir=search_directory)
     log.debug(f'Running grep command {grep_command} to get locations')
 
     proc = Popen(
@@ -64,28 +63,9 @@ def get_locations(notes_directory, directory_filter=None, grep_path='grep'):
                 'display_path': display_path,
                 'line_number': line_number,
             }
-            # locations = [location[0] for location in locations]
             location_items.append(extracted_location)
 
     # Only keep a unique set of tags with no wrapping colons
     log.debug(location_items)
 
     return location_items
-
-
-def extract_tags(text):
-
-    tags = []
-
-    if ':' not in text:
-        return tags, text
-    else:
-        raw_tags = tag_regex.findall(text)
-        raw_tags = [tag[0] for tag in raw_tags]
-        # Only keep a unique set of tags with no wrapping colons
-        tags = [item.strip().strip(':') for item in list(set(raw_tags))]
-        # Only keep tags with at least one letter
-        tags = [item for item in tags if any(char.isalpha() for char in item)]
-        tags.sort()
-        clean_text = re.sub(tag_regex, '', text).strip()
-        return tags, clean_text
