@@ -7,11 +7,11 @@ SAMPLE_DATA_DIR = 'sample_data'
 TEMP_DIR = os.path.dirname(os.path.realpath(__file__)) + '/temp'
 NOTES_DIR = TEMP_DIR + '/notes'
 CACHE_DIR = TEMP_DIR + '/cache'
-LOG_PATH = os.path.dirname(os.path.realpath(__file__)) + '/test.log'
+LOG_PATH = TEMP_DIR + '/test.log'
 
 TEST_CONFIG = {
-    "notes_directory": TEMP_DIR + '/notes',
-    "cache_directory": TEMP_DIR + '/cache',
+    "notes_directory": NOTES_DIR,
+    "cache_directory": CACHE_DIR,
     "log_file_path": LOG_PATH,
     "log_level": "debug",
     "grep_path": "/usr/local/bin/ggrep"
