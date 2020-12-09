@@ -3,10 +3,10 @@
 import argparse
 import logging
 
-from shorthand.utils.config import get_notes_config
+from shorthand.utils.config import get_notes_config, CONFIG_FILE_LOCATION
 from shorthand.utils.logging import setup_logging
-from shorthand.todo_tools import get_todos
-from shorthand.stamping import stamp_notes
+from shorthand.elements.todos import _get_todos
+from shorthand.stamping import _stamp_notes
 
 
 SHORTHAND_CONFIG = get_notes_config()
@@ -27,20 +27,24 @@ def main(args):
     notes_directory = notes_config['notes_directory']
 
     if args.action == 'stamp':
-        log.info('Stamping Notes')
-        changes = stamp_notes(notes_directory,
-                              grep_path=notes_config['grep_path'])
-        for file in changes.keys():
-            print(f'\n<<--{file}-->>')
-            for change in changes[file]:
-                print('    {line_num}(old):{old}'.format(
-                    line_num=change['line_number'], old=change['before']))
-                print('    {line_num}(new):{new}'.format(
-                    line_num=change['line_number'], new=change['after']))
+        cli_stamp_notes(notes_config)
 
     elif args.action == 'list':
         log.info('Listing Todos')
-        print(get_todos(notes_directory, args.status))
+        print(_get_todos(notes_directory, args.status))
+
+
+def cli_stamp_notes(notes_config):
+    log.info('Stamping Notes')
+    changes = _stamp_notes(notes_config['notes_directory'],
+                           grep_path=notes_config['grep_path'])
+    for file in changes.keys():
+        print(f'\n<<--{file}-->>')
+        for change in changes[file]:
+            print('    {line_num}(old):{old}'.format(
+                line_num=change['line_number'], old=change['before']))
+            print('    {line_num}(new):{new}'.format(
+                line_num=change['line_number'], new=change['after']))
 
 
 def parse_args():
@@ -53,6 +57,9 @@ def parse_args():
                         choices=['completed', 'incomplete', 'skipped'],
                         default='incomplete',
                         help='To-Do Status to show')
+    parser.add_argument('--config', required=False,
+                        default=CONFIG_FILE_LOCATION,
+                        help='Config file to use')
     return parser.parse_args()
 
 
