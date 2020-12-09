@@ -18,7 +18,7 @@ FORBIDDEN_CHARS = [
 log = logging.getLogger(__name__)
 
 
-def get_typeahead_suggestions(ngram_db_dir, query_string, limit=10):
+def _get_typeahead_suggestions(ngram_db_dir, query_string, limit=10):
     '''Get typeahead suggestions for the current active query.
     This can be a large query that we only want to provide
     suggestions for extending the last word or term of

@@ -3,8 +3,8 @@ import logging
 import unittest
 
 from shorthand.utils.logging import setup_logging
-from shorthand.todo_tools import get_todos
-from shorthand.stamping import stamp_notes
+from shorthand.elements.todos import _get_todos
+from shorthand.stamping import _stamp_notes
 
 from utils import setup_environment
 from model import ShorthandModel
@@ -20,12 +20,12 @@ MODEL = ShorthandModel()
 def get_todo_results(todo_status='incomplete', directory_filter=None,
                      query_string=None, sort_by=None, suppress_future=False,
                      stamp=False):
-    return get_todos(notes_directory=CONFIG['notes_directory'],
-                     todo_status=todo_status,
-                     directory_filter=directory_filter,
-                     query_string=query_string, sort_by=sort_by,
-                     suppress_future=suppress_future,
-                     grep_path=CONFIG['grep_path'])
+    return _get_todos(notes_directory=CONFIG['notes_directory'],
+                      todo_status=todo_status,
+                      directory_filter=directory_filter,
+                      query_string=query_string, sort_by=sort_by,
+                      suppress_future=suppress_future,
+                      grep_path=CONFIG['grep_path'])
 
 
 class TestUnstampedTodos(unittest.TestCase):
@@ -101,10 +101,10 @@ class TestTodoStamping(unittest.TestCase):
     """Test stamping functionality of the library"""
 
     def test_stamp(self):
-        response = stamp_notes(CONFIG['notes_directory'],
-                               stamp_todos=True, stamp_today=True,
-                               stamp_questions=True, stamp_answers=True,
-                               grep_path=CONFIG['grep_path'])
+        response = _stamp_notes(CONFIG['notes_directory'],
+                                stamp_todos=True, stamp_today=True,
+                                stamp_questions=True, stamp_answers=True,
+                                grep_path=CONFIG['grep_path'])
         assert response.keys()
 
     def test_today_replacement(self):

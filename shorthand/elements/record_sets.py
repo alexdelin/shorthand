@@ -10,8 +10,8 @@ from shorthand.utils.paths import get_relative_path, get_display_path, \
 log = logging.getLogger(__name__)
 
 
-def get_record_set(notes_directory, file_path, line_number, parse=True,
-                   parse_format='json', include_config=False):
+def _get_record_set(notes_directory, file_path, line_number, parse=True,
+                    parse_format='json', include_config=False):
     '''Get the full contents of a record set
     If `parse` is set to False then the record set
         contents are returned as a string
@@ -67,7 +67,7 @@ def get_record_set(notes_directory, file_path, line_number, parse=True,
         return record_set_raw
 
 
-def get_record_sets(notes_directory, directory_filter=None, grep_path='grep'):
+def _get_record_sets(notes_directory, directory_filter=None, grep_path='grep'):
     '''List all record sets within a specified directory
     '''
 

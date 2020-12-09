@@ -7,7 +7,7 @@ import unittest
 import pytest
 
 from shorthand.utils.logging import setup_logging
-from shorthand.rec_tools import get_record_set, get_record_sets
+from shorthand.elements.record_sets import _get_record_set, _get_record_sets
 from shorthand.utils.rec import load_from_string
 from utils import setup_environment
 
@@ -212,9 +212,9 @@ class TestAPI(unittest.TestCase):
     def test_list_record_sets(self):
         '''Test listing all record sets within notes
         '''
-        sets_found = get_record_sets(CONFIG['notes_directory'],
-                                     directory_filter=None,
-                                     grep_path=CONFIG['grep_path'])
+        sets_found = _get_record_sets(CONFIG['notes_directory'],
+                                      directory_filter=None,
+                                      grep_path=CONFIG['grep_path'])
         all_sets = [{'display_path': 'rec.note',
                      'file_path': '/rec.note',
                      'line_number': '4'}]
@@ -224,12 +224,12 @@ class TestAPI(unittest.TestCase):
     def test_get_record_set(self):
         '''Test getting the contents of an individual record set
         '''
-        loaded_record_set = get_record_set(CONFIG['notes_directory'],
-                                           file_path='/rec.note',
-                                           line_number=4,
-                                           parse=True,
-                                           parse_format='json',
-                                           include_config=False)
+        loaded_record_set = _get_record_set(CONFIG['notes_directory'],
+                                            file_path='/rec.note',
+                                            line_number=4,
+                                            parse=True,
+                                            parse_format='json',
+                                            include_config=False)
         loaded_record_set = json.loads(loaded_record_set)
 
         assert len(loaded_record_set) == 3

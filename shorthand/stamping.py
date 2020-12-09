@@ -14,9 +14,9 @@ from shorthand.utils.patterns import CATCH_ALL_PATTERN, \
 log = logging.getLogger(__name__)
 
 
-def stamp_notes(notes_directory, stamp_todos=True, stamp_today=True,
-                stamp_questions=True, stamp_answers=True,
-                grep_path='grep'):
+def _stamp_notes(notes_directory, stamp_todos=True, stamp_today=True,
+                 stamp_questions=True, stamp_answers=True,
+                 grep_path='grep'):
     '''Stamp notes for the purpose of inserting date stamps
     as a convenience feature. This function makes the following
     replacements:

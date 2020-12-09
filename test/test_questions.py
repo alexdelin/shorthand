@@ -3,7 +3,7 @@ import logging
 import unittest
 
 from shorthand.utils.logging import setup_logging
-from shorthand.question_tools import get_questions
+from shorthand.elements.questions import _get_questions
 
 from utils import setup_environment
 from model import ShorthandModel
@@ -17,10 +17,10 @@ MODEL = ShorthandModel()
 
 # Helper function to simplify tests
 def get_question_results(question_status='all', directory_filter=None):
-    return get_questions(notes_directory=CONFIG['notes_directory'],
-                         question_status=question_status,
-                         directory_filter=directory_filter,
-                         grep_path=CONFIG['grep_path'])
+    return _get_questions(notes_directory=CONFIG['notes_directory'],
+                          question_status=question_status,
+                          directory_filter=directory_filter,
+                          grep_path=CONFIG['grep_path'])
 
 
 class TestQuestions(unittest.TestCase):

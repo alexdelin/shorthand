@@ -1,10 +1,9 @@
 import re
 import json
 import logging
-import codecs
 
-from shorthand.todo_tools import parse_todo
-from shorthand.tag_tools import extract_tags
+from shorthand.elements.todos import parse_todo
+from shorthand.tags import extract_tags
 from shorthand.utils.rec import load_from_string
 from shorthand.utils.patterns import DEFINITION_PATTERN, \
                                      INTERNAL_LINK_PATTERN, GPS_PATTERN
@@ -259,14 +258,3 @@ def get_definition_element(definition_match, markdown_line):
 
     element = (' ' * leading_spaces) + element
     return element
-
-
-def get_file_content(file_path):
-    '''Get the raw unmodified contents of a
-    note file
-    '''
-
-    with codecs.open(file_path, mode='r', encoding="utf-8") as file_object:
-        file_content = file_object.read()
-
-    return file_content

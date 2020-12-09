@@ -5,7 +5,7 @@ import logging
 log = logging.getLogger(__name__)
 
 
-def get_toc(notes_directory, directory_filter=None):
+def _get_toc(notes_directory, directory_filter=None):
 
     fs_lookup = {}
     ordered_dirs = []

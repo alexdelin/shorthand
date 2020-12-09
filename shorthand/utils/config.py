@@ -51,6 +51,8 @@ def get_notes_config(config_location=CONFIG_FILE_LOCATION):
     return notes_config
 
 
+#TODO - make these method names match the server class,
+# and add underscores here
 def write_config(config_location, config):
     '''Write the specified config into a config file
     '''

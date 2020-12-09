@@ -2,7 +2,7 @@ import os
 import logging
 import unittest
 
-from shorthand.tag_tools import get_tags, extract_tags
+from shorthand.tags import _get_tags, extract_tags
 from shorthand.utils.logging import setup_logging
 
 from utils import setup_environment
@@ -24,8 +24,8 @@ class TestTags(unittest.TestCase):
     def test_get_tags(self):
         all_tags = ['baking', 'bar', 'baz', 'foo', 'food', 'future', 'nested',
                     'philosophy', 'pointless', 'software', 'topic']
-        tags_found = set(get_tags(CONFIG['notes_directory'],
-                                  grep_path=CONFIG['grep_path']))
+        tags_found = set(_get_tags(CONFIG['notes_directory'],
+                                   grep_path=CONFIG['grep_path']))
         assert tags_found == set(all_tags)
 
     def test_extract_tags(self):

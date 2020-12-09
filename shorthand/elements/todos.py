@@ -4,7 +4,7 @@ from datetime import datetime
 from subprocess import Popen, PIPE
 import shlex
 
-from shorthand.tag_tools import extract_tags
+from shorthand.tags import extract_tags
 from shorthand.utils.paths import get_relative_path, get_display_path
 from shorthand.utils.patterns import INCOMPLETE_PREFIX_GREP, \
     COMPLETE_PREFIX_GREP, SKIPPED_PREFIX_GREP, \
@@ -71,9 +71,10 @@ def parse_todo(todo_line):
     return processed_todo
 
 
-def get_todos(notes_directory, todo_status='incomplete', directory_filter=None,
-              query_string=None, case_sensitive=False, sort_by=None,
-              suppress_future=True, tag=None, grep_path='grep'):
+def _get_todos(notes_directory, todo_status='incomplete',
+               directory_filter=None, query_string=None, case_sensitive=False,
+               sort_by=None, suppress_future=True, tag=None,
+               grep_path='grep'):
     '''Get a specified set of todos using grep on the filesystem
     '''
 
@@ -254,7 +255,9 @@ def analyze_todos(todos):
     }
 
 
-def mark_todo(filename, line_number, status):
+def _mark_todo(filename, line_number, status):
+    # TODO - This should take in the notes direstory
+    # and a relative path as args
 
     with open(filename, 'r') as file_object:
         file_content = file_object.read()

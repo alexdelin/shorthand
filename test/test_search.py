@@ -3,8 +3,8 @@ import logging
 import unittest
 
 from shorthand.utils.logging import setup_logging
-from shorthand.search_tools import search_notes, filename_search, \
-                                   record_file_view
+from shorthand.search import _search_notes, _filename_search, \
+                                   _record_file_view
 
 from utils import setup_environment
 from results_unstamped import EMPTY_RESULTS, SEARCH_RESULTS_FOOD, \
@@ -19,7 +19,7 @@ log = logging.getLogger(__name__)
 
 # Define helpers to make the rest of the code cleaner
 def get_search_results(query_string, case_sensitive):
-    return search_notes(
+    return _search_notes(
                 notes_directory=CONFIG['notes_directory'],
                 query_string=query_string,
                 case_sensitive=case_sensitive,
@@ -27,7 +27,7 @@ def get_search_results(query_string, case_sensitive):
 
 
 def get_file_search_results(prefer_recent, query_string, case_sensitive):
-    return filename_search(
+    return _filename_search(
                 notes_directory=CONFIG['notes_directory'],
                 prefer_recent_files=prefer_recent,
                 cache_directory=CONFIG['cache_directory'],
@@ -191,8 +191,8 @@ class TestFileFinder(unittest.TestCase):
                                                       query_string=None,
                                                       case_sensitive=False)
             last_file = all_files_found[-1]
-            record_file_view(CONFIG['cache_directory'],
-                             last_file, history_limit=100)
+            _record_file_view(CONFIG['cache_directory'],
+                              last_file, history_limit=100)
 
             # Verify that the view was recorded in the history file
             with open(history_file, 'r') as history_file_object:

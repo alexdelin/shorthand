@@ -12,7 +12,7 @@ definition_regex = re.compile(DEFINITION_PATTERN)
 log = logging.getLogger(__name__)
 
 
-def get_definitions(notes_directory, directory_filter=None, grep_path='grep'):
+def _get_definitions(notes_directory, directory_filter=None, grep_path='grep'):
 
     definitions = []
 

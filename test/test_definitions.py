@@ -2,7 +2,7 @@ import os
 import logging
 import unittest
 
-from shorthand.definition_tools import get_definitions
+from shorthand.elements.definitions import _get_definitions
 from shorthand.utils.logging import setup_logging
 
 from utils import setup_environment
@@ -24,7 +24,7 @@ class TestDefinitions(unittest.TestCase):
 
     def test_get_definitions(self):
 
-        definitions = get_definitions(
+        definitions = _get_definitions(
                         CONFIG['notes_directory'],
                         directory_filter=None,
                         grep_path=CONFIG['grep_path'])

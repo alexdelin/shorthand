@@ -11,7 +11,7 @@ tag_regex = re.compile(TAG_PATTERN)
 log = logging.getLogger(__name__)
 
 
-def get_tags(notes_directory, directory_filter=None, grep_path='grep'):
+def _get_tags(notes_directory, directory_filter=None, grep_path='grep'):
 
     tag_items = []
 

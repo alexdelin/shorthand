@@ -12,7 +12,7 @@ gps_regex = re.compile(GPS_PATTERN)
 log = logging.getLogger(__name__)
 
 
-def get_locations(notes_directory, directory_filter=None, grep_path='grep'):
+def _get_locations(notes_directory, directory_filter=None, grep_path='grep'):
 
     location_items = []
 

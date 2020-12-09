@@ -8,7 +8,8 @@ from shorthand.utils.paths import get_full_path, get_relative_path
 log = logging.getLogger(__name__)
 
 
-def record_file_view(cache_directory, relative_path, history_limit=100):
+#TODO - rename all these
+def _record_file_view(cache_directory, relative_path, history_limit=100):
     '''Record a note being viewed, so that it can be preferred in
     future search results.
 
@@ -49,10 +50,10 @@ def record_file_view(cache_directory, relative_path, history_limit=100):
         history_file_object.write(history_string)
 
 
-def filename_search(notes_directory, prefer_recent_files=True,
-                    cache_directory=None, query_string=None,
-                    case_sensitive=False, grep_path='grep',
-                    find_path='find'):
+def _filename_search(notes_directory, prefer_recent_files=True,
+                     cache_directory=None, query_string=None,
+                     case_sensitive=False, grep_path='grep',
+                     find_path='find'):
     '''Search for a note file in the notes directory
 
     "prefer_recent_files" if true, will bump the most rectly
@@ -124,8 +125,8 @@ def filename_search(notes_directory, prefer_recent_files=True,
     return search_results
 
 
-def search_notes(notes_directory, query_string, type=None,
-                 case_sensitive=False, grep_path='grep'):
+def _search_notes(notes_directory, query_string, type=None,
+                  case_sensitive=False, grep_path='grep'):
     '''Perform a full-text search through all notes and return
     matching lines with metadata
 
@@ -210,11 +211,12 @@ def search_notes(notes_directory, query_string, type=None,
     }
 
 
-def get_note(notes_directory, path):
+def _get_note(notes_directory, path):
     '''Get the full raw content of a note as a string
     given its path, which can be either a relative path
     within the notes directory or a full path on the
     filesystem
+    #TODO - consolidate this with shorthand.notes.get_file_content
     '''
 
     full_path = get_full_path(notes_directory, path)

@@ -2,7 +2,7 @@ import re
 import logging
 from subprocess import Popen, PIPE
 
-from shorthand.tag_tools import extract_tags
+from shorthand.tags import extract_tags
 from shorthand.utils.patterns import ALL_QUESTIONS, ANSWER_PATTERN, \
                                      START_STAMP_ONLY_PATTERN
 from shorthand.utils.paths import get_relative_path, get_display_path
@@ -43,8 +43,8 @@ def is_answer_line(line_content):
     return False, None
 
 
-def get_questions(notes_directory, question_status='all',
-                  directory_filter=None, grep_path='grep'):
+def _get_questions(notes_directory, question_status='all',
+                   directory_filter=None, grep_path='grep'):
 
     question_status = question_status.lower()
 
