@@ -1,6 +1,6 @@
 import os
 import shutil
-from pathlib import Path
+# from pathlib import Path
 
 
 SAMPLE_DATA_DIR = 'sample_data'
@@ -22,6 +22,6 @@ def setup_environment():
     if os.path.exists(TEMP_DIR):
         shutil.rmtree(TEMP_DIR)
         os.makedirs(CACHE_DIR)
-        Path(CACHE_DIR + '/recent_files.txt').touch()
+        # Path(CACHE_DIR + '/recent_files.txt').touch()
         shutil.copytree(SAMPLE_DATA_DIR, NOTES_DIR)
     return TEST_CONFIG

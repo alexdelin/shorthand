@@ -178,11 +178,9 @@ class TestFileFinder(unittest.TestCase):
         '''Test that the implementation prefers recently accessed files
         '''
 
-        # Test that the history file starts off empty
+        # Test that the history file starts off not existing
         history_file = CONFIG['cache_directory'] + '/recent_files.txt'
-        with open(history_file, 'r') as history_file_object:
-            history_data = history_file_object.read()
-        assert len(history_data) == 0
+        assert not os.path.exists(history_file)
 
         # Verify that most recent views get bumped to the top
         for _ in range(5):
@@ -195,6 +193,7 @@ class TestFileFinder(unittest.TestCase):
                               last_file, history_limit=100)
 
             # Verify that the view was recorded in the history file
+            assert os.path.exists(history_file)
             with open(history_file, 'r') as history_file_object:
                 history_data = history_file_object.read()
             assert len(history_data) > 0

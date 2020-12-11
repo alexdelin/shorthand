@@ -1,3 +1,4 @@
+import os
 import shlex
 import logging
 from subprocess import Popen, PIPE
@@ -19,9 +20,13 @@ def _record_file_view(cache_directory, relative_path, history_limit=100):
 
     # TODO - validate that the relative path provided is
     # A valid path to a note file
+
     history_file = cache_directory + '/recent_files.txt'
-    with open(history_file, 'r') as history_file_object:
-        history_data = history_file_object.read()
+    if os.path.exists(history_file):
+        with open(history_file, 'r') as history_file_object:
+            history_data = history_file_object.read()
+    else:
+        history_data = ''
 
     history_data = [line.strip()
                     for line in history_data.split('\n')
@@ -84,8 +89,11 @@ def _filename_search(notes_directory, prefer_recent_files=True,
         # Re-order the list of all notes based on which
         # were accessed most recently
         recent_files_path = cache_directory + '/recent_files.txt'
-        with open(recent_files_path, 'r') as recent_files_object:
-            recent_files_data = recent_files_object.read()
+        if os.path.exists(recent_files_path):
+            with open(recent_files_path, 'r') as recent_files_object:
+                recent_files_data = recent_files_object.read()
+        else:
+            recent_files_data = ''
         recent_files = [file.strip()
                         for file in recent_files_data.split('\n')
                         if file.strip()]
