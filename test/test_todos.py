@@ -33,6 +33,7 @@ class TestUnstampedTodos(unittest.TestCase):
 
     def test_setup(self):
 
+        CONFIG = setup_environment()
         test_dir = CONFIG['notes_directory']
         assert os.path.exists(test_dir)
 

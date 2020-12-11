@@ -1,0 +1,5 @@
+{
+    "log_level": "info",
+    "grep_path": "grep",
+    "find_path": "find"
+}
