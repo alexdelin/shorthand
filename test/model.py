@@ -89,7 +89,8 @@ class ShorthandModel(object):
 
         return todos
 
-    def search_questions(self, question_status='all', directory_filter=None):
+    def search_questions(self, question_status='all', directory_filter=None,
+                         stamp=False):
 
         # Filter on question status
         questions = ALL_QUESTIONS['items']
@@ -122,5 +123,14 @@ class ShorthandModel(object):
         for question in questions:
             question['display_path'] = get_display_path(question['file_path'],
                                                         directory_filter)
+
+        # Emulate Stamping
+        if stamp:
+            for question in questions:
+                if not question['question_date']:
+                    question['question_date'] = datetime.now().isoformat()[:10]
+                if question['answer']:
+                    if not question['answer_date']:
+                        question['answer_date'] = datetime.now().isoformat()[:10]
 
         return questions

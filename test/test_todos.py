@@ -104,6 +104,18 @@ class TestUnstampedTodos(unittest.TestCase):
 class TestTodoStamping(unittest.TestCase):
     """Test stamping functionality of the library"""
 
+    @classmethod
+    def setup_class(cls):
+        # ensure that we have a clean environment before running any tests
+        _ = setup_environment()
+
+    @classmethod
+    def teardown_class(cls):
+        '''Ensure that we don't leave stamped
+        notes around after the tests are run
+        '''
+        teardown_environment()
+
     def test_stamp(self):
         response = _stamp_notes(CONFIG['notes_directory'],
                                 stamp_todos=True, stamp_today=True,
@@ -121,6 +133,17 @@ class TestStampedTodos(unittest.TestCase):
     """Repeat all tests for unstamped todos to ensure that
        nothing unexpected has changed.
     """
+
+    @classmethod
+    def setup_class(cls):
+        '''ensure that we have a clean environment
+        before running any tests
+        '''
+        _ = setup_environment()
+        _ = _stamp_notes(CONFIG['notes_directory'],
+                         stamp_todos=True, stamp_today=True,
+                         stamp_questions=False, stamp_answers=False,
+                         grep_path=CONFIG['grep_path'])
 
     @classmethod
     def teardown_class(cls):
