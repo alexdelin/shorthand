@@ -131,7 +131,7 @@ class TestFileFinder(unittest.TestCase):
         all_files_found = get_file_search_results(prefer_recent=True,
                                                   query_string=None,
                                                   case_sensitive=False)
-        assert all_files_found == ALL_FILES
+        assert set(all_files_found) == set(ALL_FILES)
 
     def test_file_search(self):
         '''Test searching for files via substrings (non case sensitive)
@@ -151,7 +151,7 @@ class TestFileFinder(unittest.TestCase):
             real_results = get_file_search_results(prefer_recent=False,
                                                    query_string=query_string,
                                                    case_sensitive=False)
-            assert expected_results == real_results
+            assert set(expected_results) == set(real_results)
 
     def test_file_search_case_sensitive(self):
         '''Test searching for files via substrings (case sensitive)
@@ -172,7 +172,7 @@ class TestFileFinder(unittest.TestCase):
             real_results = get_file_search_results(prefer_recent=False,
                                                    query_string=query_string,
                                                    case_sensitive=True)
-            assert expected_results == real_results
+            assert set(expected_results) == set(real_results)
 
     def test_recent_file_preference(self):
         '''Test that the implementation prefers recently accessed files
