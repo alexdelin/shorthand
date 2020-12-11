@@ -1,4 +1,5 @@
 import os
+import pathlib
 import shlex
 import logging
 from subprocess import Popen, PIPE
@@ -49,6 +50,10 @@ def _record_file_view(cache_directory, relative_path, history_limit=100):
             history_data.append(relative_path)
             if len(history_data) > history_limit:
                 history_data = history_data[-history_limit:]
+
+    # Make any needed parent dirs for the history file
+    pathlib.Path(os.path.dirname(history_file)).mkdir(
+        parents=True, exist_ok=True)
 
     history_string = '\n'.join(history_data) + '\n'
     with open(history_file, 'w') as history_file_object:
