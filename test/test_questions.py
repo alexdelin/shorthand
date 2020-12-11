@@ -28,12 +28,18 @@ class TestQuestions(unittest.TestCase):
 
     maxDiff = None
 
+    @classmethod
+    def setup_class(cls):
+        # ensure that we have a clean environment before running any tests
+        _ = setup_environment()
+
     def test_setup(self):
 
         test_dir = CONFIG['notes_directory']
         assert os.path.exists(test_dir)
 
     def test_get_unanswered_questions(self):
+
         args = {
             'question_status': 'unanswered'
         }
@@ -52,6 +58,7 @@ class TestQuestions(unittest.TestCase):
                               MODEL.search_questions(**args))
 
     def test_get_answered_questions(self):
+
         args = {
             'question_status': 'answered'
         }
@@ -66,6 +73,7 @@ class TestQuestions(unittest.TestCase):
                               MODEL.search_questions(**args))
 
     def test_get_all_questions(self):
+
         args = {
             'question_status': 'all'
         }

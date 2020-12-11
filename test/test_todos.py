@@ -31,9 +31,12 @@ def get_todo_results(todo_status='incomplete', directory_filter=None,
 class TestUnstampedTodos(unittest.TestCase):
     """Test basic search functionality of the library"""
 
-    def test_setup(self):
+    @classmethod
+    def setup_class(cls):
+        # ensure that we have a clean environment before running any tests
+        _ = setup_environment()
 
-        CONFIG = setup_environment()
+    def test_setup(self):
         test_dir = CONFIG['notes_directory']
         assert os.path.exists(test_dir)
 
@@ -104,7 +107,7 @@ class TestTodoStamping(unittest.TestCase):
     def test_stamp(self):
         response = _stamp_notes(CONFIG['notes_directory'],
                                 stamp_todos=True, stamp_today=True,
-                                stamp_questions=True, stamp_answers=True,
+                                stamp_questions=False, stamp_answers=False,
                                 grep_path=CONFIG['grep_path'])
         assert response.keys()
 
