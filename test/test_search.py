@@ -38,6 +38,11 @@ def get_file_search_results(prefer_recent, query_string, case_sensitive):
 class TestSearch(unittest.TestCase):
     """Test basic search functionality of the library"""
 
+    @classmethod
+    def setup_class(cls):
+        # ensure that we have a clean environment before running any tests
+        _ = setup_environment()
+
     def test_setup(self):
 
         test_dir = CONFIG['notes_directory']

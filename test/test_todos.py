@@ -6,7 +6,7 @@ from shorthand.utils.logging import setup_logging
 from shorthand.elements.todos import _get_todos
 from shorthand.stamping import _stamp_notes
 
-from utils import setup_environment
+from utils import setup_environment, teardown_environment
 from model import ShorthandModel
 
 
@@ -121,6 +121,13 @@ class TestStampedTodos(unittest.TestCase):
     """Repeat all tests for unstamped todos to ensure that
        nothing unexpected has changed.
     """
+
+    @classmethod
+    def teardown_class(cls):
+        '''Ensure that we don't leave stamped
+        notes around after the tests are run
+        '''
+        teardown_environment()
 
     def test_stamped_incomplete_todos_basic(self):
         # Test Getting all incomplete todos

@@ -16,6 +16,11 @@ log = logging.getLogger(__name__)
 class TestTags(unittest.TestCase):
     """Test basic search functionality of the library"""
 
+    @classmethod
+    def setup_class(cls):
+        # ensure that we have a clean environment before running any tests
+        _ = setup_environment()
+
     def test_setup(self):
 
         test_dir = CONFIG['notes_directory']

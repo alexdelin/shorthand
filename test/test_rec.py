@@ -21,10 +21,6 @@ class TestRecConfig(unittest.TestCase):
     '''Basic tests for recfile config parsing
     '''
 
-    def test_setup(self):
-        test_dir = CONFIG['notes_directory']
-        assert os.path.exists(test_dir)
-
     def test_valid_config_parsing(self):
         with open('rec_data/valid_config.rec', 'r') as f:
             valid_config_data = f.read()
@@ -208,6 +204,11 @@ class TestAPI(unittest.TestCase):
     """Test the Shorthand API for working with record sets
     embedded within notes
     """
+
+    @classmethod
+    def setup_class(cls):
+        # ensure that we have a clean environment before running any tests
+        _ = setup_environment()
 
     def test_list_record_sets(self):
         '''Test listing all record sets within notes

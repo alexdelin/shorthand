@@ -28,6 +28,11 @@ def write_config(config):
 class TestServerClass(unittest.TestCase):
     """Test the implementation of the ShorthandServer Class"""
 
+    @classmethod
+    def setup_class(cls):
+        # ensure that we have a clean environment before running any tests
+        _ = setup_environment()
+
     def test_setup(self):
 
         test_dir = ORIGINAL_CONFIG['notes_directory']

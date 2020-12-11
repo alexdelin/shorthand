@@ -5,7 +5,7 @@ import pytest
 from shorthand.utils.logging import setup_logging
 from shorthand.cli import run, cli_stamp_notes
 
-from utils import setup_environment
+from utils import setup_environment, teardown_environment
 
 
 ORIGINAL_CONFIG = setup_environment()
@@ -20,6 +20,7 @@ def test_setup():
 
 
 def test_stamp_call(capfd, caplog):
+    _ = setup_environment()
     _ = cli_stamp_notes(ORIGINAL_CONFIG)
     # Validate stdout
     captured = capfd.readouterr()
@@ -37,6 +38,8 @@ def test_stamp_call(capfd, caplog):
     # Validate that we only get DEBUG and INFO log messages
     for record in caplog.records:
         assert record.levelname in ['DEBUG', 'INFO']
+
+    teardown_environment()
 
 
 def test_cli_empty(capfd):

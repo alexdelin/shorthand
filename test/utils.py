@@ -1,7 +1,6 @@
 import os
 import json
 import shutil
-# from pathlib import Path
 
 
 SAMPLE_DATA_DIR = 'sample_data'
@@ -23,11 +22,13 @@ TEST_CONFIG = {
 
 
 def setup_environment():
+    '''A utility function to setup the test
+    environment before tests are run
+    '''
     if os.path.exists(TEMP_DIR):
         shutil.rmtree(TEMP_DIR)
-        os.makedirs(CACHE_DIR)
-        # Path(CACHE_DIR + '/recent_files.txt').touch()
-        shutil.copytree(SAMPLE_DATA_DIR, NOTES_DIR)
+    os.makedirs(CACHE_DIR)
+    shutil.copytree(SAMPLE_DATA_DIR, NOTES_DIR)
 
     # process config overrides
     if os.path.exists(CONFIG_OVERRIDE_PATH):
@@ -40,3 +41,11 @@ def setup_environment():
                 TEST_CONFIG[key] = value
 
     return TEST_CONFIG
+
+
+def teardown_environment():
+    '''A utility function to tear down the test
+    environment after tests are run
+    '''
+    if os.path.exists(NOTES_DIR):
+        shutil.rmtree(NOTES_DIR)
