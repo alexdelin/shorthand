@@ -2,6 +2,8 @@ import os
 import json
 import shutil
 
+import pytest
+
 
 SAMPLE_DATA_DIR = 'sample_data'
 TEMP_DIR = os.path.dirname(os.path.realpath(__file__)) + '/temp'
@@ -19,6 +21,17 @@ TEST_CONFIG = {
     "grep_path": "grep",
     "find_path": "find"
 }
+
+
+def validate_setup():
+    '''Validate that our test environment was set up correctly
+    '''
+    if not os.path.exists(TEMP_DIR):
+        pytest.skip(f'Temp Directory {TEMP_DIR} does not exist')
+    if not os.path.exists(NOTES_DIR):
+        pytest.skip(f'Test Notes Directory {NOTES_DIR} does not exist')
+    if not os.path.exists(CACHE_DIR):
+        pytest.skip(f'Test Cache Directory {CACHE_DIR} does not exist')
 
 
 def setup_environment():
@@ -47,5 +60,5 @@ def teardown_environment():
     '''A utility function to tear down the test
     environment after tests are run
     '''
-    if os.path.exists(NOTES_DIR):
-        shutil.rmtree(NOTES_DIR)
+    if os.path.exists(TEMP_DIR):
+        shutil.rmtree(TEMP_DIR)

@@ -1,5 +1,5 @@
 {
-    "log_level": "info",
-    "grep_path": "grep",
-    "find_path": "find"
+    "log_level": "debug",
+    "grep_path": "/usr/local/bin/ggrep",
+    "find_path": "/usr/local/bin/gfind"
 }

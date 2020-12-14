@@ -5,7 +5,7 @@ import unittest
 from shorthand.elements.locations import _get_locations
 from shorthand.utils.logging import setup_logging
 
-from utils import setup_environment
+from utils import setup_environment, validate_setup
 from results_unstamped import ALL_LOCATIONS
 
 
@@ -29,11 +29,11 @@ class TestLocations(unittest.TestCase):
         # ensure that we have a clean environment before running any tests
         _ = setup_environment()
 
-    def test_setup(self):
+    def setup_method(self, method):
+        '''Validate that the environment has been set up correctly
+        '''
+        validate_setup()
 
-        test_dir = CONFIG['notes_directory']
-        assert os.path.exists(test_dir)
-
-    def test_get_tags(self):
+    def test_get_locations(self):
         # Compare returned items ignoring the order
         self.assertCountEqual(fetch_locations(), ALL_LOCATIONS)

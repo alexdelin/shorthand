@@ -6,7 +6,7 @@ from shorthand.utils.logging import setup_logging
 from shorthand.search import _search_notes, _filename_search, \
                                    _record_file_view
 
-from utils import setup_environment
+from utils import setup_environment, validate_setup
 from results_unstamped import EMPTY_RESULTS, SEARCH_RESULTS_FOOD, \
                               SEARCH_RESULTS_FOOD_SENSITIVE, \
                               SEARCH_RESULTS_BALANCED_DIET, ALL_FILES
@@ -43,10 +43,10 @@ class TestSearch(unittest.TestCase):
         # ensure that we have a clean environment before running any tests
         _ = setup_environment()
 
-    def test_setup(self):
-
-        test_dir = CONFIG['notes_directory']
-        assert os.path.exists(test_dir)
+    def setup_method(self, method):
+        '''Validate that the environment has been set up correctly
+        '''
+        validate_setup()
 
     def test_search(self):
         '''Test full-text search
@@ -115,6 +115,11 @@ class TestSearch(unittest.TestCase):
 
 
 class TestFileFinder(unittest.TestCase):
+
+    def setup_method(self, method):
+        '''Validate that the environment has been set up correctly
+        '''
+        validate_setup()
 
     def search_helper(self, query_string, case_sensitive=False):
         '''A sort-of model to test the implementation against

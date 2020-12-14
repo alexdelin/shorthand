@@ -9,7 +9,7 @@ from shorthand import ShorthandServer
 from shorthand.utils.logging import setup_logging
 from shorthand.utils.config import clean_and_validate_config
 
-from utils import setup_environment, TEMP_DIR
+from utils import setup_environment, TEMP_DIR, validate_setup
 
 
 ORIGINAL_CONFIG = setup_environment()
@@ -33,11 +33,12 @@ class TestServerClass(unittest.TestCase):
         # ensure that we have a clean environment before running any tests
         _ = setup_environment()
 
+    def setup_method(self, method):
+        '''Validate that the environment has been set up correctly
+        '''
+        validate_setup()
+
     def test_setup(self):
-
-        test_dir = ORIGINAL_CONFIG['notes_directory']
-        assert os.path.exists(test_dir)
-
         # Write our config to a file that we will use with the server class
         write_config(ORIGINAL_CONFIG)
         assert os.path.exists(server_config_path)

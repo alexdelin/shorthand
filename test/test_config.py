@@ -9,7 +9,7 @@ from shorthand.utils.config import clean_and_validate_config, \
     DEFAULT_LOG_LEVEL, DEFAULT_GREP_PATH, DEFAULT_FIND_PATH, \
     DEFAULT_FRONTEND_CONFIG, DEFAULT_CONFIG
 
-from utils import setup_environment
+from utils import setup_environment, validate_setup
 
 
 ORIGINAL_CONFIG = setup_environment()
@@ -25,10 +25,10 @@ class TestConfig(unittest.TestCase):
         # ensure that we have a clean environment before running any tests
         _ = setup_environment()
 
-    def test_setup(self):
-
-        test_dir = ORIGINAL_CONFIG['notes_directory']
-        assert os.path.exists(test_dir)
+    def setup_method(self, method):
+        '''Validate that the environment has been set up correctly
+        '''
+        validate_setup()
 
     def test_basic_config_validation(self):
         cleaned_config = clean_and_validate_config(ORIGINAL_CONFIG)

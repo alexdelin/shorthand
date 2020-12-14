@@ -1,4 +1,3 @@
-import os
 import logging
 import unittest
 
@@ -6,7 +5,7 @@ from shorthand.utils.logging import setup_logging
 from shorthand.elements.todos import _get_todos
 from shorthand.stamping import _stamp_notes
 
-from utils import setup_environment, teardown_environment
+from utils import setup_environment, teardown_environment, validate_setup
 from model import ShorthandModel
 
 
@@ -36,9 +35,10 @@ class TestUnstampedTodos(unittest.TestCase):
         # ensure that we have a clean environment before running any tests
         _ = setup_environment()
 
-    def test_setup(self):
-        test_dir = CONFIG['notes_directory']
-        assert os.path.exists(test_dir)
+    def setup_method(self, method):
+        '''Validate that the environment has been set up correctly
+        '''
+        validate_setup()
 
     def test_unstamped_incomplete_todos_basic(self):
 
@@ -101,34 +101,6 @@ class TestUnstampedTodos(unittest.TestCase):
                               MODEL.search_todos(**args))
 
 
-class TestTodoStamping(unittest.TestCase):
-    """Test stamping functionality of the library"""
-
-    @classmethod
-    def setup_class(cls):
-        # ensure that we have a clean environment before running any tests
-        _ = setup_environment()
-
-    @classmethod
-    def teardown_class(cls):
-        '''Ensure that we don't leave stamped
-        notes around after the tests are run
-        '''
-        teardown_environment()
-
-    def test_stamp(self):
-        response = _stamp_notes(CONFIG['notes_directory'],
-                                stamp_todos=True, stamp_today=True,
-                                stamp_questions=False, stamp_answers=False,
-                                grep_path=CONFIG['grep_path'])
-        assert response.keys()
-
-    def test_today_replacement(self):
-        # Have a list of lines in specific files to check
-        # that the placeholder text has been replaced as expected
-        pass
-
-
 class TestStampedTodos(unittest.TestCase):
     """Repeat all tests for unstamped todos to ensure that
        nothing unexpected has changed.
@@ -151,6 +123,11 @@ class TestStampedTodos(unittest.TestCase):
         notes around after the tests are run
         '''
         teardown_environment()
+
+    def setup_method(self, method):
+        '''Validate that the environment has been set up correctly
+        '''
+        validate_setup()
 
     def test_stamped_incomplete_todos_basic(self):
         # Test Getting all incomplete todos

@@ -1,4 +1,3 @@
-import os
 import logging
 import unittest
 
@@ -6,7 +5,7 @@ from shorthand.utils.logging import setup_logging
 from shorthand.elements.questions import _get_questions
 from shorthand.stamping import _stamp_notes
 
-from utils import setup_environment, teardown_environment
+from utils import setup_environment, teardown_environment, validate_setup
 from model import ShorthandModel
 
 
@@ -33,10 +32,10 @@ class TestQuestions(unittest.TestCase):
         # ensure that we have a clean environment before running any tests
         _ = setup_environment()
 
-    def test_setup(self):
-
-        test_dir = CONFIG['notes_directory']
-        assert os.path.exists(test_dir)
+    def setup_method(self, method):
+        '''Validate that the environment has been set up correctly
+        '''
+        validate_setup()
 
     def test_get_unanswered_questions(self):
 
@@ -111,10 +110,10 @@ class TestStampedQuestions(unittest.TestCase):
         '''
         teardown_environment()
 
-    def test_setup(self):
-
-        test_dir = CONFIG['notes_directory']
-        assert os.path.exists(test_dir)
+    def setup_method(self, method):
+        '''Validate that the environment has been set up correctly
+        '''
+        validate_setup()
 
     def test_get_unanswered_questions(self):
 

@@ -5,7 +5,7 @@ import unittest
 from shorthand.tags import _get_tags, extract_tags
 from shorthand.utils.logging import setup_logging
 
-from utils import setup_environment
+from utils import setup_environment, validate_setup
 
 
 CONFIG = setup_environment()
@@ -21,10 +21,10 @@ class TestTags(unittest.TestCase):
         # ensure that we have a clean environment before running any tests
         _ = setup_environment()
 
-    def test_setup(self):
-
-        test_dir = CONFIG['notes_directory']
-        assert os.path.exists(test_dir)
+    def setup_method(self, method):
+        '''Validate that the environment has been set up correctly
+        '''
+        validate_setup()
 
     def test_get_tags(self):
         all_tags = ['baking', 'bar', 'baz', 'foo', 'food', 'future', 'nested',

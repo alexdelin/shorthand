@@ -1,4 +1,3 @@
-import os
 import re
 import json
 import logging
@@ -9,7 +8,7 @@ import pytest
 from shorthand.utils.logging import setup_logging
 from shorthand.elements.record_sets import _get_record_set, _get_record_sets
 from shorthand.utils.rec import load_from_string
-from utils import setup_environment
+from utils import setup_environment, validate_setup
 
 
 CONFIG = setup_environment()
@@ -209,6 +208,11 @@ class TestAPI(unittest.TestCase):
     def setup_class(cls):
         # ensure that we have a clean environment before running any tests
         _ = setup_environment()
+
+    def setup_method(self, method):
+        '''Validate that the environment has been set up correctly
+        '''
+        validate_setup()
 
     def test_list_record_sets(self):
         '''Test listing all record sets within notes
