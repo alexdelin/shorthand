@@ -311,3 +311,24 @@ ALL_FILES = [
     '/definitions.note',
     '/bugs.note'
 ]
+
+TOC = {
+    'dirs': [
+        {
+            'dirs': [],
+            'files': ['mixed.note'],
+            'path': '/section',
+            'text': 'section'
+        }
+    ],
+    'files': [
+        'bugs.note',
+        'definitions.note',
+        'todos.note',
+        'locations.note',
+        'rec.note',
+        'questions.note'
+    ],
+    'path': '',
+    'text': '',
+}
