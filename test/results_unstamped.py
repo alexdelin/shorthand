@@ -332,3 +332,42 @@ TOC = {
     'path': '',
     'text': '',
 }
+
+CALENDAR = {
+    '2019': {
+        '05': {
+            '30': [
+                {
+                    'date': '2019-05-30',
+                    'element_id': '',
+                    'event': 'A follow up item which is still open',
+                    'file_path': '/todos.note',
+                    'line_number': '12',
+                    'type': 'incomplete_todo'
+                }
+            ]
+        },
+        '06': {
+            '03': [
+                {
+                    'date': '2019-06-03',
+                    'element_id': '',
+                    'event': 'Indented',
+                    'file_path': '/todos.note',
+                    'line_number': '21',
+                    'type': 'skipped_todo'
+                }
+            ],
+            '04': [
+                {
+                    'date': '2019-06-04',
+                    'element_id': '',
+                    'event': 'Indented and with both start and end stamped',
+                    'file_path': '/todos.note',
+                    'line_number': '34',
+                    'type': 'completed_todo'
+                }
+            ]
+        }
+    }
+}
