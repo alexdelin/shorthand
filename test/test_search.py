@@ -4,7 +4,9 @@ import unittest
 
 from shorthand.utils.logging import setup_logging
 from shorthand.search import _search_notes, _filename_search, \
-                                   _record_file_view
+                             _record_file_view
+from shorthand.frontend.typeahead import update_ngram_database, \
+                                         _get_typeahead_suggestions
 
 from utils import setup_environment, validate_setup
 from results_unstamped import EMPTY_RESULTS, SEARCH_RESULTS_FOOD, \
@@ -33,6 +35,10 @@ def get_file_search_results(prefer_recent, query_string, case_sensitive):
                 cache_directory=CONFIG['cache_directory'],
                 query_string=query_string, case_sensitive=case_sensitive,
                 grep_path=CONFIG['grep_path'])
+
+
+def get_typeahead_results(string):
+    return _get_typeahead_suggestions(CONFIG['cache_directory'], string)
 
 
 class TestSearch(unittest.TestCase):
@@ -214,3 +220,44 @@ class TestFileFinder(unittest.TestCase):
                                                           query_string='note',
                                                           case_sensitive=False)
             assert file_search_results[0] == last_file
+
+
+class TestTypeahead(unittest.TestCase):
+
+    @classmethod
+    def setup_class(cls):
+        # ensure that we have a clean environment before running any tests
+        _ = setup_environment()
+        _ = update_ngram_database(CONFIG['notes_directory'],
+                                  CONFIG['cache_directory'])
+
+    def setup_method(self, method):
+        '''Validate that the environment has been set up correctly
+        '''
+        validate_setup()
+
+    def test_typeahead_unigram(self):
+
+        results = get_typeahead_results('foo')
+        assert results == ['food']
+
+        results = get_typeahead_results('inc')
+        assert results == ['includes', 'inclues', 'included', 'incomplete']
+
+    def test_typeahead_bigram(self):
+
+        results = get_typeahead_results('"apple p')
+        assert results == ['"apple pie"']
+
+        results = get_typeahead_results('"for t')
+        assert results == ['"for this"', '"for the"']
+
+    def test_typeahead_trigram(self):
+
+        results = get_typeahead_results('"what is t')
+        assert results == ['"what is the"']
+
+    def test_typeahead_invalid(self):
+
+        results = get_typeahead_results('"the best apple p')
+        assert results == []

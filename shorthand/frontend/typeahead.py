@@ -12,7 +12,8 @@ from nltk.tokenize import sent_tokenize, WhitespaceTokenizer, \
 FORBIDDEN_CHARS = [
     '[', ']', '(', ')', '\\', '/', '.', ',',
     '?', '!', '@', '#', '$', '`', "'", '"',
-    '-', '_', '=', '+', '*']
+    '-', '_', '=', '+', '*', '%', ':', '{',
+    '}']
 
 
 log = logging.getLogger(__name__)
@@ -61,14 +62,11 @@ def _get_typeahead_suggestions(ngram_db_dir, query_string, limit=10):
                                   current_term, limit)
         clean = []
         for match in matches:
-            try:
-                clean.append(unicode(previous_query + ' ' + match.decode('utf-8')))
-            except:
-                print(previous_query)
-                print(match)
-                raise
-        return [unicode(previous_query + ' ' + match.decode('utf-8'))
-                for match in matches]
+            if previous_query:
+                clean.append(previous_query + ' ' + match)
+            else:
+                clean.append(match)
+        return clean
 
 
 def search_ngram_db(database_file, search_string, limit):
@@ -83,14 +81,13 @@ def search_ngram_db(database_file, search_string, limit):
                         file=database_file,
                         limit=limit)
 
-    print(grep_command)
-
     proc = Popen(grep_command,
                  stdout=PIPE, stderr=PIPE,
                  shell=True)
 
     output, err = proc.communicate()
-    matching_terms = output.split('\n')
+    matching_terms = output.decode().split('\n')
+    matching_terms = [term for term in matching_terms if len(term)]
     return matching_terms
 
 
@@ -106,8 +103,7 @@ def update_ngram_database(notes_directory, ngram_db_dir):
         stdout=PIPE, stderr=PIPE,
         shell=True)
     output, err = proc.communicate()
-    all_notes_files = output.split('\n')
-    # print(all_notes_files)
+    all_notes_files = output.decode().split('\n')
 
     '''
     Create master list of all raw tokens. Will look like:
@@ -146,10 +142,9 @@ def update_ngram_database(notes_directory, ngram_db_dir):
                 all_words = word_tokenizer.tokenize(sentence)
                 for word in all_words:
 
-                    first_and_last = [word[0], word[-1]]
-                    for forbidden_char in FORBIDDEN_CHARS:
-                        if forbidden_char in first_and_last:
-                            word = word.replace(forbidden_char, '')
+                    # Skip any word with a forbidden character
+                    if any([char in word for char in FORBIDDEN_CHARS]):
+                        continue
 
                     has_letters = False
                     for char in word:
@@ -183,7 +178,7 @@ def update_ngram_database(notes_directory, ngram_db_dir):
         weighted_tokens = {}
 
         for single_token in all_tokens_of_type:
-            if not isinstance(single_token, basestring):
+            if not isinstance(single_token, str):
                 single_token = ' '.join(single_token)
             if not weighted_tokens.get(single_token):
                 weighted_tokens[single_token] = 1
@@ -191,7 +186,7 @@ def update_ngram_database(notes_directory, ngram_db_dir):
                 weighted_tokens[single_token] = weighted_tokens[single_token]+1
 
         tokens[token_type] = OrderedDict(sorted(
-            weighted_tokens.iteritems(),
+            weighted_tokens.items(),
             key=lambda t: t[1],
             reverse=True))
 
@@ -202,7 +197,7 @@ def update_ngram_database(notes_directory, ngram_db_dir):
         json.dump(tokens['unigrams'], unigrams_json_file_object)
     with codecs.open(unigrams_text_file_path, mode="w", encoding="utf-8") \
             as unigrams_text_file_object:
-        for unigram, frequency in tokens['unigrams'].iteritems():
+        for unigram, frequency in tokens['unigrams'].items():
             unigrams_text_file_object.write(unigram + '\n')
 
     # Write Bigrams to Disk
@@ -212,7 +207,7 @@ def update_ngram_database(notes_directory, ngram_db_dir):
         json.dump(tokens['bigrams'], bigrams_json_file_object)
     with codecs.open(bigrams_text_file_path, mode="w", encoding="utf-8") \
             as bigrams_text_file_object:
-        for bigram, frequency in tokens['bigrams'].iteritems():
+        for bigram, frequency in tokens['bigrams'].items():
             bigrams_text_file_object.write(bigram + '\n')
 
     # Write Trigrams to Disk
@@ -222,5 +217,5 @@ def update_ngram_database(notes_directory, ngram_db_dir):
         json.dump(tokens['trigrams'], trigrams_json_file_object)
     with codecs.open(trigrams_text_file_path, mode="w", encoding="utf-8") \
             as trigrams_text_file_object:
-        for trigram, frequency in tokens['trigrams'].iteritems():
+        for trigram, frequency in tokens['trigrams'].items():
             trigrams_text_file_object.write(trigram + '\n')
