@@ -91,3 +91,10 @@ class TestStamping(unittest.TestCase):
         for question in answered_qs:
             assert question.get('question_date')
             assert question.get('answer_date')
+
+    def test_restamp(self):
+        changes = _stamp_notes(CONFIG['notes_directory'],
+                               stamp_todos=True, stamp_today=True,
+                               stamp_questions=True, stamp_answers=True,
+                               grep_path=CONFIG['grep_path'])
+        assert not changes
