@@ -91,7 +91,7 @@ def search_ngram_db(database_file, search_string, limit):
     return matching_terms
 
 
-def update_ngram_database(notes_directory, ngram_db_dir):
+def _update_ngram_database(notes_directory, ngram_db_dir):
 
     line_tokenizer = LineTokenizer(blanklines='discard')
     word_tokenizer = WhitespaceTokenizer()

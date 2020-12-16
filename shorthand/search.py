@@ -222,19 +222,3 @@ def _search_notes(notes_directory, query_string, type=None,
         "items": search_results,
         "count": len(search_results)
     }
-
-
-def _get_note(notes_directory, path):
-    '''Get the full raw content of a note as a string
-    given its path, which can be either a relative path
-    within the notes directory or a full path on the
-    filesystem
-    #TODO - consolidate this with shorthand.notes.get_file_content
-    '''
-
-    full_path = get_full_path(notes_directory, path)
-
-    with open(full_path, 'r') as note_file_object:
-        note_content = note_file_object.read()
-
-    return note_content

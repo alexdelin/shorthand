@@ -11,9 +11,9 @@ import logging
 from werkzeug.exceptions import HTTPException
 from flask import Flask, request, render_template, send_from_directory
 
-from shorthand.notes import get_file_content, _update_note
+from shorthand.notes import _get_note, _update_note
 from shorthand.stamping import _stamp_notes
-from shorthand.search import _search_notes, _get_note, _filename_search, \
+from shorthand.search import _search_notes, _filename_search, \
                                    _record_file_view
 from shorthand.tags import _get_tags
 from shorthand.calendar import _get_calendar

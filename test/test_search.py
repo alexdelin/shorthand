@@ -5,7 +5,7 @@ import unittest
 from shorthand.utils.logging import setup_logging
 from shorthand.search import _search_notes, _filename_search, \
                              _record_file_view
-from shorthand.frontend.typeahead import update_ngram_database, \
+from shorthand.frontend.typeahead import _update_ngram_database, \
                                          _get_typeahead_suggestions
 
 from utils import setup_environment, validate_setup
@@ -228,8 +228,8 @@ class TestTypeahead(unittest.TestCase):
     def setup_class(cls):
         # ensure that we have a clean environment before running any tests
         _ = setup_environment()
-        _ = update_ngram_database(CONFIG['notes_directory'],
-                                  CONFIG['cache_directory'])
+        _ = _update_ngram_database(CONFIG['notes_directory'],
+                                   CONFIG['cache_directory'])
 
     def setup_method(self, method):
         '''Validate that the environment has been set up correctly

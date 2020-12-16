@@ -7,17 +7,20 @@ from shorthand.utils.paths import get_full_path
 log = logging.getLogger(__name__)
 
 
-def get_file_content(file_path):
-    '''Get the raw unmodified contents of a
-    note file
-    #TODO - Re-work this so it only accepts a relative
-    path within the notes directory
+def _get_note(notes_directory, path):
+    '''Get the full raw content of a note as a string
+    given:
+        - The full path to the notes directory
+        - Its path, as a relative path
+          within the notes directory
     '''
 
-    with codecs.open(file_path, mode='r', encoding="utf-8") as file_object:
-        file_content = file_object.read()
+    full_path = get_full_path(notes_directory, path)
 
-    return file_content
+    with open(full_path, 'r') as note_file_object:
+        note_content = note_file_object.read()
+
+    return note_content
 
 
 def _update_note(notes_directory, file_path, content):

@@ -5,7 +5,7 @@ from shorthand.utils.logging import setup_logging
 from shorthand.elements.todos import _get_todos
 from shorthand.elements.questions import _get_questions
 from shorthand.stamping import _stamp_notes
-from shorthand.notes import get_file_content
+from shorthand.notes import _get_note
 
 from utils import setup_environment, teardown_environment, validate_setup
 from model import ShorthandModel
@@ -69,7 +69,7 @@ class TestStamping(unittest.TestCase):
 
     def test_today_replaced(self):
         sample_note_path = CONFIG['notes_directory'] + '/todos.note'
-        content = get_file_content(sample_note_path)
+        content = _get_note(CONFIG['notes_directory'], sample_note_path)
         assert '\\today' not in content
 
     def test_questions_stamped(self):
