@@ -51,5 +51,75 @@ class ShorthandServer(object):
     # -------------
     # --- Todos ---
     # -------------
-    def get_todos(self):
+    def get_todos(todo_status='incomplete', directory_filter=None,
+                  query_string=None, case_sensitive=False, sort_by=None,
+                  suppress_future=True, tag=None):
+        pass
+
+    def mark_todo(filename, line_number, status):
+        pass
+
+    # -----------------
+    # --- Questions ---
+    # -----------------
+    def get_questions(question_status='all', directory_filter=None):
+        pass
+
+    # -------------------
+    # --- Definitions ---
+    # -------------------
+    def get_definitions(directory_filter=None):
+        pass
+
+    # -----------------
+    # --- Locations ---
+    # -----------------
+    def get_locations(directory_filter=None):
+        pass
+
+    # -------------------
+    # --- Record Sets ---
+    # -------------------
+    def _get_record_sets(directory_filter=None):
+        pass
+
+    def get_record_set(file_path, line_number, parse=True,
+                       parse_format='json', include_config=False):
+        pass
+
+    # Calendar
+    def get_calendar(directory_filter=None):
+        pass
+
+    # Notes
+    def get_note(file_path):
+        raise NotImplementedError
+
+    def update_note(file_path, content):
+        pass
+
+    def append_to_note():
+        raise NotImplementedError
+
+    def create_note():
+        raise NotImplementedError
+
+    # Stamping
+    def stamp_notes(stamp_todos=True, stamp_today=True, stamp_questions=True,
+                    stamp_answers=True):
+        pass
+
+    # Tags
+    def get_tags(directory_filter=None):
+        pass
+
+    # TOC
+    def get_toc(directory_filter=None):
+        pass
+
+    # Typeahead
+    def update_ngram_database():
+        pass
+
+    def get_typeahead_suggestions(query_string, limit=10):
         pass
