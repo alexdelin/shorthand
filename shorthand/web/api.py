@@ -29,8 +29,7 @@ from shorthand.utils.git import pull_repo
 from shorthand.utils.api import wrap_response_data
 from shorthand.frontend.render import get_rendered_markdown
 from shorthand.frontend.typeahead import _get_typeahead_suggestions
-
-from static_elements import static_content
+from shorthand.web.static_elements import static_content
 
 
 app = Flask(__name__)
@@ -54,17 +53,17 @@ def handle_exception(e):
 
 @app.route('/js/<path:path>', methods=['GET', 'POST'])
 def send_js(path):
-    return send_from_directory('js', path)
+    return send_from_directory('static/js', path)
 
 
 @app.route('/css/<path:path>', methods=['GET', 'POST'])
 def send_css(path):
-    return send_from_directory('css', path)
+    return send_from_directory('static/css', path)
 
 
 @app.route('/img/<path:path>', methods=['GET', 'POST'])
 def send_img(path):
-    return send_from_directory('img', path)
+    return send_from_directory('static/img', path)
 
 
 @app.route('/api/v1/config', methods=['GET'])
