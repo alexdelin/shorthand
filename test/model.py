@@ -87,6 +87,8 @@ class ShorthandModel(object):
         for todo in todos:
             todo['tags'].sort()
 
+        #TODO - Enable filtering via tags
+
         return todos
 
     def search_questions(self, question_status='all', directory_filter=None,
