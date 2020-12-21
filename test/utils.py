@@ -21,6 +21,7 @@ TEST_CONFIG = {
     "grep_path": "grep",
     "find_path": "find"
 }
+TEST_CONFIG_PATH = TEMP_DIR + '/config.json'
 
 
 def validate_setup():
@@ -52,6 +53,9 @@ def setup_environment():
                 raise ValueError(f'Config option {key} cannot be overridden')
             else:
                 TEST_CONFIG[key] = value
+
+    with open(TEST_CONFIG_PATH, 'w') as f:
+        json.dump(TEST_CONFIG, f)
 
     return TEST_CONFIG
 

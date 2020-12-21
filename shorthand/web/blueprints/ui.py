@@ -2,7 +2,8 @@ import os
 import json
 import logging
 
-from flask import request, render_template, send_from_directory, Blueprint
+from flask import request, render_template, send_from_directory, Blueprint, \
+                  current_app
 
 from shorthand.notes import _get_note
 from shorthand.tags import _get_tags
@@ -17,8 +18,8 @@ from shorthand.frontend.render import get_rendered_markdown
 from shorthand.web.blueprints.static_elements import static_content
 
 
-SHORTHAND_CONFIG = get_notes_config()
-setup_logging(SHORTHAND_CONFIG)
+# SHORTHAND_CONFIG = get_notes_config()
+# setup_logging(SHORTHAND_CONFIG)
 log = logging.getLogger(__name__)
 
 
@@ -44,6 +45,7 @@ def send_img(path):
 
 @shorthand_ui_blueprint.route('/', methods=['GET'])
 def show_home_page():
+    SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
     default_directory = SHORTHAND_CONFIG.get('default_directory')
     todos = _get_todos(
         notes_directory=SHORTHAND_CONFIG['notes_directory'],
@@ -90,6 +92,7 @@ def show_home_page():
 
 @shorthand_ui_blueprint.route('/todos', methods=['GET'])
 def show_todos_page():
+    SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
 
     all_directories = ['ALL']
     for subdir in os.walk(SHORTHAND_CONFIG['notes_directory']):
@@ -112,6 +115,7 @@ def show_todos_page():
 
 @shorthand_ui_blueprint.route('/questions', methods=['GET'])
 def show_questions():
+    SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
 
     all_directories = ['ALL']
     for subdir in os.walk(SHORTHAND_CONFIG['notes_directory']):
@@ -134,6 +138,7 @@ def show_questions():
 
 @shorthand_ui_blueprint.route('/databases', methods=['GET'])
 def show_databases():
+    SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
     record_sets = _get_record_sets(
                     notes_directory=SHORTHAND_CONFIG['notes_directory'],
                     grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
@@ -148,6 +153,7 @@ def show_locations():
 
 @shorthand_ui_blueprint.route('/glossary', methods=['GET'])
 def show_glossary():
+    SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
     all_directories = ['ALL']
     for subdir in os.walk(SHORTHAND_CONFIG['notes_directory']):
         subdir_path = subdir[0][len(SHORTHAND_CONFIG['notes_directory']) + 1:]
@@ -176,6 +182,7 @@ def show_search_page():
 
 @shorthand_ui_blueprint.route('/render', methods=['GET'])
 def send_rendered_note():
+    SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
 
     file_path = SHORTHAND_CONFIG['notes_directory'] + request.args.get('path')
     file_content = _get_note(SHORTHAND_CONFIG['notes_directory'], file_path)
@@ -194,6 +201,8 @@ def send_rendered_note():
 
 @shorthand_ui_blueprint.route('/editor', methods=['GET'])
 def show_editor():
+    SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
+
     file_path = SHORTHAND_CONFIG['notes_directory'] + request.args.get('path')
     file_content = _get_note(SHORTHAND_CONFIG['notes_directory'], file_path)
     return render_template('editor.j2', file_content=file_content,
@@ -203,6 +212,8 @@ def show_editor():
 
 @shorthand_ui_blueprint.route('/calendar', methods=['GET'])
 def show_calendar():
+    SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
+
     all_directories = ['ALL']
     for subdir in os.walk(SHORTHAND_CONFIG['notes_directory']):
         subdir_path = subdir[0][len(SHORTHAND_CONFIG['notes_directory']) + 1:]
@@ -220,6 +231,8 @@ def show_calendar():
 
 @shorthand_ui_blueprint.route('/browse', methods=['GET'])
 def show_browse_page():
+    SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
+
     toc = _get_toc(SHORTHAND_CONFIG['notes_directory'])
     return render_template('browse.j2', toc=json.dumps(toc),
                            static_content=static_content)

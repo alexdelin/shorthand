@@ -8,7 +8,7 @@ import logging
 
 from flask import Flask
 
-from shorthand.utils.config import get_notes_config
+from shorthand.utils.config import get_notes_config, CONFIG_FILE_LOCATION
 from shorthand.utils.logging import setup_logging
 from shorthand.web.blueprints.api import shorthand_api_blueprint
 from shorthand.web.blueprints.ui import shorthand_ui_blueprint
@@ -16,8 +16,11 @@ from shorthand.web.blueprints.ui import shorthand_ui_blueprint
 
 app = Flask(__name__)
 
-SHORTHAND_CONFIG = get_notes_config()
-setup_logging(SHORTHAND_CONFIG)
+app.config['config_path'] = CONFIG_FILE_LOCATION
+# SHORTHAND_CONFIG = get_notes_config(app.config['config_path'])
+
+#TODO - move logging into the ShorthandServer Object
+setup_logging(get_notes_config(app.config['config_path']))
 log = logging.getLogger(__name__)
 
 
