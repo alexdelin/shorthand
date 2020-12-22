@@ -1,5 +1,8 @@
+import logging
+
 from shorthand.utils.config import get_notes_config, write_config, \
     modify_config
+from shorthand.utils.logging import get_handler
 
 
 class ShorthandServer(object):
@@ -16,6 +19,9 @@ class ShorthandServer(object):
         # super(ShorthandServer, self).__init__()
         self.config_path = config_path
         self.reload_config()
+        self.log = logging.getLogger(__name__)
+        log_handler = get_handler(self.config)
+        self.log.addHandler(log_handler)
 
     # -------------------------
     # --- Config Management ---

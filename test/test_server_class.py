@@ -115,3 +115,16 @@ class TestServerClass(unittest.TestCase):
             config = json.load(config_file_object)
         assert config['log_level'] == update['log_level']
         assert config['frontend'] == update['frontend']
+
+    def test_logging(self):
+        write_config(ORIGINAL_CONFIG)
+        server = ShorthandServer(server_config_path)
+        test_message = 'This is just a test message'
+        server.log.error(test_message)
+
+        log_file_path = server.config['log_file_path']
+        assert os.path.exists(log_file_path)
+        with open(log_file_path, 'r') as f:
+            log_content = f.read()
+        assert log_content
+        assert test_message in log_content
