@@ -7,6 +7,7 @@ This model relies on the raw structured elements in the file
 '''
 
 import shlex
+import copy
 from datetime import datetime
 
 from results_unstamped import ALL_INCOMPLETE_TODOS, ALL_SKIPPED_TODOS, \
@@ -26,11 +27,11 @@ class ShorthandModel(object):
 
         # Get base todos
         if todo_status == 'incomplete':
-            todos = ALL_INCOMPLETE_TODOS['items']
+            todos = copy.deepcopy(ALL_INCOMPLETE_TODOS['items'])
         elif todo_status == 'skipped':
-            todos = ALL_SKIPPED_TODOS['items']
+            todos = copy.deepcopy(ALL_SKIPPED_TODOS['items'])
         elif todo_status == 'complete':
-            todos = ALL_COMPLETE_TODOS['items']
+            todos = copy.deepcopy(ALL_COMPLETE_TODOS['items'])
         else:
             raise ValueError('Invalid todo status ' + todo_status)
 
@@ -65,7 +66,6 @@ class ShorthandModel(object):
                 if todo['start_date']:
                     if todo['start_date'] > datetime.now().isoformat()[:10]:
                         continue
-
                 filtered_todos.append(todo)
             todos = filtered_todos
 
