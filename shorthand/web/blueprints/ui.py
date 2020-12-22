@@ -1,6 +1,5 @@
 import os
 import json
-import logging
 
 from flask import request, render_template, send_from_directory, Blueprint, \
                   current_app
@@ -13,14 +12,8 @@ from shorthand.elements.todos import _get_todos
 from shorthand.elements.questions import _get_questions
 from shorthand.elements.record_sets import _get_record_sets
 from shorthand.utils.config import get_notes_config
-from shorthand.utils.logging import setup_logging
 from shorthand.frontend.render import get_rendered_markdown
 from shorthand.web.blueprints.static_elements import static_content
-
-
-# SHORTHAND_CONFIG = get_notes_config()
-# setup_logging(SHORTHAND_CONFIG)
-log = logging.getLogger(__name__)
 
 
 shorthand_ui_blueprint = Blueprint('shorthand_ui_blueprint', __name__,
@@ -107,7 +100,7 @@ def show_todos_page():
     tags = _get_tags(SHORTHAND_CONFIG['notes_directory'],
                      grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
 
-    log.info('Showing the home page')
+    current_app.logger.info('Showing the home page')
     return render_template('todos.j2', all_directories=all_directories,
                            default_directory=default_directory, tags=tags,
                            static_content=static_content)
@@ -130,7 +123,7 @@ def show_questions():
     tags = _get_tags(SHORTHAND_CONFIG['notes_directory'],
                      grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
 
-    log.info('Showing the questions search page')
+    current_app.logger.info('Showing the questions search page')
     return render_template('questions.j2', all_directories=all_directories,
                            default_directory=default_directory, tags=tags,
                            static_content=static_content)
@@ -167,7 +160,7 @@ def show_glossary():
     tags = _get_tags(SHORTHAND_CONFIG['notes_directory'],
                      grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
 
-    log.info('Showing the Definitions search page')
+    current_app.logger.info('Showing the Definitions search page')
     return render_template('glossary.j2',
                            all_directories=all_directories,
                            default_directory=default_directory, tags=tags,

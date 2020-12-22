@@ -1,5 +1,4 @@
 import json
-import logging
 
 from werkzeug.exceptions import HTTPException
 from flask import Blueprint, request, current_app
@@ -17,14 +16,9 @@ from shorthand.elements.definitions import _get_definitions
 from shorthand.elements.record_sets import _get_record_sets, _get_record_set
 from shorthand.elements.locations import _get_locations
 from shorthand.utils.config import get_notes_config
-# from shorthand.utils.logging import setup_logging
-from shorthand.utils.git import pull_repo
+# from shorthand.utils.git import pull_repo
 from shorthand.utils.api import wrap_response_data
 from shorthand.frontend.typeahead import _get_typeahead_suggestions
-
-# SHORTHAND_CONFIG = get_notes_config()
-# setup_logging(SHORTHAND_CONFIG)
-log = logging.getLogger(__name__)
 
 shorthand_api_blueprint = Blueprint('shorthand_api_blueprint', __name__)
 
@@ -44,13 +38,14 @@ def handle_exception(e):
 @shorthand_api_blueprint.route('/api/v1/config', methods=['GET'])
 def get_server_config():
     SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
+    current_app.logger.info('Returning config')
     return json.dumps(SHORTHAND_CONFIG)
 
 
-@shorthand_api_blueprint.route('/api/v1/pull', methods=['GET', 'POST'])
-def pull_notes_repo():
-    SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
-    return pull_repo(SHORTHAND_CONFIG['notes_directory'])
+# @shorthand_api_blueprint.route('/api/v1/pull', methods=['GET', 'POST'])
+# def pull_notes_repo():
+#     SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
+#     return pull_repo(SHORTHAND_CONFIG['notes_directory'])
 
 
 @shorthand_api_blueprint.route('/api/v1/locations', methods=['GET'])
@@ -134,7 +129,7 @@ def get_current_todos():
                        query_string=query_string, sort_by=sort_by,
                        suppress_future=True, tag=tag,
                        grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
-    log.info(f'Returning {len(todos)} todo results')
+    current_app.logger.info(f'Returning {len(todos)} todo results')
 
     wrapped_response = wrap_response_data(todos)
     wrapped_response['meta'] = analyze_todos(todos)
@@ -164,13 +159,13 @@ def fetch_questions():
     directory_filter = request.args.get('directory_filter')
     if directory_filter == 'ALL':
         directory_filter = None
-    log.info(f'Getting {status} questions in directory {directory_filter}')
+    current_app.logger.info(f'Getting {status} questions in directory {directory_filter}')
 
     questions = _get_questions(
         notes_directory=SHORTHAND_CONFIG['notes_directory'],
         question_status=status, directory_filter=directory_filter,
         grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
-    log.info(f'Returning {len(questions)} question results')
+    current_app.logger.info(f'Returning {len(questions)} question results')
     return json.dumps(wrap_response_data(questions))
 
 
