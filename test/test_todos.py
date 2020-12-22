@@ -200,8 +200,6 @@ class TestStampedTodos(unittest.TestCase):
 class TestTodosUnstampedFlask(unittest.TestCase):
     """Test getting unstamped todos via the HTTP API"""
 
-    maxDiff = None
-
     @classmethod
     def setup_class(cls):
         # ensure that we have a clean environment before running any tests
@@ -300,7 +298,7 @@ class TestTodosUnstampedFlask(unittest.TestCase):
                               MODEL.search_todos(**args))
 
     def test_unstamped_all_combinations(self):
-        # Test every single combination of properties
+        # Test random combinations of valid properties
         status_options = ['incomplete', 'complete', 'skipped']
         directory_filter_options = [None, 'section']
         query_options = ['cooking', '"follow up"', '"follow up" cooking',
@@ -320,6 +318,130 @@ class TestTodosUnstampedFlask(unittest.TestCase):
                 'sort_by': random.choice(sort_by_options),
                 'suppress_future': random.choice(suppress_future_options),
                 'tag': random.choice(tag_options)
+            }
+            self.assertCountEqual(self.get_api_results(**args),
+                                  MODEL.search_todos(**args))
+
+
+class TestTodosStampedFlask(unittest.TestCase):
+    """Test getting stamped todos via the HTTP API"""
+
+    @classmethod
+    def setup_class(cls):
+        # ensure that we have a clean environment before running any tests
+        _ = setup_environment()
+        _ = _stamp_notes(CONFIG['notes_directory'],
+                         stamp_todos=True, stamp_today=True,
+                         stamp_questions=False, stamp_answers=False,
+                         grep_path=CONFIG['grep_path'])
+        app = create_app(TEST_CONFIG_PATH)
+        cls.api_client = app.test_client()
+
+    def setup_method(self, method):
+        '''Validate that the environment has been set up correctly
+        '''
+        validate_setup()
+
+    def get_api_results(self, todo_status='incomplete', directory_filter=None,
+                        query_string=None, case_sensitive=False, sort_by=None,
+                        suppress_future=False, stamp=False, tag=None):
+        params = {
+            'status': todo_status,
+            'directory_filter': directory_filter,
+            'query_string': query_string,
+            'case_sensitive': case_sensitive,
+            'sort_by': sort_by,
+            'suppress_future': suppress_future,
+            'tag': tag
+        }
+        response = self.api_client.get('/api/v1/todos', query_string=params)
+        return json.loads(response.data)['items']
+
+    def test_stamped_incomplete_todos_basic(self):
+        # Test Getting all incomplete todos
+        args = {
+            'todo_status': 'incomplete',
+            'stamp': True
+        }
+        self.assertCountEqual(self.get_api_results(**args),
+                              MODEL.search_todos(**args))
+
+        # Test Directory filter
+        args = {
+            'todo_status': 'incomplete',
+            'directory_filter': 'section',
+            'stamp': True
+        }
+        self.assertCountEqual(self.get_api_results(**args),
+                              MODEL.search_todos(**args))
+
+        # Test Query String
+        query_tests = ['cooking', '"follow up"', '"follow up" cooking']
+        for query_test in query_tests:
+            args = {
+                'todo_status': 'incomplete',
+                'query_string': query_test,
+                'stamp': True
+            }
+            self.assertCountEqual(self.get_api_results(**args),
+                                  MODEL.search_todos(**args))
+
+        # Test Sort Order
+        args = {
+            'todo_status': 'incomplete',
+            'sort_by': 'start_date',
+            'stamp': True
+        }
+        self.assertCountEqual(self.get_api_results(**args),
+                              MODEL.search_todos(**args))
+
+        # Test Suppress Future
+        args = {
+            'todo_status': 'incomplete',
+            'suppress_future': True,
+            'stamp': True
+        }
+        self.assertCountEqual(self.get_api_results(**args),
+                              MODEL.search_todos(**args))
+
+    def test_stamped_skipped_todos_basic(self):
+        args = {
+            'todo_status': 'skipped',
+            'stamp': True
+        }
+        self.assertCountEqual(self.get_api_results(**args),
+                              MODEL.search_todos(**args))
+
+    def test_stamped_complete_todos_basic(self):
+        args = {
+            'todo_status': 'complete',
+            'stamp': True
+        }
+        self.assertCountEqual(self.get_api_results(**args),
+                              MODEL.search_todos(**args))
+
+    def test_stamped_all_combinations(self):
+        # Test random combinations of valid properties
+        status_options = ['incomplete', 'complete', 'skipped']
+        directory_filter_options = [None, 'section']
+        query_options = ['cooking', '"follow up"', '"follow up" cooking',
+                         'Indented']
+        case_sensitive_options = [True, False]
+        sort_by_options = [None, 'start_date']
+        suppress_future_options = [True, False]
+        tag_options = [None, 'future', 'nested', 'pointless', 'topic',
+                       'doesntexist']
+
+        for _ in range(50):
+            args = {
+                'todo_status': random.choice(status_options),
+                'directory_filter': random.choice(directory_filter_options),
+                'query_string': random.choice(query_options),
+                'case_sensitive': random.choice(case_sensitive_options),
+                'sort_by': random.choice(sort_by_options),
+                'suppress_future': random.choice(suppress_future_options),
+                'tag': random.choice(tag_options),
+                'stamp': True
             }
             self.assertCountEqual(self.get_api_results(**args),
                                   MODEL.search_todos(**args))
