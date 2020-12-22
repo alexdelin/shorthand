@@ -32,6 +32,5 @@ def create_app(config_path):
 
 
 if __name__ == "__main__":
-    # app = create_app(CONFIG_FILE_LOCATION)
-    app = create_app('/Users/alexdelin/code/shorthand/test/temp/config.json')
+    app = create_app(CONFIG_FILE_LOCATION)
     app.run(port=8181, debug=True, threaded=True)

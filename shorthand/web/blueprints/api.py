@@ -118,16 +118,35 @@ def get_current_todos():
     query_string = request.args.get('query_string')
     sort_by = request.args.get('sort_by')
     tag = request.args.get('tag')
+    suppress_future = request.args.get('suppress_future', 'true')
+    case_sensitive = request.args.get('case_sensitive', 'false')
 
     if directory_filter == 'ALL':
         directory_filter = None
     if tag == 'ALL':
         tag = None
 
+    if suppress_future.lower() == 'true':
+        suppress_future = True
+    elif suppress_future.lower() == 'false':
+        suppress_future = False
+    else:
+        raise ValueError(f'Invalid value "{suppress_future}"" '
+                         f'for parameter "suppress_future"')
+
+    if case_sensitive.lower() == 'true':
+        case_sensitive = True
+    elif case_sensitive.lower() == 'false':
+        case_sensitive = False
+    else:
+        raise ValueError(f'Invalid value "{case_sensitive}"" '
+                         f'for parameter "case_sensitive"')
+
     todos = _get_todos(notes_directory=SHORTHAND_CONFIG['notes_directory'],
                        todo_status=status, directory_filter=directory_filter,
-                       query_string=query_string, sort_by=sort_by,
-                       suppress_future=True, tag=tag,
+                       query_string=query_string,
+                       case_sensitive=case_sensitive, sort_by=sort_by,
+                       suppress_future=suppress_future, tag=tag,
                        grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
     current_app.logger.info(f'Returning {len(todos)} todo results')
 

@@ -1,5 +1,6 @@
 import json
 import logging
+import random
 import unittest
 
 from shorthand.utils.logging import setup_logging
@@ -214,13 +215,16 @@ class TestTodosUnstampedFlask(unittest.TestCase):
         validate_setup()
 
     def get_api_results(self, todo_status='incomplete', directory_filter=None,
-                        query_string=None, sort_by=None, suppress_future=False,
-                        stamp=False):
+                        query_string=None, case_sensitive=False, sort_by=None,
+                        suppress_future=False, stamp=False, tag=None):
         params = {
             'status': todo_status,
             'directory_filter': directory_filter,
             'query_string': query_string,
-            'sort_by': sort_by
+            'case_sensitive': case_sensitive,
+            'sort_by': sort_by,
+            'suppress_future': suppress_future,
+            'tag': tag
         }
         response = self.api_client.get('/api/v1/todos', query_string=params)
         return json.loads(response.data)['items']
@@ -230,7 +234,7 @@ class TestTodosUnstampedFlask(unittest.TestCase):
         # Test Getting all incomplete todos
         args = {
             'todo_status': 'incomplete',
-            'suppress_future': True
+            'suppress_future': False
         }
         library_results = self.get_api_results(**args)
         model_results = MODEL.search_todos(**args)
@@ -241,8 +245,7 @@ class TestTodosUnstampedFlask(unittest.TestCase):
         # Test Directory filter
         args = {
             'todo_status': 'incomplete',
-            'directory_filter': 'section',
-            'suppress_future': True
+            'directory_filter': 'section'
         }
         self.assertCountEqual(self.get_api_results(**args),
                               MODEL.search_todos(**args))
@@ -253,7 +256,7 @@ class TestTodosUnstampedFlask(unittest.TestCase):
             args = {
                 'todo_status': 'incomplete',
                 'query_string': query_test,
-                'suppress_future': True
+                'case_sensitive': False
             }
             self.assertCountEqual(self.get_api_results(**args),
                                   MODEL.search_todos(**args))
@@ -261,8 +264,7 @@ class TestTodosUnstampedFlask(unittest.TestCase):
         # Test Sort Order
         args = {
             'todo_status': 'incomplete',
-            'sort_by': 'start_date',
-            'suppress_future': True
+            'sort_by': 'start_date'
         }
         self.assertCountEqual(self.get_api_results(**args),
                               MODEL.search_todos(**args))
@@ -271,6 +273,14 @@ class TestTodosUnstampedFlask(unittest.TestCase):
         args = {
             'todo_status': 'incomplete',
             'suppress_future': True
+        }
+        self.assertCountEqual(self.get_api_results(**args),
+                              MODEL.search_todos(**args))
+
+        # Test Tag Filtering
+        args = {
+            'todo_status': 'incomplete',
+            'tag': 'nested'
         }
         self.assertCountEqual(self.get_api_results(**args),
                               MODEL.search_todos(**args))
@@ -288,3 +298,28 @@ class TestTodosUnstampedFlask(unittest.TestCase):
         }
         self.assertCountEqual(self.get_api_results(**args),
                               MODEL.search_todos(**args))
+
+    def test_unstamped_all_combinations(self):
+        # Test every single combination of properties
+        status_options = ['incomplete', 'complete', 'skipped']
+        directory_filter_options = [None, 'section']
+        query_options = ['cooking', '"follow up"', '"follow up" cooking',
+                         'Indented']
+        case_sensitive_options = [True, False]
+        sort_by_options = [None, 'start_date']
+        suppress_future_options = [True, False]
+        tag_options = [None, 'future', 'nested', 'pointless', 'topic',
+                       'doesntexist']
+
+        for _ in range(50):
+            args = {
+                'todo_status': random.choice(status_options),
+                'directory_filter': random.choice(directory_filter_options),
+                'query_string': random.choice(query_options),
+                'case_sensitive': random.choice(case_sensitive_options),
+                'sort_by': random.choice(sort_by_options),
+                'suppress_future': random.choice(suppress_future_options),
+                'tag': random.choice(tag_options)
+            }
+            self.assertCountEqual(self.get_api_results(**args),
+                                  MODEL.search_todos(**args))

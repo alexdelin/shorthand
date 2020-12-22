@@ -22,8 +22,9 @@ class ShorthandModel(object):
         super(ShorthandModel, self).__init__()
 
     def search_todos(self, notes_directory=None, todo_status='incomplete',
-                     directory_filter=None, query_string=None, sort_by=None,
-                     suppress_future=False, stamp=False):
+                     directory_filter=None, query_string=None,
+                     case_sensitive=False, sort_by=None,
+                     suppress_future=False, stamp=False, tag=None):
 
         # Get base todos
         if todo_status == 'incomplete':
@@ -48,9 +49,14 @@ class ShorthandModel(object):
             components = shlex.split(query_string)
             filtered_todos = []
             for todo in todos:
-                if all([component in todo['todo_text']
-                        for component in components]):
-                    filtered_todos.append(todo)
+                if not case_sensitive:
+                    if all([component.lower() in todo['todo_text'].lower()
+                            for component in components]):
+                        filtered_todos.append(todo)
+                else:
+                    if all([component in todo['todo_text']
+                            for component in components]):
+                        filtered_todos.append(todo)
             todos = filtered_todos
 
         # Apply sort
@@ -82,6 +88,11 @@ class ShorthandModel(object):
         for todo in todos:
             todo['display_path'] = get_display_path(todo['file_path'],
                                                     directory_filter)
+
+        # Tag Filtering
+        if tag:
+            todos = [todo for todo in todos
+                     if tag in todo['tags']]
 
         # Sort tags
         for todo in todos:
