@@ -5,7 +5,8 @@ from subprocess import Popen, PIPE
 import shlex
 
 from shorthand.tags import extract_tags
-from shorthand.utils.paths import get_relative_path, get_display_path
+from shorthand.utils.paths import get_relative_path, get_display_path, \
+                                  get_full_path
 from shorthand.utils.patterns import INCOMPLETE_PREFIX_GREP, \
     COMPLETE_PREFIX_GREP, SKIPPED_PREFIX_GREP, \
     START_STAMP_ONLY_PATTERN, START_END_STAMP_ONLY_PATTERN
@@ -255,11 +256,11 @@ def analyze_todos(todos):
     }
 
 
-def _mark_todo(filename, line_number, status):
-    # TODO - This should take in the notes direstory
-    # and a relative path as args
+def _mark_todo(notes_directory, note_path, line_number, status):
 
-    with open(filename, 'r') as file_object:
+    full_path = get_full_path(notes_directory, note_path)
+
+    with open(full_path, 'r') as file_object:
         file_content = file_object.read()
 
     split_content = file_content.split('\n')
@@ -281,7 +282,7 @@ def _mark_todo(filename, line_number, status):
         line_content)
 
     split_content[line_number-1] = line_content
-    with open(filename, 'w') as file_object:
+    with open(full_path, 'w') as file_object:
         file_object.write('\n'.join(split_content))
 
     return line_content

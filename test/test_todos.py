@@ -4,7 +4,7 @@ import random
 import unittest
 
 from shorthand.utils.logging import setup_logging
-from shorthand.elements.todos import _get_todos
+from shorthand.elements.todos import _get_todos, _mark_todo
 from shorthand.stamping import _stamp_notes
 from shorthand.web.app import create_app
 
@@ -38,6 +38,13 @@ class TestUnstampedTodos(unittest.TestCase):
     def setup_class(cls):
         # ensure that we have a clean environment before running any tests
         _ = setup_environment()
+
+    @classmethod
+    def teardown_class(cls):
+        '''Ensure that we don't leave stamped
+        notes around after the tests are run
+        '''
+        teardown_environment()
 
     def setup_method(self, method):
         '''Validate that the environment has been set up correctly
@@ -103,6 +110,53 @@ class TestUnstampedTodos(unittest.TestCase):
         }
         self.assertCountEqual(get_todo_results(**args),
                               MODEL.search_todos(**args))
+
+
+class TestMarkTodos(unittest.TestCase):
+    """Test Marking the status of a todo
+    """
+
+    @classmethod
+    def setup_class(cls):
+        '''ensure that we have a clean environment
+        before running any tests
+        '''
+        _ = setup_environment()
+
+    @classmethod
+    def teardown_class(cls):
+        '''Ensure that we don't leave stamped
+        notes around after the tests are run
+        '''
+        teardown_environment()
+
+    def setup_method(self, method):
+        '''Validate that the environment has been set up correctly
+        '''
+        validate_setup()
+
+    def test_mark_todo(self):
+        # Mark a specific todo as completed
+        _mark_todo(notes_directory=CONFIG['notes_directory'],
+                   note_path='/todos.note', line_number=6, status='complete')
+
+        # Get all completed todos
+        results = get_todo_results(todo_status='complete')
+
+        # Check that the todo we modified now appears completed
+        assert any(['Something to do' in todo['todo_text']
+                    for todo in results])
+
+        # Mark a specific todo as skipped
+        _mark_todo(notes_directory=CONFIG['notes_directory'],
+                   note_path='/todos.note', line_number=6, status='skipped')
+
+        # Get all skipped todos
+        results = get_todo_results(todo_status='skipped')
+
+        # Check that the todo we modified now appears skipped
+        assert any(['Something to do' in todo['todo_text']
+                    for todo in results])
 
 
 class TestStampedTodos(unittest.TestCase):
@@ -206,6 +260,13 @@ class TestTodosUnstampedFlask(unittest.TestCase):
         _ = setup_environment()
         app = create_app(TEST_CONFIG_PATH)
         cls.api_client = app.test_client()
+
+    @classmethod
+    def teardown_class(cls):
+        '''Ensure that we don't leave stamped
+        notes around after the tests are run
+        '''
+        teardown_environment()
 
     def setup_method(self, method):
         '''Validate that the environment has been set up correctly
@@ -337,6 +398,13 @@ class TestTodosStampedFlask(unittest.TestCase):
         app = create_app(TEST_CONFIG_PATH)
         cls.api_client = app.test_client()
 
+    @classmethod
+    def teardown_class(cls):
+        '''Ensure that we don't leave stamped
+        notes around after the tests are run
+        '''
+        teardown_environment()
+
     def setup_method(self, method):
         '''Validate that the environment has been set up correctly
         '''
@@ -445,3 +513,64 @@ class TestTodosStampedFlask(unittest.TestCase):
             }
             self.assertCountEqual(self.get_api_results(**args),
                                   MODEL.search_todos(**args))
+
+
+class TestMarkTodosFlask(unittest.TestCase):
+    """Test Marking the status of a todo via the HTTP API
+    """
+
+    @classmethod
+    def setup_class(cls):
+        '''ensure that we have a clean environment
+        before running any tests
+        '''
+        _ = setup_environment()
+        app = create_app(TEST_CONFIG_PATH)
+        cls.api_client = app.test_client()
+
+    @classmethod
+    def teardown_class(cls):
+        '''Ensure that we don't leave stamped
+        notes around after the tests are run
+        '''
+        teardown_environment()
+
+    def setup_method(self, method):
+        '''Validate that the environment has been set up correctly
+        '''
+        validate_setup()
+
+    def test_mark_todo(self):
+        # Mark a specific todo as completed
+        params = {
+            'filename': '/todos.note',
+            'line_number': 6,
+            'status': 'complete'
+        }
+        self.api_client.get('/api/v1/mark_todo', query_string=params)
+
+        # Get all completed todos
+        params = {'status': 'complete'}
+        results = self.api_client.get('/api/v1/todos', query_string=params)
+        results = json.loads(results.data)['items']
+
+        # Check that the todo we modified now appears completed
+        assert any(['Something to do' in todo['todo_text']
+                    for todo in results])
+
+        # Mark a specific todo as skipped
+        params = {
+            'filename': '/todos.note',
+            'line_number': 6,
+            'status': 'skipped'
+        }
+        self.api_client.get('/api/v1/mark_todo', query_string=params)
+
+        # Get all skipped todos
+        params = {'status': 'skipped'}
+        results = self.api_client.get('/api/v1/todos', query_string=params)
+        results = json.loads(results.data)['items']
+
+        # Check that the todo we modified now appears skipped
+        assert any(['Something to do' in todo['todo_text']
+                    for todo in results])

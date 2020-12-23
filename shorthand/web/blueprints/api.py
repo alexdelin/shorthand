@@ -3,6 +3,7 @@ import json
 from werkzeug.exceptions import HTTPException
 from flask import Blueprint, request, current_app
 
+from shorthand import ShorthandServer
 from shorthand.notes import _get_note, _update_note
 from shorthand.stamping import _stamp_notes
 from shorthand.search import _search_notes, _filename_search, \
@@ -35,32 +36,76 @@ def handle_exception(e):
     return json.dumps({'error': str(e)}), 500
 
 
+# ------------------------------
+# --- General Notes Features ---
+# ------------------------------
 @shorthand_api_blueprint.route('/api/v1/config', methods=['GET'])
 def get_server_config():
-    SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
+    server = ShorthandServer(current_app.config['config_path'])
     current_app.logger.info('Returning config')
-    return json.dumps(SHORTHAND_CONFIG)
+    return json.dumps(server.get_config())
 
 
-# @shorthand_api_blueprint.route('/api/v1/pull', methods=['GET', 'POST'])
-# def pull_notes_repo():
-#     SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
-#     return pull_repo(SHORTHAND_CONFIG['notes_directory'])
-
-
-@shorthand_api_blueprint.route('/api/v1/locations', methods=['GET'])
-def get_gps_locations():
+@shorthand_api_blueprint.route('/api/v1/search', methods=['GET'])
+def get_search_results():
     SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
 
-    directory_filter = request.args.get('directory_filter')
+    query_string = request.args.get('query_string')
+    case_sensitive = request.args.get('case_sensitive')
 
-    locations = _get_locations(
+    search_results = _search_notes(
         notes_directory=SHORTHAND_CONFIG['notes_directory'],
-        directory_filter=directory_filter,
+        query_string=query_string,
+        case_sensitive=case_sensitive,
         grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
+    return json.dumps(wrap_response_data(search_results))
 
-    wrapped_response = wrap_response_data(locations)
-    return json.dumps(wrapped_response)
+
+@shorthand_api_blueprint.route('/api/v1/note', methods=['GET'])
+def get_full_note():
+    SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
+
+    path = request.args.get('path')
+    return _get_note(SHORTHAND_CONFIG['notes_directory'], path)
+
+
+@shorthand_api_blueprint.route('/api/v1/note', methods=['POST'])
+def write_updated_note():
+    SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
+
+    path = request.args.get('path')
+    request.get_data()
+    content = request.data.decode('utf-8')
+
+    _update_note(SHORTHAND_CONFIG['notes_directory'], path, content)
+    return 'Note Updated'
+
+
+@shorthand_api_blueprint.route('/api/v1/toc', methods=['GET'])
+def get_toc_data():
+    SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
+    return json.dumps(_get_toc(SHORTHAND_CONFIG['notes_directory']))
+
+
+@shorthand_api_blueprint.route('/api/v1/typeahead', methods=['GET'])
+def get_typeahead():
+    SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
+
+    query_string = request.args.get('query')
+
+    return json.dumps(_get_typeahead_suggestions(
+        SHORTHAND_CONFIG['ngram_db_directory'],
+        query_string))
+
+
+@shorthand_api_blueprint.route('/api/v1/stamp', methods=['GET'])
+def stamp():
+    SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
+
+    return _stamp_notes(
+        notes_directory=SHORTHAND_CONFIG['notes_directory'],
+        stamp_todos=True, stamp_today=True,
+        grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
 
 
 @shorthand_api_blueprint.route('/api/v1/files', methods=['GET'])
@@ -109,9 +154,57 @@ def record_file_view_api():
     return 'ack'
 
 
+@shorthand_api_blueprint.route('/api/v1/tags', methods=['GET'])
+def fetch_tags():
+    SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
+
+    directory_filter = request.args.get('directory_filter')
+    if directory_filter == 'ALL':
+        directory_filter = None
+
+    tags = _get_tags(
+        notes_directory=SHORTHAND_CONFIG['notes_directory'],
+        directory_filter=directory_filter,
+        grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
+    return json.dumps(wrap_response_data(tags))
+
+
+@shorthand_api_blueprint.route('/api/v1/calendar', methods=['GET'])
+def fetch_calendar():
+    SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
+
+    directory_filter = request.args.get('directory_filter')
+    if directory_filter == 'ALL':
+        directory_filter = None
+
+    calendar = _get_calendar(
+        notes_directory=SHORTHAND_CONFIG['notes_directory'],
+        directory_filter=directory_filter,
+        grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
+    return json.dumps(calendar)
+
+
+# ----------------
+# --- Elements ---
+# ----------------
+@shorthand_api_blueprint.route('/api/v1/locations', methods=['GET'])
+def get_gps_locations():
+    SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
+
+    directory_filter = request.args.get('directory_filter')
+
+    locations = _get_locations(
+        notes_directory=SHORTHAND_CONFIG['notes_directory'],
+        directory_filter=directory_filter,
+        grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
+
+    wrapped_response = wrap_response_data(locations)
+    return json.dumps(wrapped_response)
+
+
 @shorthand_api_blueprint.route('/api/v1/todos', methods=['GET'])
 def get_current_todos():
-    SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
+    server = ShorthandServer(current_app.config['config_path'])
 
     status = request.args.get('status', 'incomplete')
     directory_filter = request.args.get('directory_filter')
@@ -142,12 +235,11 @@ def get_current_todos():
         raise ValueError(f'Invalid value "{case_sensitive}"" '
                          f'for parameter "case_sensitive"')
 
-    todos = _get_todos(notes_directory=SHORTHAND_CONFIG['notes_directory'],
-                       todo_status=status, directory_filter=directory_filter,
-                       query_string=query_string,
-                       case_sensitive=case_sensitive, sort_by=sort_by,
-                       suppress_future=suppress_future, tag=tag,
-                       grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
+    todos = server.get_todos(todo_status=status,
+                             directory_filter=directory_filter,
+                             query_string=query_string,
+                             case_sensitive=case_sensitive, sort_by=sort_by,
+                             suppress_future=suppress_future, tag=tag)
     current_app.logger.info(f'Returning {len(todos)} todo results')
 
     wrapped_response = wrap_response_data(todos)
@@ -157,17 +249,13 @@ def get_current_todos():
 
 @shorthand_api_blueprint.route('/api/v1/mark_todo', methods=['GET'])
 def mark_todo_status():
-    SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
+    server = ShorthandServer(current_app.config['config_path'])
 
     filename = request.args.get('filename')
     line_number = int(request.args.get('line_number'))
     status = request.args.get('status')
 
-    # Allow Relative paths within notes dir to be specified
-    if SHORTHAND_CONFIG['notes_directory'] not in filename:
-        filename = SHORTHAND_CONFIG['notes_directory'] + filename
-
-    return _mark_todo(filename, line_number, status)
+    return server.mark_todo(filename, line_number, status)
 
 
 @shorthand_api_blueprint.route('/api/v1/questions', methods=['GET'])
@@ -186,36 +274,6 @@ def fetch_questions():
         grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
     current_app.logger.info(f'Returning {len(questions)} question results')
     return json.dumps(wrap_response_data(questions))
-
-
-@shorthand_api_blueprint.route('/api/v1/tags', methods=['GET'])
-def fetch_tags():
-    SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
-
-    directory_filter = request.args.get('directory_filter')
-    if directory_filter == 'ALL':
-        directory_filter = None
-
-    tags = _get_tags(
-        notes_directory=SHORTHAND_CONFIG['notes_directory'],
-        directory_filter=directory_filter,
-        grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
-    return json.dumps(wrap_response_data(tags))
-
-
-@shorthand_api_blueprint.route('/api/v1/calendar', methods=['GET'])
-def fetch_calendar():
-    SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
-
-    directory_filter = request.args.get('directory_filter')
-    if directory_filter == 'ALL':
-        directory_filter = None
-
-    calendar = _get_calendar(
-        notes_directory=SHORTHAND_CONFIG['notes_directory'],
-        directory_filter=directory_filter,
-        grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
-    return json.dumps(calendar)
 
 
 @shorthand_api_blueprint.route('/api/v1/definitions', methods=['GET'])
@@ -279,65 +337,3 @@ def fetch_record_set():
         parse=parse,
         parse_format=parse_format,
         include_config=include_config)
-
-
-@shorthand_api_blueprint.route('/api/v1/search', methods=['GET'])
-def get_search_results():
-    SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
-
-    query_string = request.args.get('query_string')
-    case_sensitive = request.args.get('case_sensitive')
-
-    search_results = _search_notes(
-        notes_directory=SHORTHAND_CONFIG['notes_directory'],
-        query_string=query_string,
-        case_sensitive=case_sensitive,
-        grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
-    return json.dumps(wrap_response_data(search_results))
-
-
-@shorthand_api_blueprint.route('/api/v1/note', methods=['GET'])
-def get_full_note():
-    SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
-
-    path = request.args.get('path')
-    return _get_note(SHORTHAND_CONFIG['notes_directory'], path)
-
-
-@shorthand_api_blueprint.route('/api/v1/note', methods=['POST'])
-def write_updated_note():
-    SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
-
-    path = request.args.get('path')
-    request.get_data()
-    content = request.data.decode('utf-8')
-
-    _update_note(SHORTHAND_CONFIG['notes_directory'], path, content)
-    return 'Note Updated'
-
-
-@shorthand_api_blueprint.route('/api/v1/toc', methods=['GET'])
-def get_toc_data():
-    SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
-    return json.dumps(_get_toc(SHORTHAND_CONFIG['notes_directory']))
-
-
-@shorthand_api_blueprint.route('/api/v1/typeahead', methods=['GET'])
-def get_typeahead():
-    SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
-
-    query_string = request.args.get('query')
-
-    return json.dumps(_get_typeahead_suggestions(
-        SHORTHAND_CONFIG['ngram_db_directory'],
-        query_string))
-
-
-@shorthand_api_blueprint.route('/api/v1/stamp', methods=['GET'])
-def stamp():
-    SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
-
-    return _stamp_notes(
-        notes_directory=SHORTHAND_CONFIG['notes_directory'],
-        stamp_todos=True, stamp_today=True,
-        grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))

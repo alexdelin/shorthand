@@ -1,5 +1,7 @@
 import logging
 
+from shorthand.elements.todos import _get_todos, _mark_todo
+
 from shorthand.utils.config import get_notes_config, write_config, \
     modify_config
 from shorthand.utils.logging import get_handler
@@ -54,48 +56,9 @@ class ShorthandServer(object):
             raise ValueError('Shorthand Server is not yet '
                              'initialized with config')
 
-    # -------------
-    # --- Todos ---
-    # -------------
-    def get_todos(todo_status='incomplete', directory_filter=None,
-                  query_string=None, case_sensitive=False, sort_by=None,
-                  suppress_future=True, tag=None):
-        pass
-
-    def mark_todo(filename, line_number, status):
-        pass
-
-    # -----------------
-    # --- Questions ---
-    # -----------------
-    def get_questions(question_status='all', directory_filter=None):
-        pass
-
-    # -------------------
-    # --- Definitions ---
-    # -------------------
-    def get_definitions(directory_filter=None):
-        pass
-
-    # -----------------
-    # --- Locations ---
-    # -----------------
-    def get_locations(directory_filter=None):
-        pass
-
-    # -------------------
-    # --- Record Sets ---
-    # -------------------
-    def _get_record_sets(directory_filter=None):
-        pass
-
-    def get_record_set(file_path, line_number, parse=True,
-                       parse_format='json', include_config=False):
-        pass
-
-    # Calendar
-    def get_calendar(directory_filter=None):
-        pass
+    # ---------------------------
+    # --- Utilities for Notes ---
+    # ---------------------------
 
     # Notes
     def get_note(file_path):
@@ -115,6 +78,10 @@ class ShorthandServer(object):
                     stamp_answers=True):
         pass
 
+    # Calendar
+    def get_calendar(directory_filter=None):
+        pass
+
     # Tags
     def get_tags(directory_filter=None):
         pass
@@ -128,4 +95,45 @@ class ShorthandServer(object):
         pass
 
     def get_typeahead_suggestions(query_string, limit=10):
+        pass
+
+    # ----------------
+    # --- Elements ---
+    # ----------------
+
+    # Todos
+    def get_todos(self, todo_status='incomplete', directory_filter=None,
+                  query_string=None, case_sensitive=False, sort_by=None,
+                  suppress_future=True, tag=None):
+        return _get_todos(notes_directory=self.config['notes_directory'],
+                          todo_status=todo_status,
+                          directory_filter=directory_filter,
+                          query_string=query_string,
+                          case_sensitive=case_sensitive, sort_by=sort_by,
+                          suppress_future=suppress_future, tag=tag,
+                          grep_path=self.config['grep_path'])
+
+    def mark_todo(self, note_path, line_number, status):
+        return _mark_todo(notes_directory=self.config['notes_directory'],
+                          note_path=note_path, line_number=line_number,
+                          status=status)
+
+    # Questions
+    def get_questions(question_status='all', directory_filter=None):
+        pass
+
+    # Definitions
+    def get_definitions(directory_filter=None):
+        pass
+
+    # Locations
+    def get_locations(directory_filter=None):
+        pass
+
+    # Record Sets
+    def _get_record_sets(directory_filter=None):
+        pass
+
+    def get_record_set(file_path, line_number, parse=True,
+                       parse_format='json', include_config=False):
         pass
