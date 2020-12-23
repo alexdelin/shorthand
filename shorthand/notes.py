@@ -1,4 +1,3 @@
-import codecs
 import logging
 
 from shorthand.utils.paths import get_full_path

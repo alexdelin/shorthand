@@ -1,7 +1,7 @@
 import logging
 
+from shorthand.notes import _get_note, _update_note
 from shorthand.elements.todos import _get_todos, _mark_todo
-
 from shorthand.utils.config import get_notes_config, write_config, \
     modify_config
 from shorthand.utils.logging import get_handler
@@ -61,16 +61,18 @@ class ShorthandServer(object):
     # ---------------------------
 
     # Notes
-    def get_note(file_path):
+    def get_note(self, note_path):
+        return _get_note(notes_directory=self.config['notes_directory'],
+                         path=note_path)
+
+    def update_note(self, note_path, content):
+        return _update_note(notes_directory=self.config['notes_directory'],
+                            file_path=note_path, content=content)
+
+    def append_to_note(self):
         raise NotImplementedError
 
-    def update_note(file_path, content):
-        pass
-
-    def append_to_note():
-        raise NotImplementedError
-
-    def create_note():
+    def create_note(self):
         raise NotImplementedError
 
     # Stamping

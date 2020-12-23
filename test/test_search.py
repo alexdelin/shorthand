@@ -242,7 +242,7 @@ class TestTypeahead(unittest.TestCase):
         assert results == ['food']
 
         results = get_typeahead_results('inc')
-        assert results == ['includes', 'inclues', 'included', 'incomplete']
+        assert results == ['includes', 'included', 'incomplete']
 
     def test_typeahead_bigram(self):
 

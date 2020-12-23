@@ -63,21 +63,20 @@ def get_search_results():
 
 @shorthand_api_blueprint.route('/api/v1/note', methods=['GET'])
 def get_full_note():
-    SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
-
+    server = ShorthandServer(current_app.config['config_path'])
     path = request.args.get('path')
-    return _get_note(SHORTHAND_CONFIG['notes_directory'], path)
+    return server.get_note(path)
 
 
 @shorthand_api_blueprint.route('/api/v1/note', methods=['POST'])
 def write_updated_note():
-    SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
+    server = ShorthandServer(current_app.config['config_path'])
 
     path = request.args.get('path')
     request.get_data()
     content = request.data.decode('utf-8')
 
-    _update_note(SHORTHAND_CONFIG['notes_directory'], path, content)
+    server.update_note(path, content)
     return 'Note Updated'
 
 
