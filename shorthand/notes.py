@@ -78,6 +78,8 @@ def _validate_internal_links(notes_directory, grep_path='grep'):
 
     for line in output_lines:
 
+        log.debug(f'Got line "{line}"')
+
         if not line.strip():
             continue
 
@@ -95,6 +97,7 @@ def _validate_internal_links(notes_directory, grep_path='grep'):
             # with `[` and ends with `](`
             link_text = match[0][1:-2]
             link_target = match[1]
+            log.debug(match)
             link_full_target = get_full_path(notes_directory, link_target)
             if not os.path.exists(link_full_target):
                 link = {

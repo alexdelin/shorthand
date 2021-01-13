@@ -2,7 +2,7 @@ import json
 import logging
 import unittest
 
-from shorthand.notes import _get_note, _update_note
+from shorthand.notes import _get_note, _update_note, _validate_internal_links
 from shorthand.utils.logging import setup_logging
 from shorthand.web.app import create_app
 
@@ -53,6 +53,27 @@ class TestNotesOperations(unittest.TestCase):
         note_content = _get_note(notes_directory=CONFIG['notes_directory'],
                                  path=test_path)
         assert note_content == test_content
+
+    def test_check_links(self):
+        invalid_links = _validate_internal_links(
+            notes_directory=CONFIG['notes_directory'],
+            grep_path=CONFIG['grep_path'])
+        assert invalid_links == [
+            {
+                'line_number': '30',
+                'path': '/section/mixed.note',
+                'link_target': '/does/not/exist.note',
+                'link_text': 'broken'
+            }, {
+                'line_number': '30',
+                'link_target': '/section/mixd.note',
+                'link_text': 'typos',
+                'path': '/section/mixed.note'
+            }
+        ]
+
+    def test_check_headings(self):
+        pass
 
 
 class TestNotesOperationsFlask(unittest.TestCase):

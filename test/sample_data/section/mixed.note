@@ -21,3 +21,10 @@ There are a bunch of great recipes that everyone should know how to make
     @ Granny Smith
 
 [] Test different cooking times for this recipe :food: :baking:
+
+### Links
+If you missed the stuff in the parent directory, there are [todos](/todos.note), [questions](/questions.note), [definitions](/definitions.note), and more.
+
+You can link to external sites like the [NY Times](https://nytimes.com)
+
+Some links may become [broken](/does/not/exist.note) over time, or contain [typos](/section/mixd.note). Thankfully there is tooling to identify that.
