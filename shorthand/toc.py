@@ -12,7 +12,8 @@ def _get_toc(notes_directory, directory_filter=None):
     full_contents = list(os.walk(notes_directory, topdown=False))
     for dir_path, dirnames, filenames in full_contents:
 
-        if '.git' in dir_path:
+        # Skip all hidden folders
+        if '/.' in dir_path:
             continue
 
         if notes_directory in dir_path:
@@ -35,7 +36,7 @@ def _get_toc(notes_directory, directory_filter=None):
         populated_subdirs = []
         for subdir in fs_lookup[dir_path]['dirs']:
 
-            if subdir == '.git':
+            if subdir[0] == '.':
                 continue
 
             subdir_full_path = dir_path + '/' + subdir
