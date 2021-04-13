@@ -17,23 +17,22 @@ from shorthand.web.blueprints.static_elements import static_content
 
 
 shorthand_ui_blueprint = Blueprint('shorthand_ui_blueprint', __name__,
-                                   static_folder='static',
                                    template_folder='templates')
 
 
 @shorthand_ui_blueprint.route('/js/<path:path>', methods=['GET', 'POST'])
 def send_js(path):
-    return send_from_directory('static/js', path)
+    return send_from_directory('blueprints/static/js', path)
 
 
 @shorthand_ui_blueprint.route('/css/<path:path>', methods=['GET', 'POST'])
 def send_css(path):
-    return send_from_directory('static/css', path)
+    return send_from_directory('blueprints/static/css', path)
 
 
 @shorthand_ui_blueprint.route('/img/<path:path>', methods=['GET', 'POST'])
 def send_img(path):
-    return send_from_directory('static/img', path)
+    return send_from_directory('blueprints/static/img', path)
 
 
 @shorthand_ui_blueprint.route('/', methods=['GET'])

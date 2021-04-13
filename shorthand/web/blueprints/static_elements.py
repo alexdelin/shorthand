@@ -9,28 +9,28 @@ HEADER_HTML = '''<div class="row top-gutter">
             <div class="col-md-7" id="title-wrapper">
                 <h1 id="notes-title">Notes</h1>
             </div>
-            <div class="col-md-1 icon-wrapper"><a href="/"><img class="svg-icon" src="/img/home-24.svg"></a></div>
-            <div class="col-md-1 icon-wrapper" id="elementsWrapper"><a id="elementsCollapser" href="#"><img class="svg-icon" src="/img/code-square-24.svg"></a></div>
-            <div class="col-md-1 icon-wrapper"><a href="/calendar"><img class="svg-icon" src="/img/calendar-24.svg"></a></div>
-            <div class="col-md-1 icon-wrapper"><a href="/search"><img class="svg-icon" src="/img/search-24.svg"></a></div>
-            <div class="col-md-1 icon-wrapper" id="optionsWrapper"><a id="optionsCollapser" href="#"><img class="svg-icon" src="/img/tools-24.svg"></a></div>
+            <div class="col-md-1 icon-wrapper"><a href="/"><i class="bi-house svg-icon"></i></a></div>
+            <div class="col-md-1 icon-wrapper" id="elementsWrapper"><a id="elementsCollapser" href="#"><i class="bi-code-square svg-icon"></i></a></div>
+            <div class="col-md-1 icon-wrapper"><a href="/calendar"><i class="bi-calendar-week svg-icon"></i></a></div>
+            <div class="col-md-1 icon-wrapper"><a href="/search"><i class="bi-search svg-icon"></i></a></div>
+            <div class="col-md-1 icon-wrapper" id="optionsWrapper"><a id="optionsCollapser" href="#"><i class="bi-wrench svg-icon"></i></a></div>
         </div>
 
         <!-- Elements Bar -->
         <div class="row title-bar elements-bar collapse" id="elementsBar">
             <div class="col-md-7"></div>
-            <div class="col-md-1 icon-wrapper"><a href="/todos"><img class="svg-icon" src="/img/tasklist-24.svg"></a></div>
-            <div class="col-md-1 icon-wrapper"><a href="/questions"><img class="svg-icon" src="/img/question-24.svg"></a></div>
-            <div class="col-md-1 icon-wrapper"><a href="/glossary"><img class="svg-icon" src="/img/book-24.svg"></a></div>
-            <div class="col-md-1 icon-wrapper"><a href="/databases"><img class="svg-icon" src="/img/database-24.svg"></a></div>
-            <div class="col-md-1 icon-wrapper"><a href="/locations"><img class="svg-icon" src="/img/globe-24.svg"></a></div>
+            <div class="col-md-1 icon-wrapper"><a href="/todos"><i class="bi-check-square svg-icon"></i></a></div>
+            <div class="col-md-1 icon-wrapper"><a href="/questions"><i class="bi-question-circle svg-icon"></i></a></div>
+            <div class="col-md-1 icon-wrapper"><a href="/glossary"><i class="bi-book svg-icon"></i></a></div>
+            <div class="col-md-1 icon-wrapper"><a href="/databases"><i class="bi-table svg-icon"></i></a></div>
+            <div class="col-md-1 icon-wrapper"><a href="/locations"><i class="bi-geo-fill svg-icon"></i></a></div>
         </div>
 
         <!-- Options Bar -->
         <div class="row options-bar collapse" id="optionsBar">
             <div class="col-md-10"></div>
-            <div class="col-md-1 icon-wrapper"><a id="syncIcon" href="#"><img class="svg-icon" src="/img/sync-24.svg"></a></div>
-            <div class="col-md-1 icon-wrapper"><a href="#"><img class="svg-icon" src="/img/settings-24.svg"></a></div>
+            <div class="col-md-1 icon-wrapper"><a id="syncIcon" href="#"><i class="bi-cloud-arrow-down svg-icon"></i></a></div>
+            <div class="col-md-1 icon-wrapper"><a href="#"><i class="bi-gear svg-icon"></i></a></div>
         </div>'''
 
 ERROR_MODAL = '''<div id="modalWrapper">
@@ -78,6 +78,7 @@ FILE_FINDER_MODAL = '''<!-- File Finder Modal -->
 COMMON_IMPORTS = '''<!-- Common Resources for all pages -->
     <link rel="stylesheet" type="text/css" href="/css/shorthand-common.css">
     <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap-icons.css">
     <script type="text/javascript" src="/js/jquery-3.3.1.min.js"></script>
     <script type="text/javascript" src="/js/shorthand-common.js" defer></script>
     <script type="text/javascript" src="/js/bootstrap.js" defer></script>
