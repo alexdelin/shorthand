@@ -23,6 +23,9 @@ def _get_note(notes_directory, path):
 
     full_path = get_full_path(notes_directory, path)
 
+    if not os.path.exists(full_path):
+        raise ValueError(f'Note to get at path {path} does not exist')
+
     with open(full_path, 'r') as note_file_object:
         note_content = note_file_object.read()
 
@@ -37,20 +40,54 @@ def _update_note(notes_directory, file_path, content):
     # a relative path is specified
     full_path = get_full_path(notes_directory, file_path)
 
+    if not os.path.exists(full_path):
+        raise ValueError(f'Note to get at path {file_path} does not exist')
+
     with open(full_path, 'w') as note_file:
         note_file.write(content)
 
 
-def _append_to_note():
+def _append_to_note(notes_directory, note_path, content, blank_lines=1):
     '''Append the specified content to an existing note
     '''
-    raise NotImplementedError('Not implemented yet!')
+    full_path = get_full_path(notes_directory, note_path)
+
+    if not os.path.exists(full_path):
+        raise ValueError(f'Note to append to at path {note_path} does '
+                         f'not exist')
+
+    if blank_lines:
+        content = ('\n' * (blank_lines + 1)) + content
+
+    with open(full_path, 'a') as note_file:
+        note_file.write(content)
 
 
-def _create_note():
+def _create_note(notes_directory, note_path, content=None):
     '''Create a new note
     '''
-    raise NotImplementedError('Not implemented yet!')
+    if not note_path:
+        raise ValueError('No note path provided for new note to create')
+
+    full_path = get_full_path(notes_directory, note_path)
+
+    if os.path.exists(full_path):
+        raise ValueError(f'Note to create at path {note_path} already exists')
+
+    with open(full_path, 'w') as f:
+        if content:
+            f.write(content)
+
+
+def _delete_note(notes_directory, note_path):
+    '''Deletes a note from the filesystem
+    '''
+    full_path = get_full_path(notes_directory, note_path)
+
+    if not os.path.exists(full_path):
+        raise ValueError(f'Note to delete at path {note_path} does not exist')
+
+    os.remove(full_path)
 
 
 def _validate_internal_links(notes_directory, grep_path='grep'):
@@ -109,3 +146,74 @@ def _validate_internal_links(notes_directory, grep_path='grep'):
                 invalid_links.append(link)
 
     return invalid_links
+
+
+def _get_backlinks(notes_directory, note_path):
+    '''Get backlinks from various notes to the specified note
+    '''
+    raise NotImplementedError('Not implemented yet!')
+
+
+def _get_all_links(notes_directory, include_external=False,
+                   include_invalid=False, grep_path='grep'):
+    '''Get all links between notes within the notes directory
+    '''
+
+    if include_external:
+        #TODO - Implement this
+        raise NotImplementedError('Including external links is not implemented yet!')
+
+    else:
+
+        links = []
+
+        # Use Grep to find all internal links
+        grep_command = '{grep_path} -Prn "{pattern}" '\
+                       '--include="*.note" {dir}'.format(
+                            grep_path=grep_path,
+                            pattern=INTERNAL_LINK_PATTERN,
+                            dir=notes_directory)
+        log.debug(f'Running grep command {grep_command} to get internal links')
+
+        proc = Popen(
+            grep_command,
+            stdout=PIPE, stderr=PIPE,
+            shell=True)
+        output, err = proc.communicate()
+        output_lines = output.decode().split('\n')
+
+        for line in output_lines:
+
+            log.debug(f'Got line "{line}"')
+
+            if not line.strip():
+                continue
+
+            split_line = line.split(':', 2)
+
+            file_path = split_line[0].strip()
+            line_number = split_line[1].strip()
+            match_content = split_line[2].strip()
+
+            note_path = get_relative_path(notes_directory, file_path)
+
+            matches = link_regex.findall(match_content)
+            for match in matches:
+                # The matching group for the text starts
+                # with `[` and ends with `](`
+                link_text = match[0][1:-2]
+                link_target = match[1]
+                log.debug(match)
+                link_full_target = get_full_path(notes_directory, link_target)
+                if not include_invalid:
+                    if not os.path.exists(link_full_target):
+                        log.info(f'Skipping invalid link to {link_target}')
+                        continue
+                link = {
+                    'line_number': line_number,
+                    'source': note_path,
+                    'target': link_target,
+                    'text': link_text
+                }
+                links.append(link)
+        return links
