@@ -21,11 +21,6 @@ class TestNotesOperations(unittest.TestCase):
     """Test basic operations on note files via the library"""
 
     @classmethod
-    def setup_class(cls):
-        # ensure that we have a clean environment before running any tests
-        _ = setup_environment()
-
-    @classmethod
     def teardown_class(cls):
         '''Ensure that we don't leave stamped
         notes around after the tests are run
@@ -34,7 +29,9 @@ class TestNotesOperations(unittest.TestCase):
 
     def setup_method(self, method):
         '''Validate that the environment has been set up correctly
+        Re-do the setup every time because we are modifying notes in most tests
         '''
+        _ = setup_environment()
         validate_setup()
 
     def test_get_note(self):
