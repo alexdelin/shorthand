@@ -1,6 +1,7 @@
 import logging
 import unittest
 import pytest
+import random
 
 from shorthand.notes import _get_note, _update_note, \
                             _validate_internal_links, _create_note, \
@@ -10,12 +11,14 @@ from shorthand.web.app import create_app
 
 from utils import setup_environment, teardown_environment, validate_setup, \
                   TEST_CONFIG_PATH
+from model import ShorthandModel
 from results_unstamped import ALL_LINKS
 
 
 CONFIG = setup_environment()
 setup_logging(CONFIG)
 log = logging.getLogger(__name__)
+MODEL = ShorthandModel()
 
 
 class TestNotesOperations(unittest.TestCase):
@@ -140,39 +143,62 @@ class TestLinkOperations(unittest.TestCase):
                 'link_text': 'broken'
             }, {
                 'line_number': '30',
-                'link_target': '/section/mixd.note',
+                'link_target': '/lokations.note',
                 'link_text': 'typos',
                 'path': '/section/mixed.note'
             }
         ]
 
-    def test_get_links(self):
+    def test_get_all_links(self):
         # Test Getting all notes
         all_links = _get_links(notes_directory=CONFIG['notes_directory'],
                                source=None, target=None,
-                               include_external=False, include_invalid=False,
+                               include_external=True, include_invalid=True,
                                grep_path=CONFIG['grep_path'])
-        assert all_links == ALL_LINKS
+        self.assertCountEqual(all_links, ALL_LINKS)
 
         # Test filtering for source
         for test_source in ['/section/mixed.note', '/todos.note',
                             '/questions.note', '/does-not-exist.note']:
             results = _get_links(notes_directory=CONFIG['notes_directory'],
                                  source=test_source, target=None,
-                                 include_external=False, include_invalid=False,
+                                 include_external=True, include_invalid=True,
                                  grep_path=CONFIG['grep_path'])
-            assert results == [link for link in ALL_LINKS
-                               if link['source'] == test_source]
+            self.assertCountEqual(results, [link for link in ALL_LINKS
+                                            if link['source'] == test_source])
 
         # Test filtering for target
         for test_target in ['/definitions.note', '/section/mixed.note',
                             '/does-not-exist.note']:
             results = _get_links(notes_directory=CONFIG['notes_directory'],
                                  source=None, target=test_target,
-                                 include_external=False, include_invalid=False,
+                                 include_external=True, include_invalid=True,
                                  grep_path=CONFIG['grep_path'])
-            assert results == [link for link in ALL_LINKS
-                               if link['target'] == test_target]
+            self.assertCountEqual(results, [link for link in ALL_LINKS
+                                            if link['target'] == test_target])
+
+    def test_get_links_model(self):
+        sources = [None, '/section/mixed.note', '/todos.note',
+                   '/questions.note', '/does-not-exist.note']
+        targets = [None, '/definitions.note', '/section/mixed.note',
+                   '/does-not-exist.note', '/bugs.note', 'https://nytimes.com']
+        external_options = [True, False]
+        invalid_options = [True, False]
+
+        for _ in range(50):
+            args = {
+                'notes_directory': CONFIG['notes_directory'],
+                'source': random.choice(sources),
+                'target': random.choice(targets),
+                'include_external': random.choice(external_options),
+                'include_invalid': random.choice(invalid_options),
+                'grep_path': CONFIG['grep_path']
+            }
+            log.debug(f"source: {args['source']}, target: {args['target']}, "
+                      f"external: {args['include_external']}, "
+                      f"invalid: {args['include_invalid']}")
+            self.assertCountEqual(_get_links(**args),
+                                  MODEL.get_links(**args))
 
     def test_get_backlinks(self):
         pass

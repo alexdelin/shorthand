@@ -53,3 +53,5 @@ These are malformed todos
 This is an empty Todo
 
 []
+
+Examples for some previously seen edge cases can be found in the [bugs document](/bugs.note)

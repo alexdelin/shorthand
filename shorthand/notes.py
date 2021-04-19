@@ -4,10 +4,11 @@ from subprocess import Popen, PIPE
 import logging
 
 from shorthand.utils.paths import get_full_path, get_relative_path
-from shorthand.utils.patterns import INTERNAL_LINK_PATTERN
+from shorthand.utils.patterns import INTERNAL_LINK_PATTERN, ALL_LINK_PATTERN
 
 
-link_regex = re.compile(INTERNAL_LINK_PATTERN)
+link_regex = re.compile(ALL_LINK_PATTERN)
+internal_link_regex = re.compile(INTERNAL_LINK_PATTERN)
 
 
 log = logging.getLogger(__name__)
@@ -128,7 +129,7 @@ def _validate_internal_links(notes_directory, grep_path='grep'):
 
         note_path = get_relative_path(notes_directory, file_path)
 
-        matches = link_regex.findall(match_content)
+        matches = internal_link_regex.findall(match_content)
         for match in matches:
             # The matching group for the text starts
             # with `[` and ends with `](`
@@ -231,12 +232,19 @@ def _get_links(notes_directory, source=None, target=None,
                 log.debug(f'Found invliad target {link_target}')
                 continue
 
+            if not include_external and link_target[0] != '/':
+                continue
+
             log.debug(match)
-            link_full_target = get_full_path(notes_directory, link_target)
-            if not include_invalid:
-                if not os.path.exists(link_full_target):
-                    log.info(f'Skipping invalid link to {link_target}')
-                    continue
+
+            # Only check that targets of internal links
+            # actually exist (if we need to)
+            if link_target[0] == '/':
+                link_full_target = get_full_path(notes_directory, link_target)
+                if not include_invalid:
+                    if not os.path.exists(link_full_target):
+                        log.info(f'Skipping invalid link to {link_target}')
+                        continue
 
             link = {
                 'line_number': line_number,

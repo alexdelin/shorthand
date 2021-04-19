@@ -71,6 +71,7 @@ RECORD_SET_PATTERN = r'^```rec-data$'
 
 #   Matches any link
 LINK_PATTERN = r'\[.*?\]\(.*?\)'
+ALL_LINK_PATTERN = r'(\[[^\[]*?\]\()(.*?)(\))'
 #   Matches a link to another note
 INTERNAL_LINK_PATTERN = r'(\[[^\[]*?\]\()(\/.*?)(\))'
 

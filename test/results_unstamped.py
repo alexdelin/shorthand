@@ -389,9 +389,34 @@ ALL_LINKS = [
         'target': '/definitions.note',
         'text': 'definitions'
     }, {
+        'line_number': '30',
+        'source': '/section/mixed.note',
+        'target': '/does/not/exist.note',
+        'text': 'broken'
+    }, {
+        'line_number': '30',
+        'source': '/section/mixed.note',
+        'target': '/lokations.note',
+        'text': 'typos'
+    }, {
         'line_number': '2',
         'source': '/todos.note',
         'target': '/section/mixed.note',
         'text': 'the mixed example'
+    }, {
+        'line_number': '57',
+        'source': '/todos.note',
+        'target': '/bugs.note',
+        'text': 'bugs document'
+    }, {
+        'line_number': '23',
+        'source': '/questions.note',
+        'target': '/section/mixed.note',
+        'text': 'mixed example'
+    }, {
+        'line_number': '28',
+        'source': '/section/mixed.note',
+        'target': 'https://nytimes.com',
+        'text': 'NY Times'
     }
 ]

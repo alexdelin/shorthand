@@ -6,13 +6,15 @@ This model relies on the raw structured elements in the file
 `results_unstamped.py`
 '''
 
+import os
 import shlex
 import copy
 from datetime import datetime
 
+from shorthand.utils.paths import get_display_path, get_full_path
+
 from results_unstamped import ALL_INCOMPLETE_TODOS, ALL_SKIPPED_TODOS, \
-                              ALL_COMPLETE_TODOS, ALL_QUESTIONS
-from shorthand.utils.paths import get_display_path
+                              ALL_COMPLETE_TODOS, ALL_QUESTIONS, ALL_LINKS
 
 
 class ShorthandModel(object):
@@ -145,3 +147,32 @@ class ShorthandModel(object):
                         question['answer_date'] = datetime.now().isoformat()[:10]
 
         return questions
+
+    def get_links(self, notes_directory, source=None, target=None,
+                  include_external=False, include_invalid=False,
+                  grep_path=None):
+
+        links = ALL_LINKS
+
+        # Filter for source
+        if source:
+            links = [link for link in links if link['source'] == source]
+
+        # Filter for target
+        if target:
+            links = [link for link in links if link['target'] == target]
+
+        # Filter for internal only vs. external
+        if not include_external:
+            links = [link for link in links if link['target'][0] == '/']
+
+        # Filter for valid internal targets
+        if not include_invalid:
+            links = [link for link in links
+                     # Is an external link
+                     if link['target'][0] != '/'
+                     # It is a valid internal link
+                     or os.path.exists(get_full_path(notes_directory,
+                                                     link['target']))]
+
+        return links
