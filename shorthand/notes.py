@@ -153,6 +153,7 @@ def _get_backlinks(notes_directory, note_path, grep_path='grep'):
     '''Get backlinks from various notes to the specified note
     '''
     return _get_links(notes_directory=notes_directory, target=note_path,
+                      include_external=False, include_invalid=False,
                       grep_path=grep_path)
 
 

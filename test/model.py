@@ -176,3 +176,8 @@ class ShorthandModel(object):
                                                      link['target']))]
 
         return links
+
+    def get_backlinks(self, notes_directory, note_path, grep_path='grep'):
+        return self.get_links(notes_directory=notes_directory,
+                              target=note_path, include_external=False,
+                              include_invalid=False, grep_path=grep_path)

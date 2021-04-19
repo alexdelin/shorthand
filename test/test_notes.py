@@ -5,7 +5,8 @@ import random
 
 from shorthand.notes import _get_note, _update_note, \
                             _validate_internal_links, _create_note, \
-                            _append_to_note, _delete_note, _get_links
+                            _append_to_note, _delete_note, _get_links, \
+                            _get_backlinks
 from shorthand.utils.logging import setup_logging
 from shorthand.web.app import create_app
 
@@ -201,7 +202,22 @@ class TestLinkOperations(unittest.TestCase):
                                   MODEL.get_links(**args))
 
     def test_get_backlinks(self):
-        pass
+
+        targets = ['/definitions.note', '/section/mixed.note',
+                   '/does-not-exist.note', '/bugs.note']
+        for target in targets:
+            args = {
+                'notes_directory': CONFIG['notes_directory'],
+                'note_path': target,
+                'grep_path': CONFIG['grep_path']
+            }
+            self.assertCountEqual(_get_backlinks(**args),
+                                  MODEL.get_backlinks(**args))
+
+        # Ensure you can't get backlinks for an external target
+        backlinks = _get_backlinks(notes_directory=CONFIG['notes_directory'],
+                                   note_path='https://nytimes.com')
+        assert len(backlinks) == 0
 
 
 class TestNotesOperationsFlask(unittest.TestCase):
