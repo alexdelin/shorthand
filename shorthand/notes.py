@@ -148,72 +148,103 @@ def _validate_internal_links(notes_directory, grep_path='grep'):
     return invalid_links
 
 
-def _get_backlinks(notes_directory, note_path):
+def _get_backlinks(notes_directory, note_path, grep_path='grep'):
     '''Get backlinks from various notes to the specified note
     '''
-    raise NotImplementedError('Not implemented yet!')
+    return _get_links(notes_directory=notes_directory, target=note_path,
+                      grep_path=grep_path)
 
 
-def _get_all_links(notes_directory, include_external=False,
-                   include_invalid=False, grep_path='grep'):
+def _get_links(notes_directory, source=None, target=None,
+               include_external=False, include_invalid=False,
+               grep_path='grep'):
     '''Get all links between notes within the notes directory
     '''
 
-    if include_external:
-        #TODO - Implement this
-        raise NotImplementedError('Including external links is not implemented yet!')
+    links = []
 
+    LINK_PATTERN = r'(\[)([^\[]*?)(\]\()'
+    if target:
+        LINK_PATTERN += rf'({target})'
+    elif not include_external:
+        LINK_PATTERN += r'(\/.*?)'
     else:
+        LINK_PATTERN += r'(.*?)'
+    LINK_PATTERN += r'(\))'
 
-        links = []
+    if source:
+        search_path = get_full_path(notes_directory, source)
+    else:
+        search_path = notes_directory
 
-        # Use Grep to find all internal links
-        grep_command = '{grep_path} -Prn "{pattern}" '\
-                       '--include="*.note" {dir}'.format(
-                            grep_path=grep_path,
-                            pattern=INTERNAL_LINK_PATTERN,
-                            dir=notes_directory)
-        log.debug(f'Running grep command {grep_command} to get internal links')
+    # Use Grep to find all links
+    grep_command = '{grep_path} -Prn "{pattern}" '\
+                   '--include="*.note" {dir}'.format(
+                        grep_path=grep_path,
+                        pattern=LINK_PATTERN,
+                        dir=search_path)
+    log.debug(f'Running grep command {grep_command} to get links')
 
-        proc = Popen(
-            grep_command,
-            stdout=PIPE, stderr=PIPE,
-            shell=True)
-        output, err = proc.communicate()
-        output_lines = output.decode().split('\n')
+    proc = Popen(
+        grep_command,
+        stdout=PIPE, stderr=PIPE,
+        shell=True)
+    output, err = proc.communicate()
+    output_lines = output.decode().split('\n')
 
-        for line in output_lines:
+    for line in output_lines:
 
-            log.debug(f'Got line "{line}"')
+        log.debug(f'Got line "{line}"')
 
-            if not line.strip():
-                continue
+        if not line.strip():
+            continue
 
+        # Grep returns results in different forms depending on if you specify
+        # a path to a file or directory
+        #     dir:  <file-path>:<line-number>:<line>
+        #     file: <line-number>:<line>
+        if source:
+            split_line = line.split(':', 1)
+
+            file_path = source
+            line_number = split_line[0].strip()
+            match_content = split_line[1].strip()
+
+        else:
             split_line = line.split(':', 2)
 
             file_path = split_line[0].strip()
             line_number = split_line[1].strip()
             match_content = split_line[2].strip()
 
-            note_path = get_relative_path(notes_directory, file_path)
+        note_path = get_relative_path(notes_directory, file_path)
 
-            matches = link_regex.findall(match_content)
-            for match in matches:
-                # The matching group for the text starts
-                # with `[` and ends with `](`
-                link_text = match[0][1:-2]
-                link_target = match[1]
-                log.debug(match)
-                link_full_target = get_full_path(notes_directory, link_target)
-                if not include_invalid:
-                    if not os.path.exists(link_full_target):
-                        log.info(f'Skipping invalid link to {link_target}')
-                        continue
-                link = {
-                    'line_number': line_number,
-                    'source': note_path,
-                    'target': link_target,
-                    'text': link_text
-                }
-                links.append(link)
-        return links
+        matches = link_regex.findall(match_content)
+        for match in matches:
+
+            # The matching group for the text starts
+            # with `[` and ends with `](`
+            link_text = match[0][1:-2]
+            link_target = match[1]
+
+            if target and link_target != target:
+                log.debug(f'Found invliad target {link_target}')
+                continue
+
+            log.debug(match)
+            link_full_target = get_full_path(notes_directory, link_target)
+            if not include_invalid:
+                if not os.path.exists(link_full_target):
+                    log.info(f'Skipping invalid link to {link_target}')
+                    continue
+
+            link = {
+                'line_number': line_number,
+                'source': note_path,
+                'target': link_target,
+                'text': link_text
+            }
+
+            links.append(link)
+
+    return links

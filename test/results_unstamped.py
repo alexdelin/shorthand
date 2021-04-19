@@ -371,3 +371,27 @@ CALENDAR = {
         }
     }
 }
+
+ALL_LINKS = [
+    {
+        'line_number': '26',
+        'source': '/section/mixed.note',
+        'target': '/todos.note',
+        'text': 'todos'
+    }, {
+        'line_number': '26',
+        'source': '/section/mixed.note',
+        'target': '/questions.note',
+        'text': 'questions'
+    }, {
+        'line_number': '26',
+        'source': '/section/mixed.note',
+        'target': '/definitions.note',
+        'text': 'definitions'
+    }, {
+        'line_number': '2',
+        'source': '/todos.note',
+        'target': '/section/mixed.note',
+        'text': 'the mixed example'
+    }
+]

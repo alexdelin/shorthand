@@ -4,12 +4,13 @@ import pytest
 
 from shorthand.notes import _get_note, _update_note, \
                             _validate_internal_links, _create_note, \
-                            _append_to_note, _delete_note
+                            _append_to_note, _delete_note, _get_links
 from shorthand.utils.logging import setup_logging
 from shorthand.web.app import create_app
 
 from utils import setup_environment, teardown_environment, validate_setup, \
                   TEST_CONFIG_PATH
+from results_unstamped import ALL_LINKS
 
 
 CONFIG = setup_environment()
@@ -145,10 +146,35 @@ class TestLinkOperations(unittest.TestCase):
             }
         ]
 
-    def test_get_backlinks(self):
-        pass
+    def test_get_links(self):
+        # Test Getting all notes
+        all_links = _get_links(notes_directory=CONFIG['notes_directory'],
+                               source=None, target=None,
+                               include_external=False, include_invalid=False,
+                               grep_path=CONFIG['grep_path'])
+        assert all_links == ALL_LINKS
 
-    def test_get_all_links(self):
+        # Test filtering for source
+        for test_source in ['/section/mixed.note', '/todos.note',
+                            '/questions.note', '/does-not-exist.note']:
+            results = _get_links(notes_directory=CONFIG['notes_directory'],
+                                 source=test_source, target=None,
+                                 include_external=False, include_invalid=False,
+                                 grep_path=CONFIG['grep_path'])
+            assert results == [link for link in ALL_LINKS
+                               if link['source'] == test_source]
+
+        # Test filtering for target
+        for test_target in ['/definitions.note', '/section/mixed.note',
+                            '/does-not-exist.note']:
+            results = _get_links(notes_directory=CONFIG['notes_directory'],
+                                 source=None, target=test_target,
+                                 include_external=False, include_invalid=False,
+                                 grep_path=CONFIG['grep_path'])
+            assert results == [link for link in ALL_LINKS
+                               if link['target'] == test_target]
+
+    def test_get_backlinks(self):
         pass
 
 
