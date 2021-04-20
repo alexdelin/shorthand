@@ -5,8 +5,15 @@ from shorthand.notes import _get_note, _update_note, \
                             _create_note, _get_backlinks, _get_links
 from shorthand.calendar import _get_calendar
 from shorthand.tags import _get_tags
+from shorthand.toc import _get_toc
 from shorthand.stamping import _stamp_notes
 from shorthand.elements.todos import _get_todos, _mark_todo
+from shorthand.elements.questions import _get_questions
+from shorthand.elements.definitions import _get_definitions
+from shorthand.elements.locations import _get_locations
+from shorthand.elements.record_sets import _get_record_sets, _get_record_set
+from shorthand.frontend.typeahead import _update_ngram_database, \
+                                         _get_typeahead_suggestions
 from shorthand.utils.config import get_notes_config, write_config, \
                                    modify_config
 from shorthand.utils.logging import get_handler
@@ -124,14 +131,19 @@ class ShorthandServer(object):
 
     # TOC
     def get_toc(self, directory_filter=None):
-        pass
+        return _get_toc(notes_directory=self.config['notes_directory'],
+                        directory_filter=directory_filter)
 
     # Typeahead
     def update_ngram_database(self):
-        pass
+        return _update_ngram_database(
+            notes_directory=self.config['notes_directory'],
+            ngram_db_dir=self.config['cache_directory'])
 
     def get_typeahead_suggestions(self, query_string, limit=10):
-        pass
+        return _get_typeahead_suggestions(
+            ngram_db_dir=self.config['cache_directory'],
+            query_string=query_string, limit=limit)
 
     # ----------------
     # --- Elements ---
@@ -155,21 +167,33 @@ class ShorthandServer(object):
                           status=status)
 
     # Questions
-    def get_questions(question_status='all', directory_filter=None):
-        pass
+    def get_questions(self, question_status='all', directory_filter=None):
+        return _get_questions(notes_directory=self.config['notes_directory'],
+                              question_status=question_status,
+                              directory_filter=directory_filter,
+                              grep_path=self.config['grep_path'])
 
     # Definitions
-    def get_definitions(directory_filter=None):
-        pass
+    def get_definitions(self, directory_filter=None):
+        return _get_definitions(notes_directory=self.config['notes_directory'],
+                                directory_filter=directory_filter,
+                                grep_path=self.config['grep_path'])
 
     # Locations
-    def get_locations(directory_filter=None):
-        pass
+    def get_locations(self, directory_filter=None):
+        return _get_locations(notes_directory=self.config['notes_directory'],
+                              directory_filter=directory_filter,
+                              grep_path=self.config['grep_path'])
 
     # Record Sets
-    def _get_record_sets(directory_filter=None):
-        pass
+    def _get_record_sets(self, directory_filter=None):
+        return _get_record_sets(notes_directory=self.config['notes_directory'],
+                                directory_filter=directory_filter,
+                                grep_path=self.config['grep_path'])
 
-    def get_record_set(file_path, line_number, parse=True,
+    def get_record_set(self, file_path, line_number, parse=True,
                        parse_format='json', include_config=False):
-        pass
+        return _get_record_set(notes_directory=self.config['notes_directory'],
+                               file_path=file_path, line_number=line_number,
+                               parse=parse, parse_format=parse_format,
+                               include_config=include_config)
