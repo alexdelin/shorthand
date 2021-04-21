@@ -6,7 +6,7 @@ from flask import request, render_template, send_from_directory, Blueprint, \
 
 from shorthand.notes import _get_note
 from shorthand.tags import _get_tags
-from shorthand.calendar import _get_calendar
+from shorthand.history import _get_calendar
 from shorthand.toc import _get_toc
 from shorthand.elements.todos import _get_todos
 from shorthand.elements.questions import _get_questions

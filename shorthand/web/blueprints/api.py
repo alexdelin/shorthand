@@ -9,7 +9,7 @@ from shorthand.stamping import _stamp_notes
 from shorthand.search import _search_notes, _filename_search, \
                                    _record_file_view
 from shorthand.tags import _get_tags
-from shorthand.calendar import _get_calendar
+from shorthand.history import _get_calendar
 from shorthand.toc import _get_toc
 from shorthand.elements.todos import _get_todos, _mark_todo, analyze_todos
 from shorthand.elements.questions import _get_questions
