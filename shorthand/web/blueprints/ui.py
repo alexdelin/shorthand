@@ -35,6 +35,18 @@ def send_img(path):
     return send_from_directory('blueprints/static/img', path)
 
 
+# Frontend API Methods which should all eventually be
+# replaced with proper API methods
+@shorthand_ui_blueprint.route('/frontend-api/redered-markdown',
+                              methods=['GET', 'POST'])
+def send_processed_markdown():
+    SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
+    file_content = _get_note(SHORTHAND_CONFIG['notes_directory'],
+                             request.args.get('path'))
+    file_content, toc_content = get_rendered_markdown(file_content)
+    return file_content
+
+
 @shorthand_ui_blueprint.route('/', methods=['GET'])
 def show_home_page():
     SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
