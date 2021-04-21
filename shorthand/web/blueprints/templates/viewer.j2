@@ -22,7 +22,7 @@
 
     <!-- Helpers for this page -->
     <script src="/js/underscore-min.js"></script>
-    <script src="/js/shorthand-viewer.js" defer></script>
+    <script src="/js/shorthand-viewer.js"></script>
 
     <!-- Mermaid Diagram Rendering -->
     <script src="/js/mermaid.min.js"></script>
@@ -48,6 +48,9 @@
         max-width: 800px;
     }
 </style>
+
+<!-- Metadata -->
+<div id="meta-file-path" style="display: none;">{{ file_path }}</div>
 
 <div class="row fullwrapper justify-content-center">
     <div class="render-pagewrapper">
@@ -103,14 +106,7 @@
 </div>
 
 <script>
-// Render main markdown content
-let md;
-document.addEventListener("DOMContentLoaded", () => {
-    const tm = texmath.use(katex);
-    md = markdownit({html:true}).use(tm,{delimiters:'dollars',macros:{"\\RR": "\\mathbb{R}"}});
-    toc.innerHTML = md.render('{{ toc_content }}');
-    out.innerHTML = md.render('{{ file_content }}');
-})
+$(document).ready(renderNote());
 </script>
 
 </body>

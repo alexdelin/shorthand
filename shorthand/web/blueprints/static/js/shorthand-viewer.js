@@ -3,8 +3,47 @@ $("#showTOC").click(function(){
   $(".toc-content").toggleClass("hidden");
 });
 
+// Fetch current note content via the API and render it
+function renderNote() {
+    // Get rendered markdown from the frontend API
+    var filePath = $('#meta-file-path').text()
+
+    $.ajax({
+        url: '/frontend-api/redered-markdown?' + $.param({path: filePath}),
+        type: 'GET',
+        success: function(noteContent) {
+            console.log(noteContent)
+            // Render main markdown content
+            let md;
+            const tm = texmath.use(katex);
+            md = markdownit({
+                html:true,
+                highlight: function (str, lang) {
+                    if (lang && hljs.getLanguage(lang)) {
+                        try {
+                            return hljs.highlight(lang, str).value;
+                        } catch (__) {}
+                    }
+
+                    return ''; // use external default escaping
+                }
+            }).use(tm,{delimiters:'dollars',macros:{"\\RR": "\\mathbb{R}"}});
+
+            out.innerHTML = md.render(noteContent);
+
+            // Draw record sets & set up maps for locations
+            PostNoteRender();
+
+        },
+        error: function(responseData) {
+            var loadedResponse = JSON.parse(responseData.responseText)
+            showModal(loadedResponse.error)
+        }
+    });
+}
+
 // Render tables with record sets
-$(document).ready(function() {
+function PostNoteRender() {
 
     _.each($('.record-set-table'), function (tableElement) {
         console.log(tableElement);
@@ -55,6 +94,9 @@ $(document).ready(function() {
         map.invalidateSize();
     });
 
-});
+    // Re-draw mermaid diagrams
+    mermaid.contentLoaded()
 
-hljs.initHighlightingOnLoad();
+};
+
+// hljs.initHighlightingOnLoad();

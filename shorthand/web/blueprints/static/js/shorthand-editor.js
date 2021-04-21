@@ -1,20 +1,21 @@
 // Function to Save Note
 function saveNote() {
-    var filePath = $('#meta-file-path').text()
-    var noteContent = editor.getValue()
+    var filePath = $('#meta-file-path').text();
+    var noteContent = editor.getValue();
     $.ajax({
         url: '/api/v1/note?' + $.param({path: filePath}),
         type: 'POST',
         contentType: 'text/plain',
         data: noteContent,
         success: function(response) {
-            console.log(response)
-            editor.session.getUndoManager().markClean()
-            alert(response)
+            console.log(response);
+            editor.session.getUndoManager().markClean();
+            alert(response);
+            renderNote();
         },
         error: function(responseData) {
-            var loadedResponse = JSON.parse(responseData.responseText)
-            showModal(loadedResponse.error)
+            var loadedResponse = JSON.parse(responseData.responseText);
+            showModal(loadedResponse.error);
         }
     });
 }
