@@ -164,6 +164,11 @@ def get_rendered_markdown(markdown_content):
             toc_content_lines.append(toc_markdown_line)
             continue
 
+        # Special handling for markdown tables
+        if markdown_line.lstrip()[0] == '|':
+            html_content_lines.append(markdown_line)
+            continue
+
         # Special handling for display style equations
         if markdown_line.strip()[:2] == '$$' and \
                 markdown_line.strip()[-2:] == '$$':
