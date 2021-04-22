@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
     <!-- Editor Code -->
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.3.1/ace.js"></script>
+    <script type="text/javascript" src="/js/ace.js"></script>
 
     <!-- Helpers for this page -->
     <script type="text/javascript" src="/js/shorthand-editor.js" defer></script>
@@ -124,11 +124,12 @@
 <script>
 // Draw Editor
 var editor = ace.edit("editor", {
-    wrap: true
+    wrap: true,
+    // theme: '/ace/theme/shorthand-light',
+    mode: 'ace/mode/markdown'
 });
 // editor.setTheme("ace/theme/monokai");
-editor.session.setMode("ace/mode/markdown");
-
+editor.setTheme("ace/theme/shorthand-light");
 $(document).ready(renderNote());
 </script>
 
