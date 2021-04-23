@@ -2634,6 +2634,18 @@ var MarkdownHighlightRules = function() {
         token : "markup.list",
         regex : "^\\s*(?:[*+-]|\\d+\\.)\\s+",
         next  : "listblock-start"
+    }, { // Incomplete Todo
+        token : "support.todo.incomplete.start",
+        regex : "([ ]*)(\\[ \\]|\\[\\])(?=\\s)",
+        next  : "todo-incomplete"
+    }, { // Complete Todo
+        token : "support.todo.complete.start",
+        regex : "([ ]*)(\\[X\\])(?=\\s)",
+        next  : "todo-complete"
+    }, { // Skipped Todo
+        token : "support.todo.skipped.start",
+        regex : "([ ]*)(\\[S\\])(?=\\s)",
+        next  : "todo-skipped"
     }, {
         include : "basic"
     });
@@ -2641,55 +2653,91 @@ var MarkdownHighlightRules = function() {
     this.addRules({
         "basic" : [{
             token : "constant.language.escape",
-            regex : /\\[\\`*_{}\[\]()#+\-.!]/
-        }, { // code span `
-            token : "support.function.inline",
-            regex : "(`+)(.*?[^`])(\\1)"
-        }, { // Latex span $
-            token : "support.latex",
-            regex : "(\\$+)(.*?[^\\$])(\\1)"
-        }, { // reference
-            token : ["text", "constant", "text", "url", "string", "text"],
-            regex : "^([ ]{0,3}\\[)([^\\]]+)(\\]:\\s*)([^ ]+)(\\s*(?:[\"][^\"]+[\"])?(\\s*))$"
-        }, { // link by reference
-            token : ["text", "string", "text", "constant", "text"],
-            regex : "(\\[)(" + escaped("]") + ")(\\]\\s*\\[)("+ escaped("]") + ")(\\])"
-        }, { // link by url
-            token : ["text", "string", "text", "markup.underline", "string", "text"],
-            regex : "(\\!?\\[)(" +                                        // [
-                    escaped("]") +                                    // link text or alt text
-                    ")(\\]\\()"+                                      // ](
-                    '((?:[^\\)\\s\\\\]|\\\\.|\\s(?=[^"]))*)' +        // href or image
-                    '(\\s*"' +  escaped('"') + '"\\s*)?' +            // "title"
-                    "(\\))"                                           // )
-        }, { // strong+emphasis *** ___
-            token : "string.strong-emphasis",
-            regex : "([*]{3}|[_]{2}(?=\\S))(.*?\\S[*_]*)(\\1)"
-        }, { // strong ** __
-            token : "string.strong",
-            regex : "([*]{2}|[_]{2}(?=\\S))(.*?\\S[*_]*)(\\1)"
-        }, { // emphasis * _
-            token : "string.emphasis",
-            regex : "([*]|[_](?=\\S))(.*?\\S[*_]*)(\\1)"
-        }, { // strikethrough ~~
-            token : "string.strikethrough",
-            regex : "([~]{2}(?=\\S))(.*?\\S[~]*)(\\1)"
-        }, { // date stamp
-            token : "support.timestamp",
-            regex : "( -> )?(\\(?)\\b((-?(?:[1-9][0-9]*)?[0-9]{4})-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9]))\\b(\\)?)"
-        }, { //
-            token : ["text", "url", "text"],
-            regex : "(<)("+
-                      "(?:https?|ftp|dict):[^'\">\\s]+"+
-                      "|"+
-                      "(?:mailto:)?[-.\\w]+\\@[-a-z0-9]+(?:\\.[-a-z0-9]+)*\\.[a-z]+"+
-                    ")(>)"
+                regex : /\\[\\`*_{}\[\]()#+\-.!]/
+            }, { // code span `
+                token : "support.function.inline",
+                regex : "(`+)(.*?[^`])(\\1)"
+            }, { // Latex span $
+                token : "support.latex",
+                regex : "(\\$+)(.*?[^\\$])(\\1)"
+            }, { // Tag span :
+                token : ["string", "support.tag", "string"],
+                regex : "(:)(.*?[^:])(\\1)"
+            }, { // reference
+                token : ["text", "constant", "text", "url", "string", "text"],
+                regex : "^([ ]{0,3}\\[)([^\\]]+)(\\]:\\s*)([^ ]+)(\\s*(?:[\"][^\"]+[\"])?(\\s*))$"
+            }, { // link by reference
+                token : ["text", "string", "text", "constant", "text"],
+                regex : "(\\[)(" + escaped("]") + ")(\\]\\s*\\[)("+ escaped("]") + ")(\\])"
+            }, { // link by url
+                token : ["text", "string", "text", "markup.underline", "string", "text"],
+                regex : "(\\!?\\[)(" +                                        // [
+                        escaped("]") +                                    // link text or alt text
+                        ")(\\]\\()"+                                      // ](
+                        '((?:[^\\)\\s\\\\]|\\\\.|\\s(?=[^"]))*)' +        // href or image
+                        '(\\s*"' +  escaped('"') + '"\\s*)?' +            // "title"
+                        "(\\))"                                           // )
+            }, { // strong+emphasis *** ___
+                token : ["string", "string.strong-emphasis", "string"],
+                regex : "([*]{3}|[_]{2}(?=\\S))(.*?\\S[*_]*)(\\1)"
+            }, { // strong ** __
+                token : ["string", "string.strong", "string"],
+                regex : "([*]{2}|[_]{2}(?=\\S))(.*?\\S[*_]*)(\\1)"
+            }, { // emphasis * _
+                token : ["string", "string.emphasis", "string"],
+                regex : "([*]|[_](?=\\S))(.*?\\S[*_]*)(\\1)"
+            }, { // strikethrough ~~
+                token : "string.strikethrough",
+                regex : "([~]{2}(?=\\S))(.*?\\S[~]*)(\\1)"
+            }, { // date stamp
+                token : "support.timestamp",
+                regex : "( -> )?(\\(?)\\b((-?(?:[1-9][0-9]*)?[0-9]{4})-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9]))\\b(\\)?)"
+            }, { // location
+                token : ["support.location", "constant.numeric", "punctuation.separator", "constant.numeric", "punctuation.separator", "string", "support.location"],
+                regex : "(GPS\\[)(-?1?\\d{1,2}\\.\\d{3,6})(, ?)(-?1?\\d{1,2}\\.\\d{3,6})(, ?)?([\\w ]+)?(\\])"
+            }, { //
+                token : ["text", "url", "text"],
+                regex : "(<)("+
+                          "(?:https?|ftp|dict):[^'\">\\s]+"+
+                          "|"+
+                          "(?:mailto:)?[-.\\w]+\\@[-a-z0-9]+(?:\\.[-a-z0-9]+)*\\.[a-z]+"+
+                        ")(>)"
         }],
         "allowBlock": [
             {token : "support.function", regex : "^ {4}.+", next : "allowBlock"},
             {token : "empty_line", regex : '^$', next: "allowBlock"},
             {token : "empty", regex : "", next : "start"}
         ],
+
+        "todo-incomplete": [ { // Todos end at newlines
+            token : "eol",
+            regex : "$",
+            next  : "start"
+        }, {
+            include : "basic", noEscape: true
+        }, {
+            defaultToken : "support.todo.incomplete"
+        } ],
+
+        "todo-complete": [ { // Todos end at newlines
+            token : "eol",
+            regex : "$",
+            next  : "start"
+        }, {
+            include : "basic", noEscape: true
+        }, {
+            defaultToken : "support.todo.complete"
+        } ],
+
+        "todo-skipped": [ { // Todos end at newlines
+            token : "eol",
+            regex : "$",
+            next  : "start"
+        }, {
+            include : "basic", noEscape: true
+        }, {
+            defaultToken : "support.todo.skipped"
+        } ],
 
         "header" : [{
             regex: "$",

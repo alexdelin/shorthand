@@ -44,12 +44,33 @@ color: hsl(114, 31%, 38%);\
 color: hsl(114, 31%, 38%);\
 background: hsl(204, 10%, 95%);\
 }\
+.ace-shorthand-light .ace_support.ace_todo.ace_incomplete {\
+color: hsl(32, 93%, 42%);\
+}\
+.ace-shorthand-light .ace_support.ace_todo.ace_incomplete.ace_start {\
+color: hsl(357, 79%, 55%);\
+}\
+.ace-shorthand-light .ace_support.ace_todo.ace_complete {\
+color: hsl(210, 13%, 45%);\
+}\
+.ace-shorthand-light .ace_support.ace_todo.ace_complete.ace_start {\
+color: hsl(210, 50%, 45%);\
+}\
+.ace-shorthand-light .ace_support.ace_todo.ace_skipped {\
+color: hsl(0, 0%, 60%);\
+}\
 .ace-shorthand-light .ace_support.ace_latex {\
 color: hsl(114, 31%, 38%);\
 background: hsl(204, 10%, 95%);\
 }\
+.ace-shorthand-light .ace_support.ace_tag {\
+color: hsl(357, 79%, 55%);\
+}\
 .ace-shorthand-light .ace_support.ace_timestamp {\
 color: hsl(180, 36%, 54%);\
+}\
+.ace-shorthand-light .ace_support.ace_location {\
+color: hsl(180, 36%, 38%);\
 }\
 .ace-shorthand-light .ace_support.ace_constant {\
 color: rgb(6, 150, 14);\
@@ -154,7 +175,7 @@ color: rgb(255, 0, 0);\
 color: hsl(0, 0%, 60%);\
 }\
 .ace-shorthand-light .ace_string {\
-color: #1A1AA6;\
+color: hsl(114, 31%, 38%);\
 }\
 .ace-shorthand-light .ace_string.ace_strikethrough {\
 color: hsl(23, 85%, 37%);\
