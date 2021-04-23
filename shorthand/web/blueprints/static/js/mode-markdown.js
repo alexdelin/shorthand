@@ -2632,7 +2632,7 @@ var MarkdownHighlightRules = function() {
         next: "allowBlock"
     }, { // list
         token : "markup.list",
-        regex : "^\\s{0,3}(?:[*+-]|\\d+\\.)\\s+",
+        regex : "^\\s*(?:[*+-]|\\d+\\.)\\s+",
         next  : "listblock-start"
     }, {
         include : "basic"
@@ -2643,8 +2643,11 @@ var MarkdownHighlightRules = function() {
             token : "constant.language.escape",
             regex : /\\[\\`*_{}\[\]()#+\-.!]/
         }, { // code span `
-            token : "support.function",
+            token : "support.function.inline",
             regex : "(`+)(.*?[^`])(\\1)"
+        }, { // Latex span $
+            token : "support.latex",
+            regex : "(\\$+)(.*?[^\\$])(\\1)"
         }, { // reference
             token : ["text", "constant", "text", "url", "string", "text"],
             regex : "^([ ]{0,3}\\[)([^\\]]+)(\\]:\\s*)([^ ]+)(\\s*(?:[\"][^\"]+[\"])?(\\s*))$"
@@ -2659,12 +2662,21 @@ var MarkdownHighlightRules = function() {
                     '((?:[^\\)\\s\\\\]|\\\\.|\\s(?=[^"]))*)' +        // href or image
                     '(\\s*"' +  escaped('"') + '"\\s*)?' +            // "title"
                     "(\\))"                                           // )
+        }, { // strong+emphasis *** ___
+            token : "string.strong-emphasis",
+            regex : "([*]{3}|[_]{2}(?=\\S))(.*?\\S[*_]*)(\\1)"
         }, { // strong ** __
             token : "string.strong",
             regex : "([*]{2}|[_]{2}(?=\\S))(.*?\\S[*_]*)(\\1)"
         }, { // emphasis * _
             token : "string.emphasis",
             regex : "([*]|[_](?=\\S))(.*?\\S[*_]*)(\\1)"
+        }, { // strikethrough ~~
+            token : "string.strikethrough",
+            regex : "([~]{2}(?=\\S))(.*?\\S[~]*)(\\1)"
+        }, { // date stamp
+            token : "support.timestamp",
+            regex : "( -> )?(\\(?)\\b((-?(?:[1-9][0-9]*)?[0-9]{4})-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9]))\\b(\\)?)"
         }, { //
             token : ["text", "url", "text"],
             regex : "(<)("+
@@ -2700,7 +2712,7 @@ var MarkdownHighlightRules = function() {
             next  : "start"
         }, { // list
             token : "markup.list",
-            regex : "^\\s{0,3}(?:[*+-]|\\d+\\.)\\s+",
+            regex : "^\\s*(?:[*+-]|\\d+\\.)\\s+",
             next  : "listblock-start"
         }, {
             include : "basic", noEscape: true

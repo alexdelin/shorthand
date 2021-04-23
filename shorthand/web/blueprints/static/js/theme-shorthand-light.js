@@ -39,7 +39,17 @@ color: white;\
 }\
 .ace-shorthand-light .ace_support.ace_function {\
 color: hsl(114, 31%, 38%);\
+}\
+.ace-shorthand-light .ace_support.ace_function.ace_inline {\
+color: hsl(114, 31%, 38%);\
 background: hsl(204, 10%, 95%);\
+}\
+.ace-shorthand-light .ace_support.ace_latex {\
+color: hsl(114, 31%, 38%);\
+background: hsl(204, 10%, 95%);\
+}\
+.ace-shorthand-light .ace_support.ace_timestamp {\
+color: hsl(180, 36%, 54%);\
 }\
 .ace-shorthand-light .ace_support.ace_constant {\
 color: rgb(6, 150, 14);\
@@ -146,13 +156,22 @@ color: hsl(0, 0%, 60%);\
 .ace-shorthand-light .ace_string {\
 color: #1A1AA6;\
 }\
+.ace-shorthand-light .ace_string.ace_strikethrough {\
+color: hsl(23, 85%, 37%);\
+text-decoration: line-through;\
+}\
 .ace-shorthand-light .ace_string.ace_emphasis {\
-color: #1A1AA6;\
+color: hsl(300, 30%, 48%);\
 font-style: italic;\
 }\
 .ace-shorthand-light .ace_string.ace_strong {\
-color: #1A1AA6;\
+color: hsl(300, 30%, 48%);\
 font-weight: bold;\
+}\
+.ace-shorthand-light .ace_string.ace_strong-emphasis {\
+color: hsl(300, 30%, 48%);\
+font-weight: bold;\
+font-style: italic;\
 }\
 .ace-shorthand-light .ace_entity.ace_other.ace_attribute-name {\
 color: #994409;\

@@ -97,14 +97,15 @@ function PostNoteRender() {
     // Re-draw mermaid diagrams
     mermaid.contentLoaded();
 
-    // Style code snippets properly
-    // $('code').
-
     // Style tables properly
     $('table').addClass('table table-sm');
     $('table thead').addClass('thead-dark');
     $('table thead th').attr('scope', 'col');
 
+    // Remove bullets from shorthand elements
+    $('.todo-element').parent('li').css('list-style-type', 'none');
+    $('.definition-element').parent('li').css('list-style-type', 'none');
+    $('.qa-element').parent('li').css('list-style-type', 'none');
 };
 
 // hljs.initHighlightingOnLoad();
