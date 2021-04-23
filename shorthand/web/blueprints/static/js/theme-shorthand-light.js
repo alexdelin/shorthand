@@ -37,6 +37,15 @@ color: white;\
 }\
 .ace-shorthand-light .ace_fold {\
 }\
+.ace-shorthand-light .ace_punctuation.ace_definition {\
+color: hsl(180, 36%, 38%);\
+}\
+.ace-shorthand-light .ace_punctuation.ace_definition.ace_bold {\
+color: hsl(300, 30%, 48%);\
+}\
+.ace-shorthand-light .ace_punctuation.ace_definition.ace_italic {\
+color: hsl(300, 30%, 48%);\
+}\
 .ace-shorthand-light .ace_support.ace_function {\
 color: hsl(114, 31%, 38%);\
 }\
@@ -97,7 +106,7 @@ color: #236e24;\
 color: #236e24;\
 }\
 .ace-shorthand-light .ace_constant.ace_numeric {\
-color: rgb(0, 0, 205);\
+color: hsl(32, 93%, 42%);\
 }\
 .ace-shorthand-light .ace_variable {\
 color: rgb(49, 132, 149);\
@@ -182,17 +191,17 @@ color: hsl(23, 85%, 37%);\
 text-decoration: line-through;\
 }\
 .ace-shorthand-light .ace_string.ace_emphasis {\
-color: hsl(300, 30%, 48%);\
 font-style: italic;\
+color: black;\
 }\
 .ace-shorthand-light .ace_string.ace_strong {\
-color: hsl(300, 30%, 48%);\
 font-weight: bold;\
+color: black;\
 }\
 .ace-shorthand-light .ace_string.ace_strong-emphasis {\
-color: hsl(300, 30%, 48%);\
 font-weight: bold;\
 font-style: italic;\
+color: black;\
 }\
 .ace-shorthand-light .ace_entity.ace_other.ace_attribute-name {\
 color: #994409;\

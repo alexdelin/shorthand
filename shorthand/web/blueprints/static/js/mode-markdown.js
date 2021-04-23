@@ -2634,18 +2634,8 @@ var MarkdownHighlightRules = function() {
         token : "markup.list",
         regex : "^\\s*(?:[*+-]|\\d+\\.)\\s+",
         next  : "listblock-start"
-    }, { // Incomplete Todo
-        token : "support.todo.incomplete.start",
-        regex : "([ ]*)(\\[ \\]|\\[\\])(?=\\s)",
-        next  : "todo-incomplete"
-    }, { // Complete Todo
-        token : "support.todo.complete.start",
-        regex : "([ ]*)(\\[X\\])(?=\\s)",
-        next  : "todo-complete"
-    }, { // Skipped Todo
-        token : "support.todo.skipped.start",
-        regex : "([ ]*)(\\[S\\])(?=\\s)",
-        next  : "todo-skipped"
+    }, {
+        include: "todo-starts"
     }, {
         include : "basic"
     });
@@ -2678,13 +2668,13 @@ var MarkdownHighlightRules = function() {
                         '(\\s*"' +  escaped('"') + '"\\s*)?' +            // "title"
                         "(\\))"                                           // )
             }, { // strong+emphasis *** ___
-                token : ["string", "string.strong-emphasis", "string"],
+                token : ["punctuation.definition.bold", "string.strong-emphasis", "punctuation.definition.bold"],
                 regex : "([*]{3}|[_]{2}(?=\\S))(.*?\\S[*_]*)(\\1)"
             }, { // strong ** __
-                token : ["string", "string.strong", "string"],
+                token : ["punctuation.definition.bold", "string.strong", "punctuation.definition.bold"],
                 regex : "([*]{2}|[_]{2}(?=\\S))(.*?\\S[*_]*)(\\1)"
             }, { // emphasis * _
-                token : ["string", "string.emphasis", "string"],
+                token : ["punctuation.definition.italic", "string.emphasis", "punctuation.definition.italic"],
                 regex : "([*]|[_](?=\\S))(.*?\\S[*_]*)(\\1)"
             }, { // strikethrough ~~
                 token : "string.strikethrough",
@@ -2708,6 +2698,20 @@ var MarkdownHighlightRules = function() {
             {token : "empty_line", regex : '^$', next: "allowBlock"},
             {token : "empty", regex : "", next : "start"}
         ],
+
+        "todo-starts": [{ // Incomplete Todo
+            token : "support.todo.incomplete.start",
+            regex : "([ ]*)(\\[ \\]|\\[\\])(?=\\s)",
+            next  : "todo-incomplete"
+        }, { // Complete Todo
+            token : "support.todo.complete.start",
+            regex : "([ ]*)(\\[X\\])(?=\\s)",
+            next  : "todo-complete"
+        }, { // Skipped Todo
+            token : "support.todo.skipped.start",
+            regex : "([ ]*)(\\[S\\])(?=\\s)",
+            next  : "todo-skipped"
+        }],
 
         "todo-incomplete": [ { // Todos end at newlines
             token : "eol",
@@ -2762,6 +2766,8 @@ var MarkdownHighlightRules = function() {
             token : "markup.list",
             regex : "^\\s*(?:[*+-]|\\d+\\.)\\s+",
             next  : "listblock-start"
+        }, {
+            include: "todo-starts"
         }, {
             include : "basic", noEscape: true
         },
