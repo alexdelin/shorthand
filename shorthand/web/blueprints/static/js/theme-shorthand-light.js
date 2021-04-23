@@ -1,3 +1,4 @@
+// Original theme taken from https://github.com/ajaxorg/ace-builds/blob/master/src/theme-chrome.js
 define("ace/theme/shorthand-light",["require","exports","module","ace/lib/dom"], function(require, exports, module) {
 
 exports.isDark = false;
@@ -12,7 +13,7 @@ width: 1px;\
 background: #e8e8e8;\
 }\
 .ace-shorthand-light {\
-background-color: #FFFFFF;\
+background-color: hsl(180, 9%, 98%);\
 color: black;\
 }\
 .ace-shorthand-light .ace_cursor {\
@@ -37,7 +38,8 @@ color: white;\
 .ace-shorthand-light .ace_fold {\
 }\
 .ace-shorthand-light .ace_support.ace_function {\
-color: rgb(60, 76, 114);\
+color: hsl(114, 31%, 38%);\
+background: hsl(204, 10%, 95%);\
 }\
 .ace-shorthand-light .ace_support.ace_constant {\
 color: rgb(6, 150, 14);\
@@ -102,8 +104,10 @@ color: #0000A2;\
 .ace-shorthand-light .ace_heading {\
 font-weight: bold;\
 }\
+.ace-shorthand-light .ace_markup.ace_list {\
+color: hsl(32, 93%, 42%);\
+}\
 .ace-shorthand-light .ace_list {\
-color:rgb(185, 6, 144);\
 }\
 .ace-shorthand-light .ace_marker-layer .ace_selection {\
 background: rgb(181, 213, 255);\
@@ -134,10 +138,21 @@ border: 1px solid rgb(200, 200, 250);\
 color: rgb(147, 15, 128);\
 }\
 .ace-shorthand-light .ace_string.ace_regex {\
-color: rgb(255, 0, 0)\
+color: rgb(255, 0, 0);\
+}\
+.ace-shorthand-light .ace_string.ace_blockquote {\
+color: hsl(0, 0%, 60%);\
 }\
 .ace-shorthand-light .ace_string {\
 color: #1A1AA6;\
+}\
+.ace-shorthand-light .ace_string.ace_emphasis {\
+color: #1A1AA6;\
+font-style: italic;\
+}\
+.ace-shorthand-light .ace_string.ace_strong {\
+color: #1A1AA6;\
+font-weight: bold;\
 }\
 .ace-shorthand-light .ace_entity.ace_other.ace_attribute-name {\
 color: #994409;\

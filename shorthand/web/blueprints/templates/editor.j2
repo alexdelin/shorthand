@@ -56,6 +56,14 @@
     .modal-dialog {
         max-width: 800px;
     }
+
+    pre {
+        border-color: black;
+        border: 1px solid #bbb;
+        padding: 15px;
+        border-radius: 5px;
+        background-color: #fafafa;
+    }
 </style>
 
 <!-- Metadata -->
@@ -89,7 +97,7 @@
                 </div>
             </div>
             <div class="col-md-6" style="height: 800px; overflow: scroll;">
-                <div id="out"></div>
+                <div id="out" style="padding-right: 15px;"></div>
             </div>
         </div>
         <div class="row footer-bar">
@@ -130,6 +138,8 @@ var editor = ace.edit("editor", {
 });
 // editor.setTheme("ace/theme/monokai");
 editor.setTheme("ace/theme/shorthand-light");
+editor.setFontSize('18px');
+editor.setOptions({fontFamily: "iosevka",})
 $(document).ready(renderNote());
 </script>
 

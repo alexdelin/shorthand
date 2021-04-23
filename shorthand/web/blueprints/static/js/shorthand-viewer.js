@@ -48,7 +48,7 @@ function PostNoteRender() {
     _.each($('.record-set-table'), function (tableElement) {
         console.log(tableElement);
         var jsonString = $(tableElement.parentElement).find('.record-set-data')[0].innerText;
-        console.log(jsonString)
+        console.log(jsonString);
         var tableData = JSON.parse(jsonString);
         console.log(tableData);
         var colString = $(tableElement).attr('data-cols');
@@ -95,7 +95,15 @@ function PostNoteRender() {
     });
 
     // Re-draw mermaid diagrams
-    mermaid.contentLoaded()
+    mermaid.contentLoaded();
+
+    // Style code snippets properly
+    // $('code').
+
+    // Style tables properly
+    $('table').addClass('table table-sm');
+    $('table thead').addClass('thead-dark');
+    $('table thead th').attr('scope', 'col');
 
 };
 
