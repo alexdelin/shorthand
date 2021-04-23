@@ -1,6 +1,10 @@
 // Load the calendar data on page load
 document.addEventListener('DOMContentLoaded', function() {
     reloadCalendar();
+    // Re-draw the calendar whenever the directory filter is changed
+    $("#directoryFilter").change(function () {
+        reloadCalendar();
+    });
 });
 
 
@@ -122,9 +126,3 @@ function drawChart(chartData) {
         }]
     });
 };
-
-
-// Re-draw the calendar whenever the directory filter is changed
-$("#directoryFilter").change(function () {
-    reloadCalendar();
-});
