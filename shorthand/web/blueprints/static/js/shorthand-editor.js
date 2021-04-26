@@ -10,7 +10,6 @@ function saveNote() {
         success: function(response) {
             console.log(response);
             editor.session.getUndoManager().markClean();
-            alert(response);
             renderNote();
         },
         error: function(responseData) {

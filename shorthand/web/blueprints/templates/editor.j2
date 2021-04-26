@@ -131,13 +131,27 @@
 // Draw Editor
 var editor = ace.edit("editor", {
     wrap: true,
-    // theme: '/ace/theme/shorthand-light',
     mode: 'ace/mode/markdown'
 });
 // editor.setTheme("ace/theme/monokai");
 editor.setTheme("ace/theme/shorthand-light");
 editor.setFontSize('18px');
 editor.setOptions({fontFamily: "iosevka",})
+editor.commands.addCommand({
+    name: "saveNote",
+    bindKey: { win: "Ctrl-S", mac: "Command-S" },
+    exec: function (editor) {
+        saveNote();
+    }
+});
+editor.commands.addCommand({
+    name: "findNotes",
+    bindKey: { win: "Ctrl-T", mac: "Ctrl-T" },
+    exec: function (editor) {
+        showFileFinder();
+    }
+});
+
 $(document).ready(renderNote());
 </script>
 
