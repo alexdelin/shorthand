@@ -11,6 +11,7 @@ from shorthand.utils.patterns import DEFINITION_PATTERN, \
 definition_regex = re.compile(DEFINITION_PATTERN)
 internal_link_regex = re.compile(INTERNAL_LINK_PATTERN)
 gps_regex = re.compile(GPS_PATTERN)
+leading_whitespace_regex = re.compile(r'^[ \t]*')
 
 
 log = logging.getLogger(__name__)
@@ -32,7 +33,14 @@ def get_rendered_markdown(markdown_content):
     for idx, markdown_line in enumerate(markdown_content_lines):
 
         line_number = idx + 1
-        line_span = f'<span id="line-number-{line_number}"></span>'
+        # Add whitespace at the beginning of the span line to
+        # match the content line indent level
+        span_whitespace = ''
+        leading_whitespace_match = leading_whitespace_regex.match(markdown_line)
+        if leading_whitespace_match:
+            span_whitespace = leading_whitespace_match.group(0)
+
+        line_span = f'{span_whitespace}<span id="line-number-{line_number}"></span>'
 
         # Grab everything for record sets
         if markdown_line.strip()[:3] != '```' and is_rec_data_block:
@@ -159,13 +167,13 @@ def get_rendered_markdown(markdown_content):
             heading_html_line = f'{markdown_line}<div id="{element_id}"></div>'
             toc_markdown_line = f'{"  " * (heading_level - 1)}- '\
                                 f'[{split_heading[1]}](#{element_id})'
-            html_content_lines.append(line_span)
-            html_content_lines.append(heading_html_line)
+            html_content_lines.append(heading_html_line + line_span)
             toc_content_lines.append(toc_markdown_line)
             continue
 
         # Special handling for markdown tables
         if markdown_line.lstrip()[0] == '|':
+            # Adding span tags into a table will break it, so we exclude them
             html_content_lines.append(markdown_line)
             continue
 
@@ -178,8 +186,7 @@ def get_rendered_markdown(markdown_content):
             html_content_lines.append('')
         else:
             # Catch-all for everything else
-            html_content_lines.append(line_span)
-            html_content_lines.append(markdown_line)
+            html_content_lines.append(markdown_line + line_span)
 
     html_content = '\n'.join(html_content_lines)
     toc_content = '\n'.join(toc_content_lines)
