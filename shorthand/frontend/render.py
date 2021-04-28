@@ -89,8 +89,6 @@ def get_rendered_markdown(markdown_content):
 
         # Handle empty or pseudo-empty lines
         if not markdown_line.strip():
-            if not is_fenced_code_block:
-                html_content_lines.append(line_span)
             html_content_lines.append(markdown_line)
             continue
 
@@ -207,16 +205,8 @@ def get_rendered_markdown(markdown_content):
             html_content_lines.append(markdown_line)
             continue
 
-        # Special handling for display style equations
-        if markdown_line.strip()[:2] == '$$' and \
-                markdown_line.strip()[-2:] == '$$':
-            html_content_lines.append(line_span)
-            html_content_lines.append('')
-            html_content_lines.append(markdown_line)
-            html_content_lines.append('')
-        else:
-            # Catch-all for everything else
-            html_content_lines.append(markdown_line + line_span)
+        # Catch-all for everything else
+        html_content_lines.append(markdown_line)
 
     html_content = '\n'.join(html_content_lines)
     toc_content = '\n'.join(toc_content_lines)
