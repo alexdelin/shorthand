@@ -1,8 +1,3 @@
-// Wire click events for show / hide TOC button
-$("#showTOC").click(function(){
-  $(".toc-content").toggleClass("hidden");
-});
-
 // Fetch current note content via the API and render it
 function renderNote() {
     // Get rendered markdown from the frontend API
@@ -13,6 +8,10 @@ function renderNote() {
         type: 'GET',
         success: function(noteContent) {
             console.log(noteContent)
+            var loadedContent = JSON.parse(noteContent);
+            var fileContent = loadedContent.file_content;
+            var tocContent = loadedContent.toc_content;
+
             // Render main markdown content
             let md;
             const tm = texmath.use(katex);
@@ -29,11 +28,15 @@ function renderNote() {
                 }
             }).use(tm,{delimiters:'dollars',macros:{"\\RR": "\\mathbb{R}"}});
 
-            out.innerHTML = md.render(noteContent);
+            out.innerHTML = md.render(fileContent);
 
             // Draw record sets & set up maps for locations
             PostNoteRender();
 
+            // Render ToC if we have a `#toc` element on the page
+            if (document.getElementById('toc')) {
+                RenderToc(tocContent, md);
+            }
         },
         error: function(responseData) {
             var loadedResponse = JSON.parse(responseData.responseText)
@@ -113,3 +116,13 @@ function PostNoteRender() {
     }
 
 };
+
+// Render Table of Contents
+function RenderToc(tocContent, md) {
+    console.log('rendering TOC')
+    toc.innerHTML = md.render(tocContent);
+    // Wire click events for show / hide TOC button
+    $("#showTOC").click(function(){
+        $(".toc-content").toggleClass("hidden");
+    });
+}

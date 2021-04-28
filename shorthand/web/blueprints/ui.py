@@ -12,6 +12,7 @@ from shorthand.elements.todos import _get_todos
 from shorthand.elements.questions import _get_questions
 from shorthand.elements.record_sets import _get_record_sets
 from shorthand.utils.config import get_notes_config
+from shorthand.utils.paths import get_full_path
 from shorthand.frontend import is_image_path
 from shorthand.frontend.render import get_rendered_markdown
 from shorthand.web.blueprints.static_elements import static_content
@@ -45,7 +46,10 @@ def send_processed_markdown():
     file_content = _get_note(SHORTHAND_CONFIG['notes_directory'],
                              request.args.get('path'))
     file_content, toc_content = get_rendered_markdown(file_content)
-    return file_content
+    return json.dumps({
+        'file_content': file_content,
+        'toc_content': toc_content
+    })
 
 
 @shorthand_ui_blueprint.route('/frontend-api/get-image',
@@ -198,19 +202,9 @@ def show_search_page():
 @shorthand_ui_blueprint.route('/render', methods=['GET'])
 def send_rendered_note():
     SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
-
-    file_path = SHORTHAND_CONFIG['notes_directory'] + request.args.get('path')
-    file_content = _get_note(SHORTHAND_CONFIG['notes_directory'], file_path)
-    file_content, toc_content = get_rendered_markdown(file_content)
-    file_content = file_content.replace("\\", "\\\\")
-    file_content = file_content.replace('\n', '\\n')
-    file_content = file_content.replace("'", "\\'")
-    toc_content = toc_content.replace("\\", "\\\\")
-    toc_content = toc_content.replace('\n', '\\n')
-    toc_content = toc_content.replace("'", "\\'")
-    return render_template('viewer.j2', file_content=file_content,
-                           toc_content=toc_content,
-                           static_content=static_content,
+    file_path = get_full_path(SHORTHAND_CONFIG['notes_directory'],
+                              request.args.get('path'))
+    return render_template('viewer.j2', static_content=static_content,
                            file_path=request.args.get('path'))
 
 
@@ -218,7 +212,8 @@ def send_rendered_note():
 def show_editor():
     SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
 
-    file_path = SHORTHAND_CONFIG['notes_directory'] + request.args.get('path')
+    file_path = get_full_path(SHORTHAND_CONFIG['notes_directory'],
+                              request.args.get('path'))
     file_content = _get_note(SHORTHAND_CONFIG['notes_directory'], file_path)
     return render_template('editor.j2', file_content=file_content,
                            file_path=request.args.get('path'),

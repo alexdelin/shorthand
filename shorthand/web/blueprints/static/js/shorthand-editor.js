@@ -26,8 +26,10 @@ function reloadNote() {
         url: '/api/v1/note?' + $.param({path: filePath}),
         type: 'GET',
         success: function(noteContent) {
-            console.log(noteContent)
-            editor.setValue(noteContent)
+            console.log(noteContent);
+            editor.setValue(noteContent);
+            editor.clearSelection();
+            editor.session.getUndoManager().markClean();
         },
         error: function(responseData) {
             var loadedResponse = JSON.parse(responseData.responseText)
