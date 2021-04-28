@@ -11,5 +11,9 @@ Definitions are very simple structures
 {undefined}
 
 ```python
-{"foo": "bar"} # With a comment
+{"foo": "bar"}  # With a comment
 ```
+
+Below is an _image_ which looks a bit like a link. However, it shouldn't be parsed as one
+
+![Test Image](https://foo.com/img.png)
