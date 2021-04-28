@@ -70,10 +70,13 @@ DATED_HEADING_PATTERN = r'^(#+)( )(.*)(' + DATE_STAMP_PATTERN + r')'
 RECORD_SET_PATTERN = r'^```rec-data$'
 
 #   Matches any link
-LINK_PATTERN = r'\[.*?\]\(.*?\)'
-ALL_LINK_PATTERN = r'(\[[^\[]*?\]\()(.*?)(\))'
+LINK_PATTERN = r'\s\[.*?\]\(.*?\)'
+ALL_LINK_PATTERN = r'\s(\[[^\[]*?\]\()(.*?)(\))'
 #   Matches a link to another note
-INTERNAL_LINK_PATTERN = r'(\[[^\[]*?\]\()(\/.*?)(\))'
+INTERNAL_LINK_PATTERN = r'\s(\[[^\[]*?\]\()(\/.*?)(\))'
+
+# Matches any Image
+IMAGE_PATTERN = r'!\[.*?\]\(.*?\)'
 
 #   Matches a GPS location
 GPS_PATTERN = r"(GPS\[)(-?1?\d{1,2}\.\d{3,6})(, ?)"\
