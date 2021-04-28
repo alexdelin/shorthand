@@ -106,6 +106,10 @@ function PostNoteRender() {
     $('.todo-element').parent('li').css('list-style-type', 'none');
     $('.definition-element').parent('li').css('list-style-type', 'none');
     $('.qa-element').parent('li').css('list-style-type', 'none');
-};
 
-// hljs.initHighlightingOnLoad();
+    // Scroll to element in URL if applicable
+    if (window.location.hash) {
+        document.getElementById(window.location.hash.substring(1)).scrollIntoView();
+    }
+
+};
