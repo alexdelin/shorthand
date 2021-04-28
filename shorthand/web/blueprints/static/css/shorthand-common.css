@@ -111,6 +111,10 @@
         color: blue;
     }
 
+    #out img {
+        max-width: 100%;
+    }
+
 div.tooltip {
     opacity: 100%;
 }

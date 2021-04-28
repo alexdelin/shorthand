@@ -6,15 +6,42 @@ from shorthand.elements.todos import parse_todo
 from shorthand.tags import extract_tags
 from shorthand.utils.rec import load_from_string
 from shorthand.utils.patterns import DEFINITION_PATTERN, \
-                                     INTERNAL_LINK_PATTERN, GPS_PATTERN
+                                     INTERNAL_LINK_PATTERN, GPS_PATTERN, \
+                                     IMAGE_PATTERN
+
 
 definition_regex = re.compile(DEFINITION_PATTERN)
 internal_link_regex = re.compile(INTERNAL_LINK_PATTERN)
+image_regex = re.compile(IMAGE_PATTERN)
 gps_regex = re.compile(GPS_PATTERN)
 leading_whitespace_regex = re.compile(r'^[ \t]*')
 
 
 log = logging.getLogger(__name__)
+
+
+def rewrite_image_path(matchobj):
+    '''Consumes a regex match object for an image tag
+    - If the image location is external, returns the image
+      tag unmodified
+    - If the image location is internal, modifies the image
+      location to reference the frontend endpoint used
+    '''
+    image_title = matchobj.group(1)
+    image_target = matchobj.group(2)
+
+    if image_target.startswith('http://') or image_target.startswith('https://'):
+        # External image target
+        pass
+    elif image_target.startswith('/'):
+        # Full path to internal target
+        image_target = '/frontend-api/get-image?path=' + image_target
+    else:
+        # Relative path to internal image
+        # We can't deal with this without knowing
+        #     the path to the note we are rendering!
+        pass
+    return f'![{image_title}]({image_target})'
 
 
 def get_rendered_markdown(markdown_content):
@@ -124,6 +151,9 @@ def get_rendered_markdown(markdown_content):
         markdown_line = internal_link_regex.sub(
             '\\g<1>/render?path=\\g<2>\\g<3>',
             markdown_line)
+
+        # Process internal images
+        markdown_line = image_regex.sub(rewrite_image_path, markdown_line)
 
         if gps_regex.search(markdown_line):
             markdown_line = gps_regex.sub(

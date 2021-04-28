@@ -76,7 +76,7 @@ ALL_LINK_PATTERN = r'\s(\[[^\[]*?\]\()(.*?)(\))'
 INTERNAL_LINK_PATTERN = r'\s(\[[^\[]*?\]\()(\/.*?)(\))'
 
 # Matches any Image
-IMAGE_PATTERN = r'!\[.*?\]\(.*?\)'
+IMAGE_PATTERN = r'!\[(.*?)\]\((.*?)\)'
 
 #   Matches a GPS location
 GPS_PATTERN = r"(GPS\[)(-?1?\d{1,2}\.\d{3,6})(, ?)"\
