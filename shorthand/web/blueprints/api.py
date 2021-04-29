@@ -17,7 +17,6 @@ from shorthand.elements.definitions import _get_definitions
 from shorthand.elements.record_sets import _get_record_sets, _get_record_set
 from shorthand.elements.locations import _get_locations
 from shorthand.utils.config import get_notes_config
-# from shorthand.utils.git import pull_repo
 from shorthand.utils.api import wrap_response_data
 from shorthand.frontend.typeahead import _get_typeahead_suggestions
 
@@ -48,16 +47,14 @@ def get_server_config():
 
 @shorthand_api_blueprint.route('/api/v1/search', methods=['GET'])
 def get_search_results():
-    SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
+    server = ShorthandServer(current_app.config['config_path'])
 
     query_string = request.args.get('query_string')
     case_sensitive = request.args.get('case_sensitive')
 
-    search_results = _search_notes(
-        notes_directory=SHORTHAND_CONFIG['notes_directory'],
+    search_results = server.search_notes(
         query_string=query_string,
-        case_sensitive=case_sensitive,
-        grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
+        case_sensitive=case_sensitive)
     return json.dumps(wrap_response_data(search_results))
 
 
@@ -82,29 +79,26 @@ def write_updated_note():
 
 @shorthand_api_blueprint.route('/api/v1/toc', methods=['GET'])
 def get_toc_data():
-    SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
-    return json.dumps(_get_toc(SHORTHAND_CONFIG['notes_directory']))
+    server = ShorthandServer(current_app.config['config_path'])
+    return json.dumps(server.get_toc())
 
 
 @shorthand_api_blueprint.route('/api/v1/typeahead', methods=['GET'])
 def get_typeahead():
-    SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
+    server = ShorthandServer(current_app.config['config_path'])
 
     query_string = request.args.get('query')
 
-    return json.dumps(_get_typeahead_suggestions(
-        SHORTHAND_CONFIG['ngram_db_directory'],
-        query_string))
+    return json.dumps(server.get_typeahead_suggestions(
+        query_string=query_string))
 
 
 @shorthand_api_blueprint.route('/api/v1/stamp', methods=['GET'])
 def stamp():
-    SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
+    server = ShorthandServer(current_app.config['config_path'])
 
-    return _stamp_notes(
-        notes_directory=SHORTHAND_CONFIG['notes_directory'],
-        stamp_todos=True, stamp_today=True,
-        grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
+    return server.stamp_notes(stamp_todos=True, stamp_today=True,
+                              stamp_questions=True, stamp_answers=True)
 
 
 @shorthand_api_blueprint.route('/api/v1/files', methods=['GET'])

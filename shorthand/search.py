@@ -138,7 +138,7 @@ def _filename_search(notes_directory, prefer_recent_files=True,
     return search_results
 
 
-def _search_notes(notes_directory, query_string, type=None,
+def _search_notes(notes_directory, query_string,
                   case_sensitive=False, grep_path='grep'):
     '''Perform a full-text search through all notes and return
     matching lines with metadata
@@ -146,7 +146,6 @@ def _search_notes(notes_directory, query_string, type=None,
     "query_string" is a string of words which are searched for
         independently. However multi-word phrases can be searched
         for by quoting the phrase
-    "type" is the type of objects to search (todos, questions, etc.)
     "case_sensitive" toggles whether or not the match is case
         sensitive
     '''

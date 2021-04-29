@@ -7,6 +7,7 @@ from shorthand.history import _get_calendar
 from shorthand.tags import _get_tags
 from shorthand.toc import _get_toc
 from shorthand.stamping import _stamp_notes
+from shorthand.search import _search_notes
 from shorthand.elements.todos import _get_todos, _mark_todo
 from shorthand.elements.questions import _get_questions
 from shorthand.elements.definitions import _get_definitions
@@ -116,6 +117,13 @@ class ShorthandServer(object):
                             stamp_questions=stamp_questions,
                             stamp_answers=stamp_answers,
                             grep_path=self.config['grep_path'])
+
+    # Search
+    def search_notes(query_string, case_sensitive=False):
+        return _search_notes(notes_directory=self.config['notes_directory'],
+                             query_string=query_string,
+                             case_sensitive=case_sensitive,
+                             grep_path=self.config['grep_path'])
 
     # Calendar
     def get_calendar(self, directory_filter=None):
