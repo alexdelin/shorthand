@@ -4,21 +4,11 @@ from werkzeug.exceptions import HTTPException
 from flask import Blueprint, request, current_app
 
 from shorthand import ShorthandServer
-from shorthand.notes import _get_note, _update_note
-from shorthand.stamping import _stamp_notes
-from shorthand.search import _search_notes, _filename_search, \
+from shorthand.search import _filename_search, \
                                    _record_file_view
-from shorthand.tags import _get_tags
-from shorthand.history import _get_calendar
-from shorthand.toc import _get_toc
-from shorthand.elements.todos import _get_todos, _mark_todo, analyze_todos
-from shorthand.elements.questions import _get_questions
-from shorthand.elements.definitions import _get_definitions
-from shorthand.elements.record_sets import _get_record_sets, _get_record_set
-from shorthand.elements.locations import _get_locations
+from shorthand.elements.todos import analyze_todos
 from shorthand.utils.config import get_notes_config
 from shorthand.utils.api import wrap_response_data
-from shorthand.frontend.typeahead import _get_typeahead_suggestions
 
 shorthand_api_blueprint = Blueprint('shorthand_api_blueprint', __name__)
 
@@ -86,9 +76,7 @@ def get_toc_data():
 @shorthand_api_blueprint.route('/api/v1/typeahead', methods=['GET'])
 def get_typeahead():
     server = ShorthandServer(current_app.config['config_path'])
-
     query_string = request.args.get('query')
-
     return json.dumps(server.get_typeahead_suggestions(
         query_string=query_string))
 
@@ -149,31 +137,25 @@ def record_file_view_api():
 
 @shorthand_api_blueprint.route('/api/v1/tags', methods=['GET'])
 def fetch_tags():
-    SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
+    server = ShorthandServer(current_app.config['config_path'])
 
     directory_filter = request.args.get('directory_filter')
     if directory_filter == 'ALL':
         directory_filter = None
 
-    tags = _get_tags(
-        notes_directory=SHORTHAND_CONFIG['notes_directory'],
-        directory_filter=directory_filter,
-        grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
+    tags = server.get_tags(directory_filter=directory_filter)
     return json.dumps(wrap_response_data(tags))
 
 
 @shorthand_api_blueprint.route('/api/v1/calendar', methods=['GET'])
 def fetch_calendar():
-    SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
+    server = ShorthandServer(current_app.config['config_path'])
 
     directory_filter = request.args.get('directory_filter')
     if directory_filter == 'ALL':
         directory_filter = None
 
-    calendar = _get_calendar(
-        notes_directory=SHORTHAND_CONFIG['notes_directory'],
-        directory_filter=directory_filter,
-        grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
+    calendar = server.get_calendar(directory_filter=directory_filter)
     return json.dumps(calendar)
 
 
@@ -182,15 +164,11 @@ def fetch_calendar():
 # ----------------
 @shorthand_api_blueprint.route('/api/v1/locations', methods=['GET'])
 def get_gps_locations():
-    SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
+    server = ShorthandServer(current_app.config['config_path'])
 
     directory_filter = request.args.get('directory_filter')
 
-    locations = _get_locations(
-        notes_directory=SHORTHAND_CONFIG['notes_directory'],
-        directory_filter=directory_filter,
-        grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
-
+    locations = server.get_locations(directory_filter=directory_filter)
     wrapped_response = wrap_response_data(locations)
     return json.dumps(wrapped_response)
 
@@ -253,7 +231,7 @@ def mark_todo_status():
 
 @shorthand_api_blueprint.route('/api/v1/questions', methods=['GET'])
 def fetch_questions():
-    SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
+    server = ShorthandServer(current_app.config['config_path'])
 
     status = request.args.get('status', 'all')
     directory_filter = request.args.get('directory_filter')
@@ -261,47 +239,39 @@ def fetch_questions():
         directory_filter = None
     current_app.logger.info(f'Getting {status} questions in directory {directory_filter}')
 
-    questions = _get_questions(
-        notes_directory=SHORTHAND_CONFIG['notes_directory'],
-        question_status=status, directory_filter=directory_filter,
-        grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
+    questions = server.get_questions(
+        question_status=status, directory_filter=directory_filter,)
     current_app.logger.info(f'Returning {len(questions)} question results')
     return json.dumps(wrap_response_data(questions))
 
 
 @shorthand_api_blueprint.route('/api/v1/definitions', methods=['GET'])
 def fetch_definitions():
-    SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
+    server = ShorthandServer(current_app.config['config_path'])
 
     directory_filter = request.args.get('directory_filter')
     if directory_filter == 'ALL':
         directory_filter = None
 
-    definitions = _get_definitions(
-        notes_directory=SHORTHAND_CONFIG['notes_directory'],
-        directory_filter=directory_filter,
-        grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
+    definitions = server.get_definitions(directory_filter=directory_filter)
     return json.dumps(wrap_response_data(definitions))
 
 
 @shorthand_api_blueprint.route('/api/v1/record_sets', methods=['GET'])
 def fetch_record_sets():
-    SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
+    server = ShorthandServer(current_app.config['config_path'])
 
     directory_filter = request.args.get('directory_filter')
     if directory_filter == 'ALL':
         directory_filter = None
 
-    record_sets = _get_record_sets(
-        notes_directory=SHORTHAND_CONFIG['notes_directory'],
-        directory_filter=None,
-        grep_path=SHORTHAND_CONFIG.get('grep_path', 'grep'))
+    record_sets = server.get_record_sets(directory_filter=None)
     return json.dumps(wrap_response_data(record_sets))
 
 
 @shorthand_api_blueprint.route('/api/v1/record_set', methods=['GET'])
 def fetch_record_set():
-    SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
+    server = ShorthandServer(current_app.config['config_path'])
 
     file_path = request.args.get('file_path')
     line_number = int(request.args.get('line_number'))
@@ -323,8 +293,7 @@ def fetch_record_set():
                          f'"false", found "{include_config}"')
     parse_format = request.args.get('parse_format', 'json')
 
-    return _get_record_set(
-        notes_directory=SHORTHAND_CONFIG['notes_directory'],
+    return server.get_record_set(
         file_path=file_path,
         line_number=line_number,
         parse=parse,
