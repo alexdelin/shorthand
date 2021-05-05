@@ -2,5 +2,8 @@
 
 set -e
 
-rm ./js/*.br
+if [[ $(ls ./js/*.br) ]]; then
+    rm ./js/*.br
+fi
+
 brotli --best ./js/*.js
