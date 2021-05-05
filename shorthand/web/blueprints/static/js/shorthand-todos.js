@@ -7,9 +7,9 @@ function getTodoElement(text, filePath, displayPath, startDate, endDate, line, t
            '</td><td>' + endDate +
            '</td><td class="lineNumber">' + line +
            '</td><td class="actionButtons">' +
-                '<span class="markComlete"><img src="/img/check-circle-24.svg"></span> ' +
-                '<span class="markSkipped"><img src="/img/skip-24.svg"></span> ' +
-                '<span class="editContent"><img src="/img/pencil-24.svg"></span>' +
+                '<span class="markComlete"><i class="bi-check-circle svg-icon"></i></span> ' +
+                '<span class="markSkipped"><i class="bi-slash-circle svg-icon"></i></span> ' +
+                '<span class="editContent"><i class="bi-pencil svg-icon"></i></span>' +
            '</td></tr>'
 }
 

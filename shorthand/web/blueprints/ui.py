@@ -1,4 +1,3 @@
-import os
 import json
 
 from flask import request, render_template, send_from_directory, Blueprint, \
@@ -66,6 +65,14 @@ def show_home_page():
         directory_filter=default_directory)
     summary = server.get_calendar()
     events = []
+    colors = {
+        'section': 'black',
+        'incomplete_todo': 'red',
+        'completed_todo': 'blue',
+        'skipped_todo': 'grey',
+        'question': 'purple',
+        'answer': 'green',
+    }
     for year, year_data in summary.items():
         for month, month_data in year_data.items():
             for day, day_data in month_data.items():
@@ -77,18 +84,8 @@ def show_home_page():
                                f'#line-number-{event["line_number"]}',
                         'type': event['type']
                     }
-                    if formatted_event['type'] == 'section':
-                        formatted_event['color'] = 'black'
-                    elif formatted_event['type'] == 'incomplete_todo':
-                        formatted_event['color'] = 'red'
-                    elif formatted_event['type'] == 'completed_todo':
-                        formatted_event['color'] = 'blue'
-                    elif formatted_event['type'] == 'skipped_todo':
-                        formatted_event['color'] = 'grey'
-                    elif formatted_event['type'] == 'question':
-                        formatted_event['color'] = 'purple'
-                    elif formatted_event['type'] == 'answer':
-                        formatted_event['color'] = 'green'
+                    if formatted_event['type'] in colors.keys():
+                        formatted_event['color'] = colors[formatted_event['type']]
                     events.append(formatted_event)
 
     return render_template('home.j2', num_todos=len(todos),
@@ -100,17 +97,8 @@ def show_home_page():
 @shorthand_ui_blueprint.route('/todos', methods=['GET'])
 def show_todos_page():
     server = ShorthandServer(current_app.config['config_path'])
-    notes_directory = server.get_config()['notes_directory']
 
-    all_directories = ['ALL']
-    for subdir in os.walk(notes_directory):
-        subdir_path = subdir[0][len(notes_directory) + 1:]
-        if '.git' in subdir_path or not subdir_path:
-            continue
-        elif len(subdir_path.split('/')) > 2:
-            continue
-        else:
-            all_directories.append(subdir_path)
+    all_directories = ['ALL'] + server.get_subdirs()
     default_directory = server.get_config().get('default_directory')
     tags = server.get_tags()
 
@@ -123,17 +111,8 @@ def show_todos_page():
 @shorthand_ui_blueprint.route('/questions', methods=['GET'])
 def show_questions():
     server = ShorthandServer(current_app.config['config_path'])
-    notes_directory = server.get_config()['notes_directory']
 
-    all_directories = ['ALL']
-    for subdir in os.walk(notes_directory):
-        subdir_path = subdir[0][len(notes_directory) + 1:]
-        if '.git' in subdir_path or not subdir_path:
-            continue
-        elif len(subdir_path.split('/')) > 2:
-            continue
-        else:
-            all_directories.append(subdir_path)
+    all_directories = ['ALL'] + server.get_subdirs()
     default_directory = server.get_config().get('default_directory')
     tags = server.get_tags()
 
@@ -159,16 +138,7 @@ def show_locations():
 @shorthand_ui_blueprint.route('/glossary', methods=['GET'])
 def show_glossary():
     server = ShorthandServer(current_app.config['config_path'])
-    notes_directory = server.get_config()['notes_directory']
-    all_directories = ['ALL']
-    for subdir in os.walk(notes_directory):
-        subdir_path = subdir[0][len(notes_directory) + 1:]
-        if '.git' in subdir_path or not subdir_path:
-            continue
-        elif len(subdir_path.split('/')) > 2:
-            continue
-        else:
-            all_directories.append(subdir_path)
+    all_directories = ['ALL'] + server.get_subdirs()
     default_directory = server.get_config().get('default_directory')
     tags = server.get_tags()
 
@@ -200,17 +170,8 @@ def show_editor():
 @shorthand_ui_blueprint.route('/calendar', methods=['GET'])
 def show_calendar():
     server = ShorthandServer(current_app.config['config_path'])
-    notes_directory = server.get_config()['notes_directory']
 
-    all_directories = ['ALL']
-    for subdir in os.walk(notes_directory):
-        subdir_path = subdir[0][len(notes_directory) + 1:]
-        if '.git' in subdir_path or not subdir_path:
-            continue
-        elif len(subdir_path.split('/')) > 2:
-            continue
-        else:
-            all_directories.append(subdir_path)
+    all_directories = ['ALL'] + server.get_subdirs()
     default_directory = server.get_config().get('default_directory')
     return render_template('calendar.j2', all_directories=all_directories,
                            default_directory=default_directory,

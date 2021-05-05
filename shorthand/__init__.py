@@ -17,6 +17,7 @@ from shorthand.frontend.typeahead import _update_ngram_database, \
                                          _get_typeahead_suggestions
 from shorthand.utils.config import get_notes_config, write_config, \
                                    modify_config
+from shorthand.utils.paths import _get_subdirs
 from shorthand.utils.logging import get_handler
 
 
@@ -153,6 +154,11 @@ class ShorthandServer(object):
             ngram_db_dir=self.config['cache_directory'],
             query_string=query_string, limit=limit)
 
+    #
+    def get_subdirs(self, max_depth=2, exclude_hidden=True):
+        return _get_subdirs(notes_directory=self.config['notes_directory'],
+                            max_depth=max_depth, exclude_hidden=exclude_hidden)
+
     # ----------------
     # --- Elements ---
     # ----------------
@@ -194,7 +200,7 @@ class ShorthandServer(object):
                               grep_path=self.config['grep_path'])
 
     # Record Sets
-    def _get_record_sets(self, directory_filter=None):
+    def get_record_sets(self, directory_filter=None):
         return _get_record_sets(notes_directory=self.config['notes_directory'],
                                 directory_filter=directory_filter,
                                 grep_path=self.config['grep_path'])

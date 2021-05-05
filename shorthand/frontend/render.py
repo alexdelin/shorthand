@@ -31,7 +31,7 @@ def rewrite_image_path(matchobj):
     image_target = matchobj.group(2)
 
     if image_target.startswith('http://') or image_target.startswith('https://'):
-        # External image target
+        # External image target, nothing to do
         pass
     elif image_target.startswith('/'):
         # Full path to internal target
@@ -40,6 +40,7 @@ def rewrite_image_path(matchobj):
         # Relative path to internal image
         # We can't deal with this without knowing
         #     the path to the note we are rendering!
+        # TODO - fix this
         pass
     return f'![{image_title}]({image_target})'
 
@@ -229,11 +230,11 @@ def get_todo_element(raw_todo):
     tag_elements = ''.join([f'<span class="badge badge-secondary">{tag}</span>'
                             for tag in tags])
     if status == 'incomplete':
-        icon = '<i class="material-icons">check_box_outline_blank</i>'
+        icon = '<i class="bi-square"></i>'
     elif status == 'complete':
-        icon = '<i class="material-icons">check_box</i>'
+        icon = '<i class="bi-check-square-fill"></i>'
     else:
-        icon = '<i class="material-icons">indeterminate_check_box</i>'
+        icon = '<i class="bi-dash-square-fill"></i>'
 
     todo_element = f'- <span style="display: none;">a</span>'\
                    f'<div class="row todo-element todo-{status}">'\
@@ -253,10 +254,10 @@ def get_question_element(raw_question):
 
     if raw_question.strip()[:2] == '? ':
         element_type = 'question'
-        icon = '<i class="material-icons">help_outline</i>'
+        icon = '<i class="bi-question-octagon"></i>'
     if raw_question.strip()[:2] == '@ ':
         element_type = 'answer'
-        icon = '<i class="material-icons">subdirectory_arrow_right</i>'
+        icon = '<i class="bi-arrow-return-right"></i>'
 
     text = raw_question.strip()[2:]
     tags, text = extract_tags(text)

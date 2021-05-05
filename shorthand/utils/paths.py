@@ -1,4 +1,5 @@
 # Path Utilities
+import os
 import logging
 
 
@@ -86,3 +87,21 @@ def get_display_path(path, directory_filter=None):
     path = ' → '.join(path.split('/'))
 
     return path
+
+
+def _get_subdirs(notes_directory, max_depth=2, exclude_hidden=True):
+    '''Returns a list of all sub-directories within the notes directory
+       up to the specified depth.
+    '''
+    all_directories = []
+    for subdir in os.walk(notes_directory):
+        subdir_path = subdir[0][len(notes_directory) + 1:]
+        if not subdir_path:
+            continue
+        elif exclude_hidden and subdir_path.startswith('.'):
+            continue
+        elif len(subdir_path.split('/')) > max_depth:
+            continue
+        else:
+            all_directories.append(subdir_path)
+    return all_directories
