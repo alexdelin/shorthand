@@ -84,7 +84,6 @@ def get_typeahead():
 @shorthand_api_blueprint.route('/api/v1/stamp', methods=['GET'])
 def stamp():
     server = ShorthandServer(current_app.config['config_path'])
-
     return server.stamp_notes(stamp_todos=True, stamp_today=True,
                               stamp_questions=True, stamp_answers=True)
 

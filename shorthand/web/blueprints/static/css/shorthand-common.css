@@ -4,6 +4,13 @@
         padding: 15px;
     }
 
+    #notes-title {
+        font-family: georgia;
+        font-size: 3rem;
+        font-weight: bold;
+        font-style: italic;
+    }
+
     .svg-icon {
         height: 4rem;
         line-height: 4rem;
