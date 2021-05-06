@@ -157,7 +157,7 @@ def get_rendered_markdown(markdown_content):
         if gps_regex.search(markdown_line):
             markdown_line = gps_regex.sub(
                 '<location lat="\\g<2>" lon="\\g<4>">'
-                '<span class="location-name">\\g<6></span>'
+                '<span class="location-name"><i class="bi-geo-fill"></i>\\g<6></span>'
                 '(<span class="location-coordinates">\\g<2>, \\g<4></span>)'
                 '</location>',
                 markdown_line)

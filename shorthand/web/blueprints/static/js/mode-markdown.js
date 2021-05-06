@@ -2635,7 +2635,7 @@ var MarkdownHighlightRules = function() {
         regex : "^\\s*(?:[*+-]|\\d+\\.)\\s+",
         next  : "listblock-start"
     }, {
-        include: "todo-starts"
+        include: "shorthand-element-starts"
     }, {
         include : "basic"
     });
@@ -2699,7 +2699,7 @@ var MarkdownHighlightRules = function() {
             {token : "empty", regex : "", next : "start"}
         ],
 
-        "todo-starts": [{ // Incomplete Todo
+        "shorthand-element-starts": [{ // Incomplete Todo
             token : "support.todo.incomplete.start",
             regex : "([ ]*)(\\[ \\]|\\[\\])(?=\\s)",
             next  : "todo-incomplete"
@@ -2711,6 +2711,18 @@ var MarkdownHighlightRules = function() {
             token : "support.todo.skipped.start",
             regex : "([ ]*)(\\[S\\])(?=\\s)",
             next  : "todo-skipped"
+        }, { // Question
+            token : "support.question.start",
+            regex : "^([ ]*)(\\?)(?=\\s)",
+            next  : "question"
+        }, { // Answer
+            token : "support.answer.start",
+            regex : "^([ ]*)(@)(?=\\s)",
+            next  : "answer"
+        }, { // Definition
+            token : ["empty", "support.definition.border", "support.definition.term", "support.definition.border"],
+            regex : "^([ ]*)(\\{)(.*?)(\\})(?=\\s)",
+            next  : "definition"
         }],
 
         "todo-incomplete": [ { // Todos end at newlines
@@ -2743,6 +2755,36 @@ var MarkdownHighlightRules = function() {
             defaultToken : "support.todo.skipped"
         } ],
 
+        "question": [ { // Questions end at newlines
+            token : "eol",
+            regex : "$",
+            next  : "start"
+        }, {
+            include : "basic", noEscape: true
+        }, {
+            defaultToken : "support.question"
+        } ],
+
+        "answer": [ { // Answers end at newlines
+            token : "eol",
+            regex : "$",
+            next  : "start"
+        }, {
+            include : "basic", noEscape: true
+        }, {
+            defaultToken : "support.answer"
+        } ],
+
+        "definition": [ { // Definitions end at newlines
+            token : "eol",
+            regex : "$",
+            next  : "start"
+        }, {
+            include : "basic", noEscape: true
+        }, {
+            defaultToken : "support.definition"
+        } ],
+
         "header" : [{
             regex: "$",
             next : "start"
@@ -2767,7 +2809,7 @@ var MarkdownHighlightRules = function() {
             regex : "^\\s*(?:[*+-]|\\d+\\.)\\s+",
             next  : "listblock-start"
         }, {
-            include: "todo-starts"
+            include: "shorthand-element-starts"
         }, {
             include : "basic", noEscape: true
         },

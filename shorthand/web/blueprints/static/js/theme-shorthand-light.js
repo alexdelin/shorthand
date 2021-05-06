@@ -68,6 +68,27 @@ color: hsl(210, 50%, 45%);\
 .ace-shorthand-light .ace_support.ace_todo.ace_skipped {\
 color: hsl(0, 0%, 60%);\
 }\
+.ace-shorthand-light .ace_support.ace_question.ace_start {\
+color: hsl(56, 100%, 35%);\
+}\
+.ace-shorthand-light .ace_support.ace_question {\
+color: hsl(330, 65%, 47%);\
+}\
+.ace-shorthand-light .ace_support.ace_answer.ace_start {\
+color: hsl(180, 36%, 54%);\
+}\
+.ace-shorthand-light .ace_support.ace_answer {\
+color: hsl(114, 51%, 43%);\
+}\
+.ace-shorthand-light .ace_support.ace_definition.ace_border {\
+color: hsl(0, 0%, 60%);\
+}\
+.ace-shorthand-light .ace_support.ace_definition.ace_term {\
+color: hsl(56, 100%, 35%);\
+}\
+.ace-shorthand-light .ace_support.ace_definition {\
+color: hsl(32, 93%, 42%);\
+}\
 .ace-shorthand-light .ace_support.ace_latex {\
 color: hsl(114, 31%, 38%);\
 background: hsl(204, 10%, 95%);\
