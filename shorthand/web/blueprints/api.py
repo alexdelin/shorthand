@@ -73,6 +73,21 @@ def get_toc_data():
     return json.dumps(server.get_toc())
 
 
+@shorthand_api_blueprint.route('/api/v1/links', methods=['GET'])
+def get_note_links():
+    server = ShorthandServer(current_app.config['config_path'])
+
+    source = request.args.get('source')
+    target = request.args.get('target')
+    #TODO - Implement a better way to extract these from the request
+    include_external = request.args.get('include_external')
+    include_invalid = request.args.get('include_invalid')
+
+    return json.dumps(server.get_links(source=source, target=target,
+                                       include_external=include_external,
+                                       include_invalid=include_invalid))
+
+
 @shorthand_api_blueprint.route('/api/v1/typeahead', methods=['GET'])
 def get_typeahead():
     server = ShorthandServer(current_app.config['config_path'])

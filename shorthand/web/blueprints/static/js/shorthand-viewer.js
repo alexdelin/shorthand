@@ -126,3 +126,118 @@ function RenderToc(tocContent, md) {
         $(".toc-content").toggleClass("hidden");
     });
 }
+
+$(document).ready(function() {
+    // Render ToC if we have a `#links` element on the page
+    if (document.getElementById('links')) {
+        // Wire click events for show / hide links button
+        $("#showLinks").click(function(){
+            $(".links-content").toggleClass("hidden");
+            if ( !$(".links-content").hasClass("hidden") ) {
+                renderLinks();
+            }
+        });
+    }
+});
+
+function renderLinks() {
+    console.log('rendering Links')
+    var filePath = $('#meta-file-path').text()
+
+    $.ajax({
+        url: '/api/v1/links?' + $.param({target: filePath}),
+        type: 'GET',
+        success: function(linksContent) {
+
+            if (linksContent == '[]') {
+
+                $('#links').html('<h3>No links Found</h3>')
+
+            } else {
+
+                var cy = cytoscape({
+                    container: document.getElementById('links'),
+                    elements: transformLinks(linksContent),
+                    style: [
+                        {
+                            selector: 'node',
+                            style: {
+                                'background-color': '#dd4de2',
+                                "label": "data(label)",
+                                "text-valign": "bottom",
+                                "text-halign": "center",
+                                "font-size": "4px"
+                            }
+                        },
+                        {
+                            selector: 'edge',
+                            style: {
+                                'curve-style': 'bezier',
+                                'target-arrow-shape': 'triangle',
+                                'line-color': '#dd4de2',
+                                'target-arrow-color': '#dd4de2',
+                                'opacity': 0.5
+                            }
+                        }
+                    ],
+                    layout: {
+                        name: 'klay'
+                    }
+                });
+
+                // Set up click events so that they act as links to the linked notes
+                cy.on('tap', 'node', function(evt){
+                    var fullPath = evt.target.id();
+                    var viewURL = window.location.href.split('?')[0] + '?path=' + fullPath;
+                    window.open(viewURL, '_blank').focus();
+                });
+            }
+        },
+        error: function(responseData) {
+            var loadedResponse = JSON.parse(responseData.responseText)
+            showModal(loadedResponse.error)
+        }
+    });
+}
+
+function transformLinks(linksContent) {
+    linksContent = JSON.parse(linksContent);
+
+    var nodes = [];
+    var formattedNodes = [];
+    var edges = [];
+
+    // Populate raw list of node names and edges
+    for (var i = linksContent.length - 1; i >= 0; i--) {
+        var source = linksContent[i].source;
+        var target = linksContent[i].target;
+        if (!nodes.includes(source)) {
+            nodes.push(source);
+        }
+        if (!nodes.includes(target)) {
+            nodes.push(target);
+        }
+        var edge = {
+            data: {
+                id: 'link-' + i,
+                source: source,
+                target: target
+            }
+        }
+        edges.push(edge);
+    }
+
+    // Re-format nodes into the format the libarary needs
+    for (var i = nodes.length - 1; i >= 0; i--) {
+        var splitpath = nodes[i].split('/')
+        filename = splitpath[splitpath.length - 1]
+        formattedNodes.push({
+            data: {
+                id: nodes[i],
+                label: filename
+            }
+        });
+    }
+
+    return formattedNodes.concat(edges)
+}
