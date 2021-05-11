@@ -151,9 +151,9 @@ def _validate_internal_links(notes_directory, grep_path='grep'):
             if not os.path.exists(link_full_target):
                 link = {
                     'line_number': line_number,
-                    'path': note_path,
-                    'link_target': link_target,
-                    'link_text': link_text
+                    'source': note_path,
+                    'target': link_target,
+                    'text': link_text
                 }
                 invalid_links.append(link)
 

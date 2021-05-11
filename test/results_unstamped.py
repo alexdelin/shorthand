@@ -444,18 +444,18 @@ ALL_LINKS = [
 INVALID_LINKS = [
     {
         'line_number': '30',
-        'path': '/section/mixed.note',
-        'link_target': '/does/not/exist.note',
-        'link_text': 'broken'
+        'source': '/section/mixed.note',
+        'target': '/does/not/exist.note',
+        'text': 'broken'
     }, {
         'line_number': '30',
-        'link_target': '/lokations.note',
-        'link_text': 'typos',
-        'path': '/section/mixed.note'
+        'target': '/lokations.note',
+        'text': 'typos',
+        'source': '/section/mixed.note'
     }, {
         'line_number': '13',
-        'link_target': '/README.md',
-        'link_text': 'outside',
-        'path': '/bugs.note'
+        'target': '/README.md',
+        'text': 'outside',
+        'source': '/bugs.note'
     },
 ]
