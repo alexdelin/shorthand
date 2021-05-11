@@ -35,8 +35,9 @@ def send_img(path):
                               methods=['GET', 'POST'])
 def send_processed_markdown():
     server = ShorthandServer(current_app.config['config_path'])
-    file_content = server.get_note(request.args.get('path'))
-    file_content, toc_content = get_rendered_markdown(file_content)
+    note_path = request.args.get('path')
+    file_content = server.get_note(note_path)
+    file_content, toc_content = get_rendered_markdown(file_content, note_path)
     return json.dumps({
         'file_content': file_content,
         'toc_content': toc_content

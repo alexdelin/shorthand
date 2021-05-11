@@ -134,8 +134,8 @@ def _validate_internal_links(notes_directory, grep_path='grep'):
         for match in matches:
             # The matching group for the text starts
             # with `[` and ends with `](`
-            link_text = match[0][1:-2]
-            link_target = match[1]
+            link_text = match[1][1:-2]
+            link_target = match[2]
             log.debug(match)
 
             # Handle absolute paths within the notes directory

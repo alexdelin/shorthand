@@ -8,7 +8,7 @@ from shorthand.utils.rec import load_from_string
 from shorthand.utils.patterns import DEFINITION_PATTERN, \
                                      INTERNAL_LINK_PATTERN, GPS_PATTERN, \
                                      IMAGE_PATTERN
-
+from shorthand.utils.paths import parse_relative_link_path
 
 definition_regex = re.compile(DEFINITION_PATTERN)
 internal_link_regex = re.compile(INTERNAL_LINK_PATTERN)
@@ -45,9 +45,24 @@ def rewrite_image_path(matchobj):
     return f'![{image_title}]({image_target})'
 
 
-def get_rendered_markdown(markdown_content):
+def replace_link_path(matchobj, note_path):
+    '''Consumes a regex match object for a internal link
+    '''
+    element = '{g1}{g2}/render?path={g3}{g5}'.format(
+        g1=matchobj.group(1),
+        g2=matchobj.group(2),
+        g3=parse_relative_link_path(note_path, matchobj.group(3)),
+        g5=matchobj.group(5))
+    return element
+
+
+def get_rendered_markdown(markdown_content, note_path):
     '''Pre-render all non-standard notes file
-    elements into HTML
+       elements into HTML
+
+       markdown_content: Raw unprocessed note content
+       note_path: Relative path within the notes directory
+                  of the markdown file being rendered
     '''
 
     html_content_lines = []
@@ -148,7 +163,7 @@ def get_rendered_markdown(markdown_content):
 
         # Process internal links
         markdown_line = internal_link_regex.sub(
-            '\\g<1>/render?path=\\g<2>\\g<3>',
+            lambda match: replace_link_path(match, note_path),
             markdown_line)
 
         # Process internal images
