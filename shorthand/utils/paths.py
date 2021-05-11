@@ -105,3 +105,43 @@ def _get_subdirs(notes_directory, max_depth=2, exclude_hidden=True):
         else:
             all_directories.append(subdir_path)
     return all_directories
+
+
+def parse_relative_link_path(source, target):
+    '''Transform a relative path from a source note to a relative
+       path within the notes directory
+
+       source: relative path to the source link
+       target: relative path from source note to target
+    '''
+
+    # Handle external links
+    if is_external_path(target):
+        return target
+
+    # Handle if the target is not actually a relative path
+    if target.startswith('/'):
+        return target
+
+    # Check that source is a full relative path
+    if not source.startswith('/'):
+        raise ValueError(f'Invalid Source note {source}')
+
+    source_dir = os.path.dirname(source)
+    target_path = os.path.join(source_dir, target)
+    # Note: os.normpath will prevent you from breaking out of
+    #       the notes_directory via lots of ../../..
+    target_path = os.path.normpath(target_path)
+    return target_path
+
+
+def is_external_path(path):
+    '''Determines whether or not a given path point to an external
+       web page or an internal note (within the notes directory).
+       Paths to internal notes can be either relative or absolute
+       paths within the notes directory
+    '''
+    if path.startswith('http://') or path.startswith('https://'):
+        return True
+    else:
+        return False

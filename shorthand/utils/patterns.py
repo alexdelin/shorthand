@@ -73,7 +73,7 @@ RECORD_SET_PATTERN = r'^```rec-data$'
 LINK_PATTERN = r'\s\[.*?\]\(.*?\)'
 ALL_LINK_PATTERN = r'\s(\[[^\[]*?\]\()(.*?)(\))'
 #   Matches a link to another note
-INTERNAL_LINK_PATTERN = r'\s(\[[^\[]*?\]\()(\/.*?)(\))'
+INTERNAL_LINK_PATTERN = r'\s(\[[^\[]*?\]\()((?!(https://|http://)).*?)(\))'
 
 # Matches any Image
 IMAGE_PATTERN = r'!\[(.*?)\]\((.*?)\)'

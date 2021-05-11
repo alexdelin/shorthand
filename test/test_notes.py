@@ -13,7 +13,7 @@ from shorthand.web.app import create_app
 from utils import setup_environment, teardown_environment, validate_setup, \
                   TEST_CONFIG_PATH
 from model import ShorthandModel
-from results_unstamped import ALL_LINKS
+from results_unstamped import ALL_LINKS, INVALID_LINKS
 
 
 CONFIG = setup_environment()
@@ -136,19 +136,7 @@ class TestLinkOperations(unittest.TestCase):
         invalid_links = _validate_internal_links(
             notes_directory=CONFIG['notes_directory'],
             grep_path=CONFIG['grep_path'])
-        assert invalid_links == [
-            {
-                'line_number': '30',
-                'path': '/section/mixed.note',
-                'link_target': '/does/not/exist.note',
-                'link_text': 'broken'
-            }, {
-                'line_number': '30',
-                'link_target': '/lokations.note',
-                'link_text': 'typos',
-                'path': '/section/mixed.note'
-            }
-        ]
+        self.assertCountEqual(invalid_links, INVALID_LINKS)
 
     def test_get_all_links(self):
         # Test Getting all notes

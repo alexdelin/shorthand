@@ -418,5 +418,44 @@ ALL_LINKS = [
         'source': '/section/mixed.note',
         'target': 'https://nytimes.com',
         'text': 'NY Times'
+    }, {
+        'line_number': '32',
+        'source': '/section/mixed.note',
+        'target': '/todos.note',
+        'text': 'relative paths'
+    }, {
+        'line_number': '13',
+        'source': '/bugs.note',
+        'target': '/todos.note',
+        'text': 'todos'
+    }, {
+        'line_number': '13',
+        'source': '/bugs.note',
+        'target': '/locations.note',
+        'text': 'locations'
+    }, {
+        'line_number': '13',
+        'target': '/README.md',
+        'text': 'outside',
+        'source': '/bugs.note'
     }
+]
+
+INVALID_LINKS = [
+    {
+        'line_number': '30',
+        'path': '/section/mixed.note',
+        'link_target': '/does/not/exist.note',
+        'link_text': 'broken'
+    }, {
+        'line_number': '30',
+        'link_target': '/lokations.note',
+        'link_text': 'typos',
+        'path': '/section/mixed.note'
+    }, {
+        'line_number': '13',
+        'link_target': '/README.md',
+        'link_text': 'outside',
+        'path': '/bugs.note'
+    },
 ]

@@ -3,7 +3,8 @@ import os
 from subprocess import Popen, PIPE
 import logging
 
-from shorthand.utils.paths import get_full_path, get_relative_path
+from shorthand.utils.paths import get_full_path, get_relative_path, \
+                                  parse_relative_link_path, is_external_path
 from shorthand.utils.patterns import INTERNAL_LINK_PATTERN, ALL_LINK_PATTERN
 
 
@@ -136,7 +137,17 @@ def _validate_internal_links(notes_directory, grep_path='grep'):
             link_text = match[0][1:-2]
             link_target = match[1]
             log.debug(match)
-            link_full_target = get_full_path(notes_directory, link_target)
+
+            # Handle absolute paths within the notes directory
+            if link_target[0] == '/':
+                link_full_target = get_full_path(notes_directory, link_target)
+
+            # Handle relative paths from the source note
+            else:
+                link_target = parse_relative_link_path(source=note_path,
+                                                       target=link_target)
+                link_full_target = get_full_path(notes_directory, link_target)
+
             if not os.path.exists(link_full_target):
                 link = {
                     'line_number': line_number,
@@ -165,12 +176,19 @@ def _get_links(notes_directory, source=None, target=None,
 
     links = []
 
+    if target:
+        target_filename = os.path.basename(target)
+
     LINK_PATTERN = r'(\[)([^\[]*?)(\]\()'
     if target:
-        LINK_PATTERN += rf'({target})'
+        # Only include the target filename to catch both
+        # relative and absolute references
+        LINK_PATTERN += rf'(.*?{target_filename})'
     elif not include_external:
-        LINK_PATTERN += r'(\/.*?)'
+        # Only catch internal links which don't have http[s]://
+        LINK_PATTERN += r'((?!(https://|http://)).*?)'
     else:
+        # Catch everything
         LINK_PATTERN += r'(.*?)'
     LINK_PATTERN += r'(\))'
 
@@ -229,18 +247,21 @@ def _get_links(notes_directory, source=None, target=None,
             link_text = match[0][1:-2]
             link_target = match[1]
 
+            link_target = parse_relative_link_path(source=note_path,
+                                                   target=link_target)
+
             if target and link_target != target:
-                log.debug(f'Found invliad target {link_target}')
+                log.debug(f'Found unexpected target {link_target}')
                 continue
 
-            if not include_external and link_target[0] != '/':
+            if not include_external and (is_external_path(link_target)):
                 continue
 
             log.debug(match)
 
             # Only check that targets of internal links
             # actually exist (if we need to)
-            if link_target[0] == '/':
+            if not is_external_path(link_target):
                 link_full_target = get_full_path(notes_directory, link_target)
                 if not include_invalid:
                     if not os.path.exists(link_full_target):
