@@ -8,7 +8,7 @@ from shorthand.utils.rec import load_from_string
 from shorthand.utils.patterns import DEFINITION_PATTERN, \
                                      INTERNAL_LINK_PATTERN, GPS_PATTERN, \
                                      IMAGE_PATTERN
-from shorthand.utils.paths import parse_relative_link_path
+from shorthand.utils.paths import parse_relative_link_path, is_external_path
 
 definition_regex = re.compile(DEFINITION_PATTERN)
 internal_link_regex = re.compile(INTERNAL_LINK_PATTERN)
@@ -20,7 +20,7 @@ leading_whitespace_regex = re.compile(r'^[ \t]*')
 log = logging.getLogger(__name__)
 
 
-def rewrite_image_path(matchobj):
+def rewrite_image_path(matchobj, note_path):
     '''Consumes a regex match object for an image tag
     - If the image location is external, returns the image
       tag unmodified
@@ -30,7 +30,7 @@ def rewrite_image_path(matchobj):
     image_title = matchobj.group(1)
     image_target = matchobj.group(2)
 
-    if image_target.startswith('http://') or image_target.startswith('https://'):
+    if is_external_path(image_target):
         # External image target, nothing to do
         pass
     elif image_target.startswith('/'):
@@ -40,8 +40,7 @@ def rewrite_image_path(matchobj):
         # Relative path to internal image
         # We can't deal with this without knowing
         #     the path to the note we are rendering!
-        # TODO - fix this
-        pass
+        image_target = '/frontend-api/get-image?path=' + parse_relative_link_path(note_path, image_target)
     return f'![{image_title}]({image_target})'
 
 
@@ -167,7 +166,9 @@ def get_rendered_markdown(markdown_content, note_path):
             markdown_line)
 
         # Process internal images
-        markdown_line = image_regex.sub(rewrite_image_path, markdown_line)
+        markdown_line = image_regex.sub(
+            lambda match: rewrite_image_path(match, note_path),
+            markdown_line)
 
         if gps_regex.search(markdown_line):
             markdown_line = gps_regex.sub(
