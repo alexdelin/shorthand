@@ -4,7 +4,8 @@ from subprocess import Popen, PIPE
 import logging
 
 from shorthand.utils.paths import get_full_path, get_relative_path, \
-                                  parse_relative_link_path, is_external_path
+                                  parse_relative_link_path, is_external_path, \
+                                  is_note_path
 from shorthand.utils.patterns import INTERNAL_LINK_PATTERN, ALL_LINK_PATTERN
 
 
@@ -138,17 +139,11 @@ def _validate_internal_links(notes_directory, grep_path='grep'):
             link_target = match[2]
             log.debug(match)
 
-            # Handle absolute paths within the notes directory
-            if link_target[0] == '/':
-                link_full_target = get_full_path(notes_directory, link_target)
-
-            # Handle relative paths from the source note
-            else:
-                link_target = parse_relative_link_path(source=note_path,
-                                                       target=link_target)
-                link_full_target = get_full_path(notes_directory, link_target)
-
-            if not os.path.exists(link_full_target):
+            # Handle internal links
+            link_target = parse_relative_link_path(source=note_path,
+                                                   target=link_target)
+            is_valid_target = is_note_path(notes_directory, link_target)
+            if not is_valid_target:
                 link = {
                     'line_number': line_number,
                     'source': note_path,
@@ -262,9 +257,8 @@ def _get_links(notes_directory, source=None, target=None,
             # Only check that targets of internal links
             # actually exist (if we need to)
             if not is_external_path(link_target):
-                link_full_target = get_full_path(notes_directory, link_target)
                 if not include_invalid:
-                    if not os.path.exists(link_full_target):
+                    if not is_note_path(notes_directory, link_target):
                         log.info(f'Skipping invalid link to {link_target}')
                         continue
 

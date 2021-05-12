@@ -40,7 +40,8 @@ def rewrite_image_path(matchobj, note_path):
         # Relative path to internal image
         # We can't deal with this without knowing
         #     the path to the note we are rendering!
-        image_target = '/frontend-api/get-image?path=' + parse_relative_link_path(note_path, image_target)
+        image_target = '/frontend-api/get-image?path=' + \
+                       parse_relative_link_path(note_path, image_target)
     return f'![{image_title}]({image_target})'
 
 

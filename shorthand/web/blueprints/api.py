@@ -88,6 +88,12 @@ def get_note_links():
                                        include_invalid=include_invalid))
 
 
+@shorthand_api_blueprint.route('/api/v1/links/validate', methods=['GET'])
+def validate_note_links():
+    server = ShorthandServer(current_app.config['config_path'])
+    return json.dumps(server.validate_internal_links())
+
+
 @shorthand_api_blueprint.route('/api/v1/typeahead', methods=['GET'])
 def get_typeahead():
     server = ShorthandServer(current_app.config['config_path'])

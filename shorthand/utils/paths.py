@@ -145,3 +145,17 @@ def is_external_path(path):
         return True
     else:
         return False
+
+
+def is_note_path(notes_directory, path):
+    '''consumes a note path and ensures whether a note exists at that path.
+       Ignores any #element tag after the filename
+
+       notes_directory: full path to the root of the notes directory
+       path: relateive path of the note within the notes directory
+    '''
+    if '#' in path:
+        path = path.split('#')[0]
+
+    full_path = get_full_path(notes_directory, path)
+    return os.path.exists(full_path)
