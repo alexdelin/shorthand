@@ -102,10 +102,10 @@ class ShorthandServer(object):
                               note_path=note_path,
                               grep_path=self.config['grep_path'])
 
-    def get_links(self, source=None, target=None, include_external=False,
-                  include_invalid=False):
+    def get_links(self, source=None, target=None, note=None,
+                  include_external=False, include_invalid=False):
         return _get_links(notes_directory=self.config['notes_directory'],
-                          source=source, target=target,
+                          source=source, target=target, note=note,
                           include_external=include_external,
                           include_invalid=include_invalid,
                           grep_path=self.config['grep_path'])

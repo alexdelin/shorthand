@@ -145,7 +145,7 @@ function renderLinks() {
     var filePath = $('#meta-file-path').text()
 
     $.ajax({
-        url: '/api/v1/links?' + $.param({target: filePath}),
+        url: '/api/v1/links?' + $.param({note: filePath}),
         type: 'GET',
         success: function(linksContent) {
 

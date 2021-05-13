@@ -79,11 +79,12 @@ def get_note_links():
 
     source = request.args.get('source')
     target = request.args.get('target')
+    note = request.args.get('note')
     #TODO - Implement a better way to extract these from the request
     include_external = request.args.get('include_external')
     include_invalid = request.args.get('include_invalid')
 
-    return json.dumps(server.get_links(source=source, target=target,
+    return json.dumps(server.get_links(source=source, target=target, note=note,
                                        include_external=include_external,
                                        include_invalid=include_invalid))
 
