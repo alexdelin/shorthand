@@ -163,11 +163,47 @@ def _get_backlinks(notes_directory, note_path, grep_path='grep'):
                       grep_path=grep_path)
 
 
-def _get_links(notes_directory, source=None, target=None,
+def _get_links(notes_directory, source=None, target=None, note=None,
                include_external=False, include_invalid=False,
                grep_path='grep'):
     '''Get all links between notes within the notes directory
+
+       notes_directory: The directory to do the search within
+       source: Only return links where the specified note is the source of
+               the link
+       target: Only return links where the specified note is the target of
+               the link
+       note: Only return links where the specified note is either the source or
+             the target of the link
+       include_external: Boolean for whether or not external links are included
+       include_invalid: Boolean for whether or not links with invlaid targets
+                        are included
+       grep_path: path to the grep CLI utility to use for the search
     '''
+
+    if note:
+        if source or target:
+            raise ValueError('Parameter `note` cannot be combined '
+                             'with `source` or `target`')
+
+        # Get the set of all links where the specified note is either
+        # the source or the target
+        source_links = _get_links(notes_directory=notes_directory, source=note,
+                                  target=None, note=None,
+                                  include_external=include_external,
+                                  include_invalid=include_invalid,
+                                  grep_path=grep_path)
+        target_links = _get_links(notes_directory=notes_directory, source=None,
+                                  target=note, note=None,
+                                  include_external=include_external,
+                                  include_invalid=include_invalid,
+                                  grep_path=grep_path)
+        all_links = source_links + target_links
+        # Need to convert to a list of tuples to de-duplicate a
+        # list of dictionaries
+        all_links = [dict(tupleized) for tupleized in set(tuple(item.items())
+                     for item in all_links)]
+        return all_links
 
     links = []
 

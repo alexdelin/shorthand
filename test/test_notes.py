@@ -141,51 +141,81 @@ class TestLinkOperations(unittest.TestCase):
     def test_get_all_links(self):
         # Test Getting all notes
         all_links = _get_links(notes_directory=CONFIG['notes_directory'],
-                               source=None, target=None,
+                               source=None, target=None, note=None,
                                include_external=True, include_invalid=True,
                                grep_path=CONFIG['grep_path'])
         self.assertCountEqual(all_links, ALL_LINKS)
 
+    def test_filtering_links(self):
         # Test filtering for source
         for test_source in ['/section/mixed.note', '/todos.note',
                             '/questions.note', '/does-not-exist.note']:
-            results = _get_links(notes_directory=CONFIG['notes_directory'],
-                                 source=test_source, target=None,
-                                 include_external=True, include_invalid=True,
-                                 grep_path=CONFIG['grep_path'])
-            self.assertCountEqual(results, [link for link in ALL_LINKS
-                                            if link['source'] == test_source])
+            params = {
+                'notes_directory': CONFIG['notes_directory'],
+                'source': test_source,
+                'target': None,
+                'note': None,
+                'include_external': True,
+                'include_invalid': True,
+                'grep_path': CONFIG['grep_path']
+            }
+            self.assertCountEqual(_get_links(**params),
+                                  MODEL.get_links(**params))
 
         # Test filtering for target
         for test_target in ['/definitions.note', '/section/mixed.note',
                             '/does-not-exist.note']:
-            results = _get_links(notes_directory=CONFIG['notes_directory'],
-                                 source=None, target=test_target,
-                                 include_external=True, include_invalid=True,
-                                 grep_path=CONFIG['grep_path'])
-            self.assertCountEqual(results, [link for link in ALL_LINKS
-                                            if link['target'] == test_target])
+            params = {
+                'notes_directory': CONFIG['notes_directory'],
+                'source': None,
+                'target': test_target,
+                'note': None,
+                'include_external': True,
+                'include_invalid': True,
+                'grep_path': CONFIG['grep_path']
+            }
+            self.assertCountEqual(_get_links(**params),
+                                  MODEL.get_links(**params))
+
+        # Test filtering for note
+        for test_note in []:
+            params = {
+                'notes_directory': CONFIG['notes_directory'],
+                'source': None,
+                'target': None,
+                'note': test_note,
+                'include_external': True,
+                'include_invalid': True,
+                'grep_path': CONFIG['grep_path']
+            }
+            self.assertCountEqual(_get_links(**params),
+                                  MODEL.get_links(**params))
 
     def test_get_links_model(self):
         sources = [None, '/section/mixed.note', '/todos.note',
                    '/questions.note', '/does-not-exist.note']
         targets = [None, '/definitions.note', '/section/mixed.note',
                    '/does-not-exist.note', '/bugs.note', 'https://nytimes.com']
+        notes = sources + targets
         external_options = [True, False]
         invalid_options = [True, False]
 
         for _ in range(50):
+            use_note = random.choice((True, False))
             args = {
                 'notes_directory': CONFIG['notes_directory'],
-                'source': random.choice(sources),
-                'target': random.choice(targets),
+                'source': random.choice(sources) if not use_note else None,
+                'target': random.choice(targets) if not use_note else None,
+                'note': random.choice(notes) if use_note else None,
                 'include_external': random.choice(external_options),
                 'include_invalid': random.choice(invalid_options),
                 'grep_path': CONFIG['grep_path']
             }
             log.debug(f"source: {args['source']}, target: {args['target']}, "
+                      f"note: {args['note']}"
                       f"external: {args['include_external']}, "
                       f"invalid: {args['include_invalid']}")
+            print(args)
             self.assertCountEqual(_get_links(**args),
                                   MODEL.get_links(**args))
 

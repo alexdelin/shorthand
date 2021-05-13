@@ -148,7 +148,7 @@ class ShorthandModel(object):
 
         return questions
 
-    def get_links(self, notes_directory, source=None, target=None,
+    def get_links(self, notes_directory, source=None, target=None, note=None,
                   include_external=False, include_invalid=False,
                   grep_path=None):
 
@@ -161,6 +161,11 @@ class ShorthandModel(object):
         # Filter for target
         if target:
             links = [link for link in links if link['target'] == target]
+
+        # Filter for note
+        if note:
+            links = [link for link in links
+                     if link['target'] == note or link['source'] == note]
 
         # Filter for internal only vs. external
         if not include_external:
