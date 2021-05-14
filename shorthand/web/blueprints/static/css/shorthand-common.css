@@ -122,6 +122,10 @@
         max-width: 100%;
     }
 
+    #out {
+        font-family: palatino;
+    }
+
 div.tooltip {
     opacity: 100%;
 }

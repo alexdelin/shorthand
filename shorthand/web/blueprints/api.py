@@ -8,7 +8,7 @@ from shorthand.search import _filename_search, \
                                    _record_file_view
 from shorthand.elements.todos import analyze_todos
 from shorthand.utils.config import get_notes_config
-from shorthand.utils.api import wrap_response_data
+from shorthand.utils.api import wrap_response_data, get_request_argument
 
 shorthand_api_blueprint = Blueprint('shorthand_api_blueprint', __name__)
 
@@ -39,8 +39,9 @@ def get_server_config():
 def get_search_results():
     server = ShorthandServer(current_app.config['config_path'])
 
-    query_string = request.args.get('query_string')
-    case_sensitive = request.args.get('case_sensitive')
+    query_string = get_request_argument(request.args, name='query_string')
+    case_sensitive = get_request_argument(request.args, name='case_sensitive',
+                                          arg_type='bool', default=False)
 
     search_results = server.search_notes(
         query_string=query_string,
@@ -51,7 +52,7 @@ def get_search_results():
 @shorthand_api_blueprint.route('/api/v1/note', methods=['GET'])
 def get_full_note():
     server = ShorthandServer(current_app.config['config_path'])
-    path = request.args.get('path')
+    path = get_request_argument(request.args, name='path', required=True)
     return server.get_note(path)
 
 
@@ -59,7 +60,7 @@ def get_full_note():
 def write_updated_note():
     server = ShorthandServer(current_app.config['config_path'])
 
-    path = request.args.get('path')
+    path = get_request_argument(request.args, name='path', required=True)
     request.get_data()
     content = request.data.decode('utf-8')
 
@@ -77,12 +78,15 @@ def get_toc_data():
 def get_note_links():
     server = ShorthandServer(current_app.config['config_path'])
 
-    source = request.args.get('source')
-    target = request.args.get('target')
-    note = request.args.get('note')
-    #TODO - Implement a better way to extract these from the request
-    include_external = request.args.get('include_external')
-    include_invalid = request.args.get('include_invalid')
+    source = get_request_argument(request.args, name='source')
+    target = get_request_argument(request.args, name='target')
+    note = get_request_argument(request.args, name='note')
+    include_external = get_request_argument(request.args,
+                                            name='include_external',
+                                            arg_type='bool', default=False)
+    include_invalid = get_request_argument(request.args,
+                                           name='include_invalid',
+                                           arg_type='bool', default=False)
 
     return json.dumps(server.get_links(source=source, target=target, note=note,
                                        include_external=include_external,
@@ -98,7 +102,7 @@ def validate_note_links():
 @shorthand_api_blueprint.route('/api/v1/typeahead', methods=['GET'])
 def get_typeahead():
     server = ShorthandServer(current_app.config['config_path'])
-    query_string = request.args.get('query')
+    query_string = get_request_argument(request.args, name='query')
     return json.dumps(server.get_typeahead_suggestions(
         query_string=query_string))
 
@@ -112,24 +116,14 @@ def stamp():
 
 @shorthand_api_blueprint.route('/api/v1/files', methods=['GET'])
 def get_files():
+    #TODO - Use Server
     SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
 
-    query_string = request.args.get('query_string', None)
-    prefer_recent = request.args.get('prefer_recent', 'True')
-    if prefer_recent.lower() == 'false':
-        prefer_recent = False
-    elif prefer_recent.lower() == 'true':
-        prefer_recent = True
-    else:
-        raise ValueError(f'Invalid value {prefer_recent} for `prefer_recent`')
-    case_sensitive = request.args.get('case_sensitive', 'False')
-    if case_sensitive.lower() == 'false':
-        case_sensitive = False
-    elif case_sensitive.lower() == 'true':
-        case_sensitive = True
-    else:
-        raise ValueError(f'Invalid value {case_sensitive} '
-                         f'for `case_sensitive`')
+    query_string = get_request_argument(request.args, name='query_string')
+    prefer_recent = get_request_argument(request.args, name='prefer_recent',
+                                         arg_type='bool', default=True)
+    case_sensitive = get_request_argument(request.args, name='case_sensitive',
+                                          arg_type='bool', default=False)
 
     files = _filename_search(
                 notes_directory=SHORTHAND_CONFIG['notes_directory'],
@@ -144,11 +138,12 @@ def get_files():
 
 @shorthand_api_blueprint.route('/api/v1/record_view', methods=['POST'])
 def record_file_view_api():
+    #TODO - Use Server
+    #TODO - Rename arg to "note_path" both here and in the function
     SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
 
-    relative_path = request.args.get('relative_path')
-    if not relative_path:
-        raise ValueError('No Relative Path Provided')
+    relative_path = get_request_argument(request.args, name='relative_path',
+                                         required=True)
     _record_file_view(cache_directory=SHORTHAND_CONFIG['cache_directory'],
                       relative_path=relative_path,
                       history_limit=SHORTHAND_CONFIG.get('view_history_limit',
@@ -160,7 +155,8 @@ def record_file_view_api():
 def fetch_tags():
     server = ShorthandServer(current_app.config['config_path'])
 
-    directory_filter = request.args.get('directory_filter')
+    directory_filter = get_request_argument(request.args,
+                                            name='directory_filter')
     if directory_filter == 'ALL':
         directory_filter = None
 
@@ -172,7 +168,8 @@ def fetch_tags():
 def fetch_calendar():
     server = ShorthandServer(current_app.config['config_path'])
 
-    directory_filter = request.args.get('directory_filter')
+    directory_filter = get_request_argument(request.args,
+                                            name='directory_filter')
     if directory_filter == 'ALL':
         directory_filter = None
 
@@ -187,7 +184,8 @@ def fetch_calendar():
 def get_gps_locations():
     server = ShorthandServer(current_app.config['config_path'])
 
-    directory_filter = request.args.get('directory_filter')
+    directory_filter = get_request_argument(request.args,
+                                            name='directory_filter')
 
     locations = server.get_locations(directory_filter=directory_filter)
     wrapped_response = wrap_response_data(locations)
@@ -198,34 +196,23 @@ def get_gps_locations():
 def get_current_todos():
     server = ShorthandServer(current_app.config['config_path'])
 
-    status = request.args.get('status', 'incomplete')
-    directory_filter = request.args.get('directory_filter')
-    query_string = request.args.get('query_string')
-    sort_by = request.args.get('sort_by')
-    tag = request.args.get('tag')
-    suppress_future = request.args.get('suppress_future', 'true')
-    case_sensitive = request.args.get('case_sensitive', 'false')
+    status = get_request_argument(request.args, name='status',
+                                  default='incomplete')
+    directory_filter = get_request_argument(request.args,
+                                            name='directory_filter')
+    query_string = get_request_argument(request.args, name='query_string')
+    sort_by = get_request_argument(request.args, name='sort_by')
+    tag = get_request_argument(request.args, name='tag')
+    suppress_future = get_request_argument(request.args,
+                                           name='suppress_future',
+                                           arg_type='bool', default=True)
+    case_sensitive = get_request_argument(request.args, name='case_sensitive',
+                                          arg_type='bool', default=False)
 
     if directory_filter == 'ALL':
         directory_filter = None
     if tag == 'ALL':
         tag = None
-
-    if suppress_future.lower() == 'true':
-        suppress_future = True
-    elif suppress_future.lower() == 'false':
-        suppress_future = False
-    else:
-        raise ValueError(f'Invalid value "{suppress_future}"" '
-                         f'for parameter "suppress_future"')
-
-    if case_sensitive.lower() == 'true':
-        case_sensitive = True
-    elif case_sensitive.lower() == 'false':
-        case_sensitive = False
-    else:
-        raise ValueError(f'Invalid value "{case_sensitive}"" '
-                         f'for parameter "case_sensitive"')
 
     todos = server.get_todos(todo_status=status,
                              directory_filter=directory_filter,
@@ -243,9 +230,10 @@ def get_current_todos():
 def mark_todo_status():
     server = ShorthandServer(current_app.config['config_path'])
 
-    filename = request.args.get('filename')
-    line_number = int(request.args.get('line_number'))
-    status = request.args.get('status')
+    filename = get_request_argument(request.args, name='filename')
+    line_number = get_request_argument(request.args, name='line_number',
+                                       arg_type='int')
+    status = get_request_argument(request.args, name='status')
 
     return server.mark_todo(filename, line_number, status)
 
@@ -254,14 +242,16 @@ def mark_todo_status():
 def fetch_questions():
     server = ShorthandServer(current_app.config['config_path'])
 
-    status = request.args.get('status', 'all')
-    directory_filter = request.args.get('directory_filter')
+    status = get_request_argument(request.args, name='status', default='all')
+    directory_filter = get_request_argument(request.args,
+                                            name='directory_filter')
     if directory_filter == 'ALL':
         directory_filter = None
-    current_app.logger.info(f'Getting {status} questions in directory {directory_filter}')
+    current_app.logger.info(f'Getting {status} questions in '
+                            f'directory {directory_filter}')
 
     questions = server.get_questions(
-        question_status=status, directory_filter=directory_filter,)
+        question_status=status, directory_filter=directory_filter)
     current_app.logger.info(f'Returning {len(questions)} question results')
     return json.dumps(wrap_response_data(questions))
 
@@ -270,7 +260,8 @@ def fetch_questions():
 def fetch_definitions():
     server = ShorthandServer(current_app.config['config_path'])
 
-    directory_filter = request.args.get('directory_filter')
+    directory_filter = get_request_argument(request.args,
+                                            name='directory_filter')
     if directory_filter == 'ALL':
         directory_filter = None
 
@@ -282,7 +273,8 @@ def fetch_definitions():
 def fetch_record_sets():
     server = ShorthandServer(current_app.config['config_path'])
 
-    directory_filter = request.args.get('directory_filter')
+    directory_filter = get_request_argument(request.args,
+                                            name='directory_filter')
     if directory_filter == 'ALL':
         directory_filter = None
 
@@ -294,25 +286,15 @@ def fetch_record_sets():
 def fetch_record_set():
     server = ShorthandServer(current_app.config['config_path'])
 
-    file_path = request.args.get('file_path')
-    line_number = int(request.args.get('line_number'))
-    parse = request.args.get('parse', 'true')
-    if parse.lower() == 'true':
-        parse = True
-    elif parse.lower() == 'false':
-        parse = False
-    else:
-        raise ValueError(f'Argument parse must be either "true" or "false", '
-                         f'found "{parse}"')
-    include_config = request.args.get('include_config', 'false')
-    if include_config.lower() == 'true':
-        include_config = True
-    elif include_config.lower() == 'false':
-        include_config = False
-    else:
-        raise ValueError(f'Argument include_config must be either "true" or '
-                         f'"false", found "{include_config}"')
-    parse_format = request.args.get('parse_format', 'json')
+    file_path = get_request_argument(request.args, name='file_path')
+    line_number = get_request_argument(request.args, name='line_number',
+                                       arg_type='int')
+    parse = get_request_argument(request.args, name='parse', arg_type='bool',
+                                 default=True)
+    include_config = get_request_argument(request.args, name='include_config',
+                                          arg_type='bool', default=False)
+    parse_format = get_request_argument(request.args, name='parse_format',
+                                        default='json')
 
     return server.get_record_set(
         file_path=file_path,
