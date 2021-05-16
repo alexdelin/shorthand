@@ -4,10 +4,7 @@ from werkzeug.exceptions import HTTPException
 from flask import Blueprint, request, current_app
 
 from shorthand import ShorthandServer
-from shorthand.search import _filename_search, \
-                                   _record_file_view
 from shorthand.elements.todos import analyze_todos
-from shorthand.utils.config import get_notes_config
 from shorthand.utils.api import wrap_response_data, get_request_argument
 
 shorthand_api_blueprint = Blueprint('shorthand_api_blueprint', __name__)
@@ -116,8 +113,7 @@ def stamp():
 
 @shorthand_api_blueprint.route('/api/v1/files', methods=['GET'])
 def get_files():
-    #TODO - Use Server
-    SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
+    server = ShorthandServer(current_app.config['config_path'])
 
     query_string = get_request_argument(request.args, name='query_string')
     prefer_recent = get_request_argument(request.args, name='prefer_recent',
@@ -125,29 +121,21 @@ def get_files():
     case_sensitive = get_request_argument(request.args, name='case_sensitive',
                                           arg_type='bool', default=False)
 
-    files = _filename_search(
-                notes_directory=SHORTHAND_CONFIG['notes_directory'],
+    files = server.filename_search(
                 prefer_recent_files=prefer_recent,
-                cache_directory=SHORTHAND_CONFIG['cache_directory'],
-                query_string=query_string, case_sensitive=case_sensitive,
-                grep_path=SHORTHAND_CONFIG['grep_path'],
-                find_path=SHORTHAND_CONFIG.get('find_path', 'find'))
+                query_string=query_string, case_sensitive=case_sensitive)
 
     return json.dumps(files)
 
 
 @shorthand_api_blueprint.route('/api/v1/record_view', methods=['POST'])
 def record_file_view_api():
-    #TODO - Use Server
     #TODO - Rename arg to "note_path" both here and in the function
-    SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
+    server = ShorthandServer(current_app.config['config_path'])
 
     relative_path = get_request_argument(request.args, name='relative_path',
                                          required=True)
-    _record_file_view(cache_directory=SHORTHAND_CONFIG['cache_directory'],
-                      relative_path=relative_path,
-                      history_limit=SHORTHAND_CONFIG.get('view_history_limit',
-                                                         100))
+    server.record_file_view(relative_path=relative_path)
     return 'ack'
 
 
