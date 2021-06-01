@@ -122,7 +122,7 @@ def get_files():
                                           arg_type='bool', default=False)
 
     files = server.filename_search(
-                prefer_recent_files=prefer_recent,
+                prefer_recent=prefer_recent,
                 query_string=query_string, case_sensitive=case_sensitive)
 
     return json.dumps(files)
