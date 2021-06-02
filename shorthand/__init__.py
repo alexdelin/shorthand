@@ -103,11 +103,13 @@ class ShorthandServer(object):
                               grep_path=self.config['grep_path'])
 
     def get_links(self, source=None, target=None, note=None,
-                  include_external=False, include_invalid=False):
+                  include_external=False, include_invalid=False,
+                  flatten=True):
         return _get_links(notes_directory=self.config['notes_directory'],
                           source=source, target=target, note=note,
                           include_external=include_external,
                           include_invalid=include_invalid,
+                          flatten=flatten,
                           grep_path=self.config['grep_path'])
 
     # Stamping

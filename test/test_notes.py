@@ -209,12 +209,10 @@ class TestLinkOperations(unittest.TestCase):
                 'note': random.choice(notes) if use_note else None,
                 'include_external': random.choice(external_options),
                 'include_invalid': random.choice(invalid_options),
+                'flatten': random.choice([True, False]),
                 'grep_path': CONFIG['grep_path']
             }
-            log.debug(f"source: {args['source']}, target: {args['target']}, "
-                      f"note: {args['note']}"
-                      f"external: {args['include_external']}, "
-                      f"invalid: {args['include_invalid']}")
+            log.debug(f"args: {args}")
             print(args)
             self.assertCountEqual(_get_links(**args),
                                   MODEL.get_links(**args))
@@ -229,6 +227,7 @@ class TestLinkOperations(unittest.TestCase):
                 'note_path': target,
                 'grep_path': CONFIG['grep_path']
             }
+            log.debug(f"args: {args}")
             self.assertCountEqual(_get_backlinks(**args),
                                   MODEL.get_backlinks(**args))
 
