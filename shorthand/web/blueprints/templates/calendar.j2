@@ -141,7 +141,7 @@
 
         {{ static_content['header_html'] }}
 
-        <div class="row" style="padding-top: 15px;">
+        <div class="form-row align-items-center" style="padding-top: 15px;">
           <div class="col-auto">
             <!-- Directory Filter -->
             <select id="directoryFilter" class="form-control">
@@ -152,6 +152,13 @@
                 <option>{{ sub_directory }}</option>
               {% endfor %}
             </select>
+          </div>
+          <div class="col-md-1"></div>
+          <div class="col-auto">
+            <div class="custom-control custom-switch custom-switch-lg">
+              <input type="checkbox" class="custom-control-input" id="toggleWIPView">
+              <label class="custom-control-label" for="toggleWIPView">WIP View</label>
+            </div>
           </div>
         </div>
 

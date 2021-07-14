@@ -5,6 +5,10 @@ document.addEventListener('DOMContentLoaded', function() {
     $("#directoryFilter").change(function () {
         reloadCalendar();
     });
+    // Re-draw the calendar whenever the WIP View switch is changed
+    $("#toggleWIPView").change(function () {
+        reloadCalendar();
+    });
 });
 
 
@@ -34,6 +38,8 @@ function parseCalendarResponse(responseData) {
     var chartData = []
 
     calendarData = JSON.parse(responseData)
+    var showWIP = $('#toggleWIPView').is(":checked")
+
     for (var year in calendarData) {
         for (var month in calendarData[year]) {
             for (var day in calendarData[year][month]) {
@@ -48,13 +54,18 @@ function parseCalendarResponse(responseData) {
                 for (var eventIndex in calendarData[year][month][day]) {
                     // Prep event to put on the calendar
                     var event = calendarData[year][month][day][eventIndex];
-                    var formattedEvent = {
-                        title: event['event'],
-                        start: year + '-' + month + '-' + day,
-                        url: '/render?path=' + event["file_path"] + '#line-number-' + event["line_number"],
-                        type: event['type'],
-                        textColor: 'black'
+                    if (showWIP) {
+                        alert('Not implemented yet');
+                    } else {
+                        var formattedEvent = {
+                            title: event['event'],
+                            start: year + '-' + month + '-' + day,
+                            url: '/render?path=' + event["file_path"] + '#line-number-' + event["line_number"],
+                            type: event['type'],
+                            textColor: 'black'
+                        };
                     };
+
                     if (formattedEvent['type'] == 'section') {
                         formattedEvent['color'] = '#abeeff' // Light Blue
                         formattedEvent['textColor'] = 'black'
