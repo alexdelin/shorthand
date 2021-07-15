@@ -128,7 +128,7 @@ function RenderToc(tocContent, md) {
 }
 
 $(document).ready(function() {
-    // Render ToC if we have a `#links` element on the page
+    // Render Links if we have a `#links` element on the page
     if (document.getElementById('links')) {
         // Wire click events for show / hide links button
         $("#showLinks").click(function(){
@@ -137,15 +137,22 @@ $(document).ready(function() {
                 renderLinks();
             }
         });
+        // Re-draw the links whenever the Extnernal Links switch is changed
+        $("#toggleExtLinks").change(function () {
+            renderLinks();
+        });
     }
 });
 
 function renderLinks() {
     console.log('rendering Links')
     var filePath = $('#meta-file-path').text()
+    var includeExternalLinks = $('#toggleExtLinks').is(":checked")
 
     $.ajax({
-        url: '/api/v1/links?' + $.param({note: filePath}),
+        url: '/api/v1/links?' + $.param({
+            note: filePath,
+            include_external: includeExternalLinks}),
         type: 'GET',
         success: function(linksContent) {
 
