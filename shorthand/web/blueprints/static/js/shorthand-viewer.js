@@ -155,9 +155,11 @@ function renderLinks() {
 
             } else {
 
+                var [linkElements, maxHeight] = transformLinks(linksContent);
+                $('#links').height(maxHeight * 100 + 'px');
                 var cy = cytoscape({
                     container: document.getElementById('links'),
-                    elements: transformLinks(linksContent),
+                    elements: linkElements,
                     style: [
                         {
                             selector: 'node',
@@ -166,7 +168,7 @@ function renderLinks() {
                                 "label": "data(label)",
                                 "text-valign": "bottom",
                                 "text-halign": "center",
-                                "font-size": "4px"
+                                "font-size": "5px"
                             }
                         },
                         {
@@ -227,6 +229,21 @@ function transformLinks(linksContent) {
         edges.push(edge);
     }
 
+    // Calculate max height (in units of links)
+    var filePath = $('#meta-file-path').text();
+    var maxHeightSrc = 0;
+    var maxHeightTgt = 0;
+    for (var i = edges.length - 1; i >= 0; i--) {
+        console.log(edges[i]["data"]["source"]);
+        console.log(edges[i]["data"]["target"]);
+        if (edges[i]["data"]["source"] == filePath) {
+            maxHeightSrc += 1;
+        } else if (edges[i]["data"]["target"] == filePath) {
+            maxHeightTgt += 1;
+        };
+    }
+    var maxHeight = Math.max(maxHeightSrc, maxHeightTgt);
+
     // Re-format nodes into the format the libarary needs
     for (var i = nodes.length - 1; i >= 0; i--) {
         var splitpath = nodes[i].split('/')
@@ -239,5 +256,5 @@ function transformLinks(linksContent) {
         });
     }
 
-    return formattedNodes.concat(edges)
+    return [formattedNodes.concat(edges), maxHeight]
 }
