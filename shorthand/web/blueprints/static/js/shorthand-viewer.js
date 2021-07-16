@@ -167,11 +167,13 @@ function renderLinks() {
                 var cy = cytoscape({
                     container: document.getElementById('links'),
                     elements: linkElements,
+                    userZoomingEnabled: false,
+                    userPanningEnabled: false,
                     style: [
                         {
                             selector: 'node',
                             style: {
-                                'background-color': '#dd4de2',
+                                'background-color': 'data(color)',
                                 "label": "data(label)",
                                 "text-valign": "bottom",
                                 "text-halign": "center",
@@ -183,8 +185,8 @@ function renderLinks() {
                             style: {
                                 'curve-style': 'bezier',
                                 'target-arrow-shape': 'triangle',
-                                'line-color': '#dd4de2',
-                                'target-arrow-color': '#dd4de2',
+                                'line-color': '#aaa',
+                                'target-arrow-color': '#aaa',
                                 'opacity': 0.5
                             }
                         }
@@ -197,7 +199,12 @@ function renderLinks() {
                 // Set up click events so that they act as links to the linked notes
                 cy.on('tap', 'node', function(evt){
                     var fullPath = evt.target.id();
-                    var viewURL = window.location.href.split('?')[0] + '?path=' + fullPath;
+
+                    if (evt.target.data('nodeType') == 'internal') {
+                        var viewURL = window.location.href.split('?')[0] + '?path=' + fullPath;
+                    } else {
+                        var viewURL = fullPath
+                    }
                     window.open(viewURL, '_blank').focus();
                 });
             }
@@ -253,12 +260,23 @@ function transformLinks(linksContent) {
 
     // Re-format nodes into the format the libarary needs
     for (var i = nodes.length - 1; i >= 0; i--) {
-        var splitpath = nodes[i].split('/')
+        var fullPath = nodes[i]
+        var splitpath = fullPath.split('/')
         filename = splitpath[splitpath.length - 1]
+        var isExternalPath = false;
+        var nodeColor = "#508ef2";
+        var nodeType = 'internal'
+        if (fullPath.startsWith("http://") || fullPath.startsWith("https://")) {
+            isExternalPath = true;
+            nodeColor = "#70e094";
+            nodeType = 'external'
+        }
         formattedNodes.push({
             data: {
                 id: nodes[i],
-                label: filename
+                label: filename,
+                color: nodeColor,
+                nodeType: nodeType
             }
         });
     }
