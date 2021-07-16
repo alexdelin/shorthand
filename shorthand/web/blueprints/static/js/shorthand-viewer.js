@@ -225,8 +225,8 @@ function transformLinks(linksContent) {
 
     // Populate raw list of node names and edges
     for (var i = linksContent.length - 1; i >= 0; i--) {
-        var source = linksContent[i].source;
-        var target = linksContent[i].target;
+        var source = removeInternalLinkSections(linksContent[i].source);
+        var target = removeInternalLinkSections(linksContent[i].target);
         if (!nodes.includes(source)) {
             nodes.push(source);
         }
@@ -250,9 +250,9 @@ function transformLinks(linksContent) {
     for (var i = edges.length - 1; i >= 0; i--) {
         console.log(edges[i]["data"]["source"]);
         console.log(edges[i]["data"]["target"]);
-        if (edges[i]["data"]["source"] == filePath) {
+        if (edges[i]["data"]["source"].includes(filePath)) {
             maxHeightSrc += 1;
-        } else if (edges[i]["data"]["target"] == filePath) {
+        } else if (edges[i]["data"]["target"].includes(filePath)) {
             maxHeightTgt += 1;
         };
     }
@@ -260,16 +260,17 @@ function transformLinks(linksContent) {
 
     // Re-format nodes into the format the libarary needs
     for (var i = nodes.length - 1; i >= 0; i--) {
-        var fullPath = nodes[i]
-        var splitpath = fullPath.split('/')
-        filename = splitpath[splitpath.length - 1]
+        var fullPath = nodes[i];
+        var splitpath = fullPath.split('/');
+        filename = splitpath[splitpath.length - 1];
         var isExternalPath = false;
         var nodeColor = "#508ef2";
         var nodeType = 'internal'
         if (fullPath.startsWith("http://") || fullPath.startsWith("https://")) {
             isExternalPath = true;
             nodeColor = "#70e094";
-            nodeType = 'external'
+            nodeType = 'external';
+            filename = decodeURI(fullPath).replace(/^https?:\/\//, '');
         }
         formattedNodes.push({
             data: {
@@ -282,4 +283,16 @@ function transformLinks(linksContent) {
     }
 
     return [formattedNodes.concat(edges), maxHeight]
+}
+
+function removeInternalLinkSections(linkTarget) {
+    if (linkTarget.startsWith("http://") || linkTarget.startsWith("https://")) {
+        return linkTarget
+    } else {
+        if (linkTarget.includes('#')) {
+            return linkTarget.split('#')[0]
+        } else {
+            return linkTarget
+        }
+    }
 }

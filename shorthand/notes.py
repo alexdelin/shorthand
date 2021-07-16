@@ -257,7 +257,7 @@ def _get_links(notes_directory, source=None, target=None, note=None,
     if target:
         # Only include the target filename to catch both
         # relative and absolute references
-        LINK_PATTERN += rf'(.*?{target_filename})'
+        LINK_PATTERN += rf'(.*?{target_filename})(#.+?)?'
     elif not include_external:
         # Only catch internal links which don't have http[s]://
         LINK_PATTERN += r'((?!(https://|http://)).*?)'
@@ -327,8 +327,11 @@ def _get_links(notes_directory, source=None, target=None, note=None,
             # Sanity check the link target which Grep should have already
             # filtered for
             if target and link_target != target:
-                log.debug(f'Found unexpected target {link_target}')
-                continue
+                if '#' in link_target and link_target.split('#')[0] == target:
+                    log.debug(f'Found link to subsection {link_target}')
+                else:
+                    log.debug(f'Found unexpected target {link_target}')
+                    continue
 
             if not include_external and (is_external_path(link_target)):
                 continue
