@@ -156,16 +156,19 @@ class ShorthandModel(object):
 
         # Filter for source
         if source:
-            links = [link for link in links if link['source'] == source]
+            links = [link for link in links
+                     if link['source'] == source]
 
         # Filter for target
         if target:
-            links = [link for link in links if link['target'] == target]
+            links = [link for link in links
+                     if link['target'].split('#')[0] == target]
 
         # Filter for note
         if note:
             links = [link for link in links
-                     if link['target'] == note or link['source'] == note]
+                     if link['target'].split('#')[0] == note
+                     or link['source'] == note]
 
         # Filter for internal only vs. external
         if not include_external:
@@ -175,7 +178,7 @@ class ShorthandModel(object):
         split_links = {'valid': [], 'invalid': []}
         for link in links:
             target_exists = os.path.exists(get_full_path(notes_directory,
-                                                         link['target']))
+                                           link['target'].split('#')[0]))
             if link['target'][0] != '/' or target_exists:
                 split_links['valid'].append(link)
             else:

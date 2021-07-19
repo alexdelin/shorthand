@@ -411,7 +411,7 @@ ALL_LINKS = [
     }, {
         'line_number': '23',
         'source': '/questions.note',
-        'target': '/section/mixed.note',
+        'target': '/section/mixed.note#Recipes',
         'text': 'mixed example'
     }, {
         'line_number': '28',
