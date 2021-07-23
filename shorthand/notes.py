@@ -93,64 +93,18 @@ def _delete_note(notes_directory, note_path):
     os.remove(full_path)
 
 
-def _validate_internal_links(notes_directory, grep_path='grep'):
+def _validate_internal_links(notes_directory, source=None, grep_path='grep'):
     '''Validate that all of the internal links within notes point
        to files that actually exist within the notes directory (not
            necessarily other notes files)
     '''
 
-    invalid_links = []
-
-    # Use Grep to find all internal links
-    grep_command = '{grep_path} -Prn "{pattern}" '\
-                   '--include="*.note" {dir}'.format(
-                        grep_path=grep_path,
-                        pattern=INTERNAL_LINK_PATTERN,
-                        dir=notes_directory)
-    log.debug(f'Running grep command {grep_command} to get internal links')
-
-    proc = Popen(
-        grep_command,
-        stdout=PIPE, stderr=PIPE,
-        shell=True)
-    output, err = proc.communicate()
-    output_lines = output.decode().split('\n')
-
-    for line in output_lines:
-
-        log.debug(f'Got line "{line}"')
-
-        if not line.strip():
-            continue
-
-        split_line = line.split(':', 2)
-
-        file_path = split_line[0].strip()
-        line_number = split_line[1].strip()
-        match_content = split_line[2].strip()
-
-        note_path = get_relative_path(notes_directory, file_path)
-
-        matches = internal_link_regex.findall(match_content)
-        for match in matches:
-            # The matching group for the text starts
-            # with `[` and ends with `](`
-            link_text = match[1][1:-2]
-            link_target = match[2]
-            log.debug(match)
-
-            # Handle internal links
-            link_target = parse_relative_link_path(source=note_path,
-                                                   target=link_target)
-            is_valid_target = is_note_path(notes_directory, link_target)
-            if not is_valid_target:
-                link = {
-                    'line_number': line_number,
-                    'source': note_path,
-                    'target': link_target,
-                    'text': link_text
-                }
-                invalid_links.append(link)
+    all_internal_links = _get_links(notes_directory=notes_directory,
+                                    source=source, target=None, note=None,
+                                    include_external=False,
+                                    include_invalid=True,
+                                    grep_path=grep_path)
+    invalid_links = [link for link in all_internal_links if not link['valid']]
 
     return invalid_links
 
@@ -172,7 +126,7 @@ def _get_backlinks(notes_directory, note_path, grep_path='grep'):
 
 
 def _get_links(notes_directory, source=None, target=None, note=None,
-               include_external=False, include_invalid=False, flatten=True,
+               include_external=False, include_invalid=False,
                grep_path='grep'):
     '''Get all links between notes within the notes directory
 
@@ -186,29 +140,26 @@ def _get_links(notes_directory, source=None, target=None, note=None,
        include_external: Boolean for whether or not external links are included
        include_invalid: Boolean for whether or not links with invlaid targets
                         are included
-       flatten: Determines whether all returned links are returned as a single
-                flat list, or are separated into valid and invalid links
        grep_path: Path to the grep CLI utility to use for the search
 
        Returns:
-            If Flattened:
-                [
-                    {'line_number': '26','source': '/section/mixed.note',
-                     'target': '/todos.note','text': 'todos'},
-                    {'line_number': '26','source': '/section/mixed.note',
-                     'target': '/questions.note','text': 'questions'}
-                ]
-            If Not Flattened:
+            [
                 {
-                    'valid': [
-                        {'line_number': '26','source': '/section/mixed.note',
-                         'target': '/todos.note','text': 'todos'}
-                    ],
-                    'invalid': [
-                        {'line_number': '26','source': '/section/mixed.note',
-                         'target': '/questions.note','text': 'questions'}
-                    ]
+                    'line_number': '26',
+                    'source': '/section/mixed.note',
+                    'target': '/todos.note',
+                    'text': 'todos',
+                    'internal': true,
+                    'valid': true
+                }, {
+                    'line_number': '26',
+                    'source': '/section/mixed.note',
+                    'target': '/questions.note',
+                    'text': 'questions',
+                    'internal': true,
+                    'valid': true
                 }
+            ]
     '''
 
     if note:
@@ -222,33 +173,19 @@ def _get_links(notes_directory, source=None, target=None, note=None,
                                   target=None, note=None,
                                   include_external=include_external,
                                   include_invalid=include_invalid,
-                                  flatten=flatten,
                                   grep_path=grep_path)
         target_links = _get_links(notes_directory=notes_directory, source=None,
                                   target=note, note=None,
                                   include_external=include_external,
                                   include_invalid=include_invalid,
-                                  flatten=flatten,
                                   grep_path=grep_path)
-        if flatten:
-            all_links = source_links + target_links
-            all_links = deduplicate_links(all_links)
 
-        else:
-            valid_links = deduplicate_links(source_links['valid'] +
-                                            target_links['valid'])
-            all_links = {'valid': valid_links}
-
-            if include_invalid:
-                invalid_links = deduplicate_links(source_links['invalid'] +
-                                                  target_links['invalid'])
-                all_links['invalid'] = invalid_links
+        all_links = source_links + target_links
+        all_links = deduplicate_links(all_links)
 
         return all_links
 
-    links = {'valid': []}
-    if include_invalid:
-        links['invalid'] = []
+    links = []
 
     if target:
         target_filename = os.path.basename(target)
@@ -323,24 +260,26 @@ def _get_links(notes_directory, source=None, target=None, note=None,
 
             link_target = parse_relative_link_path(source=note_path,
                                                    target=link_target)
+            link_target_file = link_target.split('#')[0]
+            is_external_link = False
+            is_valid_link = True
 
             # Sanity check the link target which Grep should have already
             # filtered for
             if target and link_target != target:
-                if '#' in link_target and link_target.split('#')[0] == target:
+                if '#' in link_target and link_target_file == target:
                     log.debug(f'Found link to subsection {link_target}')
                 else:
                     log.debug(f'Found unexpected target {link_target}')
                     continue
 
-            if not include_external and (is_external_path(link_target)):
+            is_external_link = is_external_path(link_target)
+            if is_external_link and not include_external:
                 continue
 
-            if is_external_path(link_target):
-                is_valid_target = True
-            else:
-                is_valid_target = is_note_path(notes_directory, link_target)
-                if not include_invalid and not is_valid_target:
+            if not is_external_link:
+                is_valid_link = is_note_path(notes_directory, link_target_file)
+                if not include_invalid and not is_valid_link:
                     log.info(f'Skipping invalid link to {link_target}')
                     continue
 
@@ -348,15 +287,11 @@ def _get_links(notes_directory, source=None, target=None, note=None,
                 'line_number': line_number,
                 'source': note_path,
                 'target': link_target,
-                'text': link_text
+                'text': link_text,
+                'internal': not is_external_link,
+                'valid': is_valid_link
             }
 
-            if is_valid_target:
-                links['valid'].append(link)
-            else:
-                links['invalid'].append(link)
-
-    if flatten:
-        links = links['valid'] + links.get('invalid', [])
+            links.append(link)
 
     return links

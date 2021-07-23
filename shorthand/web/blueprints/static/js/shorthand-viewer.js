@@ -152,7 +152,8 @@ function renderLinks() {
     $.ajax({
         url: '/api/v1/links?' + $.param({
             note: filePath,
-            include_external: includeExternalLinks}),
+            include_external: includeExternalLinks,
+            include_invalid: true}),
         type: 'GET',
         success: function(linksContent) {
 
@@ -197,13 +198,15 @@ function renderLinks() {
                 });
 
                 // Set up click events so that they act as links to the linked notes
-                cy.on('tap', 'node', function(evt){
+                cy.on('tap', 'node', function(evt) {
                     var fullPath = evt.target.id();
 
                     if (evt.target.data('nodeType') == 'internal') {
                         var viewURL = window.location.href.split('?')[0] + '?path=' + fullPath;
+                    } else if (evt.target.data('nodeType') == 'invalid') {
+                        return;
                     } else {
-                        var viewURL = fullPath
+                        var viewURL = fullPath;
                     }
                     window.open(viewURL, '_blank').focus();
                 });
@@ -225,8 +228,16 @@ function transformLinks(linksContent) {
 
     // Populate raw list of node names and edges
     for (var i = linksContent.length - 1; i >= 0; i--) {
-        var source = removeInternalLinkSections(linksContent[i].source);
-        var target = removeInternalLinkSections(linksContent[i].target);
+        var source = {
+            name: removeInternalLinkSections(linksContent[i].source),
+            internal: true,
+            valid: true,
+        }
+        var target = {
+            name: removeInternalLinkSections(linksContent[i].target),
+            internal: linksContent[i].internal,
+            valid: linksContent[i].valid
+        }
         if (!nodes.includes(source)) {
             nodes.push(source);
         }
@@ -236,8 +247,8 @@ function transformLinks(linksContent) {
         var edge = {
             data: {
                 id: 'link-' + i,
-                source: source,
-                target: target
+                source: source.name,
+                target: target.name
             }
         }
         edges.push(edge);
@@ -260,21 +271,23 @@ function transformLinks(linksContent) {
 
     // Re-format nodes into the format the libarary needs
     for (var i = nodes.length - 1; i >= 0; i--) {
-        var fullPath = nodes[i];
+        var fullPath = nodes[i]["name"];
         var splitpath = fullPath.split('/');
-        filename = splitpath[splitpath.length - 1];
-        var isExternalPath = false;
+        var filename = splitpath[splitpath.length - 1];
         var nodeColor = "#508ef2";
         var nodeType = 'internal'
-        if (fullPath.startsWith("http://") || fullPath.startsWith("https://")) {
-            isExternalPath = true;
+        if (!nodes[i]["internal"]) {
             nodeColor = "#70e094";
             nodeType = 'external';
             filename = decodeURI(fullPath).replace(/^https?:\/\//, '');
         }
+        if (!nodes[i]["valid"]) {
+            nodeColor = '#c91a0a';
+            nodeType = 'invalid';
+        }
         formattedNodes.push({
             data: {
-                id: nodes[i],
+                id: nodes[i]["name"],
                 label: filename,
                 color: nodeColor,
                 nodeType: nodeType

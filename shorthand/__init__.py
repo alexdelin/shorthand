@@ -92,10 +92,10 @@ class ShorthandServer(object):
         return _create_note(notes_directory=self.config['notes_directory'],
                             note_path=note_path, content=content)
 
-    def validate_internal_links(self):
+    def validate_internal_links(self, source=None):
         return _validate_internal_links(
             notes_directory=self.config['notes_directory'],
-            grep_path=self.config['grep_path'])
+            source=source, grep_path=self.config['grep_path'])
 
     def get_backlinks(self, note_path):
         return _get_backlinks(notes_directory=self.config['notes_directory'],
@@ -103,13 +103,11 @@ class ShorthandServer(object):
                               grep_path=self.config['grep_path'])
 
     def get_links(self, source=None, target=None, note=None,
-                  include_external=False, include_invalid=False,
-                  flatten=True):
+                  include_external=False, include_invalid=False):
         return _get_links(notes_directory=self.config['notes_directory'],
                           source=source, target=target, note=note,
                           include_external=include_external,
                           include_invalid=include_invalid,
-                          flatten=flatten,
                           grep_path=self.config['grep_path'])
 
     # Stamping

@@ -84,20 +84,17 @@ def get_note_links():
     include_invalid = get_request_argument(request.args,
                                            name='include_invalid',
                                            arg_type='bool', default=False)
-    flatten = get_request_argument(request.args,
-                                   name='flatten',
-                                   arg_type='bool', default=True)
 
     return json.dumps(server.get_links(source=source, target=target, note=note,
                                        include_external=include_external,
-                                       include_invalid=include_invalid,
-                                       flatten=flatten))
+                                       include_invalid=include_invalid))
 
 
 @shorthand_api_blueprint.route('/api/v1/links/validate', methods=['GET'])
 def validate_note_links():
     server = ShorthandServer(current_app.config['config_path'])
-    return json.dumps(server.validate_internal_links())
+    source = get_request_argument(request.args, name='source')
+    return json.dumps(server.validate_internal_links(source=source))
 
 
 @shorthand_api_blueprint.route('/api/v1/typeahead', methods=['GET'])

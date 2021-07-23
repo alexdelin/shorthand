@@ -13,7 +13,7 @@ from shorthand.web.app import create_app
 from utils import setup_environment, teardown_environment, validate_setup, \
                   TEST_CONFIG_PATH
 from model import ShorthandModel
-from results_unstamped import ALL_LINKS, INVALID_LINKS
+from results_unstamped import ALL_LINKS
 
 
 CONFIG = setup_environment()
@@ -136,7 +136,18 @@ class TestLinkOperations(unittest.TestCase):
         invalid_links = _validate_internal_links(
             notes_directory=CONFIG['notes_directory'],
             grep_path=CONFIG['grep_path'])
-        self.assertCountEqual(invalid_links, INVALID_LINKS)
+        _invalid_links = [link for link in ALL_LINKS if not link['valid']]
+        self.assertCountEqual(invalid_links, _invalid_links)
+
+        source = '/section/mixed.note'
+        invalid_links = _validate_internal_links(
+            notes_directory=CONFIG['notes_directory'],
+            source=source,
+            grep_path=CONFIG['grep_path'])
+        _invalid_links = [link for link in ALL_LINKS
+                          if not link['valid'] and link['source'] == source]
+        self.assertCountEqual(invalid_links, _invalid_links)
+
 
     def test_get_all_links(self):
         # Test Getting all notes
@@ -209,7 +220,6 @@ class TestLinkOperations(unittest.TestCase):
                 'note': random.choice(notes) if use_note else None,
                 'include_external': random.choice(external_options),
                 'include_invalid': random.choice(invalid_options),
-                'flatten': random.choice([True, False]),
                 'grep_path': CONFIG['grep_path']
             }
             log.debug(f"args: {args}")

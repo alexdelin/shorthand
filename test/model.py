@@ -149,7 +149,7 @@ class ShorthandModel(object):
         return questions
 
     def get_links(self, notes_directory, source=None, target=None, note=None,
-                  include_external=False, include_invalid=False, flatten=True,
+                  include_external=False, include_invalid=False,
                   grep_path=None):
 
         links = ALL_LINKS
@@ -175,23 +175,22 @@ class ShorthandModel(object):
             links = [link for link in links if link['target'][0] == '/']
 
         # Split into valid and invalid links
-        split_links = {'valid': [], 'invalid': []}
         for link in links:
-            target_exists = os.path.exists(get_full_path(notes_directory,
-                                           link['target'].split('#')[0]))
+            target_full_path = get_full_path(notes_directory,
+                                             link['target'].split('#')[0])
+            target_exists = os.path.exists(target_full_path)
             if link['target'][0] != '/' or target_exists:
-                split_links['valid'].append(link)
+                link['valid'] = True
             else:
-                split_links['invalid'].append(link)
-        links = split_links
+                link['valid'] = False
+
+            # Target is outside the notes directory
+            if notes_directory not in target_full_path:
+                link['valid'] = False
 
         # Filter for valid internal targets
         if not include_invalid:
-            del links['invalid']
-
-        # Flatten Links if needed
-        if flatten:
-            links = links['valid'] + links.get('invalid', [])
+            links = [link for link in links if link['valid']]
 
         return links
 
