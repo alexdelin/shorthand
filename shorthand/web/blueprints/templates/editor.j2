@@ -60,6 +60,12 @@
         border-radius: 5px;
         background-color: #fafafa;
     }
+
+    .brokenLink {
+        position:absolute;
+        background: #f07567;
+        z-index:20
+    }
 </style>
 
 <!-- Metadata -->
@@ -73,15 +79,19 @@
         <div class="row" style="padding: 10px;">
             <div class="col-auto">
                 <!-- Reload Button -->
-                <div id="reloadNote" class="btn btn-outline-success">Reload</div>
+                <div id="reloadNote" class="btn btn-outline-success"><i class="bi bi-arrow-clockwise"></i>&nbsp;Reload</div>
             </div>
             <div class="col-auto">
                 <!-- Save Button -->
-                <div id="saveNote" class="btn btn-outline-danger">Save</div>
+                <div id="saveNote" class="btn btn-outline-danger"><i class="bi bi-save"></i>&nbsp;Save</div>
             </div>
             <div class="col-auto">
                 <!-- Save Button -->
-                <a href="/render?path={{ file_path }}" class="btn btn-outline-warning">View</a>
+                <a href="/render?path={{ file_path }}" class="btn btn-outline-warning"><i class="bi bi-search"></i>&nbsp;View</a>
+            </div>
+            <div class="col-auto">
+                <!-- Warning Message -->
+                <i id="problemWarning" class="bi bi-exclamation-triangle hidden" style="font-size: 30px; vertical-align: middle;"></i>
             </div>
         </div>
 
@@ -117,6 +127,26 @@
         </div>
         <div id="mapModalContent" class="modal-body">
           <div id="mapModalMap"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Note Problem Modal -->
+<div id="modalWrapper">
+  <div class="modal fade" id="shorthandNoteProblemModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="noteProblemModalTitle">Note Problems</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div id="noteProblemModalContent" class="modal-body">
+          <ul id="noteProblemList">
+          </ul>
         </div>
       </div>
     </div>
