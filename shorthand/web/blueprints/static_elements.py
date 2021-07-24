@@ -18,9 +18,10 @@ HEADER_HTML = '''<div class="row top-gutter">
 
         <!-- Elements Bar -->
         <div class="row title-bar elements-bar collapse" id="elementsBar">
-            <div class="col-md-7"></div>
+            <div class="col-md-6"></div>
             <div class="col-md-1 icon-wrapper"><a href="/todos"><i class="bi-check-square svg-icon"></i></a></div>
             <div class="col-md-1 icon-wrapper"><a href="/questions"><i class="bi-question-circle svg-icon"></i></a></div>
+            <div class="col-md-1 icon-wrapper"><a href="/links"><i class="bi-link-45deg svg-icon"></i></a></div>
             <div class="col-md-1 icon-wrapper"><a href="/glossary"><i class="bi-book svg-icon"></i></a></div>
             <div class="col-md-1 icon-wrapper"><a href="/databases"><i class="bi-table svg-icon"></i></a></div>
             <div class="col-md-1 icon-wrapper"><a href="/locations"><i class="bi-geo-fill svg-icon"></i></a></div>

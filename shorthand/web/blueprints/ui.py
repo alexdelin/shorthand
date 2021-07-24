@@ -24,11 +24,6 @@ def send_css(path):
     return send_from_directory('blueprints/static/css', path)
 
 
-@shorthand_ui_blueprint.route('/img/<path:path>', methods=['GET', 'POST'])
-def send_img(path):
-    return send_from_directory('blueprints/static/img', path)
-
-
 # Frontend API Methods which should all eventually be
 # replaced with proper API methods
 @shorthand_ui_blueprint.route('/frontend-api/redered-markdown',
@@ -121,6 +116,11 @@ def show_questions():
     return render_template('questions.j2', all_directories=all_directories,
                            default_directory=default_directory, tags=tags,
                            static_content=static_content)
+
+
+@shorthand_ui_blueprint.route('/links', methods=['GET'])
+def show_links():
+    return render_template('links.j2', static_content=static_content)
 
 
 @shorthand_ui_blueprint.route('/databases', methods=['GET'])

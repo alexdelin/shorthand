@@ -10,7 +10,7 @@ from shorthand.utils.api import wrap_response_data, get_request_argument
 shorthand_api_blueprint = Blueprint('shorthand_api_blueprint', __name__)
 
 
-@shorthand_api_blueprint.errorhandler(Exception)
+@shorthand_api_blueprint.app_errorhandler(Exception)
 def handle_exception(e):
     '''This method is a catch-all for all errors thrown by the server
     '''
