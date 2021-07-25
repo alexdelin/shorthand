@@ -18,6 +18,15 @@
 </head>
 <body>
 
+  <script type="text/javascript">
+    $(document).ready(function() {
+      renderLinks();
+      // Re-draw the links whenever the External Links switch is changed
+      $("#toggleExtLinks").change(function () {
+          renderLinks();
+      });
+    });
+  </script>
   <div class="row fullwrapper">
     <div class="col-md-2 gutter"></div>
     <div class="col-md-8 pagewrapper">

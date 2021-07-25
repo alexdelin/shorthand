@@ -1,17 +1,15 @@
-$(document).ready(function() {
-    renderLinks();
-    // Re-draw the links whenever the External Links switch is changed
-    $("#toggleExtLinks").change(function () {
-        renderLinks();
-    });
-});
-
-function renderLinks() {
-    console.log('rendering Links')
-    var includeExternalLinks = $('#toggleExtLinks').is(":checked")
+function renderLinks(resizeEl=false) {
+    console.log('rendering Links');
+    if (document.getElementById("meta-file-path")) {
+        var filePath = $('#meta-file-path').text();
+    } else {
+        var filePath = null;
+    };
+    var includeExternalLinks = $('#toggleExtLinks').is(":checked");
 
     $.ajax({
         url: '/api/v1/links?' + $.param({
+            note: filePath,
             include_external: includeExternalLinks,
             include_invalid: true}),
         type: 'GET',
@@ -24,7 +22,9 @@ function renderLinks() {
             } else {
 
                 var [linkElements, maxHeight] = transformLinks(linksContent);
-                // $('#links').height(maxHeight * 100 + 'px');
+                if (resizeEl) {
+                    $('#links').height(maxHeight * 100 + 'px');
+                };
                 var cy = cytoscape({
                     container: document.getElementById('links'),
                     elements: linkElements,
