@@ -1,4 +1,3 @@
-import os
 import re
 import json
 import logging
@@ -7,9 +6,9 @@ import unittest
 import pytest
 
 from shorthand.utils.logging import setup_logging
-from shorthand.rec_tools import get_record_set, get_record_sets
+from shorthand.elements.record_sets import _get_record_set, _get_record_sets
 from shorthand.utils.rec import load_from_string
-from utils import setup_environment
+from utils import setup_environment, validate_setup
 
 
 CONFIG = setup_environment()
@@ -20,10 +19,6 @@ log = logging.getLogger(__name__)
 class TestRecConfig(unittest.TestCase):
     '''Basic tests for recfile config parsing
     '''
-
-    def test_setup(self):
-        test_dir = CONFIG['notes_directory']
-        assert os.path.exists(test_dir)
 
     def test_valid_config_parsing(self):
         with open('rec_data/valid_config.rec', 'r') as f:
@@ -209,12 +204,22 @@ class TestAPI(unittest.TestCase):
     embedded within notes
     """
 
+    @classmethod
+    def setup_class(cls):
+        # ensure that we have a clean environment before running any tests
+        _ = setup_environment()
+
+    def setup_method(self, method):
+        '''Validate that the environment has been set up correctly
+        '''
+        validate_setup()
+
     def test_list_record_sets(self):
         '''Test listing all record sets within notes
         '''
-        sets_found = get_record_sets(CONFIG['notes_directory'],
-                                     directory_filter=None,
-                                     grep_path=CONFIG['grep_path'])
+        sets_found = _get_record_sets(CONFIG['notes_directory'],
+                                      directory_filter=None,
+                                      grep_path=CONFIG['grep_path'])
         all_sets = [{'display_path': 'rec.note',
                      'file_path': '/rec.note',
                      'line_number': '4'}]
@@ -224,12 +229,12 @@ class TestAPI(unittest.TestCase):
     def test_get_record_set(self):
         '''Test getting the contents of an individual record set
         '''
-        loaded_record_set = get_record_set(CONFIG['notes_directory'],
-                                           file_path='/rec.note',
-                                           line_number=4,
-                                           parse=True,
-                                           parse_format='json',
-                                           include_config=False)
+        loaded_record_set = _get_record_set(CONFIG['notes_directory'],
+                                            file_path='/rec.note',
+                                            line_number=4,
+                                            parse=True,
+                                            parse_format='json',
+                                            include_config=False)
         loaded_record_set = json.loads(loaded_record_set)
 
         assert len(loaded_record_set) == 3

@@ -311,3 +311,183 @@ ALL_FILES = [
     '/definitions.note',
     '/bugs.note'
 ]
+
+TOC = {
+    'dirs': [
+        {
+            'dirs': [],
+            'files': ['mixed.note'],
+            'path': '/section',
+            'text': 'section'
+        }
+    ],
+    'files': [
+        'bugs.note',
+        'definitions.note',
+        'todos.note',
+        'locations.note',
+        'rec.note',
+        'questions.note'
+    ],
+    'path': '',
+    'text': '',
+}
+
+CALENDAR = {
+    '2019': {
+        '05': {
+            '30': [
+                {
+                    'date': '2019-05-30',
+                    'element_id': '',
+                    'event': 'A follow up item which is still open',
+                    'file_path': '/todos.note',
+                    'line_number': '12',
+                    'type': 'incomplete_todo'
+                }
+            ]
+        },
+        '06': {
+            '03': [
+                {
+                    'date': '2019-06-03',
+                    'element_id': '',
+                    'event': 'Indented',
+                    'file_path': '/todos.note',
+                    'line_number': '21',
+                    'type': 'skipped_todo'
+                }
+            ],
+            '04': [
+                {
+                    'date': '2019-06-04',
+                    'element_id': '',
+                    'event': 'Indented and with both start and end stamped',
+                    'file_path': '/todos.note',
+                    'line_number': '34',
+                    'type': 'completed_todo'
+                }
+            ]
+        }
+    }
+}
+
+ALL_LINKS = [
+    {
+        'line_number': '26',
+        'source': '/section/mixed.note',
+        'target': '/todos.note',
+        'text': 'todos',
+        'internal': True,
+        'valid': True
+    }, {
+        'line_number': '26',
+        'source': '/section/mixed.note',
+        'target': '/questions.note',
+        'text': 'questions',
+        'internal': True,
+        'valid': True
+    }, {
+        'line_number': '26',
+        'source': '/section/mixed.note',
+        'target': '/definitions.note',
+        'text': 'definitions',
+        'internal': True,
+        'valid': True
+    }, {
+        'line_number': '30',
+        'source': '/section/mixed.note',
+        'target': '/does/not/exist.note',
+        'text': 'broken',
+        'internal': True,
+        'valid': True
+    }, {
+        'line_number': '30',
+        'source': '/section/mixed.note',
+        'target': '/lokations.note',
+        'text': 'typos',
+        'internal': True,
+        'valid': True
+    }, {
+        'line_number': '2',
+        'source': '/todos.note',
+        'target': '/section/mixed.note',
+        'text': 'the mixed example',
+        'internal': True,
+        'valid': True
+    }, {
+        'line_number': '57',
+        'source': '/todos.note',
+        'target': '/bugs.note',
+        'text': 'bugs document',
+        'internal': True,
+        'valid': True
+    }, {
+        'line_number': '23',
+        'source': '/questions.note',
+        'target': '/section/mixed.note#Recipes',
+        'text': 'mixed example',
+        'internal': True,
+        'valid': True
+    }, {
+        'line_number': '28',
+        'source': '/section/mixed.note',
+        'target': 'https://nytimes.com',
+        'text': 'NY Times',
+        'internal': False,
+        'valid': True
+    }, {
+        'line_number': '32',
+        'source': '/section/mixed.note',
+        'target': '/todos.note',
+        'text': 'relative paths',
+        'internal': True,
+        'valid': True
+    }, {
+        'line_number': '13',
+        'source': '/bugs.note',
+        'target': '/todos.note',
+        'text': 'todos',
+        'internal': True,
+        'valid': True
+    }, {
+        'line_number': '13',
+        'source': '/bugs.note',
+        'target': '/locations.note',
+        'text': 'locations',
+        'internal': True,
+        'valid': True
+    }, {
+        'line_number': '13',
+        'target': '/README.md',
+        'text': 'outside',
+        'source': '/bugs.note',
+        'internal': True,
+        'valid': False
+    }
+]
+
+INVALID_LINKS = [
+    {
+        'line_number': '30',
+        'source': '/section/mixed.note',
+        'target': '/does/not/exist.note',
+        'text': 'broken',
+        'internal': True,
+        'valid': False
+    }, {
+        'line_number': '30',
+        'target': '/lokations.note',
+        'text': 'typos',
+        'source': '/section/mixed.note',
+        'internal': True,
+        'valid': False
+    }, {
+        'line_number': '13',
+        'target': '/README.md',
+        'text': 'outside',
+        'source': '/bugs.note',
+        'internal': True,
+        'valid': False
+    },
+]

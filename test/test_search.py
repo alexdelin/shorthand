@@ -3,10 +3,12 @@ import logging
 import unittest
 
 from shorthand.utils.logging import setup_logging
-from shorthand.search_tools import search_notes, filename_search, \
-                                   record_file_view
+from shorthand.search import _search_notes, _filename_search, \
+                             _record_file_view
+from shorthand.frontend.typeahead import _update_ngram_database, \
+                                         _get_typeahead_suggestions
 
-from utils import setup_environment
+from utils import setup_environment, validate_setup
 from results_unstamped import EMPTY_RESULTS, SEARCH_RESULTS_FOOD, \
                               SEARCH_RESULTS_FOOD_SENSITIVE, \
                               SEARCH_RESULTS_BALANCED_DIET, ALL_FILES
@@ -19,7 +21,7 @@ log = logging.getLogger(__name__)
 
 # Define helpers to make the rest of the code cleaner
 def get_search_results(query_string, case_sensitive):
-    return search_notes(
+    return _search_notes(
                 notes_directory=CONFIG['notes_directory'],
                 query_string=query_string,
                 case_sensitive=case_sensitive,
@@ -27,7 +29,7 @@ def get_search_results(query_string, case_sensitive):
 
 
 def get_file_search_results(prefer_recent, query_string, case_sensitive):
-    return filename_search(
+    return _filename_search(
                 notes_directory=CONFIG['notes_directory'],
                 prefer_recent_files=prefer_recent,
                 cache_directory=CONFIG['cache_directory'],
@@ -35,13 +37,22 @@ def get_file_search_results(prefer_recent, query_string, case_sensitive):
                 grep_path=CONFIG['grep_path'])
 
 
+def get_typeahead_results(string):
+    return _get_typeahead_suggestions(CONFIG['cache_directory'], string)
+
+
 class TestSearch(unittest.TestCase):
     """Test basic search functionality of the library"""
 
-    def test_setup(self):
+    @classmethod
+    def setup_class(cls):
+        # ensure that we have a clean environment before running any tests
+        _ = setup_environment()
 
-        test_dir = CONFIG['notes_directory']
-        assert os.path.exists(test_dir)
+    def setup_method(self, method):
+        '''Validate that the environment has been set up correctly
+        '''
+        validate_setup()
 
     def test_search(self):
         '''Test full-text search
@@ -111,6 +122,11 @@ class TestSearch(unittest.TestCase):
 
 class TestFileFinder(unittest.TestCase):
 
+    def setup_method(self, method):
+        '''Validate that the environment has been set up correctly
+        '''
+        validate_setup()
+
     def search_helper(self, query_string, case_sensitive=False):
         '''A sort-of model to test the implementation against
         '''
@@ -131,7 +147,7 @@ class TestFileFinder(unittest.TestCase):
         all_files_found = get_file_search_results(prefer_recent=True,
                                                   query_string=None,
                                                   case_sensitive=False)
-        assert all_files_found == ALL_FILES
+        assert set(all_files_found) == set(ALL_FILES)
 
     def test_file_search(self):
         '''Test searching for files via substrings (non case sensitive)
@@ -151,7 +167,7 @@ class TestFileFinder(unittest.TestCase):
             real_results = get_file_search_results(prefer_recent=False,
                                                    query_string=query_string,
                                                    case_sensitive=False)
-            assert expected_results == real_results
+            assert set(expected_results) == set(real_results)
 
     def test_file_search_case_sensitive(self):
         '''Test searching for files via substrings (case sensitive)
@@ -172,17 +188,15 @@ class TestFileFinder(unittest.TestCase):
             real_results = get_file_search_results(prefer_recent=False,
                                                    query_string=query_string,
                                                    case_sensitive=True)
-            assert expected_results == real_results
+            assert set(expected_results) == set(real_results)
 
     def test_recent_file_preference(self):
         '''Test that the implementation prefers recently accessed files
         '''
 
-        # Test that the history file starts off empty
+        # Test that the history file starts off not existing
         history_file = CONFIG['cache_directory'] + '/recent_files.txt'
-        with open(history_file, 'r') as history_file_object:
-            history_data = history_file_object.read()
-        assert len(history_data) == 0
+        assert not os.path.exists(history_file)
 
         # Verify that most recent views get bumped to the top
         for _ in range(5):
@@ -191,10 +205,11 @@ class TestFileFinder(unittest.TestCase):
                                                       query_string=None,
                                                       case_sensitive=False)
             last_file = all_files_found[-1]
-            record_file_view(CONFIG['cache_directory'],
-                             last_file, history_limit=100)
+            _record_file_view(CONFIG['cache_directory'],
+                              last_file, history_limit=100)
 
             # Verify that the view was recorded in the history file
+            assert os.path.exists(history_file)
             with open(history_file, 'r') as history_file_object:
                 history_data = history_file_object.read()
             assert len(history_data) > 0
@@ -205,3 +220,44 @@ class TestFileFinder(unittest.TestCase):
                                                           query_string='note',
                                                           case_sensitive=False)
             assert file_search_results[0] == last_file
+
+
+class TestTypeahead(unittest.TestCase):
+
+    @classmethod
+    def setup_class(cls):
+        # ensure that we have a clean environment before running any tests
+        _ = setup_environment()
+        _ = _update_ngram_database(CONFIG['notes_directory'],
+                                   CONFIG['cache_directory'])
+
+    def setup_method(self, method):
+        '''Validate that the environment has been set up correctly
+        '''
+        validate_setup()
+
+    def test_typeahead_unigram(self):
+
+        results = get_typeahead_results('foo')
+        assert results == ['food']
+
+        results = get_typeahead_results('inc')
+        assert results == ['includes', 'included', 'incomplete']
+
+    def test_typeahead_bigram(self):
+
+        results = get_typeahead_results('"apple p')
+        assert results == ['"apple pie"']
+
+        results = get_typeahead_results('"for t')
+        assert results == ['"for this"', '"for the"']
+
+    def test_typeahead_trigram(self):
+
+        results = get_typeahead_results('"what is t')
+        assert results == ['"what is the"']
+
+    def test_typeahead_invalid(self):
+
+        results = get_typeahead_results('"the best apple p')
+        assert results == []

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    {{ static_content['common_imports'] }}
+
+    <!-- Leaflet Map library -->
+    <link rel="stylesheet" href="/css/leaflet.css"/>
+    <script src="/js/leaflet.js"></script>
+
+    <!-- Helpers for this page -->
+    <script src="/js/shorthand-locations.js"></script>
+
+    <meta charset='utf-8'>
+    <title>Notes - Locations</title>
+
+</head>
+<body>
+
+  <div class="row fullwrapper">
+    <div class="col-md-2 gutter"></div>
+    <div class="col-md-8 pagewrapper">
+
+        {{ static_content['header_html'] }}
+
+        <div class="row" style="padding-top: 15px;">
+          <div class="col-md-12">
+            <!-- Directory Filter -->
+            Content Goes here!
+            <div id="shorthand-map"></div>
+          </div>
+        </div>
+
+        <div class="row footer-bar">
+          <div class="col-md-12"></div>
+        </div>
+    </div>
+    <div class="col-md-2 gutter"></div>
+  </div>
+
+{{ static_content['file_finder_modal'] }}
+
+{{ static_content['error_modal'] }}
+
+</body>
+</html>

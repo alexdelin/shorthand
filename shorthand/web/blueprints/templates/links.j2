@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    {{ static_content['common_imports'] }}
+
+    <!-- Library to draw links diagram -->
+    <script src="/js/cytoscape.js"></script>
+    <script src="/js/klay.js"></script>
+    <script src="/js/cytoscape-klay.js"></script>
+
+    <!-- Helpers for this page -->
+    <script src="/js/shorthand-links.js"></script>
+
+    <meta charset='utf-8'>
+    <title>Notes - Links</title>
+
+</head>
+<body>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      renderLinks();
+      // Re-draw the links whenever the External Links switch is changed
+      $("#toggleExtLinks").change(function () {
+          renderLinks();
+      });
+    });
+  </script>
+  <div class="row fullwrapper">
+    <div class="col-md-2 gutter"></div>
+    <div class="col-md-8 pagewrapper">
+
+        {{ static_content['header_html'] }}
+
+        <div class="row" style="padding-top: 15px;">
+          <div class="col-md-12">
+            <div class="custom-control custom-switch">
+                <input type="checkbox" class="custom-control-input" id="toggleExtLinks">
+                <label class="custom-control-label" for="toggleExtLinks">External Links</label>
+            </div>
+            <div id="links" style="width: 100%; height: 800px;"></div>
+          </div>
+        </div>
+
+        <div class="row footer-bar">
+          <div class="col-md-12"></div>
+        </div>
+    </div>
+    <div class="col-md-2 gutter"></div>
+  </div>
+
+{{ static_content['file_finder_modal'] }}
+
+{{ static_content['error_modal'] }}
+
+</body>
+</html>

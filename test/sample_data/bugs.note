@@ -9,3 +9,5 @@ This file includes content that reproduces bugs found in the parsing logic
 something :foo: :bar:
 
 else :baz:
+
+You should be able to use relative paths to link to other notes like [todos](todos.note) or [locations](locations.note), but you should not be able to use relative paths to link [outside](../README.md) the notes directory

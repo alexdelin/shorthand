@@ -3,5 +3,5 @@
 source ~/.profile
 workon notes
 
-python ~/code/shorthand/web/api.py
+python ~/code/shorthand/shorthand/web/app.py
 # open http://localhost:8181

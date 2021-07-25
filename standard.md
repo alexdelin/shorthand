@@ -82,7 +82,7 @@ C. Letters as well
     a. Upper and lower case supported
         1) can nest arbitrarily deeply
 ```
-Becaues all letters are valid leading characters, roman numerals can also be used for other sytling options
+Because all letters are valid leading characters, roman numerals can also be used for other styling options
 ```notes
 I) The first thing
 II) The second thing
@@ -110,6 +110,7 @@ def something():
     return True
 ```
 ~~~
+Indented code blocks are not valid syntax
 
 ### Questions + Answers
 Recording answered and unanswered questions are a natural part of any note-taking, and an important feature that most who take notes with a pen and paper will have a special process (colored tabs, etc.) for. Question and answer pairs are a good abstraction for individual bits of new information that should be cataloged for later retrieval, as well as current unknown which have to be figured out and addressed in the future
@@ -171,11 +172,35 @@ The element above will be tagged with the tag `topic`
 {Term} Definition
 ```
 
-## Unsupported Elements
-### Fancy Links
-Lots of other markup formats provide nice ways to format notes, which are useful for when you render notes into other formats for presentation
+### Links
+The link format used is exactly the same as used in markdown, but all link targets must be specified inline. The basic link format is:
 ```notes
-[Link Title](https://www.link-target.com/page.html)
+[Link Title](Link Target)
 ```
-### Comments
+
+Links are classified into two basic categories, External Links and Internal Links.
+
+#### External Links
+An external link is any link with a target of an external URL. Shorthand will not do any validation, so all external links are considered valid
+```notes
+[New York Times](https://nytimes.com)
+```
+
+#### Internal Links
+Internal Links are links with a target of other notes within the notes directory, such as:
+```notes
+[Link Title](/path/to/note.note)
+```
+Specific sections within the target note can be specified by adding `#Section` to the end of the target URL.
+
+Links to internal documents can be specified as either an absolute path (`/path/to/note.note`) or a relative path (`to/note.note`) from the path of the source note.
+
+Unlike external links, internal links are classified based on whether or not the target of the link is a note that actually exists. In cases where a section is specified in a link target, the section is **not** validated.
+
 ### Images
+### Diagrams
+### Locations
+### Databases
+
+## Unsupported Elements
+### Comments

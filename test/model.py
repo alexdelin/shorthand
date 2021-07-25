@@ -6,12 +6,15 @@ This model relies on the raw structured elements in the file
 `results_unstamped.py`
 '''
 
+import os
 import shlex
+import copy
 from datetime import datetime
 
+from shorthand.utils.paths import get_display_path, get_full_path
+
 from results_unstamped import ALL_INCOMPLETE_TODOS, ALL_SKIPPED_TODOS, \
-                              ALL_COMPLETE_TODOS, ALL_QUESTIONS
-from shorthand.utils.paths import get_display_path
+                              ALL_COMPLETE_TODOS, ALL_QUESTIONS, ALL_LINKS
 
 
 class ShorthandModel(object):
@@ -21,16 +24,17 @@ class ShorthandModel(object):
         super(ShorthandModel, self).__init__()
 
     def search_todos(self, notes_directory=None, todo_status='incomplete',
-                     directory_filter=None, query_string=None, sort_by=None,
-                     suppress_future=False, stamp=False):
+                     directory_filter=None, query_string=None,
+                     case_sensitive=False, sort_by=None,
+                     suppress_future=False, stamp=False, tag=None):
 
         # Get base todos
         if todo_status == 'incomplete':
-            todos = ALL_INCOMPLETE_TODOS['items']
+            todos = copy.deepcopy(ALL_INCOMPLETE_TODOS['items'])
         elif todo_status == 'skipped':
-            todos = ALL_SKIPPED_TODOS['items']
+            todos = copy.deepcopy(ALL_SKIPPED_TODOS['items'])
         elif todo_status == 'complete':
-            todos = ALL_COMPLETE_TODOS['items']
+            todos = copy.deepcopy(ALL_COMPLETE_TODOS['items'])
         else:
             raise ValueError('Invalid todo status ' + todo_status)
 
@@ -47,9 +51,14 @@ class ShorthandModel(object):
             components = shlex.split(query_string)
             filtered_todos = []
             for todo in todos:
-                if all([component in todo['todo_text']
-                        for component in components]):
-                    filtered_todos.append(todo)
+                if not case_sensitive:
+                    if all([component.lower() in todo['todo_text'].lower()
+                            for component in components]):
+                        filtered_todos.append(todo)
+                else:
+                    if all([component in todo['todo_text']
+                            for component in components]):
+                        filtered_todos.append(todo)
             todos = filtered_todos
 
         # Apply sort
@@ -65,7 +74,6 @@ class ShorthandModel(object):
                 if todo['start_date']:
                     if todo['start_date'] > datetime.now().isoformat()[:10]:
                         continue
-
                 filtered_todos.append(todo)
             todos = filtered_todos
 
@@ -83,13 +91,19 @@ class ShorthandModel(object):
             todo['display_path'] = get_display_path(todo['file_path'],
                                                     directory_filter)
 
+        # Tag Filtering
+        if tag:
+            todos = [todo for todo in todos
+                     if tag in todo['tags']]
+
         # Sort tags
         for todo in todos:
             todo['tags'].sort()
 
         return todos
 
-    def search_questions(self, question_status='all', directory_filter=None):
+    def search_questions(self, question_status='all', directory_filter=None,
+                         stamp=False):
 
         # Filter on question status
         questions = ALL_QUESTIONS['items']
@@ -123,4 +137,64 @@ class ShorthandModel(object):
             question['display_path'] = get_display_path(question['file_path'],
                                                         directory_filter)
 
+        # Emulate Stamping
+        if stamp:
+            for question in questions:
+                if not question['question_date']:
+                    question['question_date'] = datetime.now().isoformat()[:10]
+                if question['answer']:
+                    if not question['answer_date']:
+                        question['answer_date'] = datetime.now().isoformat()[:10]
+
         return questions
+
+    def get_links(self, notes_directory, source=None, target=None, note=None,
+                  include_external=False, include_invalid=False,
+                  grep_path=None):
+
+        links = ALL_LINKS
+
+        # Filter for source
+        if source:
+            links = [link for link in links
+                     if link['source'] == source]
+
+        # Filter for target
+        if target:
+            links = [link for link in links
+                     if link['target'].split('#')[0] == target]
+
+        # Filter for note
+        if note:
+            links = [link for link in links
+                     if link['target'].split('#')[0] == note
+                     or link['source'] == note]
+
+        # Filter for internal only vs. external
+        if not include_external:
+            links = [link for link in links if link['target'][0] == '/']
+
+        # Split into valid and invalid links
+        for link in links:
+            target_full_path = get_full_path(notes_directory,
+                                             link['target'].split('#')[0])
+            target_exists = os.path.exists(target_full_path)
+            if link['target'][0] != '/' or target_exists:
+                link['valid'] = True
+            else:
+                link['valid'] = False
+
+            # Target is outside the notes directory
+            if notes_directory not in target_full_path:
+                link['valid'] = False
+
+        # Filter for valid internal targets
+        if not include_invalid:
+            links = [link for link in links if link['valid']]
+
+        return links
+
+    def get_backlinks(self, notes_directory, note_path, grep_path='grep'):
+        return self.get_links(notes_directory=notes_directory,
+                              target=note_path, include_external=False,
+                              include_invalid=False, grep_path=grep_path)

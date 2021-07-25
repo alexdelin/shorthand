@@ -1,5 +1,5 @@
 # This is a test for working with todos
-Every possible type of todo is included here
+Every possible type of todo is included here as of \today. There might be even more todos located in [the mixed example](/section/mixed.note)
 
 ## Incomplete
 ### Standalone
@@ -53,3 +53,5 @@ These are malformed todos
 This is an empty Todo
 
 []
+
+Examples for some previously seen edge cases can be found in the [bugs document](/bugs.note)
