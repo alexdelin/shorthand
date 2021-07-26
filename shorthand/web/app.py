@@ -31,6 +31,8 @@ def create_app(config_path):
     return app
 
 
+app = create_app(CONFIG_FILE_LOCATION)
+
+
 if __name__ == "__main__":
-    app = create_app(CONFIG_FILE_LOCATION)
     app.run(port=8181, debug=True, threaded=True)
