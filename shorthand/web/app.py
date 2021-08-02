@@ -23,8 +23,9 @@ def create_app(config_path):
 
     app.config['config_path'] = config_path
     app.logger = logging.getLogger(__name__)
-    handler = get_handler(config)
-    app.logger.addHandler(handler)
+    if not app.logger.hasHandlers():
+        handler = get_handler(config)
+        app.logger.addHandler(handler)
 
     app.register_blueprint(shorthand_api_blueprint)
     app.register_blueprint(shorthand_ui_blueprint)

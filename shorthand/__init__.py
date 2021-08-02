@@ -36,8 +36,9 @@ class ShorthandServer(object):
 
         self.config_path = config_path
         self.reload_config()
-        log_handler = get_handler(self.config)
-        self.log.addHandler(log_handler)
+        if not self.log.hasHandlers():
+            log_handler = get_handler(self.config)
+            self.log.addHandler(log_handler)
 
     # -------------------------
     # --- Config Management ---
