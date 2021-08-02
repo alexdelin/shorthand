@@ -134,12 +134,12 @@ $(document).ready(function() {
         $("#showLinks").click(function(){
             $(".links-content").toggleClass("hidden");
             if ( !$(".links-content").hasClass("hidden") ) {
-                renderLinks();
+                renderLinks(resizeEl=true);
             }
         });
         // Re-draw the links whenever the Extnernal Links switch is changed
         $("#toggleExtLinks").change(function () {
-            renderLinks();
+            renderLinks(resizeEl=true);
         });
     }
 });
