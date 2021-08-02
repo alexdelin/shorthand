@@ -1,0 +1,40 @@
+# An Excluded note
+
+Because this note is in a hidden directory (one that starts with `.`), none of the elements included in it should be returned in search results. This note should also never show up in the file finder or TOC.
+
+## Test Elements 2021-08-01
+
+[] This should never show up
+[ ] (2021-08-01) This one should also never show up :hidden:
+
+? What happens if someone links to a hidden file
+    @ It is still a valid link! You just can't search for links _from_ hidden files
+
+A GPS[64.356799, -15.067538, Location] here won't be found either. Only the ones in [the location sample](../locations.note) should be returned
+
+```rec-data
+%rec: HiddenRecordSet
+%doc: A record set present in a hidden file
+%allowed: Id Date Temp Location
+%key: Id
+%type: Id int
+%type: Date date
+%type: Temp real
+%typedef: location_type line
+%type: Location location_type
+
+Id: 0
+Date: 2019-02-09
+Temp: 73.1
+Location: San Francisco, CA
+
+Id: 1
+Date: 2019-03-12
+Temp: 41.0
+Location: New York, NY
+
+Id: 2
+Date: 2019-04-03
+Temp: 65.2
+Location: Austin, TX
+```
