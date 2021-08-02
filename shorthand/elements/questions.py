@@ -60,7 +60,8 @@ def _get_questions(notes_directory, question_status='all',
         search_directory += directory_filter
 
     proc = Popen(
-        '{grep_path} -Prn -A 1 "{pattern}" --include="*.note" {dir}'.format(
+        '{grep_path} -Prn -A 1 "{pattern}" --include="*.note" '
+        '--exclude-dir=\'.*\' {dir}'.format(
             grep_path=grep_path,
             pattern=ALL_QUESTIONS,
             dir=search_directory),

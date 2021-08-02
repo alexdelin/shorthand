@@ -25,7 +25,7 @@ def _get_calendar(notes_directory, directory_filter=None, grep_path='grep'):
         search_directory += directory_filter
 
     grep_command = '{grep_path} -Prn "{pattern}" '\
-                   '--include="*.note" {dir}'.format(
+                   '--include="*.note" --exclude-dir=\'.*\' {dir}'.format(
                         grep_path=grep_path,
                         pattern=DATED_HEADING_PATTERN,
                         dir=search_directory)

@@ -81,7 +81,7 @@ def _stamp_notes(notes_directory, stamp_todos=True, stamp_today=True,
     # Stamp start and end dates for todo elements
     if stamp_todos:
         grep_command = '{grep_path} -Pr "{pattern}" '\
-                       '--include="*.note" {directory} | '\
+                       '--include="*.note" --exclude-dir=\'.*\' {directory} |'\
                        '{grep_path} -Pv "{filter_1}" | '\
                        '{grep_path} -Pv "{filter_2}"'.format(
                             grep_path=grep_path,
@@ -194,7 +194,7 @@ def _stamp_notes(notes_directory, stamp_todos=True, stamp_today=True,
     # Replace placeholders for `\today` helper
     if stamp_today:
         today_grep_command = '{grep_path} -r {pattern} --include="*.note" ' \
-                             '{directory}'.format(
+                             '--exclude-dir=\'.*\' {directory}'.format(
                                 grep_path=grep_path,
                                 pattern=TODAY_GREP,
                                 directory=notes_directory)
@@ -255,7 +255,7 @@ def _stamp_notes(notes_directory, stamp_todos=True, stamp_today=True,
 
         unstamped_questions_grep_command = '{grep_path} -Pr '\
                         '"{question_pattern}" --include="*.note" '\
-                        '{directory} | {grep_path} -Pv '\
+                        '--exclude-dir=\'.*\' {directory} | {grep_path} -Pv '\
                         '"{stamped_question_pattern}"'.format(
                             grep_path=grep_path,
                             question_pattern=ALL_QUESTIONS,
@@ -317,7 +317,8 @@ def _stamp_notes(notes_directory, stamp_todos=True, stamp_today=True,
     if stamp_answers:
 
         unstamped_answers_grep_command = '{grep_path} -Pr "{answer_pattern}" '\
-                        '--include="*.note" {directory} | '\
+                        '--include="*.note" --exclude-dir=\'.*\' '\
+                        '{directory} | '\
                         '{grep_path} -Pv "{stamped_answer_pattern}"'.format(
                             grep_path=grep_path,
                             answer_pattern=ANSWER_PATTERN,

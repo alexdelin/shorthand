@@ -99,7 +99,7 @@ def _get_todos(notes_directory, todo_status='incomplete',
         search_directory += directory_filter
 
     grep_command = '{grep_path} -Prn "{pattern}" '\
-                   '--include="*.note" {dir}'.format(
+                   '--include="*.note" --exclude-dir=\'.*\' {dir}'.format(
                         grep_path=grep_path,
                         pattern=PATTERN_MAPPING[todo_status],
                         dir=search_directory)

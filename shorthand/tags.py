@@ -22,7 +22,7 @@ def _get_tags(notes_directory, directory_filter=None, grep_path='grep'):
         search_directory += directory_filter
 
     grep_command = '{grep_path} -Pr "{pattern}" '\
-                   '--include="*.note" {dir}'.format(
+                   '--include="*.note" --exclude-dir=\'.*\' {dir}'.format(
                         grep_path=grep_path,
                         pattern=TAG_FILTER,
                         dir=search_directory)

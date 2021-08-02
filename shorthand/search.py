@@ -75,7 +75,8 @@ def _filename_search(notes_directory, prefer_recent_files=True,
         matched case-sensitive
     '''
 
-    find_command = '{find_path} {notes_dir} -name "*.note"'.format(
+    find_command = '{find_path} {notes_dir} -not -path \'*/\\.*\' ' \
+                   '-type f -name "*.note"'.format(
                         find_path=find_path,
                         notes_dir=notes_directory)
 
@@ -171,7 +172,7 @@ def _search_notes(notes_directory, query_string,
         grep_filter_mode += ' -i'
 
     grep_command = '{grep_path} {mode} "{pattern}" '\
-                   '--include="*.note" {dir}'.format(
+                   '--include="*.note" --exclude-dir=\'.*\' {dir}'.format(
                         grep_path=grep_path,
                         mode=grep_mode,
                         pattern=query_components[0],

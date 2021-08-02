@@ -210,7 +210,7 @@ def _get_links(notes_directory, source=None, target=None, note=None,
 
     # Use Grep to find all links
     grep_command = '{grep_path} -Prn "{pattern}" '\
-                   '--include="*.note" {dir}'.format(
+                   '--include="*.note" --exclude-dir=\'.*\' {dir}'.format(
                         grep_path=grep_path,
                         pattern=LINK_PATTERN,
                         dir=search_path)
