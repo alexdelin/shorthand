@@ -203,8 +203,12 @@ pre {
     font-size: 20px;
 }
 
-.fullwrapper {
+div.fullwrapper {
     background-color: #999;
+    margin-left: 0px;
+    margin-right: 0px;
+    padding-left: 50px;
+    padding-right: 50px;
 }
 
 #page-name {

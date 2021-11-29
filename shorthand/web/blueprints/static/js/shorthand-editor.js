@@ -1,3 +1,15 @@
+// Resize the editor and viewer windows on page load
+window.onload = window.onresize = function () {
+    var window_height = window.innerHeight;
+    if (window_height > 1018) {
+        var editorEl = document.getElementById('editor');
+        var viewerEl = document.getElementById('viewer');
+        var newHeight = (window_height - 218) + "px";
+        editorEl.style.height = newHeight;
+        viewerEl.style.height = newHeight;
+    }
+};
+
 // Function to Save Note
 function saveNote() {
     var filePath = $('#meta-file-path').text();
