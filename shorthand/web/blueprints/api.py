@@ -43,7 +43,7 @@ def get_search_results():
     search_results = server.search_notes(
         query_string=query_string,
         case_sensitive=case_sensitive)
-    return json.dumps(wrap_response_data(search_results))
+    return json.dumps(search_results)
 
 
 @shorthand_api_blueprint.route('/api/v1/note', methods=['GET'])

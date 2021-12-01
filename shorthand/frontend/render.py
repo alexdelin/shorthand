@@ -71,6 +71,7 @@ def get_rendered_markdown(markdown_content, note_path):
     is_fenced_code_block = False
     is_diagram_block = False
     is_rec_data_block = False
+    is_equation_block = False
     rec_data_lines = []
 
     for idx, markdown_line in enumerate(markdown_content_lines):
@@ -210,10 +211,12 @@ def get_rendered_markdown(markdown_content, note_path):
             split_heading = markdown_line.split(' ', 1)
             heading_level = len(split_heading[0])
             element_id = split_heading[1].replace(' ', '-')
-            heading_html_line = f'{markdown_line}<div id="{element_id}"></div>'
+            heading_div = f'<span id="{element_id}"></span>'
             toc_markdown_line = f'{"  " * (heading_level - 1)}- '\
                                 f'[{split_heading[1]}](#{element_id})'
-            html_content_lines.append(heading_html_line + line_span)
+            html_content_lines.append(line_span)
+            html_content_lines.append(heading_div)
+            html_content_lines.append(markdown_line)
             toc_content_lines.append(toc_markdown_line)
             continue
 
@@ -223,7 +226,23 @@ def get_rendered_markdown(markdown_content, note_path):
             html_content_lines.append(markdown_line)
             continue
 
+        # Handle edges of equation blocks
+        if not is_equation_block and markdown_line.strip().startswith('$$') \
+                and not markdown_line.strip().endswith('$$'):
+            is_equation_block = True
+            html_content_lines.append(markdown_line)
+            continue
+        elif is_equation_block and not markdown_line.strip().startswith('$$') \
+                and markdown_line.strip().endswith('$$'):
+            is_equation_block = False
+            html_content_lines.append(markdown_line)
+            continue
+        elif is_equation_block and not markdown_line.strip().endswith('$$'):
+            html_content_lines.append(markdown_line)
+            continue
+
         # Catch-all for everything else
+        html_content_lines.append(line_span)
         html_content_lines.append(markdown_line)
 
     html_content = '\n'.join(html_content_lines)

@@ -27,21 +27,6 @@ $("#stampNotes").click(function() {
     });
 });
 
-$('#syncIcon').click(function() {
-    $.ajax({
-        url: '/api/v1/pull',
-        type: 'GET',
-        success: function(responseData) {
-            var htmlMessage = '<div class="alert alert-success" role="alert">' + responseData + '</div>'
-            showModal(message=htmlMessage, title='Updated Notes')
-        },
-        error: function(responseData) {
-            var loadedResponse = JSON.parse(responseData.responseText)
-            showModal(loadedResponse.error)
-        }
-    })
-})
-
 // Utility function to render an error in a modal
 function showModal(message='None', title='Server Error') {
     $('#modalDescription').html(message)
@@ -81,12 +66,43 @@ function showFileFinder() {
         }
     });
 
-    $('#fileModalSearchBar').typeahead(null, {
-        name: 'notes-files',
-        highlight: true,
-        limit: 10,
-        source: fileSearch,
+    var fullTextSearch = new Bloodhound({
+        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
+        queryTokenizer: Bloodhound.tokenizers.whitespace,
+        remote: {
+            url: '/api/v1/search?query_string=%QUERY',
+            wildcard: '%QUERY',
+            filter: results => $.map(results.items, result => ({
+                match_content: result.match_content,
+                path: result.file_path + '#line-number-' + result.line_number,
+                shortPath: result.file_path + '#' + result.line_number,
+            }))
+        }
     });
+
+    $('#fileModalSearchBar').typeahead(
+        {
+            highlight: true
+        }, {
+            name: 'notes-files',
+            limit: 10,
+            source: fileSearch,
+            templates: {
+                header: '<h3>Notes Filenames</h3>'
+            }
+        }, {
+            name: 'notes-full-text',
+            limit: 10,
+            source: fullTextSearch,
+            display: 'path',
+            templates: {
+                header: '<h3>Notes Full Text</h3>',
+                suggestion: function(data) {
+                    return '<div>' + data.match_content + '<span style="float: right;">' + data.shortPath + '</span></div>';
+                }
+            }
+        }
+    );
 
     // Click Handler for the goto note button
     $("#goToNote").click( function() {
