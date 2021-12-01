@@ -41,7 +41,6 @@
 - `/todos` -
 - `/questions` -
 - `/databases` -
-- `/search` -
 - `/render` -
 - `/editor` -
 - `/calendar` -

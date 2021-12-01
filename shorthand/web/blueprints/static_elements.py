@@ -12,7 +12,7 @@ HEADER_HTML = '''<div class="row top-gutter">
             <div class="col-md-1 icon-wrapper"><a href="/"><i class="bi-house svg-icon"></i></a></div>
             <div class="col-md-1 icon-wrapper" id="elementsWrapper"><a id="elementsCollapser" href="#"><i class="bi-code-square svg-icon"></i></a></div>
             <div class="col-md-1 icon-wrapper"><a href="/calendar"><i class="bi-calendar-week svg-icon"></i></a></div>
-            <div class="col-md-1 icon-wrapper"><a href="/search"><i class="bi-search svg-icon"></i></a></div>
+            <div class="col-md-1 icon-wrapper"><i id="search-button" class="bi-search svg-icon"></i></div>
             <div class="col-md-1 icon-wrapper" id="optionsWrapper"><a id="optionsCollapser" href="#"><i class="bi-wrench svg-icon"></i></a></div>
         </div>
 

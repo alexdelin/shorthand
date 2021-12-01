@@ -150,12 +150,6 @@ def show_glossary():
                            static_content=static_content)
 
 
-@shorthand_ui_blueprint.route('/search', methods=['GET'])
-def show_search_page():
-    return render_template('search.j2',
-                           static_content=static_content)
-
-
 @shorthand_ui_blueprint.route('/render', methods=['GET'])
 def send_rendered_note():
     return render_template('viewer.j2', static_content=static_content,
