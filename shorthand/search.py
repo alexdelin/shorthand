@@ -4,7 +4,7 @@ import shlex
 import logging
 from subprocess import Popen, PIPE
 
-from shorthand.utils.paths import get_full_path, get_relative_path
+from shorthand.utils.paths import get_relative_path
 
 
 log = logging.getLogger(__name__)
@@ -139,8 +139,8 @@ def _filename_search(notes_directory, prefer_recent_files=True,
     return search_results
 
 
-def _search_notes(notes_directory, query_string,
-                  case_sensitive=False, grep_path='grep'):
+def _search_notes(notes_directory, query_string, case_sensitive=False,
+                  aggregate_by_file=False, grep_path='grep'):
     '''Perform a full-text search through all notes and return
     matching lines with metadata
 
@@ -149,6 +149,10 @@ def _search_notes(notes_directory, query_string,
         for by quoting the phrase
     "case_sensitive" toggles whether or not the match is case
         sensitive
+    "aggregate_by_file" determines whether all matches are aggregated per-file.
+        If False, a list of dictionaries representing matches is returned
+        If True, a list of dictionaries representing files with matches is
+        returned. The files with the most matches appear first in the list.
     '''
 
     query_components = shlex.split(query_string)
@@ -217,6 +221,36 @@ def _search_notes(notes_directory, query_string,
         }
 
         search_results.append(processed_line)
+
+    if aggregate_by_file:
+
+        log.debug('Aggregating search results by file')
+        aggregated_results = []
+
+        # Aggregate all matches by file
+        for result in search_results:
+            if result['file_path'] not in [f['file_path']
+                                           for f in aggregated_results]:
+                aggregated_results.append({
+                    'file_path': result['file_path'],
+                    'matches': [{
+                        'line_number': result['line_number'],
+                        'match_content': result['match_content']
+                    }]
+                })
+            else:
+                for entry in aggregated_results:
+                    if entry['file_path'] == result['file_path']:
+                        entry['matches'].append({
+                            'line_number': result['line_number'],
+                            'match_content': result['match_content']
+                        })
+                        break
+
+        # Sort files by number of matches
+        aggregated_results.sort(key=lambda result: len(result['matches']),
+                                reverse=True)
+        search_results = aggregated_results
 
     return {
         "items": search_results,

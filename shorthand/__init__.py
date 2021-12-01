@@ -122,10 +122,12 @@ class ShorthandServer(object):
                             grep_path=self.config['grep_path'])
 
     # Search
-    def search_notes(self, query_string, case_sensitive=False):
+    def search_notes(self, query_string, case_sensitive=False,
+                     aggregate_by_file=False):
         return _search_notes(notes_directory=self.config['notes_directory'],
                              query_string=query_string,
                              case_sensitive=case_sensitive,
+                             aggregate_by_file=aggregate_by_file,
                              grep_path=self.config['grep_path'])
 
     #TODO - Rename both this and the implementation search_filenames

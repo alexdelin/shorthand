@@ -39,10 +39,14 @@ def get_search_results():
     query_string = get_request_argument(request.args, name='query_string')
     case_sensitive = get_request_argument(request.args, name='case_sensitive',
                                           arg_type='bool', default=False)
+    aggregate_by_file = get_request_argument(request.args,
+                                             name='aggregate_by_file',
+                                             arg_type='bool', default=False)
 
     search_results = server.search_notes(
         query_string=query_string,
-        case_sensitive=case_sensitive)
+        case_sensitive=case_sensitive,
+        aggregate_by_file=aggregate_by_file)
     return json.dumps(search_results)
 
 
