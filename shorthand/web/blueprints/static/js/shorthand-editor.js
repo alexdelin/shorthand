@@ -1,5 +1,5 @@
-// Resize the editor and viewer windows on page load
-window.onload = window.onresize = function () {
+// Function to resize editor and viewer windows
+function resizeWindows() {
     var window_height = window.innerHeight;
     if (window_height > 1018) {
         var editorEl = document.getElementById('editor');
@@ -8,6 +8,11 @@ window.onload = window.onresize = function () {
         editorEl.style.height = newHeight;
         viewerEl.style.height = newHeight;
     }
+}
+
+// Resize the editor and viewer windows on page load
+window.onload = window.onresize = function () {
+    resizeWindows();
 };
 
 // Function to Save Note
