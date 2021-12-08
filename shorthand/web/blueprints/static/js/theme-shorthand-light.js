@@ -51,7 +51,6 @@ color: hsl(114, 31%, 38%);\
 }\
 .ace-shorthand-light .ace_support.ace_function.ace_inline {\
 color: hsl(114, 31%, 38%);\
-background: hsl(204, 10%, 95%);\
 }\
 .ace-shorthand-light .ace_support.ace_todo.ace_incomplete {\
 color: hsl(32, 93%, 42%);\
@@ -91,7 +90,6 @@ color: hsl(32, 93%, 42%);\
 }\
 .ace-shorthand-light .ace_support.ace_latex {\
 color: hsl(114, 31%, 38%);\
-background: hsl(204, 10%, 95%);\
 }\
 .ace-shorthand-light .ace_support.ace_tag {\
 color: hsl(357, 79%, 55%);\
