@@ -327,3 +327,25 @@ div.fullwrapper {
 .mermaid {
     text-align: center;
 }
+
+.resultFilePath {
+    font-size: 24px;
+}
+
+.lineSearchResult {
+    margin-left: 25px;
+}
+
+.lineSearchResult:hover {
+    background-color: #eee;
+}
+
+.line-number {
+    float: right;
+    color: #888;
+}
+
+.showMoreResults {
+    text-align: center;
+    background-color: #aec4f5;
+}

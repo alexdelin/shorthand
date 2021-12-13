@@ -66,19 +66,29 @@ function showFileFinder() {
         }
     });
 
-    var fullTextSearch = new Bloodhound({
-        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
-        queryTokenizer: Bloodhound.tokenizers.whitespace,
-        remote: {
-            url: '/api/v1/search?query_string=%QUERY',
-            wildcard: '%QUERY',
-            filter: results => $.map(results.items, result => ({
-                match_content: result.match_content,
-                path: result.file_path + '#line-number-' + result.line_number,
-                shortPath: result.file_path + '#' + result.line_number,
-            }))
-        }
-    });
+    // var fullTextSearch = new Bloodhound({
+    //     datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
+    //     queryTokenizer: Bloodhound.tokenizers.whitespace,
+    //     remote: {
+    //         url: '/api/v1/search?aggregate_by_file=True&query_string=%QUERY',
+    //         wildcard: '%QUERY',
+    //         filter: function(results) {
+    //             var response = [];
+    //             $.each(results.items, function(resultIndex, result) {
+    //                 $.each(result.matches, function(matchIndex, match) {
+    //                     response.push({
+    //                         match_content: match.match_content,
+    //                         path: result.file_path + '#line-number-' + match.line_number,
+    //                         shortPath: result.file_path + '#' + match.line_number,
+    //                         resultIndex: resultIndex,
+    //                         matchIndex: matchIndex
+    //                     })
+    //                 })
+    //             })
+    //             return response
+    //         }
+    //     }
+    // });
 
     $('#fileModalSearchBar').typeahead(
         {
@@ -90,18 +100,19 @@ function showFileFinder() {
             templates: {
                 header: '<h3>Notes Filenames</h3>'
             }
-        }, {
-            name: 'notes-full-text',
-            limit: 10,
-            source: fullTextSearch,
-            display: 'path',
-            templates: {
-                header: '<h3>Notes Full Text</h3>',
-                suggestion: function(data) {
-                    return '<div>' + data.match_content + '<span style="float: right;">' + data.shortPath + '</span></div>';
-                }
-            }
-        }
+        },
+        // {
+        //     name: 'notes-full-text',
+        //     limit: 10,
+        //     source: fullTextSearch,
+        //     display: 'path',
+        //     templates: {
+        //         header: '<h3 style="padding-top: 15px;">Notes Full Text</h3>',
+        //         suggestion: function(data) {
+        //             return '<div>' + data.match_content + '<span style="float: right;">' + data.shortPath + '</span></div>';
+        //         }
+        //     }
+        // }
     );
 
     // Click Handler for the goto note button
@@ -137,7 +148,87 @@ function showFileFinder() {
         }
     });
 
+    // Handler for getting full text search results
+    // https://stackoverflow.com/a/21460243
+    var timer;
+    function onInput() {
+        clearTimeout(timer);
+        timer = setTimeout(fullTextSearch.bind(this), 2000);
+    }
+    $('#fileModalSearchBar').on('input', onInput);
+
 };
+
+// Get Full text note search results
+function fullTextSearch() {
+    var queryString = $('#fileModalSearchBar').val();
+    $.ajax({
+        url: '/api/v1/search?' + $.param({
+            aggregate_by_file: true,
+            query_string: queryString
+        }),
+        type: 'GET',
+        success: function(responseData) {
+            // Remove any previous results
+            $('.searchResultsContainer').html('');
+
+            // Draw search results
+            searchResults = JSON.parse(responseData);
+            $.each(searchResults.items, function(i, fileResult) {
+                var filePath = fileResult.file_path;
+                var matchResults = [];
+                var resultsElement = $('<div class="fileSearchResult">' +
+                                       '<span class="resultFilePath">' +
+                                       filePath + '</span></div>');
+
+                $.each(fileResult.matches, function(j, match) {
+                    var lineNumber = match.line_number;
+                    var matchContent = match.match_content;
+
+                    if (j > 4) {
+                        var overflowClass = ' overflow hidden';
+                    } else {
+                        var overflowClass = '';
+                    }
+
+                    var matchElement = '<div class="lineSearchResult' + overflowClass +
+                                       '">' + matchContent +
+                                       '<span class="line-number">' + lineNumber +
+                                       '</span></div>';
+
+                    resultsElement.html(resultsElement.html() + matchElement);
+                });
+
+                if (fileResult.matches.length > 5) {
+                    var showMoreElement = '<div class="showMoreResults">Show More</div>';
+                    resultsElement.html(resultsElement.html() + showMoreElement);
+                }
+                $('.searchResultsContainer').html($('.searchResultsContainer').html() + resultsElement[0].outerHTML);
+
+            });
+
+            // Wire click events on results
+            $('.lineSearchResult').click(function(ev){
+                var lineNumber = $(ev.currentTarget).find('.line-number')[0].innerText;
+                var filePath = $(ev.currentTarget.parentElement).find('.resultFilePath')[0].innerText;
+                $('#fileModalSearchBar').val(filePath + '#line-number-' + lineNumber);
+            });
+            $('.showMoreResults').click(function(ev){
+                var overflow = $(ev.currentTarget.parentElement).find('.overflow')
+                overflow.toggleClass('hidden');
+                if (ev.currentTarget.innerText == 'Show More') {
+                    ev.currentTarget.innerText = 'Show Less'
+                } else {
+                    ev.currentTarget.innerText = 'Show More'
+                }
+            });
+        },
+        error: function(responseData) {
+            var loadedResponse = JSON.parse(responseData.responseText);
+            showModal(loadedResponse.error);
+        }
+    });
+}
 
 // From https://stackoverflow.com/a/16006607
 function KeyPress(e) {
