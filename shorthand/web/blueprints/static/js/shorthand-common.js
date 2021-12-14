@@ -153,7 +153,7 @@ function showFileFinder() {
     var timer;
     function onInput() {
         clearTimeout(timer);
-        timer = setTimeout(fullTextSearch.bind(this), 2000);
+        timer = setTimeout(fullTextSearch.bind(this), 500);
     }
     $('#fileModalSearchBar').on('input', onInput);
 
@@ -191,8 +191,17 @@ function fullTextSearch() {
                         var overflowClass = '';
                     }
 
+                    // debugger;
+                    var queryString = $('#fileModalSearchBar').val();
+                    var matchStartIndex = matchContent.toLowerCase().indexOf(queryString.toLowerCase())
+                    var highlightedMatch = matchContent.substr(0, matchStartIndex) +
+                                           '<span class="highlight">' +
+                                           matchContent.substr(matchStartIndex, queryString.length) +
+                                           '</span>' +
+                                           matchContent.substr(matchStartIndex + queryString.length);
+
                     var matchElement = '<div class="lineSearchResult' + overflowClass +
-                                       '">' + matchContent +
+                                       '">' + highlightedMatch +
                                        '<span class="line-number">' + lineNumber +
                                        '</span></div>';
 

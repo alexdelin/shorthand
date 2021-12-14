@@ -328,6 +328,11 @@ div.fullwrapper {
     text-align: center;
 }
 
+.searchResultsContainer {
+    max-height: 500px;
+    overflow: scroll;
+}
+
 .resultFilePath {
     font-size: 24px;
 }
@@ -348,4 +353,8 @@ div.fullwrapper {
 .showMoreResults {
     text-align: center;
     background-color: #aec4f5;
+}
+
+.highlight {
+    font-weight: bold;
 }

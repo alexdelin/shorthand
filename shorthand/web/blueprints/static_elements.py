@@ -70,6 +70,10 @@ FILE_FINDER_MODAL = '''<!-- File Finder Modal -->
               <button class="btn btn-primary" type="button" id="goToNote">Go</button>
             </div>
           </div>
+          <div class="fullTextSearchResults">
+            <h3>Full Text Search Results</h3>
+            <div class="searchResultsContainer"></div>
+          </div>
         </div>
       </div>
     </div>
