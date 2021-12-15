@@ -7,6 +7,7 @@ import logging
 CONFIG_FILE_LOCATION = '/etc/shorthand/shorthand_config.json'
 DEFAULT_CACHE_DIR = '/var/lib/shorthand/cache'
 DEFAULT_LOG_FILE = '/var/log/shorthand/shorthand.log'
+DEFAULT_LOG_FORMAT = '%(asctime)s %(name)s %(levelname)-8s %(message)s'
 DEFAULT_LOG_LEVEL = 'INFO'
 DEFAULT_GREP_PATH = 'grep'
 DEFAULT_FIND_PATH = 'find'
@@ -21,6 +22,7 @@ DEFAULT_CONFIG = {
     "default_directory": None,
     "log_file_path": DEFAULT_LOG_FILE,
     "log_level": DEFAULT_LOG_LEVEL,
+    "log_format": DEFAULT_LOG_FORMAT,
     "grep_path": DEFAULT_GREP_PATH,
     "find_path": DEFAULT_FIND_PATH,
     "frontend": DEFAULT_FRONTEND_CONFIG
@@ -167,6 +169,16 @@ def clean_and_validate_config(config):
         log.info(f'No log level specified, falling back to '
                  f'default of "{DEFAULT_LOG_LEVEL}"')
         config['log_level'] = DEFAULT_LOG_LEVEL
+
+    log_format = config.get('log_format')
+    if log_format:
+        if not isinstance(log_format, str):
+            raise ValueError('log_format must be specified as a string')
+        pass
+    else:
+        log.info(f'No log format specified, falling back to '
+                 f'default of "{DEFAULT_LOG_FORMAT}"')
+        config['log_format'] = DEFAULT_LOG_FORMAT
 
     # Validate default directory
     default_dir = config.get('default_directory')

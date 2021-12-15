@@ -1,5 +1,3 @@
-import logging
-
 from shorthand.notes import _get_note, _update_note, \
                             _validate_internal_links, _append_to_note, \
                             _create_note, _get_backlinks, _get_links
@@ -18,7 +16,14 @@ from shorthand.frontend.typeahead import _update_ngram_database, \
 from shorthand.utils.config import get_notes_config, write_config, \
                                    modify_config
 from shorthand.utils.paths import _get_subdirs
-from shorthand.utils.logging import get_handler
+from shorthand.utils.logging import get_handler, log_level_from_string, \
+                                    get_default_logger
+
+
+# Set up the default module-level logger which the rest of the library
+#   will inherit. This will be updated with the settings specified in the
+#   config when the server object is initialized.
+log = get_default_logger()
 
 
 class ShorthandServer(object):
@@ -32,12 +37,17 @@ class ShorthandServer(object):
         '''Initialize the server with the configuration
            in the specified file
         '''
-        self.log = logging.getLogger(__name__)
+        self.log = log
 
         self.config_path = config_path
         self.reload_config()
+
+    def setup_logging(self):
+        '''Setup logging handlers to match what is specified in config
+        '''
+        self.log.setLevel(log_level_from_string(self.config['log_level']))
         if self.log.handlers:
-            [self.log.removeHandler(h) for h in self.log.handlers]
+            self.log.handlers.clear()
         log_handler = get_handler(self.config)
         self.log.addHandler(log_handler)
 
@@ -47,18 +57,21 @@ class ShorthandServer(object):
     def get_config(self):
         '''Get the current server configuration
         '''
+        self.log.debug('returned config')
         return self.config
 
     def reload_config(self):
         '''Reload the config from the config file
         '''
         self.config = get_notes_config(self.config_path)
+        self.setup_logging()
 
     def update_config(self, updates):
         '''Update one or more fields in the configuration
            Note: This does not save the updated config to disk
         '''
         self.config = modify_config(self.config, updates)
+        self.setup_logging()
 
     def save_config(self):
         '''Save the current config to the config file
