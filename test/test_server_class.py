@@ -6,10 +6,9 @@ import pytest
 import unittest
 
 from shorthand import ShorthandServer
-from shorthand.utils.logging import setup_logging
 from shorthand.utils.config import clean_and_validate_config
 
-from utils import setup_environment, TEMP_DIR, validate_setup
+from utils import setup_environment, TEMP_DIR, validate_setup, setup_logging
 
 
 ORIGINAL_CONFIG = setup_environment()

@@ -1,13 +1,13 @@
 import logging
 import unittest
 
-from shorthand.utils.logging import setup_logging
 from shorthand.elements.todos import _get_todos
 from shorthand.elements.questions import _get_questions
 from shorthand.stamping import _stamp_notes
 from shorthand.notes import _get_note
 
-from utils import setup_environment, teardown_environment, validate_setup
+from utils import setup_environment, teardown_environment, validate_setup, \
+                  setup_logging
 from model import ShorthandModel
 
 

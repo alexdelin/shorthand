@@ -5,10 +5,9 @@ import unittest
 
 import pytest
 
-from shorthand.utils.logging import setup_logging
 from shorthand.elements.record_sets import _get_record_set, _get_record_sets
 from shorthand.utils.rec import load_from_string
-from utils import setup_environment, validate_setup
+from utils import setup_environment, validate_setup, setup_logging
 
 
 CONFIG = setup_environment()

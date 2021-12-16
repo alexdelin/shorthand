@@ -31,18 +31,6 @@ def log_level_from_string(log_level_string):
     return log_level
 
 
-def setup_logging(config):
-    log_file_path = config.get('log_file_path', 'shorthand.log')
-    log_level_string = config.get('log_level', 'info')
-    log_level = log_level_from_string(log_level_string)
-
-    log_format = '%(asctime)s %(name)s %(levelname)-8s %(message)s'
-    logging.basicConfig(filename=log_file_path, filemode='a',
-                        level=log_level, format=log_format)
-    # Log in UTC time
-    logging.Formatter.converter = time.gmtime
-
-
 def get_handler(config):
     log_file_path = config.get('log_file_path', 'shorthand.log')
     log_level_string = config.get('log_level', 'info')

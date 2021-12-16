@@ -1,11 +1,9 @@
-import os
 import logging
 import unittest
 
 from shorthand.tags import _get_tags, extract_tags
-from shorthand.utils.logging import setup_logging
 
-from utils import setup_environment, validate_setup
+from utils import setup_environment, validate_setup, setup_logging
 
 
 CONFIG = setup_environment()

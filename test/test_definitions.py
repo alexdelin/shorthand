@@ -1,11 +1,9 @@
-import os
 import logging
 import unittest
 
 from shorthand.elements.definitions import _get_definitions
-from shorthand.utils.logging import setup_logging
 
-from utils import setup_environment, validate_setup
+from utils import setup_environment, validate_setup, setup_logging
 from results_unstamped import ALL_DEFINITIONS
 
 

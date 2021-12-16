@@ -1,8 +1,12 @@
 import os
 import json
+import time
 import shutil
+import logging
 
 import pytest
+
+from shorthand.utils.logging import log_level_from_string
 
 
 SAMPLE_DATA_DIR = 'sample_data'
@@ -22,6 +26,18 @@ TEST_CONFIG = {
     "find_path": "find"
 }
 TEST_CONFIG_PATH = TEMP_DIR + '/config.json'
+
+
+def setup_logging(config):
+    log_file_path = config.get('log_file_path', 'shorthand.log')
+    log_level_string = config.get('log_level', 'info')
+    log_level = log_level_from_string(log_level_string)
+
+    log_format = '%(asctime)s %(name)s %(levelname)-8s %(message)s'
+    logging.basicConfig(filename=log_file_path, filemode='a',
+                        level=log_level, format=log_format)
+    # Log in UTC time
+    logging.Formatter.converter = time.gmtime
 
 
 def validate_setup():

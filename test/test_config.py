@@ -1,15 +1,13 @@
-import os
 import logging
 import pytest
 import unittest
 
-from shorthand.utils.logging import setup_logging
 from shorthand.utils.config import clean_and_validate_config, \
     modify_config, DEFAULT_CACHE_DIR, DEFAULT_LOG_FILE, \
     DEFAULT_LOG_LEVEL, DEFAULT_GREP_PATH, DEFAULT_FIND_PATH, \
     DEFAULT_FRONTEND_CONFIG, DEFAULT_CONFIG
 
-from utils import setup_environment, validate_setup
+from utils import setup_environment, validate_setup, setup_logging
 
 
 ORIGINAL_CONFIG = setup_environment()

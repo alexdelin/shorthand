@@ -3,13 +3,12 @@ import logging
 import random
 import unittest
 
-from shorthand.utils.logging import setup_logging
 from shorthand.elements.todos import _get_todos, _mark_todo
 from shorthand.stamping import _stamp_notes
 from shorthand.web.app import create_app
 
 from utils import setup_environment, teardown_environment, validate_setup, \
-                  TEST_CONFIG_PATH
+                  TEST_CONFIG_PATH, setup_logging
 from model import ShorthandModel
 
 

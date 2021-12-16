@@ -2,10 +2,9 @@ import os
 import logging
 import pytest
 
-from shorthand.utils.logging import setup_logging
 from shorthand.cli import run, cli_stamp_notes
 
-from utils import setup_environment, teardown_environment
+from utils import setup_environment, teardown_environment, setup_logging
 
 
 ORIGINAL_CONFIG = setup_environment()

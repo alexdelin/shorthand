@@ -7,11 +7,10 @@ from shorthand.notes import _get_note, _update_note, \
                             _validate_internal_links, _create_note, \
                             _append_to_note, _delete_note, _get_links, \
                             _get_backlinks
-from shorthand.utils.logging import setup_logging
 from shorthand.web.app import create_app
 
 from utils import setup_environment, teardown_environment, validate_setup, \
-                  TEST_CONFIG_PATH
+                  TEST_CONFIG_PATH, setup_logging
 from model import ShorthandModel
 from results_unstamped import ALL_LINKS
 

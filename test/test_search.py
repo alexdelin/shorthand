@@ -2,13 +2,12 @@ import os
 import logging
 import unittest
 
-from shorthand.utils.logging import setup_logging
 from shorthand.search import _search_notes, _filename_search, \
                              _record_file_view
 from shorthand.frontend.typeahead import _update_ngram_database, \
                                          _get_typeahead_suggestions
 
-from utils import setup_environment, validate_setup
+from utils import setup_environment, validate_setup, setup_logging
 from results_unstamped import EMPTY_RESULTS, SEARCH_RESULTS_FOOD, \
                               SEARCH_RESULTS_FOOD_SENSITIVE, \
                               SEARCH_RESULTS_BALANCED_DIET, ALL_FILES

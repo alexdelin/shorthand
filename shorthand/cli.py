@@ -4,13 +4,11 @@ import argparse
 import logging
 
 from shorthand.utils.config import get_notes_config, CONFIG_FILE_LOCATION
-from shorthand.utils.logging import setup_logging
 from shorthand.elements.todos import _get_todos
 from shorthand.stamping import _stamp_notes
 
 
 SHORTHAND_CONFIG = get_notes_config()
-setup_logging(SHORTHAND_CONFIG)
 log = logging.getLogger(__name__)
 
 
