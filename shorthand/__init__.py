@@ -13,8 +13,8 @@ from shorthand.elements.locations import _get_locations
 from shorthand.elements.record_sets import _get_record_sets, _get_record_set
 from shorthand.frontend.typeahead import _update_ngram_database, \
                                          _get_typeahead_suggestions
-from shorthand.utils.config import get_notes_config, write_config, \
-                                   modify_config
+from shorthand.utils.config import _get_notes_config, _write_config, \
+                                   _modify_config
 from shorthand.utils.paths import _get_subdirs
 from shorthand.utils.logging import get_handler, log_level_from_string, \
                                     get_default_logger
@@ -28,9 +28,14 @@ log = get_default_logger()
 
 class ShorthandServer(object):
     '''Main Shorthand Server API
+
        This implementation exposes a nicer API than calling
        the underlying functions directly and manages basic
-       configuration transparently
+       configuration transparently.
+
+       The ShorthandServer is meant to be instantiated on a
+       machine with local access to the notes directory, and
+       all requests will be processed against the local filesystem.
     '''
 
     def __init__(self, config_path):
@@ -63,20 +68,20 @@ class ShorthandServer(object):
     def reload_config(self):
         '''Reload the config from the config file
         '''
-        self.config = get_notes_config(self.config_path)
+        self.config = _get_notes_config(self.config_path)
         self.setup_logging()
 
     def update_config(self, updates):
         '''Update one or more fields in the configuration
            Note: This does not save the updated config to disk
         '''
-        self.config = modify_config(self.config, updates)
+        self.config = _modify_config(self.config, updates)
         self.setup_logging()
 
     def save_config(self):
         '''Save the current config to the config file
         '''
-        write_config(self.config_path, self.config)
+        _write_config(self.config_path, self.config)
 
     def check_config_init(self):
         '''Validate that config is present

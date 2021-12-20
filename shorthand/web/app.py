@@ -8,7 +8,7 @@ import logging
 
 from flask import Flask
 
-from shorthand.utils.config import get_notes_config, CONFIG_FILE_LOCATION
+from shorthand.utils.config import _get_notes_config, CONFIG_FILE_LOCATION
 from shorthand.utils.logging import get_handler
 from shorthand.web.blueprints.api import shorthand_api_blueprint
 from shorthand.web.blueprints.ui import shorthand_ui_blueprint
@@ -16,7 +16,7 @@ from shorthand.web.blueprints.ui import shorthand_ui_blueprint
 
 def create_app(config_path):
 
-    config = get_notes_config(config_path)
+    config = _get_notes_config(config_path)
 
     logger = logging.getLogger('shorthand-flask')
     logger.setLevel(logging.DEBUG)

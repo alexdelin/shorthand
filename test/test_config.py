@@ -3,7 +3,7 @@ import pytest
 import unittest
 
 from shorthand.utils.config import clean_and_validate_config, \
-    modify_config, DEFAULT_CACHE_DIR, DEFAULT_LOG_FILE, \
+    _modify_config, DEFAULT_CACHE_DIR, DEFAULT_LOG_FILE, \
     DEFAULT_LOG_LEVEL, DEFAULT_GREP_PATH, DEFAULT_FIND_PATH, \
     DEFAULT_FRONTEND_CONFIG, DEFAULT_CONFIG
 
@@ -239,7 +239,7 @@ class TestConfig(unittest.TestCase):
                 'map_tileserver_url': 'https://{s}.site.com/{z}/{x}/{y}.png'
             }
         }
-        config = modify_config(config, updates)
+        config = _modify_config(config, updates)
         assert config['log_level'] == updates['log_level']
         assert config['frontend'] == updates['frontend']
 
@@ -251,7 +251,7 @@ class TestConfig(unittest.TestCase):
             'log_level': 'INVALID'
         }
         with pytest.raises(ValueError) as e:
-            _ = modify_config(config, updates)
+            _ = _modify_config(config, updates)
         assert str(e.value)
 
         updates = {
@@ -260,5 +260,5 @@ class TestConfig(unittest.TestCase):
             }
         }
         with pytest.raises(ValueError) as e:
-            _ = modify_config(config, updates)
+            _ = _modify_config(config, updates)
         assert str(e.value)

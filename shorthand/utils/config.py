@@ -34,7 +34,7 @@ REQUIRED_FIELDS = ['notes_directory']
 log = logging.getLogger(__name__)
 
 
-def get_notes_config(config_location=CONFIG_FILE_LOCATION):
+def _get_notes_config(config_location=CONFIG_FILE_LOCATION):
     '''Get notes config from the file path specified
     returns the loaded, cleaned, and validated config
     '''
@@ -53,9 +53,7 @@ def get_notes_config(config_location=CONFIG_FILE_LOCATION):
     return notes_config
 
 
-#TODO - make these method names match the server class,
-# and add underscores here
-def write_config(config_location, config):
+def _write_config(config_location, config):
     '''Write the specified config into a config file
     '''
 
@@ -73,7 +71,7 @@ def write_config(config_location, config):
         json.dump(clean_config, config_file_object)
 
 
-def modify_config(config, updates):
+def _modify_config(config, updates):
     '''Update one or more fields in the config
        Takes an original config and a dictionary of updates to make
        The updates have the same form as the regular config but

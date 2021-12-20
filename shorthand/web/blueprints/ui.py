@@ -4,7 +4,7 @@ from flask import request, render_template, send_from_directory, Blueprint, \
                   current_app, abort
 
 from shorthand import ShorthandServer
-from shorthand.utils.config import get_notes_config
+from shorthand.utils.config import _get_notes_config
 from shorthand.frontend import is_image_path
 from shorthand.frontend.render import get_rendered_markdown
 from shorthand.web.blueprints.static_elements import static_content
@@ -42,7 +42,7 @@ def send_processed_markdown():
 @shorthand_ui_blueprint.route('/frontend-api/get-image',
                               methods=['GET', 'POST'])
 def send_image():
-    SHORTHAND_CONFIG = get_notes_config(current_app.config['config_path'])
+    SHORTHAND_CONFIG = _get_notes_config(current_app.config['config_path'])
     image_path = request.args.get('path').strip('/')
     if not is_image_path(SHORTHAND_CONFIG['notes_directory'], image_path):
         abort(404)

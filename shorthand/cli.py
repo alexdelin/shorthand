@@ -3,12 +3,12 @@
 import argparse
 import logging
 
-from shorthand.utils.config import get_notes_config, CONFIG_FILE_LOCATION
+from shorthand.utils.config import _get_notes_config, CONFIG_FILE_LOCATION
 from shorthand.elements.todos import _get_todos
 from shorthand.stamping import _stamp_notes
 
 
-SHORTHAND_CONFIG = get_notes_config()
+SHORTHAND_CONFIG = _get_notes_config()
 log = logging.getLogger(__name__)
 
 
@@ -21,7 +21,7 @@ def main(args):
     """Main method
     """
 
-    notes_config = get_notes_config()
+    notes_config = _get_notes_config()
     notes_directory = notes_config['notes_directory']
 
     if args.action == 'stamp':
