@@ -43,7 +43,7 @@ def get_search_results():
                                              name='aggregate_by_file',
                                              arg_type='bool', default=False)
 
-    search_results = server.search_notes(
+    search_results = server.search_full_text(
         query_string=query_string,
         case_sensitive=case_sensitive,
         aggregate_by_file=aggregate_by_file)
@@ -126,7 +126,7 @@ def get_files():
     case_sensitive = get_request_argument(request.args, name='case_sensitive',
                                           arg_type='bool', default=False)
 
-    files = server.filename_search(
+    files = server.search_filenames(
                 prefer_recent=prefer_recent,
                 query_string=query_string, case_sensitive=case_sensitive)
 

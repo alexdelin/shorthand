@@ -2,7 +2,7 @@ import os
 import logging
 import unittest
 
-from shorthand.search import _search_notes, _filename_search, \
+from shorthand.search import _search_full_text, _search_filenames, \
                              _record_file_view
 from shorthand.frontend.typeahead import _update_ngram_database, \
                                          _get_typeahead_suggestions
@@ -20,7 +20,7 @@ log = logging.getLogger(__name__)
 
 # Define helpers to make the rest of the code cleaner
 def get_search_results(query_string, case_sensitive):
-    return _search_notes(
+    return _search_full_text(
                 notes_directory=CONFIG['notes_directory'],
                 query_string=query_string,
                 case_sensitive=case_sensitive,
@@ -28,7 +28,7 @@ def get_search_results(query_string, case_sensitive):
 
 
 def get_file_search_results(prefer_recent, query_string, case_sensitive):
-    return _filename_search(
+    return _search_filenames(
                 notes_directory=CONFIG['notes_directory'],
                 prefer_recent_files=prefer_recent,
                 cache_directory=CONFIG['cache_directory'],
@@ -205,6 +205,7 @@ class TestFileFinder(unittest.TestCase):
                                                       case_sensitive=False)
             last_file = all_files_found[-1]
             _record_file_view(CONFIG['cache_directory'],
+                              CONFIG['notes_directory'],
                               last_file, history_limit=100)
 
             # Verify that the view was recorded in the history file

@@ -4,13 +4,14 @@ import shlex
 import logging
 from subprocess import Popen, PIPE
 
-from shorthand.utils.paths import get_relative_path
+from shorthand.utils.paths import get_relative_path, is_note_path
 
 
 log = logging.getLogger(__name__)
 
 
-def _record_file_view(cache_directory, note_path, history_limit=100):
+def _record_file_view(cache_directory, notes_directory, note_path,
+                      history_limit=100):
     '''Record a note being viewed, so that it can be preferred in
     future search results.
 
@@ -18,8 +19,9 @@ def _record_file_view(cache_directory, note_path, history_limit=100):
         most recent view at the END of the file
     '''
 
-    # TODO - validate that the relative path provided is
-    # A valid path to a note file
+    if not is_note_path(notes_directory=notes_directory, path=note_path):
+        raise ValueError(f'Cannot record view for note {note_path}. '
+                         f'Note does not exist')
 
     history_file = cache_directory + '/recent_files.txt'
     if os.path.exists(history_file):
@@ -59,11 +61,10 @@ def _record_file_view(cache_directory, note_path, history_limit=100):
         history_file_object.write(history_string)
 
 
-#TODO - rename all these
-def _filename_search(notes_directory, prefer_recent_files=True,
-                     cache_directory=None, query_string=None,
-                     case_sensitive=False, grep_path='grep',
-                     find_path='find'):
+def _search_filenames(notes_directory, prefer_recent_files=True,
+                      cache_directory=None, query_string=None,
+                      case_sensitive=False, grep_path='grep',
+                      find_path='find'):
     '''Search for a note file in the notes directory
 
     "prefer_recent_files" if true, will bump the most rectly
@@ -139,8 +140,8 @@ def _filename_search(notes_directory, prefer_recent_files=True,
     return search_results
 
 
-def _search_notes(notes_directory, query_string, case_sensitive=False,
-                  aggregate_by_file=False, grep_path='grep'):
+def _search_full_text(notes_directory, query_string, case_sensitive=False,
+                      aggregate_by_file=False, grep_path='grep'):
     '''Perform a full-text search through all notes and return
     matching lines with metadata
 
