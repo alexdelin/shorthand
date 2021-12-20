@@ -10,8 +10,7 @@ from shorthand.utils.paths import get_relative_path
 log = logging.getLogger(__name__)
 
 
-#TODO - rename all these
-def _record_file_view(cache_directory, relative_path, history_limit=100):
+def _record_file_view(cache_directory, note_path, history_limit=100):
     '''Record a note being viewed, so that it can be preferred in
     future search results.
 
@@ -35,19 +34,19 @@ def _record_file_view(cache_directory, relative_path, history_limit=100):
 
     if len(history_data) == 0:
         # There is no history yet
-        history_data = [relative_path]
+        history_data = [note_path]
     else:
-        if relative_path == history_data[-1]:
+        if note_path == history_data[-1]:
             # The viewed file is already the most recently viewed file
             return
-        elif relative_path in history_data:
+        elif note_path in history_data:
             # The viewed file is in the history file, but
             # is not the most recently viewed file
-            history_data.remove(relative_path)
-            history_data.append(relative_path)
+            history_data.remove(note_path)
+            history_data.append(note_path)
         else:
             # The viewed file is not in the history file
-            history_data.append(relative_path)
+            history_data.append(note_path)
             if len(history_data) > history_limit:
                 history_data = history_data[-history_limit:]
 
@@ -60,6 +59,7 @@ def _record_file_view(cache_directory, relative_path, history_limit=100):
         history_file_object.write(history_string)
 
 
+#TODO - rename all these
 def _filename_search(notes_directory, prefer_recent_files=True,
                      cache_directory=None, query_string=None,
                      case_sensitive=False, grep_path='grep',

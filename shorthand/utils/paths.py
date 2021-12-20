@@ -9,7 +9,6 @@ log = logging.getLogger(__name__)
 def get_relative_path(notes_directory, path):
     '''Produce a relative path within the notes directory
     from a full path on the filesystem
-    #TODO - Add a server class method for this
     '''
 
     if not path:
@@ -34,7 +33,6 @@ def get_relative_path(notes_directory, path):
 def get_full_path(notes_directory, relative_path):
     '''Get a full path on the local filesystem from a
     relative path
-    #TODO - Add a server class method for this
     '''
 
     if not relative_path:

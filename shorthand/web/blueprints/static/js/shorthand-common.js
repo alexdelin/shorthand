@@ -121,7 +121,7 @@ function showFileFinder() {
         var notePath = $('#fileModalSearchBar').val();
         // Log the file view
         $.ajax({
-            url: '/api/v1/record_view?' + $.param({relative_path: notePath}),
+            url: '/api/v1/record_view?' + $.param({note_path: notePath}),
             type: 'POST',
             success: function(responseData) {
                 if (responseData == 'ack') {

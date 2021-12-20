@@ -135,12 +135,11 @@ def get_files():
 
 @shorthand_api_blueprint.route('/api/v1/record_view', methods=['POST'])
 def record_file_view_api():
-    #TODO - Rename arg to "note_path" both here and in the function
     server = ShorthandServer(current_app.config['config_path'])
 
-    relative_path = get_request_argument(request.args, name='relative_path',
-                                         required=True)
-    server.record_file_view(relative_path=relative_path)
+    note_path = get_request_argument(request.args, name='note_path',
+                                     required=True)
+    server.record_file_view(note_path=note_path)
     return 'ack'
 
 

@@ -115,6 +115,9 @@ def clean_and_validate_config(config):
     if an issue is found
     '''
 
+    #TODO - Set up logging immediately, so later errors will
+    #       be logged correctly
+
     # Ensure that no unknown fields are present in the config
     for field in config.keys():
         if field not in DEFAULT_CONFIG.keys():

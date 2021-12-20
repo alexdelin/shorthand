@@ -36,6 +36,10 @@ class ShorthandServer(object):
        The ShorthandServer is meant to be instantiated on a
        machine with local access to the notes directory, and
        all requests will be processed against the local filesystem.
+
+       The API exposed by the server abstracts away the location
+       of the notes directory. Only relative paths within the notes
+       directory should be provided to or returned from the server.
     '''
 
     def __init__(self, config_path):
@@ -159,10 +163,10 @@ class ShorthandServer(object):
                 grep_path=self.config['grep_path'],
                 find_path=self.config['find_path'])
 
-    def record_file_view(self, relative_path):
+    def record_file_view(self, note_path):
         return _record_file_view(
             cache_directory=self.config['cache_directory'],
-            relative_path=relative_path,
+            note_path=note_path,
             history_limit=self.config['frontend']['view_history_limit'])
 
     # Calendar
