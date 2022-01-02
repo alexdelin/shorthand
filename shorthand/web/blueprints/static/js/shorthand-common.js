@@ -251,7 +251,7 @@ document.onkeydown = KeyPress;
 
 // Show file finder when the search button is clicked
 $(document).ready(function() {
-    $("#search-button").click(function(){
+    $("#search-button").on('click touchend', function(){
         showFileFinder();
     });
 });
