@@ -119,7 +119,7 @@ export function TodosPage() {
 
   return (
     <TodoPageWrapper>
-      <h2>Todos Page</h2>
+      <h2>Todos</h2>
       <StyledForm>
         <TextField
           id="status-select"

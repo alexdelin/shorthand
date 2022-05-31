@@ -132,7 +132,14 @@ export function TodosGrid({ status, search, directory, tags }: TodosGridProps) {
   }
 
   return <Grid
-    data={todoData.items.map((todo: Todo) => ([
+    data={todoData.items.map((todo: Todo) => (
+      status === 'Incomplete' ? [
+        todo.display_path,
+        getTodoElement(todo.todo_text, todo.tags),
+        todo.start_date,
+        todo.line_number,
+        'placeholder'
+      ] : [
         todo.display_path,
         getTodoElement(todo.todo_text, todo.tags),
         todo.start_date,
@@ -140,9 +147,13 @@ export function TodosGrid({ status, search, directory, tags }: TodosGridProps) {
         todo.line_number,
         'placeholder'
     ]))}
-    columns={[
-      'Todo', 'Path', 'Start Date', 'End Date',
+    columns={status === 'Incomplete' ? [
+      'Path', 'Todo', 'Start Date',
+      'Line #', 'Actions'
+    ] : [
+      'Path', 'Todo', 'Start Date', 'End Date',
       'Line #', 'Actions'
     ]}
   />
+
 }
