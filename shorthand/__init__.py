@@ -19,6 +19,10 @@ from shorthand.utils.config import _get_notes_config, _write_config, \
 from shorthand.utils.paths import _get_subdirs
 from shorthand.utils.logging import get_handler, log_level_from_string, \
                                     get_default_logger
+from shorthand.utils.buffers import _new_buffer, _get_buffers, \
+                                    _get_buffer_content, \
+                                    _update_buffer_content, \
+                                    _delete_buffer, _write_buffer
 
 
 # Set up the default module-level logger which the rest of the library
@@ -255,3 +259,32 @@ class ShorthandServer(object):
                                file_path=file_path, line_number=line_number,
                                parse=parse, parse_format=parse_format,
                                include_config=include_config)
+
+    # ---------------
+    # --- Buffers ---
+    # ---------------
+    def new_buffer(self) -> str:
+        return _new_buffer(cache_directory=self.config['cache_directory'])
+
+    def get_buffers(self) -> list:
+        return _get_buffers(cache_directory=self.config['cache_directory'])
+
+    def get_buffer_content(self, buffer_id: str) -> str:
+        return _get_buffer_content(
+            cache_directory=self.config['cache_directory'],
+            buffer_id=buffer_id)
+
+    def update_buffer_content(self, buffer_id: str, content: str) -> bool:
+        return _update_buffer_content(
+            cache_directory=self.config['cache_directory'],
+            buffer_id=buffer_id, content=content)
+
+    def delete_buffer(self, buffer_id: str) -> bool:
+        return _delete_buffer(cache_directory=self.config['cache_directory'],
+                              buffer_id=buffer_id)
+
+    def write_buffer(self, notes_directory: str, buffer_id: str,
+                     note_path: str) -> bool:
+        return _write_buffer(cache_directory=self.config['cache_directory'],
+                             notes_directory=self.config['notes_directory'],
+                             buffer_id=buffer_id, note_path=note_path)
