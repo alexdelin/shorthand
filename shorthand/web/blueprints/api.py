@@ -1,7 +1,7 @@
 import json
 
 from werkzeug.exceptions import HTTPException
-from flask import Blueprint, request, current_app
+from flask import Blueprint, request, current_app, Response
 
 from shorthand import ShorthandServer
 from shorthand.elements.todos import analyze_todos
@@ -29,7 +29,9 @@ def handle_exception(e):
 def get_server_config():
     server = ShorthandServer(current_app.config['config_path'])
     current_app.logger.info('Returning config')
-    return json.dumps(server.get_config())
+    resp = Response(json.dumps(server.get_config()))
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    return resp
 
 
 @shorthand_api_blueprint.route('/api/v1/search', methods=['GET'])
@@ -73,6 +75,14 @@ def write_updated_note():
 def get_toc_data():
     server = ShorthandServer(current_app.config['config_path'])
     return json.dumps(server.get_toc())
+
+
+@shorthand_api_blueprint.route('/api/v1/subdirs', methods=['GET'])
+def get_subdirs_data():
+    server = ShorthandServer(current_app.config['config_path'])
+    resp = Response(json.dumps(server.get_subdirs()))
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    return resp
 
 
 @shorthand_api_blueprint.route('/api/v1/links', methods=['GET'])
@@ -153,7 +163,9 @@ def fetch_tags():
         directory_filter = None
 
     tags = server.get_tags(directory_filter=directory_filter)
-    return json.dumps(wrap_response_data(tags))
+    resp = Response(json.dumps(wrap_response_data(tags)))
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    return resp
 
 
 @shorthand_api_blueprint.route('/api/v1/calendar', methods=['GET'])
@@ -215,7 +227,10 @@ def get_current_todos():
 
     wrapped_response = wrap_response_data(todos)
     wrapped_response['meta'] = analyze_todos(todos)
-    return json.dumps(wrapped_response)
+
+    resp = Response(json.dumps(wrapped_response))
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    return resp
 
 
 @shorthand_api_blueprint.route('/api/v1/mark_todo', methods=['GET'])
