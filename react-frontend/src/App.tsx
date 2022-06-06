@@ -19,7 +19,7 @@ import styled from 'styled-components';
 const Content = styled.div`
   background-color: white;
   width: calc(100% - 5rem);
-  height: 100%;
+  height: 100vh;
   margin-left: 5rem;
   overflow: scroll;`
 

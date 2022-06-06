@@ -77,7 +77,7 @@ export function TodosGrid({ status, search, directory, tags }: TodosGridProps) {
         <StyledReactMarkdown
           children={todoText}
           linkTarget="_blank"
-          remarkPlugins={[remarkMath]}
+          remarkPlugins={[remarkMath, remarkGfm]}
           rehypePlugins={[rehypeKatex]}
         />
         {tags.map((tag) => <StyledTag>{tag}</StyledTag>)}
