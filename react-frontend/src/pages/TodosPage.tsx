@@ -1,29 +1,15 @@
 import { useState } from 'react';
 import { useQuery } from 'react-query';
 import "gridjs/dist/theme/mermaid.css";
-import styled from 'styled-components';
 import 'katex/dist/katex.min.css';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
 import { TodosGrid } from '../components/TodosGrid';
 import { TodosStats } from '../components/TodosStats';
-import { ConfigResponse, TagsResponse,
-         SubdirsResponse } from '../types';
-
-
-const TodoPageWrapper = styled.div`
-  padding: 1rem;`
-
-const StyledForm = styled.form`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 2rem;
-
-  & .MuiTextField-root {
-    margin-left: 2rem;
-  }`
+import { GetConfigResponse, GetTagsResponse,
+         GetSubdirsResponse } from '../types';
+import { TodoPageWrapper, StyledForm } from './TodosPage.styles';
 
 export function TodosPage() {
 
@@ -34,7 +20,7 @@ export function TodosPage() {
 
   let {
     data: configData
-  } = useQuery<ConfigResponse, Error>('config', () =>
+  } = useQuery<GetConfigResponse, Error>('config', () =>
     fetch('http://localhost:8181/api/v1/config').then(res =>
       res.json()
     )
@@ -42,7 +28,7 @@ export function TodosPage() {
 
   let {
     data: tagsData
-  } = useQuery<TagsResponse, Error>('tags', () =>
+  } = useQuery<GetTagsResponse, Error>('tags', () =>
     fetch('http://localhost:8181/api/v1/tags').then(res =>
       res.json()
     )
@@ -58,7 +44,7 @@ export function TodosPage() {
 
   let {
     data: subdirsData
-  } = useQuery<SubdirsResponse, Error>('subdirs', () =>
+  } = useQuery<GetSubdirsResponse, Error>('subdirs', () =>
     fetch('http://localhost:8181/api/v1/subdirs').then(res =>
       res.json()
     )

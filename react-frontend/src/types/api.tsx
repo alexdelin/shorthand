@@ -2,20 +2,27 @@
 //   the Shorthand API
 import * as ELEMENTS from './elements';
 
-export type TodosResponse = {
-  items: ELEMENTS.Todo[],
-  count: number,
-  meta: any
+
+export type TodosStats = {
+  month_counts: any,
+  tag_counts: any,
+  timeline_data: any
 }
 
-export type TagsResponse = {
+export type GetTodosResponse = {
+  items: ELEMENTS.Todo[],
+  count: number,
+  meta: TodosStats
+}
+
+export type GetTagsResponse = {
   items: ELEMENTS.Tag[],
   count: number,
   meta: any
 }
 
-export type SubdirsResponse = ELEMENTS.Subdir[];
+export type GetSubdirsResponse = ELEMENTS.Subdir[];
 
-export type ConfigResponse = ELEMENTS.Config;
+export type GetConfigResponse = ELEMENTS.Config;
 
 export type GetNoteResponse = string;

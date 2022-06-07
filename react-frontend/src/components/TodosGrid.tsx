@@ -4,31 +4,8 @@ import { useQuery } from 'react-query';
 import remarkMath from 'remark-math';
 import remarkGfm from 'remark-gfm'
 import rehypeKatex from 'rehype-katex';
-import ReactMarkdown from 'react-markdown';
-import styled from 'styled-components';
-import { TodosResponse, Tag } from '../types';
-
-const StyledReactMarkdown = styled(ReactMarkdown)`
-  & a {
-    color: blue;
-  }
-
-  & code {
-    color: #e83e8c;
-  }`
-
-const StyledTag = styled.span`
-  display: inline-block;
-  padding: 0.25em 0.4em;
-  font-size: 75%;
-  font-weight: 700;
-  line-height: 1;
-  text-align: center;
-  white-space: nowrap;
-  vertical-align: baseline;
-  border-radius: 0.25rem;
-  color: #fff;
-  background-color: #6c757d;`
+import { GetTodosResponse, Tag } from '../types';
+import { StyledReactMarkdown, StyledTag } from './TodosGrid.styles';
 
 type TodosGridProps = {
   status: string,
@@ -41,7 +18,7 @@ export function TodosGrid(props: TodosGridProps) {
 
   const {
     data: todoData
-  } = useQuery<TodosResponse, Error>('todos-' + props.status + '-' + props.directory + '-' + props.search + '-' + props.tags, () =>
+  } = useQuery<GetTodosResponse, Error>('todos-' + props.status + '-' + props.directory + '-' + props.search + '-' + props.tags, () =>
     // TODO - Replace with a better library
     fetch('http://localhost:8181/api/v1/todos?status=' + props.status + '&directory_filter=' + props.directory + '&query_string=' + props.search + '&sort_by=start_date&tag=' + props.tags).then(res =>
       res.json()
