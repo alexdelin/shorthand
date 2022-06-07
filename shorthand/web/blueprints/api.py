@@ -56,7 +56,9 @@ def get_search_results():
 def get_full_note():
     server = ShorthandServer(current_app.config['config_path'])
     path = get_request_argument(request.args, name='path', required=True)
-    return server.get_note(path)
+    resp = Response(server.get_note(path))
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    return resp
 
 
 @shorthand_api_blueprint.route('/api/v1/note', methods=['POST'])
