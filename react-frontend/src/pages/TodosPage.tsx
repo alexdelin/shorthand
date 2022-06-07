@@ -6,10 +6,10 @@ import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
 import { TodosGrid } from '../components/TodosGrid';
-import { TodosStats } from '../components/TodosStats';
 import { GetConfigResponse, GetTagsResponse,
          GetSubdirsResponse } from '../types';
 import { TodoPageWrapper, StyledForm } from './TodosPage.styles';
+
 
 export function TodosPage() {
 
@@ -17,6 +17,7 @@ export function TodosPage() {
   const [search, setSearch] = useState('');
   const [directory, setDirectory] = useState('ALL');
   const [tags, setTags] = useState('ALL');
+  const [showStats, setShowStats] = useState(false);
 
   let {
     data: configData
@@ -37,8 +38,7 @@ export function TodosPage() {
   if (tagsData === undefined) {
     tagsData = {
       count: 1,
-      items: ['ALL'],
-      meta: {}
+      items: ['ALL']
     }
   }
 
@@ -77,6 +77,10 @@ export function TodosPage() {
 
   const handleTagsChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTags(event.target.value);
+  }
+
+  function handleStatsClick() {
+    setShowStats(!showStats);
   }
 
   return (
@@ -130,10 +134,21 @@ export function TodosPage() {
              <MenuItem key={tag} value={tag}>{tag}</MenuItem>
           )}
         </TextField>
-        <Button variant="contained">Contained</Button>
+        <Button
+          variant="contained"
+          sx={{ ml: 'auto' }}
+          onClick={handleStatsClick}
+        >
+          Stats
+        </Button>
       </StyledForm>
-      <TodosStats />
-      <TodosGrid status={status} search={search} directory={directory} tags={tags} />
+      <TodosGrid
+        status={status}
+        search={search}
+        directory={directory}
+        tags={tags}
+        showStats={showStats}
+      />
     </TodoPageWrapper>
   )
 }

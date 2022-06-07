@@ -6,12 +6,14 @@ import remarkGfm from 'remark-gfm'
 import rehypeKatex from 'rehype-katex';
 import { GetTodosResponse, Tag } from '../types';
 import { StyledReactMarkdown, StyledTag } from './TodosGrid.styles';
+import { TodosStatsSection } from './TodosStats';
 
 type TodosGridProps = {
   status: string,
   search: string,
   directory: string,
-  tags: string
+  tags: string,
+  showStats: boolean
 }
 
 export function TodosGrid(props: TodosGridProps) {
@@ -91,29 +93,32 @@ export function TodosGrid(props: TodosGridProps) {
     </Fragment>);
   }
 
-  return <Grid
-    data={todoData.items.map((todo) => (
-      props.status === 'Incomplete' ? [
-        todo.display_path,
-        getTodoElement(todo.todo_text, todo.tags),
-        todo.start_date,
-        todo.line_number,
-        'placeholder'
+  return <Fragment>
+    {props.showStats ? <TodosStatsSection stats={todoData.meta} /> : null}
+    <Grid
+      data={todoData.items.map((todo) => (
+        props.status === 'Incomplete' ? [
+          todo.display_path,
+          getTodoElement(todo.todo_text, todo.tags),
+          todo.start_date,
+          todo.line_number,
+          'placeholder'
+        ] : [
+          todo.display_path,
+          getTodoElement(todo.todo_text, todo.tags),
+          todo.start_date,
+          todo.end_date,
+          todo.line_number,
+          'placeholder'
+      ]))}
+      columns={props.status === 'Incomplete' ? [
+        'Path', 'Todo', 'Start Date',
+        'Line #', 'Actions'
       ] : [
-        todo.display_path,
-        getTodoElement(todo.todo_text, todo.tags),
-        todo.start_date,
-        todo.end_date,
-        todo.line_number,
-        'placeholder'
-    ]))}
-    columns={props.status === 'Incomplete' ? [
-      'Path', 'Todo', 'Start Date',
-      'Line #', 'Actions'
-    ] : [
-      'Path', 'Todo', 'Start Date', 'End Date',
-      'Line #', 'Actions'
-    ]}
-  />
+        'Path', 'Todo', 'Start Date', 'End Date',
+        'Line #', 'Actions'
+      ]}
+    />
+  </Fragment>
 
 }

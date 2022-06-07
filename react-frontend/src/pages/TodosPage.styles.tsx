@@ -11,4 +11,8 @@ export const StyledForm = styled.form`
 
   & .MuiTextField-root {
     margin-left: 2rem;
+  }
+
+  & .MuiTextField-root:first-child {
+    margin-left: auto;
   }`

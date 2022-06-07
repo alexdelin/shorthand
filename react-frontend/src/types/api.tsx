@@ -4,9 +4,13 @@ import * as ELEMENTS from './elements';
 
 
 export type TodosStats = {
-  month_counts: any,
-  tag_counts: any,
-  timeline_data: any
+  month_counts: {
+      [key: string]: number
+  },
+  tag_counts: {
+      [key: string]: number
+  },
+  timeline_data: Array<Array<number>>
 }
 
 export type GetTodosResponse = {
@@ -17,8 +21,7 @@ export type GetTodosResponse = {
 
 export type GetTagsResponse = {
   items: ELEMENTS.Tag[],
-  count: number,
-  meta: any
+  count: number
 }
 
 export type GetSubdirsResponse = ELEMENTS.Subdir[];
