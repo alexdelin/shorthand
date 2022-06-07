@@ -6,6 +6,7 @@ import remarkGfm from 'remark-gfm'
 import rehypeKatex from 'rehype-katex';
 import ReactMarkdown from 'react-markdown';
 import styled from 'styled-components';
+import { TodosResponse, Tag } from '../types';
 
 const StyledReactMarkdown = styled(ReactMarkdown)`
   & a {
@@ -29,25 +30,6 @@ const StyledTag = styled.span`
   color: #fff;
   background-color: #6c757d;`
 
-type Tag = string;
-
-type Todo = {
-  display_path: string,
-  end_date: string,
-  file_path: string,
-  line_number: string,
-  start_date: string,
-  status: string,
-  tags: Tag[],
-  todo_text: string
-}
-
-type TodosResponse = {
-  items: Todo[],
-  count: number,
-  meta: any
-}
-
 type TodosGridProps = {
   status: string,
   search: string,
@@ -55,12 +37,13 @@ type TodosGridProps = {
   tags: string
 }
 
-export function TodosGrid({ status, search, directory, tags }: TodosGridProps) {
+export function TodosGrid(props: TodosGridProps) {
 
   const {
     data: todoData
-  } = useQuery<TodosResponse, Error>('todos-' + status + '-' + directory + '-' + search + '-' + tags, () =>
-    fetch('http://localhost:8181/api/v1/todos?status=' + status + '&directory_filter=' + directory + '&query_string=' + search + '&sort_by=start_date&tag=' + tags).then(res =>
+  } = useQuery<TodosResponse, Error>('todos-' + props.status + '-' + props.directory + '-' + props.search + '-' + props.tags, () =>
+    // TODO - Replace with a better library
+    fetch('http://localhost:8181/api/v1/todos?status=' + props.status + '&directory_filter=' + props.directory + '&query_string=' + props.search + '&sort_by=start_date&tag=' + props.tags).then(res =>
       res.json()
     )
   )
@@ -132,8 +115,8 @@ export function TodosGrid({ status, search, directory, tags }: TodosGridProps) {
   }
 
   return <Grid
-    data={todoData.items.map((todo: Todo) => (
-      status === 'Incomplete' ? [
+    data={todoData.items.map((todo) => (
+      props.status === 'Incomplete' ? [
         todo.display_path,
         getTodoElement(todo.todo_text, todo.tags),
         todo.start_date,
@@ -147,7 +130,7 @@ export function TodosGrid({ status, search, directory, tags }: TodosGridProps) {
         todo.line_number,
         'placeholder'
     ]))}
-    columns={status === 'Incomplete' ? [
+    columns={props.status === 'Incomplete' ? [
       'Path', 'Todo', 'Start Date',
       'Line #', 'Actions'
     ] : [

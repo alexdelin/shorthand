@@ -5,36 +5,12 @@ import styled from 'styled-components';
 import 'katex/dist/katex.min.css';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
+import Button from '@mui/material/Button';
 import { TodosGrid } from '../components/TodosGrid';
+import { TodosStats } from '../components/TodosStats';
+import { ConfigResponse, TagsResponse,
+         SubdirsResponse } from '../types';
 
-type Tag = string;
-
-type TagsResponse = {
-  items: Tag[],
-  count: number,
-  meta: any
-}
-
-type Subdir = string;
-
-type SubdirsResponse = Subdir[];
-
-type FrontendConfig = {
-  view_history_limit: number,
-  map_tileserver_url: string
-}
-
-type ConfigResponse = {
-  notes_directory: string,
-  cache_directory: string,
-  default_directory: string,
-  log_file_path: string,
-  log_level: string,
-  grep_path: string,
-  find_path: string,
-  frontend: FrontendConfig,
-  log_format: string
-}
 
 const TodoPageWrapper = styled.div`
   padding: 1rem;`
@@ -128,6 +104,7 @@ export function TodosPage() {
           label="Status"
           value={status}
           onChange={handleStatusChange}
+          size="small"
         >
           <MenuItem key="Incomplete" value="Incomplete">Incomplete</MenuItem>
           <MenuItem key="Complete" value="Complete">Complete</MenuItem>
@@ -139,6 +116,7 @@ export function TodosPage() {
           onChange={handleSearchChange}
           label="Search"
           variant="outlined"
+          size="small"
         />
         <TextField
           select
@@ -146,6 +124,7 @@ export function TodosPage() {
           value={directory}
           onChange={handleDirectoryChange}
           label="Directory"
+          size="small"
         >
           <MenuItem key="ALL" value="ALL">ALL</MenuItem>
           {subdirsData.map((subdir) =>
@@ -158,13 +137,16 @@ export function TodosPage() {
           value={tags}
           onChange={handleTagsChange}
           label="Tag"
+          size="small"
         >
           <MenuItem key="ALL" value="ALL">ALL</MenuItem>
           {tagsData.items.map((tag) =>
              <MenuItem key={tag} value={tag}>{tag}</MenuItem>
           )}
         </TextField>
+        <Button variant="contained">Contained</Button>
       </StyledForm>
+      <TodosStats />
       <TodosGrid status={status} search={search} directory={directory} tags={tags} />
     </TodoPageWrapper>
   )

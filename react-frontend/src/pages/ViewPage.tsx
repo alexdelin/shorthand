@@ -3,12 +3,12 @@ import { useQuery } from 'react-query';
 import { Fragment } from 'react';
 import remarkMath from 'remark-math';
 import remarkGfm from 'remark-gfm'
-// import { remarkMermaid } from 'remark-mermaidjs';
 import rehypeKatex from 'rehype-katex';
 import rehypeHighlight from 'rehype-highlight';
 import ReactMarkdown from 'react-markdown';
 import styled from 'styled-components';
 import 'highlight.js/styles/atom-one-light.css';
+import { GetNoteResponse } from '../types';
 
 const StyledReactMarkdown = styled(ReactMarkdown)`
   padding: 1.5rem;
@@ -76,11 +76,9 @@ const StyledReactMarkdown = styled(ReactMarkdown)`
     background-color: #fafafa;
   }`
 
-type GetNoteResponse = string;
-
 export function ViewPage() {
 
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [ searchParams ] = useSearchParams();
   const notePath = searchParams.get('path');
 
   const {
