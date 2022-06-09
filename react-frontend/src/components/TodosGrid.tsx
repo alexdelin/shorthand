@@ -1,4 +1,4 @@
-import { Fragment } from 'react';
+import { Fragment, useMemo } from 'react';
 import { Grid, _ } from 'gridjs-react';
 import { useQuery } from 'react-query';
 import remarkMath from 'remark-math';
@@ -6,17 +6,17 @@ import remarkGfm from 'remark-gfm'
 import rehypeKatex from 'rehype-katex';
 import { GetTodosResponse, Tag } from '../types';
 import { StyledReactMarkdown, StyledTag } from './TodosGrid.styles';
-import { TodosStatsSection } from './TodosStats';
 
 type TodosGridProps = {
   status: string,
   search: string,
   directory: string,
   tags: string,
-  showStats: boolean
 }
 
 export function TodosGrid(props: TodosGridProps) {
+
+  // const [todosLimit, setTodosLimit] = useState(100);
 
   const {
     data: todoData
@@ -24,8 +24,43 @@ export function TodosGrid(props: TodosGridProps) {
     // TODO - Replace with a better library
     fetch('http://localhost:8181/api/v1/todos?status=' + props.status + '&directory_filter=' + props.directory + '&query_string=' + props.search + '&sort_by=start_date&tag=' + props.tags).then(res =>
       res.json()
-    )
+    ),
+    {
+      // Re-Fetch every hour
+      refetchInterval: 1000 * 60 * 60,
+
+      // Cache responses for 10 seconds
+      staleTime: 1000 * 10,
+    }
   )
+
+  const elements = useMemo(() => {
+    if (todoData === undefined) {
+      return [];
+    } else {
+      // let todos;
+      // if (todoData.items.length > todosLimit) {
+      //   todos = todoData.items;
+      // } else {
+      //   todos = todoData.items;
+      // }
+      return todoData.items.map((todo) => (
+        props.status === 'Incomplete' ? [
+          todo.display_path,
+          getTodoElement(todo.todo_text, todo.tags),
+          todo.start_date,
+          todo.line_number,
+          'placeholder'
+        ] : [
+          todo.display_path,
+          getTodoElement(todo.todo_text, todo.tags),
+          todo.start_date,
+          todo.end_date,
+          todo.line_number,
+          'placeholder'
+      ]))
+    }
+  }, [todoData, props.status]);
 
   if (todoData === undefined) return <div>Loading...</div>
 
@@ -94,23 +129,12 @@ export function TodosGrid(props: TodosGridProps) {
   }
 
   return <Fragment>
-    {props.showStats ? <TodosStatsSection stats={todoData.meta} /> : null}
     <Grid
-      data={todoData.items.map((todo) => (
-        props.status === 'Incomplete' ? [
-          todo.display_path,
-          getTodoElement(todo.todo_text, todo.tags),
-          todo.start_date,
-          todo.line_number,
-          'placeholder'
-        ] : [
-          todo.display_path,
-          getTodoElement(todo.todo_text, todo.tags),
-          todo.start_date,
-          todo.end_date,
-          todo.line_number,
-          'placeholder'
-      ]))}
+      data={elements}
+      pagination={{
+        enabled: true,
+        limit: 50
+      }}
       columns={props.status === 'Incomplete' ? [
         'Path', 'Todo', 'Start Date',
         'Line #', 'Actions'

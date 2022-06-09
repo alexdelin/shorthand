@@ -9,6 +9,7 @@ import { TodosGrid } from '../components/TodosGrid';
 import { GetConfigResponse, GetTagsResponse,
          GetSubdirsResponse } from '../types';
 import { TodoPageWrapper, StyledForm } from './TodosPage.styles';
+import { TodosStatsSection } from '../components/TodosStats';
 
 
 export function TodosPage() {
@@ -142,12 +143,18 @@ export function TodosPage() {
           Stats
         </Button>
       </StyledForm>
+      {showStats ? (
+        <TodosStatsSection
+          status={status}
+          search={search}
+          directory={directory}
+          tags={tags}
+        />) : null}
       <TodosGrid
         status={status}
         search={search}
         directory={directory}
         tags={tags}
-        showStats={showStats}
       />
     </TodoPageWrapper>
   )
