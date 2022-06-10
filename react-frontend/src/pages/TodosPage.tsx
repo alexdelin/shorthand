@@ -12,6 +12,17 @@ import { TodoPageWrapper, StyledForm } from './TodosPage.styles';
 import { TodosStatsSection } from '../components/TodosStats';
 
 
+const TODO_REFETCH_TIME_MINUTES = 60;
+const TODO_STALE_TIME_SECONDS = 30;
+export const TODO_QUERY_CONFIG = {
+  // Re-Fetch every hour
+  refetchInterval: 1000 * 60 * TODO_REFETCH_TIME_MINUTES,
+
+  // Cache responses for 10 seconds
+  staleTime: 1000 * TODO_STALE_TIME_SECONDS,
+}
+
+
 export function TodosPage() {
 
   const [status, setStatus] = useState('Incomplete');
@@ -19,13 +30,15 @@ export function TodosPage() {
   const [directory, setDirectory] = useState('ALL');
   const [tags, setTags] = useState('ALL');
   const [showStats, setShowStats] = useState(false);
+  const [updatedDirectory, setUpdatedDirectory] = useState(false);
 
   let {
     data: configData
   } = useQuery<GetConfigResponse, Error>('config', () =>
     fetch('http://localhost:8181/api/v1/config').then(res =>
       res.json()
-    )
+    ),
+    TODO_QUERY_CONFIG
   )
 
   let {
@@ -33,7 +46,8 @@ export function TodosPage() {
   } = useQuery<GetTagsResponse, Error>('tags', () =>
     fetch('http://localhost:8181/api/v1/tags').then(res =>
       res.json()
-    )
+    ),
+    TODO_QUERY_CONFIG
   )
 
   if (tagsData === undefined) {
@@ -48,16 +62,20 @@ export function TodosPage() {
   } = useQuery<GetSubdirsResponse, Error>('subdirs', () =>
     fetch('http://localhost:8181/api/v1/subdirs').then(res =>
       res.json()
-    )
+    ),
+    TODO_QUERY_CONFIG
   )
 
   if (subdirsData === undefined) {
     subdirsData = ['ALL']
   }
 
+  // Set the default directory, but only once when the page loads
   if (configData?.default_directory !== undefined &&
-      configData.default_directory !== directory) {
+      configData.default_directory !== directory &&
+      !updatedDirectory) {
     setDirectory(configData.default_directory);
+    setUpdatedDirectory(true);
   }
 
   const handleStatusChange = (event: React.ChangeEvent<HTMLInputElement>) => {

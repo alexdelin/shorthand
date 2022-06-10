@@ -6,6 +6,7 @@ import remarkGfm from 'remark-gfm'
 import rehypeKatex from 'rehype-katex';
 import { GetTodosResponse, Tag } from '../types';
 import { StyledReactMarkdown, StyledTag } from './TodosGrid.styles';
+import { TODO_QUERY_CONFIG } from '../pages/TodosPage';
 
 type TodosGridProps = {
   status: string,
@@ -25,25 +26,13 @@ export function TodosGrid(props: TodosGridProps) {
     fetch('http://localhost:8181/api/v1/todos?status=' + props.status + '&directory_filter=' + props.directory + '&query_string=' + props.search + '&sort_by=start_date&tag=' + props.tags).then(res =>
       res.json()
     ),
-    {
-      // Re-Fetch every hour
-      refetchInterval: 1000 * 60 * 60,
-
-      // Cache responses for 10 seconds
-      staleTime: 1000 * 10,
-    }
+    TODO_QUERY_CONFIG
   )
 
   const elements = useMemo(() => {
     if (todoData === undefined) {
       return [];
     } else {
-      // let todos;
-      // if (todoData.items.length > todosLimit) {
-      //   todos = todoData.items;
-      // } else {
-      //   todos = todoData.items;
-      // }
       return todoData.items.map((todo) => (
         props.status === 'Incomplete' ? [
           todo.display_path,
