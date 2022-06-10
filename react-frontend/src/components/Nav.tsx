@@ -1,4 +1,5 @@
 import { useState, Fragment } from 'react';
+// import { useLocation } from "react-router-dom";
 import {
   ANIMATION_LENGTH_MS, NavSidebar, NavHeader,
   NavHeaderRest, NavDivider, NavOptionList,
@@ -12,6 +13,8 @@ export function Nav() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [coverVisible, setCoverVisible] = useState(false);
   const [elementsExpanded, setElementsExpanded] = useState(false);
+
+  // const location = useLocation();
 
   function changeNav() {
 
@@ -54,7 +57,7 @@ export function Nav() {
           <div>S</div><NavHeaderRest isExpanded={isExpanded}>horthand</NavHeaderRest>
         </NavHeader>
         <NavDivider></NavDivider>
-        <NavOptionList>
+        <NavOptionList isExpanded={isExpanded}>
           <li>
             <NavOption to="/home" onClick={collapseNav}>
               <NavOptionIcon className="bi bi-house-door"></NavOptionIcon>

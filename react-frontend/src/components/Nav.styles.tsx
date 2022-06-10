@@ -10,7 +10,7 @@ type NavSidebarSCProps = {
 
 export const NavSidebar = styled.div`
   width: ${(props: NavSidebarSCProps) => (props.isExpanded ? '15rem' : '5rem')};
-  height: 100%;
+  height: 100vh;
   z-index: 1;
   position: absolute;
   top: 0;
@@ -44,8 +44,12 @@ export const NavDivider = styled.hr`
   border-color: #555;
   margin: 0rem;`
 
+type NavOptionListProps = {isExpanded?: boolean};
+
 export const NavOptionList = styled.ul`
   flex-grow: 1;
+  width: ${(props: NavOptionListProps) => (props.isExpanded ? '10rem' : '3rem')};
+  transition: width ${ANIMATION_LENGTH_MS}ms;
   list-style-type: none;
   padding-inline-start: 0rem;
   margin: 0rem;
@@ -57,7 +61,8 @@ export const NavOption = styled(Link)`
   flex-wrap: nowrap;
   align-items: center;
   text-decoration: none;
-  color: white;`
+  color: white;
+  justify-content: center;`
 
 export const NavOptionIcon = styled.i`
   font-size: 1.5rem;
@@ -100,7 +105,7 @@ export const NavSubOptionList = styled.ul`
   padding-left: 1rem;
   padding-top: 0.25rem;
   height: ${(props: NavSubOptionListProps) => (props.elementsExpanded ? '13.75rem' : '0rem')};
-  width: ${(props: NavSubOptionListProps) => (props.elementsExpanded ? '10rem' : '0rem')};
+  width: ${(props: NavSubOptionListProps) => (props.elementsExpanded ? '9rem' : '0rem')};
   transition: height ${ANIMATION_LENGTH_MS}ms, width ${ANIMATION_LENGTH_MS}ms;
   overflow: hidden;
   list-style-type: none;`
