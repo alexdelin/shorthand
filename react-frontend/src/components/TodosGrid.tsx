@@ -1,11 +1,13 @@
 import { Fragment, useMemo } from 'react';
 import { Grid, _ } from 'gridjs-react';
 import { useQuery } from 'react-query';
-import remarkMath from 'remark-math';
-import remarkGfm from 'remark-gfm'
-import rehypeKatex from 'rehype-katex';
+import MarkdownIt from 'markdown-it';
+import tm from 'markdown-it-texmath';
 import { GetTodosResponse, Tag } from '../types';
-import { StyledReactMarkdown, StyledTag } from './TodosGrid.styles';
+import {
+  StyledTodoText,
+  StyledTag
+} from './TodosGrid.styles';
 import { TODO_QUERY_CONFIG } from '../pages/TodosPage';
 
 type TodosGridProps = {
@@ -17,7 +19,11 @@ type TodosGridProps = {
 
 export function TodosGrid(props: TodosGridProps) {
 
-  // const [todosLimit, setTodosLimit] = useState(100);
+  const writer = useMemo(() => {
+    return MarkdownIt({
+    }).use(tm,{delimiters:'dollars',macros:{"\\RR": "\\mathbb{R}"}
+    });
+  }, [])
 
   const {
     data: todoData
@@ -54,65 +60,10 @@ export function TodosGrid(props: TodosGridProps) {
   if (todoData === undefined) return <div>Loading...</div>
 
   function getTodoElement(todoText: string, tags: Tag[]) {
-    // This is just an optimization to create
-    // Todo elements with as few plugins as possible
-
-    // If the todo has LaTeX
-    if (todoText.includes('$')) {
-      return _(<Fragment>
-        <StyledReactMarkdown
-          children={todoText}
-          linkTarget="_blank"
-          remarkPlugins={[remarkMath, remarkGfm]}
-          rehypePlugins={[rehypeKatex]}
-        />
-        {tags.map((tag) => <StyledTag>{tag}</StyledTag>)}
-      </Fragment>)
-    }
-
-    // If the todo has GFM strikethrough
-    if (todoText.includes('~')) {
-      return _(<Fragment>
-        <StyledReactMarkdown
-          children={todoText}
-          linkTarget="_blank"
-          remarkPlugins={[remarkGfm]}
-        />
-        {tags.map((tag) => <StyledTag>{tag}</StyledTag>)}
-      </Fragment>)
-    }
-
-    // If the todo has markdown styling
-    if (todoText.includes('_') ||
-        todoText.includes('](') ||
-        todoText.includes('`') ||
-        todoText.includes('*')) {
-      return _(<Fragment>
-        <StyledReactMarkdown
-          children={todoText}
-          linkTarget="_blank"
-        />
-        {tags.map((tag) => <StyledTag>{tag}</StyledTag>)}
-      </Fragment>)
-    }
-
-    // If the todo has a GFM link
-    if (todoText.includes('www.') ||
-        todoText.includes('http://') ||
-        todoText.includes('https://')) {
-      return _(<Fragment>
-        <StyledReactMarkdown
-          children={todoText}
-          linkTarget="_blank"
-          remarkPlugins={[remarkGfm]}
-        />
-        {tags.map((tag) => <StyledTag>{tag}</StyledTag>)}
-      </Fragment>)
-    }
-
-    // If the todo has no markdown
     return _(<Fragment>
-      <div>{todoText}</div>
+      <StyledTodoText
+        dangerouslySetInnerHTML={{__html: writer.render(todoText)}}
+      />
       {tags.map((tag) => <StyledTag>{tag}</StyledTag>)}
     </Fragment>);
   }

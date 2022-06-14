@@ -1,7 +1,7 @@
 import json
 
 from flask import request, render_template, send_from_directory, Blueprint, \
-                  current_app, abort
+                  current_app, abort, Response
 
 from shorthand import ShorthandServer
 from shorthand.utils.config import _get_notes_config
@@ -33,10 +33,12 @@ def send_processed_markdown():
     note_path = request.args.get('path')
     file_content = server.get_note(note_path)
     file_content, toc_content = get_rendered_markdown(file_content, note_path)
-    return json.dumps({
+    resp = Response(json.dumps({
         'file_content': file_content,
         'toc_content': toc_content
-    })
+    }))
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    return resp
 
 
 @shorthand_ui_blueprint.route('/frontend-api/get-image',

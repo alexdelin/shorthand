@@ -13,12 +13,12 @@ import { TodosStatsSection } from '../components/TodosStats';
 
 
 const TODO_REFETCH_TIME_MINUTES = 60;
-const TODO_STALE_TIME_SECONDS = 30;
+const TODO_STALE_TIME_SECONDS = 30000;
 export const TODO_QUERY_CONFIG = {
   // Re-Fetch every hour
   refetchInterval: 1000 * 60 * TODO_REFETCH_TIME_MINUTES,
 
-  // Cache responses for 10 seconds
+  // How long responses are cached for
   staleTime: 1000 * TODO_STALE_TIME_SECONDS,
 }
 

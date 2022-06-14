@@ -1,7 +1,13 @@
 import styled from 'styled-components';
-import ReactMarkdown from 'react-markdown';
 
-export const StyledReactMarkdown = styled(ReactMarkdown)`
+export const StyledTodoText = styled.div`
+  display: inline;
+  line-height: 1.3rem;
+
+  & p {
+    display: inline;
+  }
+
   & a {
     color: blue;
   }
@@ -11,7 +17,8 @@ export const StyledReactMarkdown = styled(ReactMarkdown)`
   }`
 
 export const StyledTag = styled.span`
-  display: inline-block;
+  display: inline;
+  margin-left: 0.15rem;
   padding: 0.25em 0.4em;
   font-size: 75%;
   font-weight: 700;
