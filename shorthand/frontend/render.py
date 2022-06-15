@@ -48,7 +48,7 @@ def rewrite_image_path(matchobj, note_path):
 def replace_link_path(matchobj, note_path):
     '''Consumes a regex match object for a internal link
     '''
-    element = '{g1}{g2}/render?path={g3}{g5}'.format(
+    element = '{g1}{g2}/view?path={g3}{g5}'.format(
         g1=matchobj.group(1),
         g2=matchobj.group(2),
         g3=parse_relative_link_path(note_path, matchobj.group(3)),
@@ -111,17 +111,6 @@ def get_rendered_markdown(markdown_content, note_path):
 
         # Handle edges of fenced code blocks
         if markdown_line.strip()[:3] == '```':
-
-            # Special handling for diagram blocks
-            if markdown_line.strip()[:10] == '```mermaid':
-                is_diagram_block = True
-                html_content_lines.append(line_span)
-                html_content_lines.append('<div class="mermaid">')
-                continue
-            elif is_diagram_block:
-                is_diagram_block = False
-                html_content_lines.append('</div>')
-                continue
 
             # Special handling for record sets
             if markdown_line.strip()[:11] == '```rec-data':
@@ -263,7 +252,7 @@ def get_todo_element(raw_todo):
     start = todo['start_date']
     end = todo['end_date']
     tags = todo['tags']
-    tag_elements = ''.join([f'<span class="badge badge-secondary">{tag}</span>'
+    tag_elements = ''.join([f'<span class="tag">{tag}</span>'
                             for tag in tags])
     if status == 'incomplete':
         icon = '<i class="bi-square"></i>'
@@ -273,10 +262,10 @@ def get_todo_element(raw_todo):
         icon = '<i class="bi-dash-square-fill"></i>'
 
     todo_element = f'- <span style="display: none;">a</span>'\
-                   f'<div class="row todo-element todo-{status}">'\
-                   f'<div class="col-md-1">{icon}</div>'\
-                   f'<div class="col-md-7">{text}</div>'\
-                   f'<div class="col-md-4 todo-meta">{tag_elements}<br />'\
+                   f'<div class="todo-element todo-{status}">'\
+                   f'<div class="todo-icon">{icon}</div>'\
+                   f'<div class="todo-text">{text}</div>'\
+                   f'<div class="todo-meta">{tag_elements}<br />'\
                    f'{start} -> {end}</div>'\
                    f'</div>'
 
@@ -297,16 +286,16 @@ def get_question_element(raw_question):
 
     text = raw_question.strip()[2:]
     tags, text = extract_tags(text)
-    tag_elements = ''.join([f'<span class="badge badge-secondary">{tag}</span>'
+    tag_elements = ''.join([f'<span class="tag">{tag}</span>'
                             for tag in tags])
 
     leading_spaces = len(raw_question) - len(raw_question.lstrip(' '))
 
     question_element = f'- <span style="display: none;">a</span>'\
-                       f'<div class="row qa-element qa-{element_type}">'\
-                       f'<div class="col-md-1">{icon}</div>'\
-                       f'<div class="col-md-9">{text}</div>'\
-                       f'<div class="col-md-2 question-meta">{tag_elements}'\
+                       f'<div class="qa-element qa-{element_type}">'\
+                       f'<div class="qa-icon">{icon}</div>'\
+                       f'<div class="qa-text">{text}</div>'\
+                       f'<div class="question-meta">{tag_elements}'\
                        f'</div></div>'
 
     question_element = (' ' * leading_spaces) + question_element
@@ -320,9 +309,9 @@ def get_definition_element(definition_match, markdown_line):
 
     leading_spaces = len(markdown_line) - len(markdown_line.lstrip(' '))
 
-    element = f'- <div class="row definition-element">'\
-              f'<div class="col-md-2 definition-term">{term}</div>'\
-              f'<div class="col-md-10 definition-text">{definition}'\
+    element = f'- <div class="definition-element">'\
+              f'<div class="definition-term">{term}</div>'\
+              f'<div class="definition-text">{definition}'\
               f'</div></div>'
 
     element = (' ' * leading_spaces) + element
