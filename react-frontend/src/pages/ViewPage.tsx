@@ -52,8 +52,22 @@ export function ViewPage() {
 
   useLayoutEffect(() => {
     mermaid.contentLoaded();
-    // console.log(writer)
-  });
+    console.log('useLayoutEffect hook called!');
+    scrollToAnchor();
+  }, [noteContent]);
+
+  function scrollToAnchor() {
+    let currentLocation = window.location.href;
+    const hasAnchor = currentLocation.includes("#");
+    if (hasAnchor) {
+      console.log('scrolling to anchor')
+      const anchorId = `${currentLocation.substring(currentLocation.indexOf("#") + 1)}`;
+      const anchor = document.getElementById(anchorId);
+      if(anchor){
+          anchor.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  }
 
   if (noteContent === undefined) return <div>No note found</div>
 
