@@ -64,6 +64,16 @@ export const NavOption = styled(Link)`
   color: white;
   justify-content: center;`
 
+export const ElementsIcon = styled.span`
+  padding-top: 1rem;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  text-decoration: none;
+  color: white;
+  justify-content: center;
+  cursor: pointer;`
+
 export const NavOptionIcon = styled.i`
   font-size: 1.5rem;
   margin-right: 1rem;
@@ -90,7 +100,7 @@ export const NavToggleIcon = styled.i`
 
 export const NavCover = styled.div`
   width: calc(100% - ${(props: NavCoverProps) => (props.isExpanded ? '15rem' : '5rem')});
-  height: 100%;
+  height: 100vh;
   position: absolute;
   display: ${(props: NavCoverProps) => (props.coverVisible ? 'block' : 'none')};
   margin-left: ${(props: NavCoverProps) => (props.isExpanded ? '15rem' : '5rem')};

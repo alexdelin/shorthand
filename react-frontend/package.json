@@ -38,6 +38,7 @@
   },
   "scripts": {
     "start": "PORT=3001 react-scripts start",
+    "serve": "serve -s build",
     "build": "react-scripts build",
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "test": "jest --testEnvironment=jsdom --collectCoverage=true --coverageDirectory=coverage --coverageProvider=v8",

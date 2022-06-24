@@ -1,4 +1,6 @@
-// Type definitions for Shorthand Elements
+// Type definitions for Shorthand Core Elements
+
+export type Note = string;
 
 export type Todo = {
   display_path: string,

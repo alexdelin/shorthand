@@ -5,7 +5,7 @@ import {
   NavHeaderRest, NavDivider, NavOptionList,
   NavOption, NavOptionIcon, NavOptionName,
   NavCover, NavSubOptionList, NavSubOption,
-  NavSubOptionName, NavToggleIcon
+  NavSubOptionName, NavToggleIcon, ElementsIcon
 } from './Nav.styles';
 
 export function Nav() {
@@ -71,10 +71,10 @@ export function Nav() {
             </NavOption>
           </li>
           <li>
-            <NavOption to="#" onClick={handleElementsClick}>
+            <ElementsIcon onClick={handleElementsClick}>
               <NavOptionIcon className="bi bi-code-square"></NavOptionIcon>
               <NavOptionName isExpanded={isExpanded}>Elements</NavOptionName>
-            </NavOption>
+            </ElementsIcon>
             <NavSubOptionList elementsExpanded={elementsExpanded}>
               <li>
                 <NavSubOption to="/todos" onClick={collapseNav}>

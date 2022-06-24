@@ -23,7 +23,7 @@ export const TODO_QUERY_CONFIG = {
 }
 
 
-export function TodosPage() {
+export default function TodosPage() {
 
   const [status, setStatus] = useState('Incomplete');
   const [search, setSearch] = useState('');

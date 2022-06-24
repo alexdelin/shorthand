@@ -2,40 +2,98 @@ import styled, { css } from 'styled-components';
 import { RenderedMarkdown } from './ViewPage';
 
 
+export const ViewNoteWrapper = styled.div``
+
+export const ViewNoteHeader = styled.div`
+  display: flex;
+  align-items: center;`
+
+export const NoteTitle = styled.h2`
+  margin-right: auto;
+  margin-left: 1.5rem;`
+
+export const ShorthandTOC = styled(RenderedMarkdown)`
+  margin: 1.5rem;
+  font-family: palatino;
+  font-size: 1.2rem;
+
+  & a {
+    text-decoration: none;
+    color: black
+  }
+
+  & ul {
+    list-style-type: decimal;
+  }`
+
 const todosCss = css`
   & .todo-element {
     display: flex;
-    padding: 5px;
+    align-items: center;
+    padding: 0.4rem;
+    padding-top: 0.5rem;
+    margin: 0.5rem 0rem;
+    border: 1px solid black;
+    border-radius: 0.5rem;
+  }
+
+  & .todo-icon {
+    margin-right: 0.5rem;
   }
 
   & .todo-incomplete {
-    background-color: #ffb2ab;
+    background-color: #fce0dd;
   }
 
   & .todo-complete {
-    background-color: #c4c5ff;
+    background-color: #dedeff;
   }
 
   & .todo-skipped {
-    background-color: #c4c4c4;
+    background-color: #dfdfdf;
   }
 
-  & .todo-meta {
-    text-align: right;
+  & .todo-timestamp {
+    margin-left: auto;
+    display: flex;
+    white-space: pre;
+  }
+
+  & .todo-start-date, & .todo-end-date {
+    margin-left: 0.15rem;
+    padding: 0.25em 0.4em;
+    padding-top: 0.3rem;
+    font-size: 75%;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    border-radius: 0.25rem;
+    color: #6c757d;
+    background-color: #fff;
   }`
 
 const questionsAnswersCss = css`
   & .qa-element {
-    padding: 5px;
     display: flex;
+    padding: 0.4rem;
+    padding-top: 0.5rem;
+    border: 1px solid black;
+    border-radius: 0.5rem;
+    margin: 0.5rem 0rem;
+  }
+
+  & .qa-icon {
+    margin-right: 0.5rem;
   }
 
   & .qa-question {
-    background-color: #f4b8ff;
+    background-color: #f5d6fb;
   }
 
   & .qa-answer {
-    background-color: #afffa3;
+    background-color: #d4ffce;
   }
 
   & .question-meta {
@@ -45,32 +103,41 @@ const questionsAnswersCss = css`
 const definitionsCss = css`
   & .definition-element {
     display: flex;
-    padding: 5px;
+    margin: 0.5rem 0rem;
+    border: 1px solid black;
+    border-radius: 0.5rem;
   }
 
   & .definition-term {
-    background-color: #ffd38c;
+    background-color: #fae9ce;
+    padding: 0.4rem;
+    padding-top: 0.5rem;
+    border-radius: 0.5rem 0 0 0.5rem;
   }
 
   & .definition-text {
-    background-color: #fbfc8d;
+    background-color: #feffc7;
+    flex-grow: 1;
+    padding: 0.4rem;
+    padding-top: 0.5rem;
+    border-radius: 0 0.5rem 0.5rem 0;
   }`
 
 const tableCss = css`
-  & table {
+  & table:not(.gridjs-table) {
     width: 100%;
     margin-bottom: 1rem;
     color: #212529;
     border-collapse: collapse;
   }
 
-  & table thead {
+  & table:not(.gridjs-table) thead {
     display: table-header-group;
     vertical-align: middle;
     border-color: inherit;
   }
 
-  & table th {
+  & table:not(.gridjs-table) th {
     color: #fff;
     background-color: #343a40;
     border-color: #454d55;
@@ -81,7 +148,7 @@ const tableCss = css`
     font-weight: bold;
   }
 
-  & table td {
+  & table:not(.gridjs-table) td {
     word-wrap: break-word;
     padding: 0.3rem;
     vertical-align: top;
@@ -107,7 +174,7 @@ const tagsCss = css`
     line-height: 1;
     text-align: center;
     white-space: nowrap;
-    vertical-align: baseline;
+    vertical-align: middle;
     border-radius: 0.25rem;
     color: #fff;
     background-color: #6c757d;
@@ -158,8 +225,21 @@ const mermaidCss = css`
     max-width: 900px;
   }`
 
+const recordSetCss = css`
+  .record-set .record-set-data {
+    display: none;
+  }
+
+  .record-set .record-set-columns {
+    display: none;
+  }
+
+  table.gridjs-table {
+    width: 100%;
+  }`
+
 export const ShorthandMarkdown = styled(RenderedMarkdown)`
-  padding: 1.5rem;
+  margin: 1.5rem;
   font-family: palatino;
 
   // Core elements
@@ -177,4 +257,5 @@ export const ShorthandMarkdown = styled(RenderedMarkdown)`
   ${questionsAnswersCss}
   ${definitionsCss}
   ${locationsCss}
-  ${tagsCss}`
+  ${tagsCss}
+  ${recordSetCss}`

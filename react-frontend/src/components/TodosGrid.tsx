@@ -17,19 +17,18 @@ type TodosGridProps = {
   tags: string,
 }
 
-export function TodosGrid(props: TodosGridProps) {
+const writer = MarkdownIt({}).use(
+  tm,{ delimiters: 'dollars', macros: {"\\RR": "\\mathbb{R}"}
+});
 
-  const writer = useMemo(() => {
-    return MarkdownIt({
-    }).use(tm,{delimiters:'dollars',macros:{"\\RR": "\\mathbb{R}"}
-    });
-  }, [])
+
+export function TodosGrid(props: TodosGridProps) {
 
   const {
     data: todoData
-  } = useQuery<GetTodosResponse, Error>('todos-' + props.status + '-' + props.directory + '-' + props.search + '-' + props.tags, () =>
+  } = useQuery<GetTodosResponse, Error>(`todos-${props.status}-${props.directory}-${props.search}-${props.tags}`, () =>
     // TODO - Replace with a better library
-    fetch('http://localhost:8181/api/v1/todos?status=' + props.status + '&directory_filter=' + props.directory + '&query_string=' + props.search + '&sort_by=start_date&tag=' + props.tags).then(res =>
+    fetch(`http://localhost:8181/api/v1/todos?status=${props.status}&directory_filter=${props.directory}&query_string=${props.search}&sort_by=start_date&tag=${props.tags}`).then(res =>
       res.json()
     ),
     TODO_QUERY_CONFIG
@@ -55,6 +54,7 @@ export function TodosGrid(props: TodosGridProps) {
           'placeholder'
       ]))
     }
+  // eslint-disable-next-line
   }, [todoData, props.status]);
 
   if (todoData === undefined) return <div>Loading...</div>

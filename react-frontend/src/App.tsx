@@ -1,10 +1,10 @@
+import { lazy } from 'react';
 import { ErrorBoundary, FallbackProps } from 'react-error-boundary';
 import { Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { Nav } from './components/Nav';
 import { HomePage } from './pages/HomePage';
 import { ComposePage } from './pages/ComposePage';
-import { TodosPage } from './pages/TodosPage';
 import { QuestionsPage } from './pages/QuestionsPage';
 import { LinksPage } from './pages/LinksPage';
 import { DefinitionsPage } from './pages/DefinitionsPage';
@@ -12,16 +12,26 @@ import { DatasetsPage } from './pages/DatasetsPage';
 import { LocationsPage } from './pages/LocationsPage';
 import { CalendarPage } from './pages/CalendarPage';
 import { SearchPage } from './pages/SearchPage';
-import { ViewPage } from './pages/ViewPage';
 import { SettingsPage } from './pages/SettingsPage';
 import styled from 'styled-components';
+
+// Lazy-load pages with heavy dependencies
+const ViewPage = lazy(() => import(
+  /* webpackChunkName: "ViewPage" */
+  './pages/ViewPage'
+));
+const TodosPage = lazy(() => import(
+  /* webpackChunkName: "TodosPage" */
+  './pages/TodosPage'
+));
 
 const Content = styled.div`
   background-color: white;
   width: calc(100% - 5rem);
   height: 100vh;
   margin-left: 5rem;
-  overflow: scroll;`
+  overflow: scroll;
+  position: relative;`
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -45,7 +55,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <Nav></Nav>
-      <Content className="ContentEl">
+      <Content id="ContentEl">
         <ErrorBoundary
           FallbackComponent={ErrorFallback}
           onReset={() => {

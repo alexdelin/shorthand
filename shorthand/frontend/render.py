@@ -120,23 +120,17 @@ def get_rendered_markdown(markdown_content, note_path):
                 is_rec_data_block = False
                 record_set = load_from_string('\n'.join(rec_data_lines))
                 record_set_data = json.dumps(list(record_set.all()))
-                column_config = [{'title': field,
-                                  'data': field,
-                                  'defaultContent': ''}
-                                 for field in record_set.get_fields()]
+                column_config = json.dumps(record_set.get_fields())
                 record_set_name = record_set.get_config().get(
                     'rec', {}).get('name')
                 if record_set_name:
                     html_content_lines.append(f'##### Record Set: '
                                               f'{record_set_name}')
-                record_set_html = f'<div><div class="record-set-data">'\
-                                  f'{record_set_data}'\
-                                  f'</div><table class="table table-striped '\
-                                  f'table-bordered record-set-table" '\
-                                  f'style="width:100%" data-rec=\'\' '\
-                                  f'data-cols='\
-                                  f'\'{json.dumps(column_config)}\'>'\
-                                  f'</table></div>'
+                record_set_html = f'<div class="record-set">'\
+                                  f'<div class="record-set-data">{record_set_data}</div>'\
+                                  f'<div class="record-set-columns">{column_config}</div>'\
+                                  f'<div class="record-set-display"></div>'\
+                                  f'</div>'
                 html_content_lines.append(record_set_html)
                 html_content_lines.append(line_span)
                 rec_data_lines = []
@@ -261,12 +255,15 @@ def get_todo_element(raw_todo):
     else:
         icon = '<i class="bi-dash-square-fill"></i>'
 
+    todo_timestamp = f'<div class="todo-start-date">{start}</div>'
+    if end:
+        todo_timestamp += f' <i class="bi-arrow-right"></i> <div class="todo-end-date">{end}</div>'
+
     todo_element = f'- <span style="display: none;">a</span>'\
                    f'<div class="todo-element todo-{status}">'\
                    f'<div class="todo-icon">{icon}</div>'\
-                   f'<div class="todo-text">{text}</div>'\
-                   f'<div class="todo-meta">{tag_elements}<br />'\
-                   f'{start} -> {end}</div>'\
+                   f'<div class="todo-text">{text}{tag_elements}</div>'\
+                   f'<div class="todo-timestamp">{todo_timestamp}</div>'\
                    f'</div>'
 
     todo_element = (' ' * leading_spaces) + todo_element
@@ -294,9 +291,8 @@ def get_question_element(raw_question):
     question_element = f'- <span style="display: none;">a</span>'\
                        f'<div class="qa-element qa-{element_type}">'\
                        f'<div class="qa-icon">{icon}</div>'\
-                       f'<div class="qa-text">{text}</div>'\
-                       f'<div class="question-meta">{tag_elements}'\
-                       f'</div></div>'
+                       f'<div class="qa-text">{text}{tag_elements}</div>'\
+                       f'</div>'
 
     question_element = (' ' * leading_spaces) + question_element
     return question_element
@@ -305,14 +301,17 @@ def get_question_element(raw_question):
 def get_definition_element(definition_match, markdown_line):
     term = definition_match.group(2)
     term = term.strip().strip('{}')
-    definition = definition_match.group(3)
+    tags, definition = extract_tags(definition_match.group(3))
+    tag_elements = ''.join([f'<span class="tag">{tag}</span>'
+                            for tag in tags])
 
     leading_spaces = len(markdown_line) - len(markdown_line.lstrip(' '))
 
-    element = f'- <div class="definition-element">'\
+    element = f'- <span style="display: none;">a</span>'\
+              f'<div class="definition-element">'\
               f'<div class="definition-term">{term}</div>'\
-              f'<div class="definition-text">{definition}'\
-              f'</div></div>'
+              f'<div class="definition-text">{definition}{tag_elements}</div>'\
+              f'</div>'
 
     element = (' ' * leading_spaces) + element
     return element
