@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useQuery } from 'react-query';
 import "gridjs/dist/theme/mermaid.css";
 import 'katex/dist/katex.min.css';
@@ -10,6 +10,7 @@ import { GetConfigResponse, GetTagsResponse,
          GetSubdirsResponse } from '../types';
 import { TodoPageWrapper, StyledForm } from './TodosPage.styles';
 import { TodosStatsSection } from '../components/TodosStats';
+import { SuspenseFallback } from '../components/SuspenseFallback';
 
 
 const TODO_REFETCH_TIME_MINUTES = 60;
@@ -162,18 +163,23 @@ export default function TodosPage() {
         </Button>
       </StyledForm>
       {showStats ? (
-        <TodosStatsSection
+        <Suspense fallback={SuspenseFallback}>
+          <TodosStatsSection
+            status={status}
+            search={search}
+            directory={directory}
+            tags={tags}
+          />
+        </Suspense>
+      ) : null}
+      <Suspense fallback={SuspenseFallback}>
+        <TodosGrid
           status={status}
           search={search}
           directory={directory}
           tags={tags}
-        />) : null}
-      <TodosGrid
-        status={status}
-        search={search}
-        directory={directory}
-        tags={tags}
-      />
+        />
+      </Suspense>
     </TodoPageWrapper>
   )
 }

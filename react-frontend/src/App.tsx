@@ -1,7 +1,8 @@
-import { lazy } from 'react';
+import { lazy, Suspense } from 'react';
 import { ErrorBoundary, FallbackProps } from 'react-error-boundary';
 import { Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from 'react-query';
+import { SuspenseFallback } from './components/SuspenseFallback';
 import { Nav } from './components/Nav';
 import { HomePage } from './pages/HomePage';
 import { ComposePage } from './pages/ComposePage';
@@ -36,7 +37,7 @@ const Content = styled.div`
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      suspense: false,
+      suspense: true,
     },
   },
 });
@@ -62,22 +63,24 @@ function App() {
             // reset the state of your app so the error doesn't happen again
           }}
         >
-          <Routes>
-            <Route path="/home" element={<HomePage />} />
-            <Route path="/compose" element={<ComposePage />} />
+          <Suspense fallback={SuspenseFallback}>
+            <Routes>
+              <Route path="/home" element={<HomePage />} />
+              <Route path="/compose" element={<ComposePage />} />
 
-            <Route path="/todos" element={<TodosPage />} />
-            <Route path="/questions" element={<QuestionsPage />} />
-            <Route path="/links" element={<LinksPage />} />
-            <Route path="/definitions" element={<DefinitionsPage />} />
-            <Route path="/datasets" element={<DatasetsPage />} />
-            <Route path="/locations" element={<LocationsPage />} />
+              <Route path="/todos" element={<TodosPage />} />
+              <Route path="/questions" element={<QuestionsPage />} />
+              <Route path="/links" element={<LinksPage />} />
+              <Route path="/definitions" element={<DefinitionsPage />} />
+              <Route path="/datasets" element={<DatasetsPage />} />
+              <Route path="/locations" element={<LocationsPage />} />
 
-            <Route path="/calendar" element={<CalendarPage />} />
-            <Route path="/search" element={<SearchPage />} />
-            <Route path="/view" element={<ViewPage />} />
-            <Route path="/settings" element={<SettingsPage />} />
-          </Routes>
+              <Route path="/calendar" element={<CalendarPage />} />
+              <Route path="/search" element={<SearchPage />} />
+              <Route path="/view" element={<ViewPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
+            </Routes>
+          </Suspense>
         </ErrorBoundary>
       </Content>
     </QueryClientProvider>

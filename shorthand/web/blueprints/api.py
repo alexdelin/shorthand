@@ -49,7 +49,9 @@ def get_search_results():
         query_string=query_string,
         case_sensitive=case_sensitive,
         aggregate_by_file=aggregate_by_file)
-    return json.dumps(search_results)
+    resp = Response(json.dumps(search_results))
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    return resp
 
 
 @shorthand_api_blueprint.route('/api/v1/note', methods=['GET'])
@@ -101,9 +103,12 @@ def get_note_links():
                                            name='include_invalid',
                                            arg_type='bool', default=False)
 
-    return json.dumps(server.get_links(source=source, target=target, note=note,
-                                       include_external=include_external,
-                                       include_invalid=include_invalid))
+    resp = Response(json.dumps(
+        server.get_links(source=source, target=target, note=note,
+                         include_external=include_external,
+                         include_invalid=include_invalid)))
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    return resp
 
 
 @shorthand_api_blueprint.route('/api/v1/links/validate', methods=['GET'])
@@ -142,7 +147,9 @@ def get_files():
                 prefer_recent=prefer_recent,
                 query_string=query_string, case_sensitive=case_sensitive)
 
-    return json.dumps(files)
+    resp = Response(json.dumps(files))
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    return resp
 
 
 @shorthand_api_blueprint.route('/api/v1/record_view', methods=['POST'])
