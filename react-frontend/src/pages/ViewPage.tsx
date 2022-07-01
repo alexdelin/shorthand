@@ -1,6 +1,6 @@
 import { useSearchParams } from "react-router-dom";
 import { useQuery } from 'react-query';
-import { useLayoutEffect, useState } from 'react';
+import { useLayoutEffect, useState, Suspense } from 'react';
 import 'highlight.js/styles/atom-one-light.css';
 import 'katex/dist/katex.min.css';
 import "gridjs/dist/theme/mermaid.css";
@@ -12,6 +12,7 @@ import tm from 'markdown-it-texmath';
 import mermaid from 'mermaid';
 import { mermaidPlugin, highlighter as hljs } from '../utils/markdown';
 import { Grid } from "gridjs";
+import { LinksGraph } from '../components/LinksGraph';
 import { GetRenderedMarkdownResponse,
          RecordSetColumns,
          RecordSetJSON } from '../types/api';
@@ -143,6 +144,15 @@ export default function ViewPage() {
         <Button variant="text" style={{marginRight: '1rem'}}>Edit</Button>
       </ViewNoteHeader>
       <hr style={{margin: '0'}} />
+      {linksShown ? (
+        <div>
+          <h3 style={{marginLeft: '1.5rem'}}>Links</h3>
+          <Suspense fallback={<div>Loading...</div>}>
+            <LinksGraph notePath={notePath} />
+          </Suspense>
+          <hr />
+        </div>
+      ) : null}
       {tocShown ? (
         <div>
           <h3 style={{marginLeft: '1.5rem'}}>Table of Contents</h3>
