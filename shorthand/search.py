@@ -76,6 +76,10 @@ def _search_filenames(notes_directory, prefer_recent_files=True,
         matched case-sensitive
     '''
 
+    # Early exit for no query
+    if not query_string:
+        return []
+
     find_command = '{find_path} {notes_dir} -not -path \'*/\\.*\' ' \
                    '-type f -name "*.note"'.format(
                         find_path=find_path,

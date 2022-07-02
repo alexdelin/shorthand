@@ -159,7 +159,9 @@ def record_file_view_api():
     note_path = get_request_argument(request.args, name='note_path',
                                      required=True)
     server.record_file_view(note_path=note_path)
-    return 'ack'
+    resp = Response('ack')
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    return resp
 
 
 @shorthand_api_blueprint.route('/api/v1/tags', methods=['GET'])

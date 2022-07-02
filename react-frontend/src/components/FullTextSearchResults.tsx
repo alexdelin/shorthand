@@ -16,7 +16,8 @@ type FullTextSearchResult = {
   match_content: string
 }
 
-type FullTextSearchResponse<T extends FullTextSearchResult | AggregatedFullTextSearchResult> = {
+type FullTextSearchResponse<T extends FullTextSearchResult |
+                                      AggregatedFullTextSearchResult> = {
   items: Array<T>,
   count: number
 }
@@ -29,13 +30,14 @@ export function FullTextSearchResults(props: FullTextSearchResultsProps) {
 
   const { data: FullTextSearchData } =
     useQuery<FullTextSearchResponse<AggregatedFullTextSearchResult>, Error>('fullTextSearch-' + props.query, () =>
-    fetch('http://localhost:8181/api/v1/search?query_string=' + props.query +
+    fetch('http://localhost:8181/api/v1/search' +
+          '?query_string=' + props.query +
           '&aggregate_by_file=true').then(res =>
       res.json()
     )
   )
 
   return (
-    <div>Full Text Search Results: {props.query} {FullTextSearchData}</div>
+    <h3>Full Text Search Results</h3>
   )
 }
