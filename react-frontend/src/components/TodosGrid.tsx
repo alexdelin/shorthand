@@ -21,12 +21,27 @@ const writer = MarkdownIt({}).use(
   tm,{ delimiters: 'dollars', macros: {"\\RR": "\\mathbb{R}"}
 });
 
+function getTodoElement(todoText: string, tags: Tag[]) {
+  return _(<Fragment>
+    <StyledTodoText
+      dangerouslySetInnerHTML={{__html: writer.render(todoText)}}
+    />
+    {tags.map((tag) => <StyledTag>{tag}</StyledTag>)}
+  </Fragment>);
+}
+
+function processDateString(dateString: string) {
+
+}
+
 
 export function TodosGrid(props: TodosGridProps) {
 
   const {
     data: todoData
-  } = useQuery<GetTodosResponse, Error>(`todos-${props.status}-${props.directory}-${props.search}-${props.tags}`, () =>
+  } = useQuery<GetTodosResponse, Error>(
+    `todos-${props.status}-${props.directory}-${props.search}-${props.tags}`, () =>
+
     // TODO - Replace with a better library
     fetch(`http://localhost:8181/api/v1/todos?status=${props.status}&directory_filter=${props.directory}&query_string=${props.search}&sort_by=start_date&tag=${props.tags}`).then(res =>
       res.json()
@@ -40,17 +55,15 @@ export function TodosGrid(props: TodosGridProps) {
     } else {
       return todoData.items.map((todo) => (
         props.status === 'Incomplete' ? [
-          todo.display_path,
+          `${todo.display_path}: ${todo.line_number}`,
           getTodoElement(todo.todo_text, todo.tags),
           todo.start_date,
-          todo.line_number,
           'placeholder'
         ] : [
-          todo.display_path,
+          `${todo.display_path}: ${todo.line_number}`,
           getTodoElement(todo.todo_text, todo.tags),
           todo.start_date,
           todo.end_date,
-          todo.line_number,
           'placeholder'
       ]))
     }
@@ -58,15 +71,6 @@ export function TodosGrid(props: TodosGridProps) {
   }, [todoData, props.status]);
 
   if (todoData === undefined) return <div>Loading...</div>
-
-  function getTodoElement(todoText: string, tags: Tag[]) {
-    return _(<Fragment>
-      <StyledTodoText
-        dangerouslySetInnerHTML={{__html: writer.render(todoText)}}
-      />
-      {tags.map((tag) => <StyledTag>{tag}</StyledTag>)}
-    </Fragment>);
-  }
 
   return <Fragment>
     <Grid
@@ -77,10 +81,10 @@ export function TodosGrid(props: TodosGridProps) {
       }}
       columns={props.status === 'Incomplete' ? [
         'Path', 'Todo', 'Start Date',
-        'Line #', 'Actions'
+        'Actions'
       ] : [
         'Path', 'Todo', 'Start Date', 'End Date',
-        'Line #', 'Actions'
+        'Actions'
       ]}
     />
   </Fragment>

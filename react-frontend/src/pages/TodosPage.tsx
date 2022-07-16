@@ -1,5 +1,6 @@
 import { useState, Suspense } from 'react';
 import { useQuery } from 'react-query';
+import { useQueryClient } from 'react-query';
 import "gridjs/dist/theme/mermaid.css";
 import 'katex/dist/katex.min.css';
 import TextField from '@mui/material/TextField';
@@ -8,23 +9,27 @@ import Button from '@mui/material/Button';
 import { TodosGrid } from '../components/TodosGrid';
 import { GetConfigResponse, GetTagsResponse,
          GetSubdirsResponse } from '../types';
-import { TodoPageWrapper, StyledForm } from './TodosPage.styles';
+import { TodoPageWrapper, StyledForm,
+         RefreshIcon } from './TodosPage.styles';
 import { TodosStatsSection } from '../components/TodosStats';
 import { SuspenseFallback } from '../components/SuspenseFallback';
 
 
-const TODO_REFETCH_TIME_MINUTES = 60;
-const TODO_STALE_TIME_SECONDS = 30000;
+const TODO_STALE_TIME_SECONDS = 300;
+const CACHE_TIME_MINUTES = 60;
 export const TODO_QUERY_CONFIG = {
-  // Re-Fetch every hour
-  refetchInterval: 1000 * 60 * TODO_REFETCH_TIME_MINUTES,
-
   // How long responses are cached for
   staleTime: 1000 * TODO_STALE_TIME_SECONDS,
+
+  // How long Responses are kept in the cache
+  //   after a todo component is no longer shown
+  cacheTime: 1000 * 60 * CACHE_TIME_MINUTES,
 }
 
 
 export default function TodosPage() {
+
+  const queryClient = useQueryClient();
 
   const [status, setStatus] = useState('Incomplete');
   const [search, setSearch] = useState('');
@@ -103,6 +108,10 @@ export default function TodosPage() {
     setShowStats(!showStats);
   }
 
+  function handleRefreshClick() {
+    queryClient.invalidateQueries(`todos-${status}-${directory}-${search}-${tags}`);
+  }
+
   return (
     <TodoPageWrapper>
       <h2>Todos</h2>
@@ -154,6 +163,14 @@ export default function TodosPage() {
              <MenuItem key={tag} value={tag}>{tag}</MenuItem>
           )}
         </TextField>
+        <Button
+          variant="contained"
+          sx={{ ml: '2rem' }}
+          color="success"
+          onClick={handleRefreshClick}
+        >
+          <RefreshIcon className="bi bi-arrow-clockwise"></RefreshIcon>
+        </Button>
         <Button
           variant="contained"
           sx={{ ml: 'auto' }}
