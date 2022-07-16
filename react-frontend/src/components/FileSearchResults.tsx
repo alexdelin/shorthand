@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Fragment } from 'react';
 import { useQuery } from 'react-query';
 import { useNavigate } from "react-router-dom";
 import styled from 'styled-components';
@@ -7,15 +7,20 @@ import styled from 'styled-components';
 const PAGE_SIZE = 10;
 
 const FileResultsWrapper = styled.div`
-  border: 1px solid black;
-  border-radius: 0.5rem;`
+  border: 1px solid #e5e7eb;
+  border-radius: 0.3rem;
+
+  & :last-child {
+    border-bottom: none;
+  }`
 
 const FileResult = styled.div`
-  border-bottom: 1px solid black;
-  padding: 0.5rem;`
+  border-bottom: 1px solid #e5e7eb;
+  padding: 0.6rem;
+  color: #4d525d;`
 
 const MoreButton = styled.div`
-  padding: 0.5rem;
+  padding: 0.6rem;
   text-align: center;`
 
 type FileSearchResult = string
@@ -74,14 +79,21 @@ export function FileSearchResults(props: FileSearchResultsProps) {
   }
 
   return (
-    <div>
-      <h3>File Search Results</h3>
+    <Fragment>
+      <h3>Notes</h3>
       <FileResultsWrapper>
         {pagedResults.map((result) =>
-          <FileResult key={result} onClick={() => handleResultClick(result)}>{result}</FileResult>
+          <FileResult
+            key={result}
+            onClick={() => handleResultClick(result)}
+          >
+            {result}
+          </FileResult>
         )}
-        {isTruncated && <MoreButton onClick={handleMoreClick}>More...</MoreButton>}
+        {isTruncated &&
+          <MoreButton onClick={handleMoreClick}>More...</MoreButton>
+        }
       </FileResultsWrapper>
-    </div>
+    </Fragment>
   )
 }

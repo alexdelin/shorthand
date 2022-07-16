@@ -3,7 +3,10 @@ import { SuspenseFallback } from '../components/SuspenseFallback';
 import { FileSearchResults } from '../components/FileSearchResults';
 import { FullTextSearchResults } from '../components/FullTextSearchResults';
 import { SearchPageWrapper, SearchBar, SearchBarWrapper } from './SearchPage.styles'
+import styled from 'styled-components';
 
+
+const SearchResultsWrapper = styled.div``
 
 export function SearchPage() {
 
@@ -29,12 +32,16 @@ export function SearchPage() {
           variant="outlined"
         />
       </SearchBarWrapper>
-      <Suspense fallback={SuspenseFallback}>
-        <FileSearchResults query={search} />
-      </Suspense>
-      <Suspense fallback={SuspenseFallback}>
-        <FullTextSearchResults query={search} />
-      </Suspense>
+      {search !== '' && (
+        <SearchResultsWrapper>
+          <Suspense fallback={SuspenseFallback}>
+            <FileSearchResults query={search} />
+          </Suspense>
+          <Suspense fallback={SuspenseFallback}>
+            <FullTextSearchResults query={search} />
+          </Suspense>
+        </SearchResultsWrapper>
+      )}
     </SearchPageWrapper>
   )
 
