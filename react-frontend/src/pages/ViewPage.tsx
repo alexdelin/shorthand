@@ -48,7 +48,6 @@ export default function ViewPage() {
 
   const [ searchParams ] = useSearchParams();
   const notePath = searchParams.get('path');
-  const [hasScrolled, setHasScrolled] = useState(false);
   const [tocShown, setTocShown] = useState(false);
   const [linksShown, setLinksShown] = useState(false);
 
@@ -59,6 +58,75 @@ export default function ViewPage() {
       res.json()
     )
   )
+
+  function handleTOCClick() {
+    setTocShown(!tocShown);
+  }
+
+  function handleLinksClick() {
+    setLinksShown(!linksShown);
+  }
+
+  if (noteContent === undefined) return <div>No note found</div>
+
+  return (
+    <ViewNoteWrapper id="ViewNoteWrapper">
+      <ViewNoteHeader>
+        <NoteTitle>Viewing Note: {notePath}</NoteTitle>
+        <Button
+          variant="text"
+          onClick={handleTOCClick}
+        >
+          TOC
+        </Button>
+        <Button
+          variant="text"
+          onClick={handleLinksClick}
+        >
+          Links
+        </Button>
+        <Button
+          href={`/compose?path=${notePath}`}
+          variant="text"
+          style={{marginRight: '1rem'}}
+        >
+          Edit
+        </Button>
+      </ViewNoteHeader>
+      <hr style={{margin: '0'}} />
+      {linksShown ? (
+        <div>
+          <h3 style={{marginLeft: '1.5rem'}}>Links</h3>
+          <Suspense fallback={<div>Loading...</div>}>
+            <LinksGraph notePath={notePath} />
+          </Suspense>
+          <hr />
+        </div>
+      ) : null}
+      {tocShown ? (
+        <div>
+          <h3 style={{marginLeft: '1.5rem'}}>Table of Contents</h3>
+          <ShorthandTOC
+            source={noteContent.toc_content}
+          />
+          <hr />
+        </div>
+      ) : null}
+      <ShorthandMarkdown
+        source={noteContent.file_content}
+      />
+    </ViewNoteWrapper>
+  )
+}
+
+type RenderMarkdownProps = {
+  source: string,
+  className?: string
+}
+
+export function RenderedMarkdown(props: RenderMarkdownProps) {
+
+  const [hasScrolled, setHasScrolled] = useState(false);
 
   // Called once on page load
   useLayoutEffect(() => {
@@ -111,69 +179,13 @@ export default function ViewPage() {
     }
 
     // Ensure we only scroll to the target id once
-    if (noteContent !== undefined && !hasScrolled) {
+    if (props.source !== undefined && !hasScrolled) {
       setTimeout(() => {
         scrollToAnchor();
         setHasScrolled(true);
       }, 500)
     }
-  }, [noteContent, hasScrolled]);
+  }, [props.source, hasScrolled]);
 
-  function handleTOCClick() {
-    setTocShown(!tocShown);
-  }
-
-  function handleLinksClick() {
-    setLinksShown(!linksShown);
-  }
-
-  if (noteContent === undefined) return <div>No note found</div>
-
-  return (
-    <ViewNoteWrapper id="ViewNoteWrapper">
-      <ViewNoteHeader>
-        <NoteTitle>Viewing Note: {notePath}</NoteTitle>
-        <Button
-          variant="text"
-          onClick={handleTOCClick}
-        >TOC</Button>
-        <Button
-          variant="text"
-          onClick={handleLinksClick}
-        >Links</Button>
-        <Button variant="text" style={{marginRight: '1rem'}}>Edit</Button>
-      </ViewNoteHeader>
-      <hr style={{margin: '0'}} />
-      {linksShown ? (
-        <div>
-          <h3 style={{marginLeft: '1.5rem'}}>Links</h3>
-          <Suspense fallback={<div>Loading...</div>}>
-            <LinksGraph notePath={notePath} />
-          </Suspense>
-          <hr />
-        </div>
-      ) : null}
-      {tocShown ? (
-        <div>
-          <h3 style={{marginLeft: '1.5rem'}}>Table of Contents</h3>
-          <ShorthandTOC
-            source={noteContent.toc_content}
-          />
-          <hr />
-        </div>
-      ) : null}
-      <ShorthandMarkdown
-        source={noteContent.file_content}
-      />
-    </ViewNoteWrapper>
-  )
-}
-
-type RenderMarkdownProps = {
-  source: string,
-  className?: string
-}
-
-export function RenderedMarkdown(props: RenderMarkdownProps) {
   return <div className={props.className} dangerouslySetInnerHTML={{__html: writer.render(props.source)}} />
 }

@@ -1,4 +1,4 @@
-import { useState, useEffect, Fragment } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from 'react-query';
 import { useNavigate } from "react-router-dom";
 import styled from 'styled-components';
@@ -7,6 +7,10 @@ import styled from 'styled-components';
 const PAGE_SIZE = 10;
 
 const FileResultsWrapper = styled.div`
+  width: 100%;`
+
+const FileResultsList = styled.div`
+  width: 100%;
   border: 1px solid #e5e7eb;
   border-radius: 0.3rem;
 
@@ -26,18 +30,20 @@ const MoreButton = styled.div`
 type FileSearchResult = string
 type FileSearchResponse = FileSearchResult[]
 
-type FileSearchResultsProps = {
-  query: string
+interface FileSearchResultsProps {
+  query: string;
+  showHeader?: boolean;
+  onResultClick?: (notePath: string) => void;
 }
 
-export function FileSearchResults(props: FileSearchResultsProps) {
+export function FileSearchResults({query, showHeader=true, onResultClick}: FileSearchResultsProps) {
 
   const [resultCount, setResultCount] = useState(PAGE_SIZE);
   const navigate = useNavigate();
 
   const { data: FileSearchData } =
-    useQuery<FileSearchResponse, Error>('fileSearch-' + props.query, () =>
-    fetch('http://localhost:8181/api/v1/files?query_string=' + props.query
+    useQuery<FileSearchResponse, Error>('fileSearch-' + query, () =>
+    fetch('http://localhost:8181/api/v1/files?query_string=' + query
           ).then(res =>
       res.json()
     ),
@@ -47,24 +53,30 @@ export function FileSearchResults(props: FileSearchResultsProps) {
   // Reset the result count whenever the query changes
   useEffect(() => {
     setResultCount(PAGE_SIZE);
-  }, [props.query]);
+  }, [query]);
 
   if (FileSearchData === undefined) {
     return <div>No Results</div>
   }
 
   function handleResultClick(notePath: string) {
-    // Record the file view
-    fetch(
-      'http://localhost:8181/api/v1/record_view?note_path=' + notePath,
-      { method: 'POST' }
-    ).then(async res => {
-      if (await res.text() === 'ack') {
-        // Navigate to the target page
-        const viewNotePath = `/view?path=${notePath}`;
-        navigate(viewNotePath);
-      }
-    })
+    if (onResultClick !== undefined) {
+      // Call a result click handler if provided
+      onResultClick(notePath);
+    } else {
+      // Else, fall back to the default
+      // Record the file view
+      fetch(
+        'http://localhost:8181/api/v1/record_view?note_path=' + notePath,
+        { method: 'POST' }
+      ).then(async res => {
+        if (await res.text() === 'ack') {
+          // Navigate to the target page
+          const viewNotePath = `/view?path=${notePath}`;
+          navigate(viewNotePath);
+        }
+      })
+    }
   }
 
   function handleMoreClick() {
@@ -79,9 +91,9 @@ export function FileSearchResults(props: FileSearchResultsProps) {
   }
 
   return (
-    <Fragment>
-      <h3>Notes</h3>
-      <FileResultsWrapper>
+    <FileResultsWrapper>
+      {showHeader && <h3>Notes</h3>}
+      <FileResultsList>
         {pagedResults.map((result) =>
           <FileResult
             key={result}
@@ -93,7 +105,7 @@ export function FileSearchResults(props: FileSearchResultsProps) {
         {isTruncated &&
           <MoreButton onClick={handleMoreClick}>More...</MoreButton>
         }
-      </FileResultsWrapper>
-    </Fragment>
+      </FileResultsList>
+    </FileResultsWrapper>
   )
 }

@@ -72,7 +72,10 @@ def write_updated_note():
     content = request.data.decode('utf-8')
 
     server.update_note(path, content)
-    return 'Note Updated'
+    resp = Response('Note Updated')
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    return resp
+
 
 
 @shorthand_api_blueprint.route('/api/v1/toc', methods=['GET'])

@@ -4,6 +4,7 @@ import { Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { SuspenseFallback } from './components/SuspenseFallback';
 import { Nav } from './components/Nav';
+import { FileSearchModal } from './components/FileSearchModal';
 import { HomePage } from './pages/HomePage';
 import { ComposePage } from './pages/ComposePage';
 import { QuestionsPage } from './pages/QuestionsPage';
@@ -15,6 +16,7 @@ import { CalendarPage } from './pages/CalendarPage';
 import { SearchPage } from './pages/SearchPage';
 import { SettingsPage } from './pages/SettingsPage';
 import styled from 'styled-components';
+
 
 // Lazy-load pages with heavy dependencies
 const ViewPage = lazy(() => import(
@@ -56,6 +58,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <Nav></Nav>
+      <FileSearchModal />
       <Content id="ContentEl">
         <ErrorBoundary
           FallbackComponent={ErrorFallback}

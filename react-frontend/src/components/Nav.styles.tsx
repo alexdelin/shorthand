@@ -11,7 +11,7 @@ type NavSidebarSCProps = {
 export const NavSidebar = styled.div`
   width: ${(props: NavSidebarSCProps) => (props.isExpanded ? '15rem' : '5rem')};
   height: 100vh;
-  z-index: 1;
+  z-index: 10;
   position: absolute;
   top: 0;
   left: 0;
