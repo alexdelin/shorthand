@@ -51,7 +51,7 @@ def get_open_files(cache_directory, notes_directory):
             found_invalid_paths = True
             log.info(f'Found invalid open file path: {note}, '
                      f'removing...')
-            close_file(note)
+            close_file(cache_directory, note)
 
     # Re-read open files if we found invalid paths
     #   that we had to remove
@@ -68,7 +68,11 @@ def clear_open_files(cache_directory):
         json.dump([], f)
 
 
-def open_file(cache_directory, note_path):
+def open_file(cache_directory, notes_directory, note_path):
+    if not is_note_path(notes_directory, note_path):
+        log.info(f'Cannot open non-existent file at path: {note_path}')
+        return
+
     open_files_path = f'{cache_directory}/open_files.json'
 
     with open(open_files_path, 'r') as f:
