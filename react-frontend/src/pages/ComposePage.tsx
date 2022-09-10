@@ -3,64 +3,24 @@ import { useQuery } from 'react-query';
 import { useQueryClient } from 'react-query';
 import { useSearchParams } from "react-router-dom";
 import { useBeforeunload } from 'react-beforeunload';
-import styled from 'styled-components';
 import { ShorthandMarkdown } from './ViewPage.styles';
 import { GetRenderedMarkdownResponse } from '../types/api';
-import AceEditor, { IEditorProps } from "react-ace";
-import { Ace } from "ace-builds";
-import "ace-builds/src-noconflict/mode-markdown";
-// import "../utils/ace-plugins/mode-shorthand";
-import "../utils/ace-plugins/theme-shorthand-light";
-import "ace-builds/src-noconflict/ext-language_tools";
-import FormGroup from '@mui/material/FormGroup';
+import { ReactCodeMirrorRef } from '@uiw/react-codemirror';
+import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
+import { languages } from '@codemirror/language-data';
+import { EditorView, keymap } from "@codemirror/view";
+import { selectSubwordBackward, selectSubwordForward
+         } from '@codemirror/commands';
+import { shorthandDark } from '../utils/codemirror-plugins/theme-shorthand-dark';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
-
-
-const ComposePageWrapper = styled.div`
-  width: 100%;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;`
-
-const ComposeHeader = styled.div`
-  width: 100%;
-  height: 3rem;
-  border-bottom: 1px solid black;`
-
-const ComposeNoteWrapper = styled.div`
-  width: 100%;
-  height: calc(100vh - 3rem);
-  display: flex;`
-
-interface ComposeEditorWrapperProps {
-  showPreview: boolean
-};
-
-const ComposeEditorWrapper = styled.div`
-  width: ${(props: ComposeEditorWrapperProps) => (props.showPreview ? '50%' : '100%')};
-  height: 100%;
-  display: flex;`
-
-const ComposePreviewWrapper = styled.div`
-  width: 50%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  overflow: scroll;
-  border-left: 1px solid black;`
-
-const StyledFormGroup = styled(FormGroup)`
-  justify-content: flex-end;
-  align-items: center;
-  height: 3rem;`
-
-const SwitchLabel = styled.span`
-  margin-left: 1rem;`
-
-const PreviewBottomMarker = styled.div`
-  width: 100%;
-  height: 0px;`
+import { latexPlugin, locationPlugin, todoPlugin,
+         timestampPlugin
+         } from '../utils/codemirror-plugins';
+import { ComposePageWrapper, ComposeHeader, ComposeNoteWrapper,
+         ComposeEditorWrapper, ComposePreviewWrapper,
+         StyledFormGroup, SwitchLabel, PreviewBottomMarker,
+         StyledCodeMirror } from './ComposePage.styles';
 
 
 export function ComposePage() {
@@ -71,7 +31,7 @@ export function ComposePage() {
   const [changesSaved, setChangesSaved] = useState(true);
   const [showPreview, setShowPreview] = useState(true);
   const [scrollPreview, setScrollPreview] = useState(true);
-  const aceEl = useRef<AceEditor>(null);
+  const editorRef = useRef<ReactCodeMirrorRef>(null);
 
   const queryClient = useQueryClient();
 
@@ -102,14 +62,6 @@ export function ComposePage() {
   // eslint-disable-next-line
   }, []);
 
-  // Have the Ace window resize when the preview is
-  //   hidden / shown
-  useEffect(() => {
-    if (aceEl.current !== null) {
-      aceEl.current.editor.resize();
-    }
-  }, [showPreview]);
-
   // Check if you leave the page with pending changes
   useBeforeunload((event) => {
     if (!changesSaved) {
@@ -119,19 +71,22 @@ export function ComposePage() {
 
   // TODO - Prevent navigation via react-router
 
-  function saveNote(editor: Ace.Editor) {
+  function saveNote() {
+
+    if (!editorRef || !editorRef.current || !editorRef.current.view) {
+      return false
+    }
+
     fetch(
       'http://localhost:8181/api/v1/note?path=' + notePath,
       {
         method: 'POST',
-        body: editor.getValue()
+        body: editorRef.current.view.state.doc.toString()
       }
     ).then(async res => {
       if (await res.text() === 'Note Updated') {
         queryClient.invalidateQueries(`note-${notePath}`);
         setChangesSaved(true);
-        // const undoMgr = editor.session.getUndoManager() as any;
-        // undoMgr.markClean();
       }
     })
 
@@ -145,19 +100,34 @@ export function ComposePage() {
     }
   }
 
-  function handleEditorScroll(editor: IEditorProps) {
+  function handleEditorScroll() {
+
     if (showPreview && scrollPreview) {
-      if (editor.renderer.layerConfig.lastRow === editor.env.document.getLength() - 1) {
+      const cm = editorRef.current;
+
+      if (cm === null || !cm.view || !cm.editor) {
+        return
+      }
+
+      // Getting first and last visible lines
+      // https://discuss.codemirror.net/t/how-to-get-currently-visible-line-s/4807/5
+      const rect = cm.editor.getBoundingClientRect();
+      const topVisibleLineBlock = cm.view.lineBlockAtHeight(rect.top - cm.view.documentTop);
+      const bottomVisibleLineBlock = cm.view.lineBlockAtHeight(rect.bottom - cm.view.documentTop);
+
+      const topLine = cm.view.state.doc.lineAt(topVisibleLineBlock.from).number
+      const bottomLine = cm.view.state.doc.lineAt(bottomVisibleLineBlock.from).number
+      const lastLine = cm.view.state.doc.lines;
+
+      if (bottomLine === lastLine) {
         // special case for scrolling to the bottom of the preview
         //   if the last line of source is visible
-        console.log('last row visible!');
         const anchor = document.getElementById('preview-bottom-marker');
         if (anchor) {
             anchor.scrollIntoView({ behavior: "smooth" });
         }
       } else {
-        const firstVisibleLine = editor.renderer.layerConfig.firstRow + 1;
-        const lineNumberAnchor = `line-number-${firstVisibleLine}`;
+        const lineNumberAnchor = `line-number-${topLine}`;
         const anchor = document.getElementById(lineNumberAnchor);
         if (anchor) {
             anchor.scrollIntoView({ behavior: "smooth" });
@@ -195,29 +165,56 @@ export function ComposePage() {
       </ComposeHeader>
       <ComposeNoteWrapper>
         <ComposeEditorWrapper showPreview={showPreview}>
-          <AceEditor
-            ref={aceEl}
-            commands={[
-              {
-                name: "saveNote",
-                bindKey: { win: "Ctrl-S", mac: "Command-S" },
-                exec: function (editor) {
-                    saveNote(editor);
-                }
-              },
-              // TODO- Write a command to show the file finder modal
-            ]}
-            style={{"fontFamily": "iosevka"}}
-            height="100%"
-            width="100%"
-            mode="shorthand"
+          <StyledCodeMirror
             value={editorText}
-            theme="shorthand-light"
-            wrapEnabled={true}
-            onChange={(value)=> handleEditorChange(value)}
-            onScroll={(editor) => {handleEditorScroll(editor)}}
-            fontSize={16}
-            name="shorthand-compose-editor"
+            height="100%"
+            style={{fontSize: '18px', width: '100%'}}
+            theme={shorthandDark}
+            extensions={[
+              markdown({
+                base: markdownLanguage,
+                codeLanguages: languages,
+                extensions: [
+                  latexPlugin,
+                  locationPlugin,
+                  todoPlugin,
+                  timestampPlugin
+                ]
+              }),
+              EditorView.lineWrapping,
+              keymap.of([
+                {
+                  key: 'Mod-s',
+                  preventDefault: true,
+                  run: saveNote,
+                },
+
+                // TODO- These don't get picked up,
+                //       so bump priority
+                {
+                  mac: 'Ctrl-Shift-ArrowLeft',
+                  preventDefault: true,
+                  run: selectSubwordBackward,
+                },
+                {
+                  mac: 'Ctrl-Shift-ArrowRight',
+                  preventDefault: true,
+                  run: selectSubwordForward,
+                },
+
+                // TODO- Add this
+                // {
+                //   key: "Shift-Ctrl-Up",
+                //   run: addCursorToPrevLine,
+                // }, {
+                //   key: "Shift-Ctrl-Down",
+                //   run: addCursorToNextLine,
+                // }
+
+              ])
+            ]}
+            onScrollCapture={handleEditorScroll}
+            ref={editorRef}
           />
         </ComposeEditorWrapper>
         {showPreview &&

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { useNavigate } from "react-router-dom";
 import styled from 'styled-components';
 import TextField from '@mui/material/TextField';
@@ -47,13 +47,16 @@ export function FileSearchModal() {
     document.addEventListener('keydown', (e) => {
       if (e.keyCode === 84 && e.ctrlKey) {
         setShown(!shown);
-        if (inputRef.current !== null) {
-          inputRef.current.focus();
-        }
       } else if (shown === true && e.key === "Escape") {
         setShown(false);
       }
     })
+  }, [shown])
+
+  useLayoutEffect(() => {
+    if (inputRef.current !== null) {
+      inputRef.current.focus();
+    }
   }, [shown])
 
   function handleSearchChange(event: React.ChangeEvent<HTMLInputElement>) {
