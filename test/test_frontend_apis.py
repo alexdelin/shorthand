@@ -27,6 +27,8 @@ class TestOpenFilesAPI(unittest.TestCase):
         '''Validate that the environment has been set up correctly
         '''
         validate_setup()
+        test_config = get_test_config()
+        clear_open_files(test_config['cache_directory'])
 
     def test_get_empty_open_files(self):
         test_config = get_test_config()
@@ -54,3 +56,54 @@ class TestOpenFilesAPI(unittest.TestCase):
         open_files = get_open_files(test_config['cache_directory'],
                                     test_config['notes_directory'])
         assert '/does-not-exist.note' not in open_files
+
+    def test_closing_files(self):
+        test_config = get_test_config()
+
+        # Open a valid path
+        open_file(test_config['cache_directory'],
+                  test_config['notes_directory'],
+                  '/bugs.note')
+        open_file(test_config['cache_directory'],
+                  test_config['notes_directory'],
+                  '/todos.note')
+        open_files = get_open_files(test_config['cache_directory'],
+                                    test_config['notes_directory'])
+        assert set(['/bugs.note', '/todos.note']) == set(open_files)
+
+        # Close the open file
+        close_file(test_config['cache_directory'],
+                   '/bugs.note')
+        open_files = get_open_files(test_config['cache_directory'],
+                                    test_config['notes_directory'])
+        assert '/bugs.note' not in open_files
+
+        # Test handling for closing a file that isn't open
+        close_file(test_config['cache_directory'],
+                   '/notopen.note')
+        open_files = get_open_files(test_config['cache_directory'],
+                                    test_config['notes_directory'])
+        assert ['/todos.note'] == open_files
+
+    def test_clearing_open_files(self):
+        test_config = get_test_config()
+
+        # Open a valid path
+        open_file(test_config['cache_directory'],
+                  test_config['notes_directory'],
+                  '/bugs.note')
+        open_file(test_config['cache_directory'],
+                  test_config['notes_directory'],
+                  '/todos.note')
+        open_file(test_config['cache_directory'],
+                  test_config['notes_directory'],
+                  '/rec.note')
+        open_files = get_open_files(test_config['cache_directory'],
+                                    test_config['notes_directory'])
+        assert set(['/bugs.note', '/rec.note',
+                    '/todos.note']) == set(open_files)
+
+        clear_open_files(test_config['cache_directory'])
+        open_files = get_open_files(test_config['cache_directory'],
+                                    test_config['notes_directory'])
+        assert open_files == []

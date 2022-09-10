@@ -28,6 +28,11 @@ TEST_CONFIG = {
 TEST_CONFIG_PATH = TEMP_DIR + '/config.json'
 
 
+def get_test_config():
+    with open(TEST_CONFIG_PATH, 'r') as f:
+        return json.load(f)
+
+
 def setup_logging(config):
     log_file_path = config.get('log_file_path', 'shorthand.log')
     log_level_string = config.get('log_level', 'info')

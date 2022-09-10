@@ -11,6 +11,15 @@ log = logging.getLogger(__name__)
 IMAGE_FILE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'tiff', 'svg', 'pdf']
 
 
+def _ensure_file_exists(file_path, default_content):
+    # Handle file not existing
+    if not os.path.exists(file_path):
+        log.info(f'Open Files file {file_path} '
+                 f'does not exist, creating it')
+        with open(file_path, 'w') as f:
+            json.dump(default_content, f)
+
+
 def is_image_path(notes_directory, path):
     # Check the file extension
     extension = path.split('.')[-1]
@@ -27,13 +36,7 @@ def is_image_path(notes_directory, path):
 
 def get_open_files(cache_directory, notes_directory):
     open_files_path = f'{cache_directory}/open_files.json'
-
-    # Handle file not existing
-    if not os.path.exists(open_files_path):
-        log.info(f'Open Files file {open_files_path} '
-                 f'does not exist, creating it')
-        with open(open_files_path, 'w') as f:
-            json.dump([], f)
+    _ensure_file_exists(open_files_path, [])
 
     with open(open_files_path, 'r') as f:
         open_files = json.load(f)
@@ -64,6 +67,8 @@ def get_open_files(cache_directory, notes_directory):
 
 def clear_open_files(cache_directory):
     open_files_path = f'{cache_directory}/open_files.json'
+    _ensure_file_exists(open_files_path, [])
+
     with open(open_files_path, 'w') as f:
         json.dump([], f)
 
@@ -74,6 +79,7 @@ def open_file(cache_directory, notes_directory, note_path):
         return
 
     open_files_path = f'{cache_directory}/open_files.json'
+    _ensure_file_exists(open_files_path, [])
 
     with open(open_files_path, 'r') as f:
         open_files = json.load(f)
@@ -91,6 +97,7 @@ def open_file(cache_directory, notes_directory, note_path):
 
 def close_file(cache_directory, note_path):
     open_files_path = f'{cache_directory}/open_files.json'
+    _ensure_file_exists(open_files_path, [])
 
     with open(open_files_path, 'r') as f:
         open_files = json.load(f)
