@@ -140,14 +140,6 @@ class TestFileFinder(unittest.TestCase):
                         for query_component in query_string.split(' ')])
                 ]
 
-    def test_find_all_files(self):
-        '''Test finding all notes files
-        '''
-        all_files_found = get_file_search_results(prefer_recent=True,
-                                                  query_string=None,
-                                                  case_sensitive=False)
-        assert set(all_files_found) == set(ALL_FILES)
-
     def test_file_search(self):
         '''Test searching for files via substrings (non case sensitive)
         '''
@@ -201,7 +193,7 @@ class TestFileFinder(unittest.TestCase):
         for _ in range(5):
             # View the last file returned
             all_files_found = get_file_search_results(prefer_recent=True,
-                                                      query_string=None,
+                                                      query_string='note',
                                                       case_sensitive=False)
             last_file = all_files_found[-1]
             _record_file_view(CONFIG['cache_directory'],

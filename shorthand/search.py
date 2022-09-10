@@ -78,6 +78,7 @@ def _search_filenames(notes_directory, prefer_recent_files=True,
 
     # Early exit for no query
     if not query_string:
+        log.debug('No Query String Provided for finding files')
         return []
 
     find_command = '{find_path} {notes_dir} -not -path \'*/\\.*\' ' \
@@ -164,6 +165,7 @@ def _search_full_text(notes_directory, query_string, case_sensitive=False,
 
     # Early exit for empty query
     if not query_components:
+        log.debug('No query string provided for full text search')
         return []
 
     # Add safe handling of quoted phrases
