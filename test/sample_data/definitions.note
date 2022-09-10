@@ -2,13 +2,13 @@
 
 Definitions are very simple structures
 
-{definition} A formal meaning attached to a specific term
-{software} A tool you can use to make your life easier and better
-{food} Something that you eat when you are hungry
+- {definition} A formal meaning attached to a specific term
+- {software} A tool you can use to make your life easier and better
+- {food} Something that you eat when you are hungry
 
 ## Bugs / False Positives
 
-{undefined}
+- {undefined}
 
 ```python
 {"foo": "bar"}  # With a comment

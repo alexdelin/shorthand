@@ -13,27 +13,27 @@ END_STAMP_PATTERN = r'\(' + DATE_STAMP_PATTERN + r' -> ' + \
 
 # To-Dos
 #   Matches all valid prefixes for incomplete, complete, or skipped todos
-CATCH_ALL_PATTERN = r'(^\s*)(\[[XS ]?\])( [a-zA-Z1-9\(\)])'
+CATCH_ALL_PATTERN = r'(^\s*)([-+*] )(\[[XS ]?\])( [a-zA-Z1-9\(\)])'
 #   Matches all incomplete todos with valid timestamps
-VALID_INCOMPLETE_PATTERN = r'\[ \] ' + START_STAMP_PATTERN
+VALID_INCOMPLETE_PATTERN = r'[-+*] \[ \] ' + START_STAMP_PATTERN
 #   Matches all completed or skipped todos with valid start and end timestamps
-VALID_COMPLETE_PATTERN = r'\[[XS]\] ' + END_STAMP_PATTERN
+VALID_COMPLETE_PATTERN = r'[-+*] \[[XS]\] ' + END_STAMP_PATTERN
 #   Matches incomplete todos without a valid start timestamp
-UNFINISHED_UNSTAMPED_PATTERN = r'(^\s*)(\[ ?\]) (?!' + \
+UNFINISHED_UNSTAMPED_PATTERN = r'(^\s*)([-+*] )(\[ ?\]) (?!' + \
                                START_STAMP_PATTERN + r')'
 #   Matches completed or skipped todos with only the start timestamp
-FINISHED_START_STAMPED_PATTERN = r'(^\s*)(\[)([XS])(\] )(\()(' + \
+FINISHED_START_STAMPED_PATTERN = r'(^\s*)([-+*] )(\[)([XS])(\] )(\()(' + \
                                  DATE_STAMP_PATTERN + r')(\)) '
 #   Matches completed or skipped todos with no valid timestamp
-FINISHED_UNSTAMPED_PATTERN = r'(^\s*)(\[)([XS])(\] )(?!(' + \
+FINISHED_UNSTAMPED_PATTERN = r'(^\s*)([-+*] )(\[)([XS])(\] )(?!(' + \
                              START_STAMP_PATTERN + r'|' + \
                              END_STAMP_PATTERN + r'))'
 #   Matches the prefix of a skipped todo
-SKIPPED_PREFIX_GREP = r'(^\s*)(\[S\])( [a-zA-Z1-9\(\)])'
+SKIPPED_PREFIX_GREP = r'(^\s*)([-+*] )(\[S\])( [a-zA-Z1-9\(\)])'
 #   Matches the prefix of an incomplete todo
-INCOMPLETE_PREFIX_GREP = r'(^\s*)(\[ ?\])( [a-zA-Z1-9\(\)])'
+INCOMPLETE_PREFIX_GREP = r'(^\s*)([-+*] )(\[ ?\])( [a-zA-Z1-9\(\)])'
 #   Matches the prefix of a complete todo
-COMPLETE_PREFIX_GREP = r'(^\s*)(\[X\])( [a-zA-Z1-9\(\)])'
+COMPLETE_PREFIX_GREP = r'(^\s*)([-+*] )(\[X\])( [a-zA-Z1-9\(\)])'
 #   Matches a start stamp and todo without the prefix
 START_STAMP_ONLY_PATTERN = r'(\()(' + DATE_STAMP_PATTERN + r')(\))( )(.*)'
 #   Matches an end stamp and todo without the prefix
@@ -42,12 +42,12 @@ START_END_STAMP_ONLY_PATTERN = r'(\()(' + DATE_STAMP_PATTERN + r')( -> )(' + \
 
 # Questions & Answers
 #   Matches a question
-ALL_QUESTIONS = r'(^\s*)(\? )'
-UNSTAMPED_QUESTION = r'(^\s*)(\? )(?!' + START_STAMP_PATTERN + r' )'
+ALL_QUESTIONS = r'(^\s*)([-+*] )(\? )'
+UNSTAMPED_QUESTION = r'(^\s*)([-+*] )(\? )(?!' + START_STAMP_PATTERN + r' )'
 STAMPED_QUESTION = r'\? ' + START_STAMP_PATTERN + r' '
 #   Matches an answer
-ANSWER_PATTERN = r'(^\s*)(@ )(.*)'
-UNSTAMPED_ANSWER = r'(^\s*)(@ )(?!' + START_STAMP_PATTERN + r' )'
+ANSWER_PATTERN = r'(^\s*)([-+*] )(@ )(.*)'
+UNSTAMPED_ANSWER = r'(^\s*)([-+*] )(@ )(?!' + START_STAMP_PATTERN + r' )'
 STAMPED_ANSWER = r'(@ )(\()' + DATE_STAMP_PATTERN + r'(\)) '
 
 #   Matches a today placeholder
@@ -59,7 +59,7 @@ TAG_FILTER = r'( :\w+:)'
 TAG_PATTERN = r'( :\w+:)($|(?= ))'
 
 #   Matches a definition
-DEFINITION_PATTERN = r"^(\s*)(\{[-_+ \w]*?\} )(.*)"
+DEFINITION_PATTERN = r"^(\s*)([-+*] )(\{[-_+ \w]*?\} )(.*)"
 
 #   Matches any heading
 HEADING_PATTERN = r'^(#+)( )(.*)'

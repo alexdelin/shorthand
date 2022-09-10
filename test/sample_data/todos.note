@@ -3,55 +3,55 @@ Every possible type of todo is included here as of \today. There might be even m
 
 ## Incomplete
 ### Standalone
-[] Something to do
-[ ] With a space in the brackets already
-    [] (2120-06-01) Indented todo which won't start for a **long** time :future:
+- [] Something to do
+- [ ] With a space in the brackets already
+    + [] (2120-06-01) Indented todo which won't start for a **long** time :future:
 
 ### In a List
 - Some items
-[ ] (2019-05-30) A follow up item which is still open
+- [ ] (2019-05-30) A follow up item which is still open
     1. A sub-task
     2. Second element
-        [] A more specific todo :nested:
+        * [] A more specific todo :nested:
     3. A third element
 
 ## Skipped
 ### Standalone
-[S] Something that I could have done but didn't
-    [S] (2019-05-30 -> 2019-06-03) Indented :pointless:
+- [S] Something that I could have done but didn't
+    + [S] (2019-05-30 -> 2019-06-03) Indented :pointless:
 
 ### In a List
 - Some items
-[S] (2019-05-30) A follow up item which seemed like a good idea but wasn't
+- [S] (2019-05-30) A follow up item which seemed like a good idea but wasn't
     a) A sub-task
     b) Second element
-        [S] A more specific todo :nested:
+        * [S] A more specific todo :nested:
     c) A third element
 
 ## Completed
 ### Standalone
-[X] Something that got completed
-    [X] (2019-05-27 -> 2019-06-04) Indented and with both start and end stamped :topic:
+- [X] Something that got completed
+    + [X] (2019-05-27 -> 2019-06-04) Indented and with both start and end stamped :topic:
 
 ### In a List
 - Some items
-[X] (2019-05-30) A follow up item which seemed like a good idea and is now finished
+- [X] (2019-05-30) A follow up item which seemed like a good idea and is now finished
     a) A sub-task
     b) Second element
-        [X] A more specific todo :nested:
+        * [X] A more specific todo :nested:
     c) A third element
 
 ## Invalid
 These are malformed todos
 
-[ Maybe something
+- [ Maybe something
 
-] Nothing at all
+- ] Nothing at all
 
-[  ] Too many spaces
+- [  ] Too many spaces
 
 This is an empty Todo
 
-[]
+- []
 
 Examples for some previously seen edge cases can be found in the [bugs document](/bugs.note)

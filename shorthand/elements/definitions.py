@@ -54,9 +54,9 @@ def _get_definitions(notes_directory, directory_filter=None, grep_path='grep'):
         if not definition_match:
             log.debug(f'No definition match found for line {line}')
         else:
-            term = definition_match.group(2)
+            term = definition_match.group(3)
             term = term.strip().strip(r'{}')
-            definition_text = definition_match.group(3)
+            definition_text = definition_match.group(4)
 
         parsed_definition = {
             "file_path": file_path,

@@ -37,7 +37,7 @@ def is_answer_line(line_content):
     line_content = split_content[-1]
     answer_match = ANSWER_REGEX.match(line_content)
     if answer_match:
-        answer_text = answer_match.groups()[2]
+        answer_text = answer_match.groups()[3]
         return True, answer_text
 
     return False, None
@@ -82,7 +82,7 @@ def _get_questions(notes_directory, question_status='all',
             split_line = output_line.split(':', 2)
             file_path = split_line[0].strip()
             line_number = split_line[1].strip()
-            question_text = split_line[2].strip()[2:]
+            question_text = split_line[2].strip()[4:]
 
             # Return all paths as relative paths within the notes dir
             file_path = get_relative_path(notes_directory, file_path)

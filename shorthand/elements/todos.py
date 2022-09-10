@@ -267,8 +267,10 @@ def _mark_todo(notes_directory, note_path, line_number, status):
     line_content = split_content[line_number-1]
 
     # Modify line_content
-    block_pattern = r'(^\s*)(\[)([ XS]*)(\])'
+    block_pattern = r'(^\s*)([-+*] )(\[)([ XS]*)(\])'
     block_regex = re.compile(block_pattern)
+
+    # TODO - Add the completion date here if completing the todo
 
     if status == 'complete':
         sub_character = 'X'
@@ -276,9 +278,10 @@ def _mark_todo(notes_directory, note_path, line_number, status):
         sub_character = 'S'
     else:
         sub_character = ' '
+        # TODO - Remove the completion date if one exists
 
     line_content = block_regex.sub(
-        '\\g<1>[{}]'.format(sub_character),
+        '\\g<1>\\g<2>[{}]'.format(sub_character),
         line_content)
 
     split_content[line_number-1] = line_content

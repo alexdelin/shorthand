@@ -3,21 +3,21 @@ Questions capture things commonly asked and their answers
 They can use any indent level
 
 ## Answered
-? What is the meaning of life :philosophy:
-    @ 42
-? What color is the sky
-@ blue
+- ? What is the meaning of life :philosophy:
+    + @ 42
+- ? What color is the sky
+- @ blue
 
 
-? Why did the chicken cross the road
-                @ To get to the other side
+- ? Why did the chicken cross the road
+                + @ To get to the other side
 
 ## Unanswered
-? Is the world eternal
-        ? What is the best kind of cereal :food:
+- ? Is the world eternal
+        * ? What is the best kind of cereal :food:
 
 Food is an essential part of a balanced diet
 
-? How do you write software with no bugs :software:
+- ? How do you write software with no bugs :software:
 
 More question example can be found in the [mixed example](/section/mixed.note#Recipes)

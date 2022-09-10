@@ -126,7 +126,7 @@ def _stamp_notes(notes_directory, stamp_todos=True, stamp_today=True,
                         # unfinished unstamped
                         log.info(f'Found unstamped unfinished todo "{line}"')
                         new_line = unfinished_unstamped_regex.sub(
-                            '\\g<1>[ ] ({timestamp}) '.format(
+                            '\\g<1>\\g<2>[ ] ({timestamp}) '.format(
                                 timestamp=datetime.now().isoformat()[:10]),
                             line)
                         log.info(f'Writing stamped unfinished '
@@ -146,7 +146,7 @@ def _stamp_notes(notes_directory, stamp_todos=True, stamp_today=True,
                         # finished with start stamped
                         log.info(f'Found unstamped finished todo "{line}"')
                         new_line = finished_start_stamped_regex.sub(
-                            '\\g<1>[\\g<3>] (\\g<6> -> {timestamp_2}) '.format(
+                            '\\g<1>\\g<2>[\\g<4>] (\\g<7> -> {timestamp_2}) '.format(
                                 timestamp_2=datetime.now().isoformat()[:10]),
                             line)
                         log.info(f'Writing stamped finished '
@@ -166,7 +166,7 @@ def _stamp_notes(notes_directory, stamp_todos=True, stamp_today=True,
                         # finished unstamped
                         log.info(f'Found unstamped finished todo "{line}"')
                         new_line = finished_unstamped_regex.sub(
-                            '\\g<1>[\\g<3>] ({timestamp}'
+                            '\\g<1>\\g<2>[\\g<4>] ({timestamp}'
                             ' -> {timestamp}) '.format(
                                 timestamp=datetime.now().isoformat()[:10]),
                             line)
@@ -289,7 +289,7 @@ def _stamp_notes(notes_directory, stamp_todos=True, stamp_today=True,
                         # unstamped question
                         log.info(f'Found unstamped question "{line}"')
                         new_line = unstamped_question_regex.sub(
-                            '\\g<1>? ({timestamp}) '.format(
+                            '\\g<1>\\g<2>? ({timestamp}) '.format(
                                 timestamp=datetime.now().isoformat()[:10]),
                             line)
                         log.info(f'Writing stamped question '
@@ -352,7 +352,7 @@ def _stamp_notes(notes_directory, stamp_todos=True, stamp_today=True,
                         # unstamped answer
                         log.info(f'Found unstamped answer "{line}"')
                         new_line = unstamped_answer_regex.sub(
-                            '\\g<1>@ ({timestamp}) '.format(
+                            '\\g<1>\\g<2>@ ({timestamp}) '.format(
                                 timestamp=datetime.now().isoformat()[:10]),
                             line)
                         log.info(f'Writing stamped answer '
