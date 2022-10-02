@@ -7,13 +7,17 @@ from shorthand.tags import extract_tags
 from shorthand.utils.rec import load_from_string
 from shorthand.utils.patterns import DEFINITION_PATTERN, \
                                      INTERNAL_LINK_PATTERN, GPS_PATTERN, \
-                                     IMAGE_PATTERN
+                                     IMAGE_PATTERN, CATCH_ALL_PATTERN, \
+                                     QUESTION_OR_ANSWER, START_STAMP_PATTERN
 from shorthand.utils.paths import parse_relative_link_path, is_external_path
 
+todo_regex = re.compile(CATCH_ALL_PATTERN)
+question_regex = re.compile(QUESTION_OR_ANSWER)
 definition_regex = re.compile(DEFINITION_PATTERN)
 internal_link_regex = re.compile(INTERNAL_LINK_PATTERN)
 image_regex = re.compile(IMAGE_PATTERN)
 gps_regex = re.compile(GPS_PATTERN)
+timestamp_regex = re.compile(START_STAMP_PATTERN)
 leading_whitespace_regex = re.compile(r'^[ \t]*')
 
 
@@ -164,9 +168,8 @@ def get_rendered_markdown(markdown_content, note_path):
                 markdown_line)
 
         # Process All to-dos
-        if len(markdown_line) >= 4:
-            if markdown_line.strip()[:4] in ['[ ] ', '[X] ', '[S] '] or \
-                    markdown_line.strip()[:3] == '[] ':
+        if len(markdown_line) >= 6:
+            if todo_regex.match(markdown_line):
                 html_content_lines.append(line_span)
                 todo_element = get_todo_element(markdown_line)
                 html_content_lines.append(todo_element)
@@ -174,7 +177,7 @@ def get_rendered_markdown(markdown_content, note_path):
 
         # Process Questions & Answers
         if len(markdown_line) >= 2:
-            if markdown_line.strip()[:2] in ['? ', '@ ']:
+            if question_regex.match(markdown_line):
                 html_content_lines.append(line_span)
                 question_element = get_question_element(markdown_line)
                 html_content_lines.append(question_element)
@@ -238,7 +241,7 @@ def get_todo_element(raw_todo):
     its properties
     '''
 
-    todo = parse_todo(raw_todo.strip())
+    todo = parse_todo(raw_todo.strip()[2:])
     leading_spaces = len(raw_todo) - len(raw_todo.lstrip(' '))
 
     status = todo['status']
@@ -274,15 +277,16 @@ def get_question_element(raw_question):
     '''Get rendered HTML for a question given its properties
     '''
 
-    if raw_question.strip()[:2] == '? ':
+    if raw_question.strip()[2] == '?':
         element_type = 'question'
         icon = '<i class="bi-question-octagon"></i>'
-    if raw_question.strip()[:2] == '@ ':
+    if raw_question.strip()[2] == '@':
         element_type = 'answer'
         icon = '<i class="bi-arrow-return-right"></i>'
 
-    text = raw_question.strip()[2:]
+    text = raw_question.strip()[4:]
     tags, text = extract_tags(text)
+    timestamp, text = extract_timestamp(text)
     tag_elements = ''.join([f'<span class="tag">{tag}</span>'
                             for tag in tags])
 
@@ -292,6 +296,7 @@ def get_question_element(raw_question):
                        f'<div class="qa-element qa-{element_type}">'\
                        f'<div class="qa-icon">{icon}</div>'\
                        f'<div class="qa-text">{text}{tag_elements}</div>'\
+                       f'<div class="qa-timestamp"><div class="qa-create-date">{timestamp}</div></div>'\
                        f'</div>'
 
     question_element = (' ' * leading_spaces) + question_element
@@ -299,9 +304,9 @@ def get_question_element(raw_question):
 
 
 def get_definition_element(definition_match, markdown_line):
-    term = definition_match.group(2)
+    term = definition_match.group(3)
     term = term.strip().strip('{}')
-    tags, definition = extract_tags(definition_match.group(3))
+    tags, definition = extract_tags(definition_match.group(4))
     tag_elements = ''.join([f'<span class="tag">{tag}</span>'
                             for tag in tags])
 
@@ -315,3 +320,17 @@ def get_definition_element(definition_match, markdown_line):
 
     element = (' ' * leading_spaces) + element
     return element
+
+
+def extract_timestamp(text):
+
+    timestamp = None
+
+    timestamp_match = timestamp_regex.search(text)
+    if timestamp_match:
+        timestamp = timestamp_match.group(0).strip('()')
+        text = timestamp_regex.sub('', text)
+        return timestamp, text
+    else:
+        return timestamp, text
+

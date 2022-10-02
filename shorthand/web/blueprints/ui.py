@@ -5,7 +5,9 @@ from flask import request, render_template, send_from_directory, Blueprint, \
 
 from shorthand import ShorthandServer
 from shorthand.utils.config import _get_notes_config
-from shorthand.frontend import is_image_path
+from shorthand.utils.api import get_request_argument
+from shorthand.frontend import is_image_path, get_open_files, open_file, \
+                               close_file, clear_open_files
 from shorthand.frontend.render import get_rendered_markdown
 from shorthand.web.blueprints.static_elements import static_content
 
@@ -48,8 +50,47 @@ def send_image():
     image_path = request.args.get('path').strip('/')
     if not is_image_path(SHORTHAND_CONFIG['notes_directory'], image_path):
         abort(404)
-    return send_from_directory(SHORTHAND_CONFIG['notes_directory'], image_path)
+    resp = send_from_directory(SHORTHAND_CONFIG['notes_directory'], image_path)
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    return resp
 
+@shorthand_ui_blueprint.route('/frontend-api/get-open-files', methods=['GET'])
+def send_get_open_files():
+    SHORTHAND_CONFIG = _get_notes_config(current_app.config['config_path'])
+    open_files = get_open_files(SHORTHAND_CONFIG['cache_directory'],
+                                SHORTHAND_CONFIG['notes_directory'])
+    resp = Response(json.dumps(open_files))
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    return resp
+
+@shorthand_ui_blueprint.route('/frontend-api/open-file', methods=['POST'])
+def call_open_file():
+    SHORTHAND_CONFIG = _get_notes_config(current_app.config['config_path'])
+    path = get_request_argument(request.args, name='path')
+    response = open_file(SHORTHAND_CONFIG['cache_directory'],
+                         SHORTHAND_CONFIG['notes_directory'],
+                         path)
+    resp = Response(response)
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    return resp
+
+@shorthand_ui_blueprint.route('/frontend-api/close-file', methods=['POST'])
+def call_close_file():
+    SHORTHAND_CONFIG = _get_notes_config(current_app.config['config_path'])
+    path = get_request_argument(request.args, name='path')
+    response = close_file(SHORTHAND_CONFIG['cache_directory'],
+                          path)
+    resp = Response(response)
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    return resp
+
+@shorthand_ui_blueprint.route('/frontend-api/clear-open-files', methods=['POST'])
+def call_clear_open_files():
+    SHORTHAND_CONFIG = _get_notes_config(current_app.config['config_path'])
+    response = clear_open_files(SHORTHAND_CONFIG['cache_directory'])
+    resp = Response(response)
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    return resp
 
 @shorthand_ui_blueprint.route('/', methods=['GET'])
 def show_home_page():

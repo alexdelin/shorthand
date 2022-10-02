@@ -12,7 +12,11 @@ IMAGE_FILE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'tiff', 'svg', 'pdf']
 
 
 def _ensure_file_exists(file_path, default_content):
-    # Handle file not existing
+    ''' Utility to handle file not existing
+        If a file exist at the specified path, do nothing
+        If not, create a file populated with the default
+          contents, dumped as a JSON string
+    '''
     if not os.path.exists(file_path):
         log.info(f'Open Files file {file_path} '
                  f'does not exist, creating it')
@@ -43,9 +47,9 @@ def get_open_files(cache_directory, notes_directory):
 
     # Manual Type Checking
     if not isinstance(open_files, list):
-        log.error(f'Open Files data is not a list')
+        raise ValueError(f'Open Files data is not a list')
     if not all([isinstance(x, str) for x in open_files]):
-        log.error(f'Open Files data includes an invalid entry')
+        raise ValueError(f'Open Files data includes an invalid entry')
 
     # Check that all files actually exist
     found_invalid_paths = False
@@ -72,11 +76,12 @@ def clear_open_files(cache_directory):
     with open(open_files_path, 'w') as f:
         json.dump([], f)
 
+    return 'ack'
+
 
 def open_file(cache_directory, notes_directory, note_path):
     if not is_note_path(notes_directory, note_path):
-        log.info(f'Cannot open non-existent file at path: {note_path}')
-        return
+        raise ValueError(f'Cannot open non-existent file at path: {note_path}')
 
     open_files_path = f'{cache_directory}/open_files.json'
     _ensure_file_exists(open_files_path, [])
@@ -86,13 +91,15 @@ def open_file(cache_directory, notes_directory, note_path):
 
     if note_path in open_files:
         log.info(f'Note file {note_path} is already open, skipping...')
-        return
+        return 'ack'
 
     open_files.append(note_path)
     log.info(f'Opened file at path: {note_path}')
 
     with open(open_files_path, 'w') as f:
         json.dump(open_files, f)
+
+    return 'ack'
 
 
 def close_file(cache_directory, note_path):
@@ -104,10 +111,12 @@ def close_file(cache_directory, note_path):
 
     if note_path not in open_files:
         log.info(f'Note file {note_path} is not open, skipping...')
-        return
+        return 'ack'
 
     open_files.remove(note_path)
     log.info(f'Closed file at path: {note_path}')
 
     with open(open_files_path, 'w') as f:
         json.dump(open_files, f)
+
+    return 'ack'

@@ -41,8 +41,10 @@ START_END_STAMP_ONLY_PATTERN = r'(\()(' + DATE_STAMP_PATTERN + r')( -> )(' + \
                                DATE_STAMP_PATTERN + r')(\))( )(.*)'
 
 # Questions & Answers
+#   Matches either a question or answer
+QUESTION_OR_ANSWER = r'(^\s*)([-+*] )([\?@] )(.*)'
 #   Matches a question
-ALL_QUESTIONS = r'(^\s*)([-+*] )(\? )'
+ALL_QUESTIONS = r'(^\s*)([-+*] )(\? )(.*)'
 UNSTAMPED_QUESTION = r'(^\s*)([-+*] )(\? )(?!' + START_STAMP_PATTERN + r' )'
 STAMPED_QUESTION = r'\? ' + START_STAMP_PATTERN + r' '
 #   Matches an answer

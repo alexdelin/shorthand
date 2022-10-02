@@ -19,7 +19,11 @@ def handle_exception(e):
     if isinstance(e, HTTPException):
         return e
 
-    return json.dumps({'error': str(e)}), 500
+    error_message = json.dumps({'error': str(e)})
+    resp = Response(error_message)
+    resp.status_code = 500
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    return resp
 
 
 # ------------------------------
