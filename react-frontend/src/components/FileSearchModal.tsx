@@ -83,12 +83,14 @@ export function FileSearchModal() {
     ).then(async res => {
       if (await res.text() === 'ack') {
         // Navigate to the target page
-        const viewNotePath = `/view?path=${notePath}`;
+        const viewNotePath = `/compose?path=${notePath}`;
         navigate(viewNotePath);
         setShown(false);
       }
     })
   }
+
+  if (!shown) return null;
 
   return (
     <FileSearchModalOverlay shown={shown} onClick={handleOverlayClick}>

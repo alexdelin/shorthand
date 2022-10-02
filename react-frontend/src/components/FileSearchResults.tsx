@@ -43,12 +43,12 @@ export function FileSearchResults({query, showHeader=true, onResultClick}: FileS
 
   const { data: FileSearchData } =
     useQuery<FileSearchResponse, Error>('fileSearch-' + query, () =>
-    fetch('http://localhost:8181/api/v1/files?query_string=' + query
-          ).then(res =>
-      res.json()
-    ),
-    { placeholderData: [] }
-  )
+      fetch('http://localhost:8181/api/v1/files?query_string=' + query
+            ).then(res =>
+        res.json()
+      ),
+      { placeholderData: [] }
+    )
 
   // Reset the result count whenever the query changes
   useEffect(() => {
