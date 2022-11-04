@@ -78,7 +78,7 @@ export function FullTextSearchResults(props: FullTextSearchResultsProps) {
   const navigate = useNavigate();
 
   const { data: FullTextSearchData } =
-    useQuery<FullTextSearchResponse<AggregatedFullTextSearchResult>, Error>('fullTextSearch-' + props.query, () =>
+    useQuery<FullTextSearchResponse<AggregatedFullTextSearchResult>, Error>(['fullTextSearch', { query: props.query }], () =>
     fetch('http://localhost:8181/api/v1/search' +
           '?query_string=' + props.query +
           '&aggregate_by_file=true').then(res =>

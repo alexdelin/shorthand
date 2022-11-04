@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/bin/zsh
 
-source ~/.profile
-workon notes
+source ~/.zlogin
+workon shorthand
 
-python ~/code/shorthand/shorthand/cli.py --action stamp
+shorthand-cli --action=stamp

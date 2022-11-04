@@ -31,7 +31,8 @@ function scrollToAnchor() {
 }
 
 const writer = MarkdownIt({
-  html:true,
+  html: true,
+  linkify: true,
   highlight: function (str, lang) {
     if (lang && hljs.getLanguage(lang)) {
       try {
@@ -44,6 +45,25 @@ const writer = MarkdownIt({
 }).use(mermaidPlugin);
 // })
 
+// Remember old renderer, if overridden, or proxy to default renderer
+var defaultRender = writer.renderer.rules.link_open || function(tokens, idx, options, env, self) {
+  return self.renderToken(tokens, idx, options);
+};
+
+writer.renderer.rules.link_open = function (tokens: any, idx, options, env, self) {
+  // If you are sure other plugins can't add `target` - drop check below
+  var aIndex = tokens[idx].attrIndex('target');
+
+  if (aIndex < 0) {
+    tokens[idx].attrPush(['target', '_blank']); // add new attribute
+  } else {
+    tokens[idx].attrs[aIndex][1] = '_blank';    // replace value of existing attr
+  }
+
+  // pass token to default renderer.
+  return defaultRender(tokens, idx, options, env, self);
+};
+
 export default function ViewPage() {
 
   const [ searchParams ] = useSearchParams();
@@ -53,7 +73,7 @@ export default function ViewPage() {
 
   const {
     data: noteContent
-  } = useQuery<GetRenderedMarkdownResponse, Error>('note-' + notePath, () =>
+  } = useQuery<GetRenderedMarkdownResponse, Error>(['note', { path: notePath }], () =>
     fetch('http://localhost:8181/frontend-api/redered-markdown?path=' + notePath).then(res =>
       res.json()
     )
@@ -178,6 +198,11 @@ export function RenderedMarkdown(props: RenderMarkdownProps) {
       }).render(displayEl);
     }
 
+    // Initialize Locations
+    for (const locationEl of document.querySelectorAll('location')) {
+      // TODO - Add popover modal for each location
+    }
+
     // Ensure we only scroll to the target id once
     if (props.source !== undefined && !hasScrolled) {
       setTimeout(() => {
@@ -187,5 +212,5 @@ export function RenderedMarkdown(props: RenderMarkdownProps) {
     }
   }, [props.source, hasScrolled]);
 
-  return <div className={props.className} dangerouslySetInnerHTML={{__html: writer.render(props.source)}} />
+  return <div className={props.className} dangerouslySetInnerHTML={{__html: writer.render(props.source ? props.source : '')}} />
 }

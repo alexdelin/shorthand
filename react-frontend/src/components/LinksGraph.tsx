@@ -49,7 +49,7 @@ const baseStyle: any = [
 export function LinksGraph(props: LinksGraphProps) {
 
   const { data: linksData } =
-    useQuery<GetLinksResponse, Error>('links-' + props.notePath, () =>
+    useQuery<GetLinksResponse, Error>(['links', { path: props.notePath }], () =>
     fetch('http://localhost:8181/api/v1/links?note=' + props.notePath +
           '&include_external=true&include_invalid=true').then(res =>
       res.json()

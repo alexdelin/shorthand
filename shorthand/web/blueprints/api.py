@@ -251,7 +251,7 @@ def get_current_todos():
     return resp
 
 
-@shorthand_api_blueprint.route('/api/v1/mark_todo', methods=['GET'])
+@shorthand_api_blueprint.route('/api/v1/mark_todo', methods=['POST'])
 def mark_todo_status():
     server = ShorthandServer(current_app.config['config_path'])
 
@@ -260,7 +260,9 @@ def mark_todo_status():
                                        arg_type='int')
     status = get_request_argument(request.args, name='status')
 
-    return server.mark_todo(filename, line_number, status)
+    resp = Response(server.mark_todo(filename, line_number, status))
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    return resp
 
 
 @shorthand_api_blueprint.route('/api/v1/questions', methods=['GET'])

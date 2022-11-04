@@ -12,6 +12,8 @@ export const ComposePageWrapper = styled.div`
 export const ComposeHeader = styled.div`
   width: 100%;
   height: 3rem;
+  display: flex;
+  flex-direction: row;
   border-bottom: 1px solid black;`
 
 export const ComposeNoteWrapper = styled.div`
@@ -37,9 +39,9 @@ export const ComposePreviewWrapper = styled.div`
   border-left: 1px solid black;`
 
 export const StyledFormGroup = styled(FormGroup)`
-  justify-content: flex-end;
   align-items: center;
-  height: 3rem;`
+  height: 3rem;
+  margin-left: auto;`
 
 export const SwitchLabel = styled.span`
   margin-left: 1rem;`

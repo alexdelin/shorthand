@@ -98,6 +98,27 @@ const questionsAnswersCss = css`
 
   & .question-meta {
     text-align: right;
+  }
+
+  & .qa-timestamp {
+    margin-left: auto;
+    display: flex;
+    white-space: pre;
+  }
+
+  & .qa-create-date {
+    margin-left: 0.15rem;
+    padding: 0.25em 0.4em;
+    padding-top: 0.3rem;
+    font-size: 75%;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    border-radius: 0.25rem;
+    color: #6c757d;
+    background-color: #fff;
   }`
 
 const definitionsCss = css`
@@ -209,6 +230,7 @@ const codeCss = css`
     border-radius: 5px;
     background-color: #fafafa;
     display: block;
+    white-space: pre-wrap;
   }`
 
 const latexCss = css`

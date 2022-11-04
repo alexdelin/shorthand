@@ -42,7 +42,7 @@ export function FileSearchResults({query, showHeader=true, onResultClick}: FileS
   const navigate = useNavigate();
 
   const { data: FileSearchData } =
-    useQuery<FileSearchResponse, Error>('fileSearch-' + query, () =>
+    useQuery<FileSearchResponse, Error>(['fileSearch', { query }], () =>
       fetch('http://localhost:8181/api/v1/files?query_string=' + query
             ).then(res =>
         res.json()

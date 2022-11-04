@@ -3,6 +3,10 @@
 import * as ELEMENTS from './elements';
 
 
+export type ShorthandApiError = {
+  error: string
+}
+
 export type TodosStats = {
   month_counts: {
       [key: string]: number

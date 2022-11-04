@@ -40,7 +40,7 @@ export default function TodosPage() {
 
   let {
     data: configData
-  } = useQuery<GetConfigResponse, Error>('config', () =>
+  } = useQuery<GetConfigResponse, Error>(['config'], () =>
     fetch('http://localhost:8181/api/v1/config').then(res =>
       res.json()
     ),
@@ -49,7 +49,7 @@ export default function TodosPage() {
 
   let {
     data: tagsData
-  } = useQuery<GetTagsResponse, Error>('tags', () =>
+  } = useQuery<GetTagsResponse, Error>(['tags'], () =>
     fetch('http://localhost:8181/api/v1/tags').then(res =>
       res.json()
     ),
@@ -65,7 +65,7 @@ export default function TodosPage() {
 
   let {
     data: subdirsData
-  } = useQuery<GetSubdirsResponse, Error>('subdirs', () =>
+  } = useQuery<GetSubdirsResponse, Error>(['subdirs'], () =>
     fetch('http://localhost:8181/api/v1/subdirs').then(res =>
       res.json()
     ),
@@ -109,7 +109,7 @@ export default function TodosPage() {
   }
 
   function handleRefreshClick() {
-    queryClient.invalidateQueries(`todos-${status}-${directory}-${search}-${tags}`);
+    queryClient.invalidateQueries(['todos', { status, directory, search, tags }]);
   }
 
   return (
