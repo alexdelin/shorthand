@@ -10,6 +10,13 @@ from shorthand.utils.api import wrap_response_data, get_request_argument
 shorthand_api_blueprint = Blueprint('shorthand_api_blueprint', __name__)
 
 
+@shorthand_api_blueprint.after_request
+def after_request(response):
+    header = response.headers
+    header['Access-Control-Allow-Origin'] = '*'
+    return response
+
+
 @shorthand_api_blueprint.app_errorhandler(Exception)
 def handle_exception(e):
     '''This method is a catch-all for all errors thrown by the server
@@ -22,7 +29,6 @@ def handle_exception(e):
     error_message = json.dumps({'error': str(e)})
     resp = Response(error_message)
     resp.status_code = 500
-    resp.headers['Access-Control-Allow-Origin'] = '*'
     return resp
 
 
@@ -33,9 +39,7 @@ def handle_exception(e):
 def get_server_config():
     server = ShorthandServer(current_app.config['config_path'])
     current_app.logger.info('Returning config')
-    resp = Response(json.dumps(server.get_config()))
-    resp.headers['Access-Control-Allow-Origin'] = '*'
-    return resp
+    return json.dumps(server.get_config())
 
 
 @shorthand_api_blueprint.route('/api/v1/search', methods=['GET'])
@@ -53,18 +57,14 @@ def get_search_results():
         query_string=query_string,
         case_sensitive=case_sensitive,
         aggregate_by_file=aggregate_by_file)
-    resp = Response(json.dumps(search_results))
-    resp.headers['Access-Control-Allow-Origin'] = '*'
-    return resp
+    return json.dumps(search_results)
 
 
 @shorthand_api_blueprint.route('/api/v1/note', methods=['GET'])
 def get_full_note():
     server = ShorthandServer(current_app.config['config_path'])
     path = get_request_argument(request.args, name='path', required=True)
-    resp = Response(server.get_note(path))
-    resp.headers['Access-Control-Allow-Origin'] = '*'
-    return resp
+    return server.get_note(path)
 
 
 @shorthand_api_blueprint.route('/api/v1/note', methods=['POST'])
@@ -76,9 +76,7 @@ def write_updated_note():
     content = request.data.decode('utf-8')
 
     server.update_note(path, content)
-    resp = Response('Note Updated')
-    resp.headers['Access-Control-Allow-Origin'] = '*'
-    return resp
+    return 'Note Updated'
 
 
 
@@ -91,9 +89,7 @@ def get_toc_data():
 @shorthand_api_blueprint.route('/api/v1/subdirs', methods=['GET'])
 def get_subdirs_data():
     server = ShorthandServer(current_app.config['config_path'])
-    resp = Response(json.dumps(server.get_subdirs()))
-    resp.headers['Access-Control-Allow-Origin'] = '*'
-    return resp
+    return json.dumps(server.get_subdirs())
 
 
 @shorthand_api_blueprint.route('/api/v1/links', methods=['GET'])
@@ -110,12 +106,10 @@ def get_note_links():
                                            name='include_invalid',
                                            arg_type='bool', default=False)
 
-    resp = Response(json.dumps(
+    return json.dumps(
         server.get_links(source=source, target=target, note=note,
                          include_external=include_external,
-                         include_invalid=include_invalid)))
-    resp.headers['Access-Control-Allow-Origin'] = '*'
-    return resp
+                         include_invalid=include_invalid))
 
 
 @shorthand_api_blueprint.route('/api/v1/links/validate', methods=['GET'])
@@ -129,8 +123,9 @@ def validate_note_links():
 def get_typeahead():
     server = ShorthandServer(current_app.config['config_path'])
     query_string = get_request_argument(request.args, name='query')
-    return json.dumps(server.get_typeahead_suggestions(
-        query_string=query_string))
+    return json.dumps(
+        server.get_typeahead_suggestions(
+            query_string=query_string))
 
 
 @shorthand_api_blueprint.route('/api/v1/stamp', methods=['GET'])
@@ -154,9 +149,7 @@ def get_files():
                 prefer_recent=prefer_recent,
                 query_string=query_string, case_sensitive=case_sensitive)
 
-    resp = Response(json.dumps(files))
-    resp.headers['Access-Control-Allow-Origin'] = '*'
-    return resp
+    return json.dumps(files)
 
 
 @shorthand_api_blueprint.route('/api/v1/record_view', methods=['POST'])
@@ -166,9 +159,7 @@ def record_file_view_api():
     note_path = get_request_argument(request.args, name='note_path',
                                      required=True)
     server.record_file_view(note_path=note_path)
-    resp = Response('ack')
-    resp.headers['Access-Control-Allow-Origin'] = '*'
-    return resp
+    return 'ack'
 
 
 @shorthand_api_blueprint.route('/api/v1/tags', methods=['GET'])
@@ -181,9 +172,7 @@ def fetch_tags():
         directory_filter = None
 
     tags = server.get_tags(directory_filter=directory_filter)
-    resp = Response(json.dumps(wrap_response_data(tags)))
-    resp.headers['Access-Control-Allow-Origin'] = '*'
-    return resp
+    return json.dumps(wrap_response_data(tags))
 
 
 @shorthand_api_blueprint.route('/api/v1/calendar', methods=['GET'])
@@ -246,9 +235,7 @@ def get_current_todos():
     wrapped_response = wrap_response_data(todos)
     wrapped_response['meta'] = analyze_todos(todos)
 
-    resp = Response(json.dumps(wrapped_response))
-    resp.headers['Access-Control-Allow-Origin'] = '*'
-    return resp
+    return json.dumps(wrapped_response)
 
 
 @shorthand_api_blueprint.route('/api/v1/mark_todo', methods=['POST'])
@@ -260,9 +247,7 @@ def mark_todo_status():
                                        arg_type='int')
     status = get_request_argument(request.args, name='status')
 
-    resp = Response(server.mark_todo(filename, line_number, status))
-    resp.headers['Access-Control-Allow-Origin'] = '*'
-    return resp
+    return server.mark_todo(filename, line_number, status)
 
 
 @shorthand_api_blueprint.route('/api/v1/questions', methods=['GET'])
