@@ -546,7 +546,7 @@ class TestMarkTodosFlask(unittest.TestCase):
             'line_number': 6,
             'status': 'complete'
         }
-        self.api_client.get('/api/v1/mark_todo', query_string=params)
+        self.api_client.post('/api/v1/mark_todo', query_string=params)
 
         # Get all completed todos
         params = {'status': 'complete'}
@@ -563,7 +563,7 @@ class TestMarkTodosFlask(unittest.TestCase):
             'line_number': 6,
             'status': 'skipped'
         }
-        self.api_client.get('/api/v1/mark_todo', query_string=params)
+        self.api_client.post('/api/v1/mark_todo', query_string=params)
 
         # Get all skipped todos
         params = {'status': 'skipped'}

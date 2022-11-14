@@ -12,8 +12,7 @@ shorthand_api_blueprint = Blueprint('shorthand_api_blueprint', __name__)
 
 @shorthand_api_blueprint.after_request
 def after_request(response):
-    header = response.headers
-    header['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Origin'] = '*'
     return response
 
 

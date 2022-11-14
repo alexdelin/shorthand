@@ -1,4 +1,6 @@
 import os
+
+import pytest
 import unittest
 
 from shorthand.frontend import get_open_files, open_file, close_file, \
@@ -50,9 +52,12 @@ class TestOpenFilesAPI(unittest.TestCase):
         assert '/bugs.note' in open_files
 
         # Test opening invalid paths
-        open_file(test_config['cache_directory'],
-                  test_config['notes_directory'],
-                  '/does-not-exist.note')
+        with pytest.raises(ValueError) as e:
+            open_file(test_config['cache_directory'],
+                      test_config['notes_directory'],
+                      '/does-not-exist.note')
+        assert 'non-existent file' in str(e.value)
+
         open_files = get_open_files(test_config['cache_directory'],
                                     test_config['notes_directory'])
         assert '/does-not-exist.note' not in open_files
