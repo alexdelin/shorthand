@@ -77,6 +77,10 @@ The switch to markdown was gradual for about a month, then happened all at once.
 6. Note format notes are explicitly designed to store information in the simplest way possible. Features are based on recording information such that the source can be written, read, and parsed as easily as possible, even if doing so is naïve. There will be some cases where content within notes is incorrectly identified as an element like a todo or a question, and this is expected (although very rare). However, the format is simple enough that these issues will be obvious and can very easily be fixed. ~~Rendering a note into a display version is a second-class consideration compared to storing information clearly and supporting easy retrieval of elements. The need to render files written in other markup languages into display formats creates a number of unnecessary elements and increases the complexity of the format in a way that does more damage than good.~~
 7. The language should be as minimal as possible. Markup languages have defined lots of different ways of doing the same few things, with most markup languages supporting multiple options for each based on arbitrary personal preferences of users. Shorthand's note format is closer to the C-style idea that a language should provide one way and **only one way** to do everything. Some elements have syntaxes that are more restricted than markdown in order to a) make parsing these elemetns as simple as possible; and b) ensure that the elements are always self-contained on a single line
 
+### Notes vs. Resources
+The primary version of all shorthand data is a single directory on disk. The contents of this directory, as you may expect, are just sub-directories and a bunch of files on disk. For the files present, there is a special distinction between files with a `.note` extension, and everything else. The files with the `.note` extension are termed "Notes", while everything else is a "Resource". These two categories will have separate APIs, and the core functionality is only geared to work against notes. 
+
+Resources are still useful for providing things like images, audio, video, or other things you may want to be stored alongside your notes. However, storing your notes with a file extension other than `.note` will cause problems or result in you not finding the content you expect when using the Notes APIs.
 
 ## Syntax Definition
 
@@ -180,39 +184,52 @@ def something():
 ~~~
 Indented code blocks are not valid syntax
 
-### Questions + Answers
+### List Extensions
+Some extended markdown syntaxes, such as GFM, support additional variations of list items. In these cases, a list item that matches a pattern is treated as a different element entirely, as opposed to just a text item within the list.
+
+Two important things to note about list extensions are:
+1. List extensions only work in _itemized lists_, not _enumerated lists_
+2. All elements produced via list extensions are always a single line. Line breaks cannot be inserted within them the way that they can be with other markdown elements.
+
+#### ToDos
+
+```notes
+# Unstamped
+- [] An incomplete to-do item
+- [X] Another incomplete thing
+- [S] An item which is no longer needed and has been skipped
+- [X] An item which has been completed
+```
+
+#### Questions + Answers
 Recording answered and unanswered questions are a natural part of any note-taking, and an important feature that most who take notes with a pen and paper will have a special process (colored tabs, etc.) for. Question and answer pairs are a good abstraction for individual bits of new information that should be cataloged for later retrieval, as well as current unknown which have to be figured out and addressed in the future
 
-The simplest form of a question is any string of text following a question mark and a space (`? foo`).
-Because questions and their answers are intrinsically tied together, answers must be stored in predictable locations. The easiest place to put an answer is on the following line, indicated by an at-sign followed by a space then the text of the answer. Questions that are followed by **any other line** are considered to have no answer tied to them and be in an "unanswered" state.
+The simplest form of a question is any list item starting with a question mark and a space (`- ? foo`).
+Because questions and their answers are intrinsically tied together, answers must be stored in predictable locations relative to the question that they are attached to. The easiest place to put an answer is on the following line, indicated by an at-sign followed by a space then the text of the answer (`- @ bar`). Questions that are followed by **any other line** are considered to have no answer tied to them and be in an "unanswered" state.
 The indentation of the answer is for readability purposes only and does not have any functional impact.
 ```notes
-? What is the meaning of life
-    @ 23
+- ? What is the meaning of life
+    + @ 23
 ```
 Unanswered and Answered questions side-by-side
 ```notes
-? Does P = NP
-? Another question
-    @ with an answer
+- ? Does P = NP
+- ? Another question
+    + @ with an answer
 ```
 
-### ToDos
+### Definitions
 ```notes
-# Unstamped
-[] An incomplete to-do item
-[ ] Another incomplete thing
-[S] An item which is no longer needed and has been skipped
-[X] An item which has been completed
+- {Term} Definition
 ```
 
-#### Metadata
-Metadata can be added to todos to make tracking them easier and more useful
+### Metadata
+Metadata can be added to list extensions to make tracking them easier and more useful
 
-##### Timestamps
-ToDo items can include a start timestamp and an end timestamp.
-Generally these timestamps are placed in parentheses right after the opening `[ ]` and are of the format `(start -> end)`
-The start timestamp indicates the
+#### Timestamps
+ToDo Question, and Answer elements can include a start timestamp and an end timestamp.
+Generally these timestamps are placed in parentheses right before the content of the element, and are of the format either `(creation)` or `(start -> end)`.
+The start timestamp indicates the date when the element was created, and the end timestamp (for todos) indicates when the state of the element was changed to either completed or skipped.
 ```notes
 # Stamped
 [ ] (2019-05-14) An open todo which lists the date that it was created
@@ -220,7 +237,21 @@ The start timestamp indicates the
 [X] (2019-05-16 -> 2019-05-20) A completed todo that lists the date it was created and the date it was marked completed
 ```
 
-##### Priority
+In addition to timestamps added to list elements, you can also add timestamps to headings. This is particularly useful when you have a section that represents a specific event, and you want to record the date of the event. 
+```notes
+## Weekly Client Meeting 2019-15-18
+```
+
+##### Stamping
+Timestamps can be annoying to type out manually every time that you create a new todo or complete an existing one. For this reason, there is a stamping feature that will identify any missing timestamps and add them automatically with the current date. 
+
+###### Today Placeholder
+In addition to adding timestamps to elements, the stamping feature will also replace instances of the string `\today` with the current date. This can be used as a convenience feature for quickly dating elements when authoring notes. For example, the dated section example above could be written as:
+```notes
+## Weekly Client Meeting \today
+```
+
+#### Priority (Not Implemented)
 Priority of a ToDo is indicated in braces `{priority}` right after the timestamp block and before the text of the todo item.
 Priority is represented by a single digit number `1-9` with `1` being the highest priority and `9` being the lowest priority. Any ToDos with no priority listed have an implicit priority level of `5`
 ```notes
@@ -228,17 +259,12 @@ Priority is represented by a single digit number `1-9` with `1` being the highes
 [ ] (2019-05-15) {5} Something _significantly_ less important, but which also has to be done
 ```
 
-### Tags
+#### Tags
 Tags are metadata fields that can be applied to any item for easier retireval later on
 ```notes
 Somethings that I want to find in the future :topic:
 ```
 The element above will be tagged with the tag `topic`
-
-### Definitions
-```notes
-{Term} Definition
-```
 
 ### Links
 The link format used is exactly the same as used in markdown, but all link targets must be specified inline. The basic link format is:
@@ -266,7 +292,7 @@ Links to internal documents can be specified as either an absolute path (`/path/
 Unlike external links, internal links are classified based on whether or not the target of the link is a note that actually exists. In cases where a section is specified in a link target, the section is **not** validated.
 
 ### Images
-### Diagrams
+### Diagrams (Mermaid)
 ### Locations
 ### Databases
 
