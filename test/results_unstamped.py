@@ -207,50 +207,41 @@ ALL_QUESTIONS = {
     ]
 }
 
-SEARCH_RESULTS_FOOD = {
-    'count': 4,
-    'items': [
-        {
-            'file_path': '/definitions.note',
-            'line_number': '7',
-            'match_content': r'{food} Something that you eat when you are hungry'
-        }, {
-            'file_path': '/section/mixed.note',
-            'line_number': '23',
-            'match_content': '[] Test different cooking times for this recipe :food: :baking:'
-        }, {
-            'file_path': '/questions.note',
-            'line_number': '17',
-            'match_content': '? What is the best kind of cereal :food:'
-        }, {
-            'file_path': '/questions.note',
-            'line_number': '19',
-            'match_content': 'Food is an essential part of a balanced diet'
-        }
-    ]
-}
+SEARCH_RESULTS_FOOD = [
+    {
+        'file_path': '/definitions.note',
+        'line_number': '7',
+        'match_content': r'- {food} Something that you eat when you are hungry'
+    }, {
+        'file_path': '/section/mixed.note',
+        'line_number': '23',
+        'match_content': '- [] Test different cooking times for this recipe :food: :baking:'
+    }, {
+        'file_path': '/questions.note',
+        'line_number': '17',
+        'match_content': '* ? What is the best kind of cereal :food:'
+    }, {
+        'file_path': '/questions.note',
+        'line_number': '19',
+        'match_content': 'Food is an essential part of a balanced diet'
+    }
+]
 
-SEARCH_RESULTS_FOOD_SENSITIVE = {
-    'count': 1,
-    'items': [
-        {
-            'file_path': '/questions.note',
-            'line_number': '19',
-            'match_content': 'Food is an essential part of a balanced diet'
-        }
-    ]
-}
+SEARCH_RESULTS_FOOD_SENSITIVE = [
+    {
+        'file_path': '/questions.note',
+        'line_number': '19',
+        'match_content': 'Food is an essential part of a balanced diet'
+    }
+]
 
-SEARCH_RESULTS_BALANCED_DIET = {
-    'count': 1,
-    'items': [
-        {
-            'file_path': '/questions.note',
-            'line_number': '19',
-            'match_content': 'Food is an essential part of a balanced diet'
-        }
-    ]
-}
+SEARCH_RESULTS_BALANCED_DIET = [
+    {
+        'file_path': '/questions.note',
+        'line_number': '19',
+        'match_content': 'Food is an essential part of a balanced diet'
+    }
+]
 
 ALL_DEFINITIONS = [
     {'definition': 'A formal meaning attached to a specific term',

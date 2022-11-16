@@ -1,12 +1,15 @@
 # Path Utilities
 import os
 import logging
+from typing import Optional
+
+from shorthand.types import DirectoryPath, FilePath, NotePath
 
 
 log = logging.getLogger(__name__)
 
 
-def get_relative_path(notes_directory, path):
+def get_relative_path(notes_directory: DirectoryPath, path: FilePath) -> NotePath:
     '''Produce a relative path within the notes directory
     from a full path on the filesystem
     '''
@@ -30,7 +33,7 @@ def get_relative_path(notes_directory, path):
     return path
 
 
-def get_full_path(notes_directory, relative_path):
+def get_full_path(notes_directory: DirectoryPath, relative_path: NotePath) -> FilePath:
     '''Get a full path on the local filesystem from a
     relative path
     '''
@@ -54,7 +57,7 @@ def get_full_path(notes_directory, relative_path):
     return notes_directory + relative_path
 
 
-def get_display_path(path, directory_filter=None):
+def get_display_path(path: NotePath, directory_filter: Optional[str] = None) -> str:
     '''Produce a path that is nicer for display than an actual file path
     If a directory filter is specified, it produces a path that is relative
     to that directory

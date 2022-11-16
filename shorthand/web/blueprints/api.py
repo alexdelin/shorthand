@@ -41,6 +41,16 @@ def get_server_config():
     return json.dumps(server.get_config())
 
 
+@shorthand_api_blueprint.route('/api/v1/config', methods=['PUT'])
+def update_server_config():
+    server = ShorthandServer(current_app.config['config_path'])
+    current_app.logger.info('Updating config')
+    updates = json.loads(request.get_data())
+    server.update_config(updates)
+    server.save_config()
+    return 'ack'
+
+
 @shorthand_api_blueprint.route('/api/v1/search', methods=['GET'])
 def get_search_results():
     server = ShorthandServer(current_app.config['config_path'])

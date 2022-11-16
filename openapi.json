@@ -1,0 +1,263 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Shorthand API",
+    "description": "This is an API for retrieving content and metadata from notes written in Shorthand markdown format.",
+    "termsOfService": "http://swagger.io/terms/",
+    "contact": {
+      "email": "apiteam@swagger.io"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://github.com/alexdelin/shorthand/blob/master/LICENSE.md"
+    },
+    "version": "0.1.0"
+  },
+  "externalDocs": {
+    "description": "Find out more about Shorthand",
+    "url": "https://github.com/alexdelin/shorthand"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8181/api/v1"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Administration",
+      "description": "Manage the config for the server"
+    },
+    {
+      "name": "General",
+      "description": "Navigation and access to notes"
+    },
+    {
+      "name": "Elements",
+      "description": "Access elements within notes"
+    }
+  ],
+  "paths": {
+    "/config": {
+      "get": {
+        "tags": [
+          "Administration"
+        ],
+        "summary": "Get the current server configuration",
+        "description": "Get the current server configuration",
+        "operationId": "getConfig",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Administration"
+        ],
+        "summary": "Update the server configuration",
+        "description": "Update the server configuration",
+        "operationId": "updateConfig",
+        "requestBody": {
+          "description": "Update an existent pet in the store",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Config"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Ack"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/search": {
+      "get": {
+        "tags": ["General"],
+        "summary": "Get the full-text search results",
+        "description": "Get the full-text search results",
+        "operationId": "search",
+        "parameters": [
+          {
+            "name": "query_string",
+            "in": "query",
+            "description": "Query to perform against notes",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "meeting notes"
+            }
+          },
+          {
+            "name": "case_sensitive",
+            "in": "query",
+            "description": "Whether to perfrom a case-sensitive search",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "aggregate_by_file",
+            "in": "query",
+            "description": "Whether to aggregate results by file",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Ack": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "ack"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "Something went wrong"
+          }
+        }
+      },
+      "FrontendConfig": {
+        "type": "object",
+        "properties": {
+          "view_history_limit": {
+            "type": "integer",
+            "example": 100
+          },
+          "map_tileserver_url": {
+            "type": "string",
+            "example": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          }
+        }
+      },
+      "Config": {
+        "type": "object",
+        "properties": {
+          "notes_directory": {
+            "type": "string",
+            "example": "/var/lib/shorthand/notes"
+          },
+          "cache_directory": {
+            "type": "string",
+            "example": "/var/lib/shorthand/cache"
+          },
+          "default_directory": {
+            "type": "string",
+            "nullable": true,
+            "example": "work"
+          },
+          "log_file_path": {
+            "type": "string",
+            "example": "/var/log/shorthand/shorthand.log"
+          },
+          "log_level": {
+            "type": "string",
+            "example": "INFO",
+            "enum": [
+              "DEBUG", "INFO", "WARN",
+              "WARNING", "ERROR", "CRITICAL"
+            ]
+          },
+          "log_format": {
+            "type": "string",
+            "example": "%(asctime)s %(name)s %(levelname)-8s %(message)s"
+          },
+          "grep_path": {
+            "type": "string",
+            "example": "grep"
+          },
+          "find_path": {
+            "type": "string",
+            "example": "find"
+          },
+          "frontend": {
+            "$ref": "#/components/schemas/FrontendConfig"
+          }
+        }
+      },
+      "SearchResult": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "Something went wrong"
+          }
+        }
+      }
+    }
+  }
+}

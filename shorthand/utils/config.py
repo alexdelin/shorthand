@@ -2,22 +2,53 @@ import os
 import copy
 import json
 import logging
+from typing import TypedDict, Union, NewType
+
+from shorthand.types import FilePath, DirectoryPath
+
+
+class ShorthandFrontendConfig(TypedDict):
+    view_history_limit: int
+    map_tileserver_url: str
+
+class ShorthandConfig(TypedDict):
+    notes_directory: DirectoryPath
+    cache_directory: DirectoryPath
+    default_directory: Union[str, None]
+    log_file_path: FilePath
+    log_level: str
+    log_format: str
+    grep_path: str
+    find_path: str
+    frontend: ShorthandFrontendConfig
+
+class ShorthandConfigUpdates(TypedDict, total=False):
+    notes_directory: DirectoryPath
+    cache_directory: DirectoryPath
+    default_directory: Union[str, None]
+    log_file_path: FilePath
+    log_level: str
+    log_format: str
+    grep_path: str
+    find_path: str
+    frontend: ShorthandFrontendConfig
 
 
 CONFIG_FILE_LOCATION = '/etc/shorthand/shorthand_config.json'
+DEFAULT_NOTES_DIR = '/var/lib/shorthand/notes'
 DEFAULT_CACHE_DIR = '/var/lib/shorthand/cache'
 DEFAULT_LOG_FILE = '/var/log/shorthand/shorthand.log'
 DEFAULT_LOG_FORMAT = '%(asctime)s %(name)s %(levelname)-8s %(message)s'
 DEFAULT_LOG_LEVEL = 'INFO'
 DEFAULT_GREP_PATH = 'grep'
 DEFAULT_FIND_PATH = 'find'
-DEFAULT_FRONTEND_CONFIG = {
+DEFAULT_FRONTEND_CONFIG: ShorthandFrontendConfig = {
     'view_history_limit': 100,
     'map_tileserver_url': 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
 }
 
-DEFAULT_CONFIG = {
-    "notes_directory": None,
+DEFAULT_CONFIG: ShorthandConfig = {
+    "notes_directory": DEFAULT_NOTES_DIR,
     "cache_directory": DEFAULT_CACHE_DIR,
     "default_directory": None,
     "log_file_path": DEFAULT_LOG_FILE,
@@ -34,7 +65,7 @@ REQUIRED_FIELDS = ['notes_directory']
 log = logging.getLogger(__name__)
 
 
-def _get_notes_config(config_location=CONFIG_FILE_LOCATION):
+def _get_notes_config(config_location: FilePath = CONFIG_FILE_LOCATION) -> ShorthandConfig:
     '''Get notes config from the file path specified
     returns the loaded, cleaned, and validated config
     '''
@@ -53,7 +84,7 @@ def _get_notes_config(config_location=CONFIG_FILE_LOCATION):
     return notes_config
 
 
-def _write_config(config_location, config):
+def _write_config(config_location: FilePath, config: ShorthandConfig) -> None:
     '''Write the specified config into a config file
     '''
 
@@ -71,7 +102,7 @@ def _write_config(config_location, config):
         json.dump(clean_config, config_file_object)
 
 
-def _modify_config(config, updates):
+def _modify_config(config: ShorthandConfig, updates: ShorthandConfigUpdates) -> ShorthandConfig:
     '''Update one or more fields in the config
        Takes an original config and a dictionary of updates to make
        The updates have the same form as the regular config but
@@ -90,7 +121,7 @@ def _modify_config(config, updates):
         else:
             new_config[key] = value
 
-    if updates.get('frontend'):
+    if 'frontend' in updates:
         # Validate Provided frontend updates
         if not isinstance(updates['frontend'], dict):
             raise ValueError('Frontend config must be provided '
@@ -109,7 +140,7 @@ def _modify_config(config, updates):
     return new_config
 
 
-def clean_and_validate_config(config):
+def clean_and_validate_config(config: ShorthandConfig) -> ShorthandConfig:
     '''Clean and validate values from the config file as needed
     Return the config if there are no issues, and raise an error
     if an issue is found
@@ -162,7 +193,7 @@ def clean_and_validate_config(config):
 
     log_level = config.get('log_level')
     if log_level:
-        if log_level.upper() not in ['DEBUG', 'INFO', 'WARNING',
+        if log_level.upper() not in ['DEBUG', 'INFO', 'WARNING', 'WARN',
                                      'ERROR', 'CRITICAL']:
             raise ValueError(f'Invalid log level "{log_level}" specified')
         config['log_level'] = log_level.upper()
@@ -277,7 +308,7 @@ def clean_and_validate_config(config):
                 if view_history_limit < 0:
                     raise ValueError('View History Limit must be '
                                      'at least zero')
-            else:
+            elif isinstance(view_history_limit, str):
                 try:
                     config['frontend']['view_history_limit'] = \
                         int(view_history_limit)

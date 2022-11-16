@@ -60,11 +60,7 @@ type FullTextSearchResult = {
   match_content: string
 }
 
-type FullTextSearchResponse<T extends FullTextSearchResult |
-                                      AggregatedFullTextSearchResult> = {
-  items: Array<T>,
-  count: number
-}
+type FullTextSearchResponse = FullTextSearchResult[] | AggregatedFullTextSearchResult[]
 
 type FullTextSearchResultsProps = {
   query: string
@@ -78,7 +74,7 @@ export function FullTextSearchResults(props: FullTextSearchResultsProps) {
   const navigate = useNavigate();
 
   const { data: FullTextSearchData } =
-    useQuery<FullTextSearchResponse<AggregatedFullTextSearchResult>, Error>(['fullTextSearch', { query: props.query }], () =>
+    useQuery<AggregatedFullTextSearchResult[], Error>(['fullTextSearch', { query: props.query }], () =>
     fetch('http://localhost:8181/api/v1/search' +
           '?query_string=' + props.query +
           '&aggregate_by_file=true').then(res =>
@@ -126,7 +122,7 @@ export function FullTextSearchResults(props: FullTextSearchResultsProps) {
   const trimmedResults = useMemo(() => {
     if (FullTextSearchData === undefined) return [];
 
-    let res = FullTextSearchData.items.map((result) => {
+    let res = FullTextSearchData.map((result) => {
       if (result.matches.length <= MATCH_PAGE_SIZE) {
         return {
           truncated: false,
@@ -148,7 +144,7 @@ export function FullTextSearchResults(props: FullTextSearchResultsProps) {
       }
     })
 
-    if (FullTextSearchData.count > resultCount) {
+    if (FullTextSearchData.length > resultCount) {
       res = res.slice(0, resultCount)
     }
 
@@ -159,7 +155,7 @@ export function FullTextSearchResults(props: FullTextSearchResultsProps) {
     return <div>No Results</div>
   }
 
-  const isTruncated = trimmedResults.length < FullTextSearchData.count;
+  const isTruncated = trimmedResults.length < FullTextSearchData.length;
 
   return (
     <Fragment>

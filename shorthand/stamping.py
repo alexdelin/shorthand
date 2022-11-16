@@ -17,7 +17,7 @@ log = logging.getLogger(__name__)
 def _stamp_notes(notes_directory, stamp_todos=True, stamp_today=True,
                  stamp_questions=True, stamp_answers=True,
                  grep_path='grep'):
-    '''Stamp notes for the purpose of inserting date stamps
+    r'''Stamp notes for the purpose of inserting date stamps
     as a convenience feature. This function makes the following
     replacements:
 
