@@ -152,7 +152,21 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Config"
+                  "oneOf": [
+                    {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/FullTextSearchResult"
+                      }
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/AggregatedFullTextSearchResult"
+                      }
+                    }
+                  ]
+
                 }
               }
             }
@@ -249,12 +263,48 @@
           }
         }
       },
-      "SearchResult": {
+      "FullTextSearchResult": {
         "type": "object",
         "properties": {
-          "error": {
+          "file_path": {
             "type": "string",
-            "example": "Something went wrong"
+            "example": "/example.note"
+          },
+          "line_number": {
+            "type": "string",
+            "example": "120"
+          },
+          "match_content": {
+            "type": "string",
+            "example": "## Conference meeting notes"
+          }
+        }
+      },
+      "AggregatedFullTextSearchResult": {
+        "type": "object",
+        "properties": {
+          "file_path": {
+            "type": "string",
+            "example": "/example.note"
+          },
+          "matches": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AggregatedFullTextSearchMatch"
+            }
+          }
+        }
+      },
+      "AggregatedFullTextSearchMatch": {
+        "type": "object",
+        "properties": {
+          "line_number": {
+            "type": "string",
+            "example": "120"
+          },
+          "match_content": {
+            "type": "string",
+            "example": "## Conference meeting notes"
           }
         }
       }
