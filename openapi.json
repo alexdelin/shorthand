@@ -4,9 +4,7 @@
     "title": "Shorthand API",
     "description": "This is an API for retrieving content and metadata from notes written in Shorthand markdown format.",
     "termsOfService": "http://swagger.io/terms/",
-    "contact": {
-      "email": "apiteam@swagger.io"
-    },
+    "contact": { "email": "apiteam@swagger.io" },
     "license": {
       "name": "MIT",
       "url": "https://github.com/alexdelin/shorthand/blob/master/LICENSE.md"
@@ -17,11 +15,7 @@
     "description": "Find out more about Shorthand",
     "url": "https://github.com/alexdelin/shorthand"
   },
-  "servers": [
-    {
-      "url": "http://localhost:8181/api/v1"
-    }
-  ],
+  "servers": [{ "url": "http://localhost:8181/api/v1" }],
   "tags": [
     {
       "name": "Administration",
@@ -39,9 +33,7 @@
   "paths": {
     "/config": {
       "get": {
-        "tags": [
-          "Administration"
-        ],
+        "tags": ["Administration"],
         "summary": "Get the current server configuration",
         "description": "Get the current server configuration",
         "operationId": "getConfig",
@@ -69,14 +61,12 @@
         }
       },
       "put": {
-        "tags": [
-          "Administration"
-        ],
+        "tags": ["Administration"],
         "summary": "Update the server configuration",
         "description": "Update the server configuration",
         "operationId": "updateConfig",
         "requestBody": {
-          "description": "Update an existent pet in the store",
+          "description": "The config values to update",
           "content": {
             "application/json": {
               "schema": {
@@ -167,6 +157,98 @@
                     }
                   ]
 
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/note": {
+      "get": {
+        "tags": ["General"],
+        "summary": "Get the raw content of a note",
+        "description": "Get the raw content of a note",
+        "operationId": "getNote",
+        "parameters": [{
+          "name": "path",
+          "in": "query",
+          "description": "Path to note to get the content of",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "example": "/example.note"
+          }
+        }],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "# Example Note \nHello!"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["General"],
+        "summary": "Update the raw content of a note",
+        "description": "Update the raw content of a note",
+        "operationId": "updateNote",
+        "parameters": [{
+          "name": "path",
+          "in": "query",
+          "description": "Path to note to update the content of",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "example": "/example.note"
+          }
+        }],
+        "requestBody": {
+          "description": "The note content to update the note with",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "type": "string",
+                "example": "# Example Note \nHello!"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Note Updated"
                 }
               }
             }

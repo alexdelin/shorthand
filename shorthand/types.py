@@ -31,6 +31,9 @@ Subdir = str
 # Note level concepts
 # -------------------
 
+# The raw string content of a note
+RawNoteContent = str
+
 # A URL which points to an external resource
 ExternalURL = str
 

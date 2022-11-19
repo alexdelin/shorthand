@@ -65,7 +65,8 @@ REQUIRED_FIELDS = ['notes_directory']
 log = logging.getLogger(__name__)
 
 
-def _get_notes_config(config_location: FilePath = CONFIG_FILE_LOCATION) -> ShorthandConfig:
+def _get_notes_config(config_location: FilePath = CONFIG_FILE_LOCATION
+                      ) -> ShorthandConfig:
     '''Get notes config from the file path specified
     returns the loaded, cleaned, and validated config
     '''
@@ -102,7 +103,8 @@ def _write_config(config_location: FilePath, config: ShorthandConfig) -> None:
         json.dump(clean_config, config_file_object)
 
 
-def _modify_config(config: ShorthandConfig, updates: ShorthandConfigUpdates) -> ShorthandConfig:
+def _modify_config(config: ShorthandConfig, updates: ShorthandConfigUpdates
+                   ) -> ShorthandConfig:
     '''Update one or more fields in the config
        Takes an original config and a dictionary of updates to make
        The updates have the same form as the regular config but
