@@ -188,8 +188,7 @@ class ShorthandServer(object):
 
     # TOC
     def get_toc(self, directory_filter=None):
-        return _get_toc(notes_directory=self.config['notes_directory'],
-                        directory_filter=directory_filter)
+        return _get_toc(notes_directory=self.config['notes_directory'])
 
     # Typeahead
     def update_ngram_database(self):

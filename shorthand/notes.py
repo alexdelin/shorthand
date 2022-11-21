@@ -2,19 +2,29 @@ import re
 import os
 from subprocess import Popen, PIPE
 import logging
-from typing import Optional, TypedDict, cast
+from typing import Optional, TypedDict, cast, Union
 
 from shorthand.utils.paths import get_full_path, get_relative_path, \
                                   parse_relative_link_path, is_external_path, \
                                   is_note_path
 from shorthand.utils.patterns import INTERNAL_LINK_PATTERN, ALL_LINK_PATTERN
-from shorthand.types import DirectoryPath, ExecutablePath, NotePath, RawNoteContent
+from shorthand.types import DirectoryPath, ExecutablePath, ExternalURL, NotePath, RawNoteContent, RelativeNotePath
+
 
 link_regex = re.compile(ALL_LINK_PATTERN)
 internal_link_regex = re.compile(INTERNAL_LINK_PATTERN)
 
 
 log = logging.getLogger(__name__)
+
+
+class Link(TypedDict):
+    line_number: str
+    source: NotePath
+    target: Union[NotePath, RelativeNotePath, ExternalURL]
+    text: str
+    internal: bool
+    valid: bool
 
 
 def _get_note(notes_directory: DirectoryPath, path: NotePath
@@ -97,14 +107,6 @@ def _delete_note(notes_directory: DirectoryPath, note_path: NotePath) -> None:
 
     os.remove(full_path)
 
-
-class Link(TypedDict):
-    line_number: str
-    source: str
-    target: str
-    text: str
-    internal: bool
-    valid: bool
 
 def _validate_internal_links(notes_directory: DirectoryPath,
                              source: Optional[NotePath]=None,

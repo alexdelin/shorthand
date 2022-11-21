@@ -24,6 +24,9 @@ DisplayPath = str
 # Typically must be transformed into a NotePath before it can be used
 RelativeNotePath = str
 
+# A relative path within the notes directory to a subdir
+RelativeDirectoryPath = str
+
 # A subdirectory within the notes directory
 Subdir = str
 

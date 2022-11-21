@@ -88,7 +88,6 @@ def write_updated_note():
     return 'Note Updated'
 
 
-
 @shorthand_api_blueprint.route('/api/v1/toc', methods=['GET'])
 def get_toc_data():
     server = ShorthandServer(current_app.config['config_path'])

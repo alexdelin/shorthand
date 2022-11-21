@@ -156,7 +156,6 @@
                       }
                     }
                   ]
-
                 }
               }
             }
@@ -249,6 +248,36 @@
                 "schema": {
                   "type": "string",
                   "example": "Note Updated"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/toc": {
+      "get": {
+        "tags": ["General"],
+        "summary": "Get the table of contents of the notes directory",
+        "description": "Get the table of contents of the notes directory",
+        "operationId": "getTOC",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TOC"
                 }
               }
             }
@@ -388,6 +417,40 @@
             "type": "string",
             "example": "## Conference meeting notes"
           }
+        }
+      },
+      "TOC": {
+        "type": "object",
+        "properties": {
+          "files": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "dirs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TOC"
+            }
+          },
+          "path": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "files": ["example.note"],
+          "dirs": [{
+            "files": ["meetings.note", "projects.note"],
+            "dirs": [],
+            "path": "/work",
+            "text": "work"
+          }],
+          "path": "",
+          "text": ""
         }
       }
     }
