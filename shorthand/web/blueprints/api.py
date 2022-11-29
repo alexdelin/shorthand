@@ -1,7 +1,7 @@
 import json
 
 from werkzeug.exceptions import HTTPException
-from flask import Blueprint, request, current_app, Response
+from flask import Blueprint, request, current_app
 
 from shorthand import ShorthandServer
 from shorthand.elements.todos import analyze_todos
@@ -25,10 +25,7 @@ def handle_exception(e):
     if isinstance(e, HTTPException):
         return e
 
-    error_message = json.dumps({'error': str(e)})
-    resp = Response(error_message)
-    resp.status_code = 500
-    return resp
+    return json.dumps({'error': str(e)}), 500
 
 
 # ------------------------------
@@ -57,10 +54,10 @@ def get_search_results():
 
     query_string = get_request_argument(request.args, name='query_string')
     case_sensitive = get_request_argument(request.args, name='case_sensitive',
-                                          arg_type='bool', default=False)
+                                          arg_type=bool, default=False)
     aggregate_by_file = get_request_argument(request.args,
                                              name='aggregate_by_file',
-                                             arg_type='bool', default=False)
+                                             arg_type=bool, default=False)
 
     search_results = server.search_full_text(
         query_string=query_string,
@@ -109,10 +106,10 @@ def get_note_links():
     note = get_request_argument(request.args, name='note')
     include_external = get_request_argument(request.args,
                                             name='include_external',
-                                            arg_type='bool', default=False)
+                                            arg_type=bool, default=False)
     include_invalid = get_request_argument(request.args,
                                            name='include_invalid',
-                                           arg_type='bool', default=False)
+                                           arg_type=bool, default=False)
 
     return json.dumps(
         server.get_links(source=source, target=target, note=note,
@@ -149,9 +146,9 @@ def get_files():
 
     query_string = get_request_argument(request.args, name='query_string')
     prefer_recent = get_request_argument(request.args, name='prefer_recent',
-                                         arg_type='bool', default=True)
+                                         arg_type=bool, default=True)
     case_sensitive = get_request_argument(request.args, name='case_sensitive',
-                                          arg_type='bool', default=False)
+                                          arg_type=bool, default=False)
 
     files = server.search_filenames(
                 prefer_recent=prefer_recent,
@@ -224,9 +221,9 @@ def get_current_todos():
     tag = get_request_argument(request.args, name='tag')
     suppress_future = get_request_argument(request.args,
                                            name='suppress_future',
-                                           arg_type='bool', default=True)
+                                           arg_type=bool, default=True)
     case_sensitive = get_request_argument(request.args, name='case_sensitive',
-                                          arg_type='bool', default=False)
+                                          arg_type=bool, default=False)
 
     if directory_filter == 'ALL':
         directory_filter = None
@@ -250,10 +247,12 @@ def get_current_todos():
 def mark_todo_status():
     server = ShorthandServer(current_app.config['config_path'])
 
-    filename = get_request_argument(request.args, name='filename')
+    filename = get_request_argument(request.args, name='filename',
+                                    required=True)
     line_number = get_request_argument(request.args, name='line_number',
-                                       arg_type='int')
-    status = get_request_argument(request.args, name='status')
+                                       arg_type=int, default=None,
+                                       required=True)
+    status = get_request_argument(request.args, name='status', required=True)
 
     return server.mark_todo(filename, line_number, status)
 
@@ -267,7 +266,7 @@ def fetch_questions():
                                             name='directory_filter')
     if directory_filter == 'ALL':
         directory_filter = None
-    current_app.logger.info(f'Getting {status} questions in '
+    current_app.logger.info(f'Getting {status} questions in ' +
                             f'directory {directory_filter}')
 
     questions = server.get_questions(
@@ -306,13 +305,15 @@ def fetch_record_sets():
 def fetch_record_set():
     server = ShorthandServer(current_app.config['config_path'])
 
-    file_path = get_request_argument(request.args, name='file_path')
+    file_path = get_request_argument(request.args, name='file_path',
+                                     required=True)
     line_number = get_request_argument(request.args, name='line_number',
-                                       arg_type='int')
-    parse = get_request_argument(request.args, name='parse', arg_type='bool',
+                                       arg_type=int, default=None,
+                                       required=True)
+    parse = get_request_argument(request.args, name='parse', arg_type=bool,
                                  default=True)
     include_config = get_request_argument(request.args, name='include_config',
-                                          arg_type='bool', default=False)
+                                          arg_type=bool, default=False)
     parse_format = get_request_argument(request.args, name='parse_format',
                                         default='json')
 

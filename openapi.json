@@ -294,6 +294,170 @@
           }
         }
       }
+    },
+    "/subdirs": {
+      "get": {
+        "tags": ["General"],
+        "summary": "Get all subdirectories within the notes directory",
+        "description": "Get all subdirectories within the notes directory",
+        "operationId": "getSubdirs",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "example": ["work", "reading"]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/links": {
+      "get": {
+        "tags": ["General"],
+        "summary": "Get all links within the notes directory",
+        "description": "Get all links within the notes directory",
+        "operationId": "getLinks",
+        "parameters": [
+          {
+            "name": "source",
+            "in": "query",
+            "description": "Path to the source note that contains a link",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "/example.note"
+            }
+          },
+          {
+            "name": "target",
+            "in": "query",
+            "description": "The target specified in a link",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "/example.note"
+            }
+          },
+          {
+            "name": "note",
+            "in": "query",
+            "description": "Path to a note which can be either the source or target of a link",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "/example.note"
+            }
+          },
+          {
+            "name": "include_external",
+            "in": "query",
+            "description": "Include links with external targets (http://...)",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "include_invalid",
+            "in": "query",
+            "description": "Include links with invalid internal targets (notes that don't exist)",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Link"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/links/validate": {
+      "get": {
+        "tags": ["General"],
+        "summary": "Find invalid links within the notes directory",
+        "description": "Find invalid links within the notes directory",
+        "operationId": "getInvalidLinks",
+        "parameters": [
+          {
+            "name": "source",
+            "in": "query",
+            "description": "Path to the source note that contains an invalid link",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "/example.note"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Link"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -451,6 +615,35 @@
           }],
           "path": "",
           "text": ""
+        }
+      },
+      "Link": {
+        "type": "object",
+        "properties": {
+          "line_number": {
+            "type": "string",
+            "example": "22"
+          },
+          "source": {
+            "type": "string",
+            "example": "/example.note"
+          },
+          "target": {
+            "type": "string",
+            "example": "/example2.note"
+          },
+          "text": {
+            "type": "string",
+            "example": "A sample link"
+          },
+          "internal": {
+            "type": "boolean",
+            "example": true
+          },
+          "valid": {
+            "type": "boolean",
+            "example": true
+          }
         }
       }
     }
