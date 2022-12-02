@@ -4,7 +4,7 @@ from shorthand.notes import _get_note, _update_note, \
 from shorthand.history import _get_calendar
 from shorthand.tags import _get_tags
 from shorthand.toc import _get_toc
-from shorthand.stamping import _stamp_notes
+from shorthand.stamping import _stamp_notes, _stamp_raw_note
 from shorthand.search import _search_full_text, _search_filenames, \
                              _record_file_view
 from shorthand.elements.todos import _get_todos, _mark_todo
@@ -147,6 +147,13 @@ class ShorthandServer(object):
                             stamp_questions=stamp_questions,
                             stamp_answers=stamp_answers,
                             grep_path=self.config['grep_path'])
+
+    def stamp_raw_note(self, raw_note, stamp_todos=True, stamp_today=True,
+                       stamp_questions=True, stamp_answers=True):
+        return _stamp_raw_note(raw_note=raw_note, stamp_todos=stamp_todos,
+                               stamp_today=stamp_today,
+                               stamp_questions=stamp_questions,
+                               stamp_answers=stamp_answers)
 
     # Search
     def search_full_text(self, query_string, case_sensitive=False,

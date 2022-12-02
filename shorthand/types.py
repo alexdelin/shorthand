@@ -34,8 +34,11 @@ Subdir = str
 # Note level concepts
 # -------------------
 
-# The raw string content of a note
+# The full raw string content of a note
 RawNoteContent = str
+
+# The full raw conntent of a single line in a note
+RawNoteLine = str
 
 # A URL which points to an external resource
 ExternalURL = str
@@ -43,5 +46,11 @@ ExternalURL = str
 
 # API level concepts
 # ------------------
+ACKResponse = str
 
-
+JSONShorthandConfig = str
+JSONShorthandConfigUpdates = str
+JSONSearchResults = str
+JSONTOC = str
+JSONSubdirs = str
+JSONLinks = str

@@ -5,7 +5,9 @@ from flask import Blueprint, request, current_app
 
 from shorthand import ShorthandServer
 from shorthand.elements.todos import analyze_todos
+from shorthand.types import JSONTOC, ACKResponse, JSONLinks, JSONSearchResults, JSONShorthandConfig, JSONShorthandConfigUpdates, JSONSubdirs, NotePath, RawNoteContent
 from shorthand.utils.api import wrap_response_data, get_request_argument
+from shorthand.utils.config import ShorthandConfigUpdates
 
 shorthand_api_blueprint = Blueprint('shorthand_api_blueprint', __name__)
 
@@ -32,24 +34,25 @@ def handle_exception(e):
 # --- General Notes Features ---
 # ------------------------------
 @shorthand_api_blueprint.route('/api/v1/config', methods=['GET'])
-def get_server_config():
+def get_server_config() -> JSONShorthandConfig:
     server = ShorthandServer(current_app.config['config_path'])
     current_app.logger.info('Returning config')
     return json.dumps(server.get_config())
 
 
 @shorthand_api_blueprint.route('/api/v1/config', methods=['PUT'])
-def update_server_config():
+def update_server_config() -> ACKResponse:
     server = ShorthandServer(current_app.config['config_path'])
     current_app.logger.info('Updating config')
-    updates = json.loads(request.get_data())
+    updates_json: JSONShorthandConfigUpdates = str(request.get_data())
+    updates: ShorthandConfigUpdates = json.loads(updates_json)
     server.update_config(updates)
     server.save_config()
     return 'ack'
 
 
 @shorthand_api_blueprint.route('/api/v1/search', methods=['GET'])
-def get_search_results():
+def get_search_results() -> JSONSearchResults:
     server = ShorthandServer(current_app.config['config_path'])
 
     query_string = get_request_argument(request.args, name='query_string')
@@ -67,7 +70,7 @@ def get_search_results():
 
 
 @shorthand_api_blueprint.route('/api/v1/note', methods=['GET'])
-def get_full_note():
+def get_full_note() -> RawNoteContent:
     server = ShorthandServer(current_app.config['config_path'])
     path = get_request_argument(request.args, name='path', required=True)
     return server.get_note(path)
@@ -77,28 +80,28 @@ def get_full_note():
 def write_updated_note():
     server = ShorthandServer(current_app.config['config_path'])
 
-    path = get_request_argument(request.args, name='path', required=True)
+    path: NotePath = get_request_argument(request.args, name='path', required=True)
     request.get_data()
-    content = request.data.decode('utf-8')
+    content: RawNoteContent = request.data.decode('utf-8')
 
     server.update_note(path, content)
     return 'Note Updated'
 
 
 @shorthand_api_blueprint.route('/api/v1/toc', methods=['GET'])
-def get_toc_data():
+def get_toc_data() -> JSONTOC:
     server = ShorthandServer(current_app.config['config_path'])
     return json.dumps(server.get_toc())
 
 
 @shorthand_api_blueprint.route('/api/v1/subdirs', methods=['GET'])
-def get_subdirs_data():
+def get_subdirs_data() -> JSONSubdirs:
     server = ShorthandServer(current_app.config['config_path'])
     return json.dumps(server.get_subdirs())
 
 
 @shorthand_api_blueprint.route('/api/v1/links', methods=['GET'])
-def get_note_links():
+def get_note_links() -> JSONLinks:
     server = ShorthandServer(current_app.config['config_path'])
 
     source = get_request_argument(request.args, name='source')
@@ -118,7 +121,7 @@ def get_note_links():
 
 
 @shorthand_api_blueprint.route('/api/v1/links/validate', methods=['GET'])
-def validate_note_links():
+def validate_note_links() -> JSONLinks:
     server = ShorthandServer(current_app.config['config_path'])
     source = get_request_argument(request.args, name='source')
     return json.dumps(server.validate_internal_links(source=source))
@@ -136,8 +139,15 @@ def get_typeahead():
 @shorthand_api_blueprint.route('/api/v1/stamp', methods=['GET'])
 def stamp():
     server = ShorthandServer(current_app.config['config_path'])
-    return server.stamp_notes(stamp_todos=True, stamp_today=True,
-                              stamp_questions=True, stamp_answers=True)
+    return server.stamp_notes()
+
+
+@shorthand_api_blueprint.route('/api/v1/stamp/raw', methods=['GET'])
+def stamp_raw() -> RawNoteContent:
+    server = ShorthandServer(current_app.config['config_path'])
+    request.get_data()
+    raw_note: RawNoteContent = request.data.decode('utf-8')
+    return server.stamp_raw_note(raw_note)
 
 
 @shorthand_api_blueprint.route('/api/v1/files', methods=['GET'])
@@ -225,7 +235,7 @@ def get_current_todos():
     case_sensitive = get_request_argument(request.args, name='case_sensitive',
                                           arg_type=bool, default=False)
 
-    if directory_filter == 'ALL':
+    if directory_filter in ['ALL', '']:
         directory_filter = None
     if tag == 'ALL':
         tag = None

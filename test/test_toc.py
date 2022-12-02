@@ -26,5 +26,5 @@ class TestToc(unittest.TestCase):
         validate_setup()
 
     def test_get_toc(self):
-        toc = _get_toc(CONFIG['notes_directory'], directory_filter=None)
+        toc = _get_toc(CONFIG['notes_directory'])
         assert toc == TOC

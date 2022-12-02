@@ -284,8 +284,12 @@ class TestTodosUnstampedFlask(unittest.TestCase):
             'suppress_future': suppress_future,
             'tag': tag
         }
-        response = self.api_client.get('/api/v1/todos', query_string=params)
-        return json.loads(response.data)['items']
+        response_json = self.api_client.get('/api/v1/todos', query_string=params)
+        response = json.loads(response_json.data)
+        if response.get('error'):
+            raise ValueError(f'Got server Error: {response["error"]}')
+        else:
+            return response['items']
 
     def test_unstamped_incomplete_todos_basic(self):
 
@@ -421,8 +425,13 @@ class TestTodosStampedFlask(unittest.TestCase):
             'suppress_future': suppress_future,
             'tag': tag
         }
-        response = self.api_client.get('/api/v1/todos', query_string=params)
-        return json.loads(response.data)['items']
+        json_response = self.api_client.get('/api/v1/todos', query_string=params)
+        response = json.loads(json_response.data)
+        if response.get('error'):
+            raise ValueError(f'Got server Error: {response["error"]}')
+        else:
+            return response['items']
+
 
     def test_stamped_incomplete_todos_basic(self):
         # Test Getting all incomplete todos
