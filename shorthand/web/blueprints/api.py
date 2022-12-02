@@ -142,7 +142,7 @@ def stamp():
     return server.stamp_notes()
 
 
-@shorthand_api_blueprint.route('/api/v1/stamp/raw', methods=['GET'])
+@shorthand_api_blueprint.route('/api/v1/stamp/raw', methods=['POST'])
 def stamp_raw() -> RawNoteContent:
     server = ShorthandServer(current_app.config['config_path'])
     request.get_data()

@@ -114,18 +114,35 @@ export function ComposePage() {
       return false
     }
 
+    const currentNoteContent = editorRef.current.view.state.doc.toString();
+
     fetch(
-      'http://localhost:8181/api/v1/note?path=' + notePath,
+      'http://localhost:8181/api/v1/stamp/raw',
       {
         method: 'POST',
-        body: editorRef.current.view.state.doc.toString()
+        body: currentNoteContent
       }
     ).then(async res => {
-      if (await res.text() === 'Note Updated') {
-        queryClient.invalidateQueries(['note', { path: notePath }]);
-        queryClient.invalidateQueries(['raw-note', { path: notePath }]);
-        setChangesSaved(true);
+
+      const stampedNoteContent = await res.text();
+      if (stampedNoteContent !== currentNoteContent) {
+        setEditorText(stampedNoteContent);
       }
+
+      fetch(
+        'http://localhost:8181/api/v1/note?path=' + notePath,
+        {
+          method: 'POST',
+          body: stampedNoteContent
+        }
+      ).then(async res => {
+        if (await res.text() === 'Note Updated') {
+          queryClient.invalidateQueries(['note', { path: notePath }]);
+          queryClient.invalidateQueries(['raw-note', { path: notePath }]);
+          setChangesSaved(true);
+        }
+      })
+
     })
 
     return false;
