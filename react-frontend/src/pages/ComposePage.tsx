@@ -9,6 +9,7 @@ import { SuspenseFallback } from '../components/SuspenseFallback';
 import { ReactCodeMirrorRef } from '@uiw/react-codemirror';
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
 import { languages } from '@codemirror/language-data';
+import { indentUnit } from '@codemirror/language'
 import { EditorView, keymap } from "@codemirror/view";
 import { selectSubwordBackward, selectSubwordForward
          } from '@codemirror/commands';
@@ -19,7 +20,8 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Button from '@mui/material/Button';
 import { latexPlugin, locationPlugin, todoPlugin,
-         timestampPlugin
+         timestampPlugin, questionPlugin, definitionPlugin,
+         todayPlaceholderPlugin
          } from '../utils/codemirror-plugins';
 import { ComposePageWrapper, ComposeHeader, ComposeNoteWrapper,
          ComposeEditorWrapper, ComposePreviewWrapper,
@@ -290,7 +292,7 @@ export function ComposePage() {
             checked={showPreview}
             onChange={handleShowPreviewChange}
           />
-          <SwitchLabel>Auto-scroll Preview</SwitchLabel>
+          <SwitchLabel>Auto-scroll</SwitchLabel>
           <Switch
             checked={showPreview && scrollPreview}
             onChange={handleScrollPreviewChange}
@@ -320,10 +322,14 @@ export function ComposePage() {
                   latexPlugin,
                   locationPlugin,
                   todoPlugin,
-                  timestampPlugin
+                  timestampPlugin,
+                  questionPlugin,
+                  definitionPlugin,
+                  todayPlaceholderPlugin
                 ]
               }),
               EditorView.lineWrapping,
+              indentUnit.of('    '),
               keymap.of([
                 {
                   key: 'Mod-s',
@@ -358,6 +364,7 @@ export function ComposePage() {
             onScrollCapture={handleEditorScroll}
             onChange={handleEditorChange}
             ref={editorRef}
+            tabIndex={4}
           />
         </ComposeEditorWrapper>
         {showPreview &&
