@@ -8,6 +8,11 @@ type NavSidebarSCProps = {
   isExpanded: boolean
 }
 
+type TreeSidebarSCProps = {
+  isExpanded: boolean,
+  treeExpanded: boolean
+}
+
 export const NavSidebar = styled.div`
   width: ${(props: NavSidebarSCProps) => (props.isExpanded ? '15rem' : '5rem')};
   height: 100vh;
@@ -19,6 +24,23 @@ export const NavSidebar = styled.div`
   overflow: hidden;
   transition: width ${ANIMATION_LENGTH_MS}ms;
   background-color: rgb(33, 37, 41);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;`
+
+export const TreeSidebar = styled.div`
+  width: ${(props: TreeSidebarSCProps) => (props.isExpanded && props.treeExpanded ? '15rem' : '0rem')};
+  height: 100vh;
+  z-index: 10;
+  position: absolute;
+  top: 0;
+  left: ${(props: TreeSidebarSCProps) => (props.isExpanded ? '15rem' : '5rem')};;
+  float: left;
+  overflow: hidden;
+  transition: width ${ANIMATION_LENGTH_MS}ms, left ${ANIMATION_LENGTH_MS}ms;
+  background-color: rgb(33, 37, 61);
+  // background-color: red;
   color: white;
   display: flex;
   flex-direction: column;
@@ -74,6 +96,8 @@ export const ElementsIcon = styled.span`
   justify-content: center;
   cursor: pointer;`
 
+export const TreeIcon = ElementsIcon;
+
 export const NavOptionIcon = styled.i`
   font-size: 1.5rem;
   margin-right: 1rem;
@@ -99,13 +123,12 @@ export const NavToggleIcon = styled.i`
   margin-bottom: 0.5rem;`
 
 export const NavCover = styled.div`
-  width: calc(100% - ${(props: NavCoverProps) => (props.isExpanded ? '15rem' : '5rem')});
+  width: 100%;
   height: 100vh;
   position: absolute;
   display: ${(props: NavCoverProps) => (props.coverVisible ? 'block' : 'none')};
-  margin-left: ${(props: NavCoverProps) => (props.isExpanded ? '15rem' : '5rem')};
   opacity: ${(props: NavCoverProps) => (props.isExpanded ? '70%' : '0%')};
-  transition: margin-left ${ANIMATION_LENGTH_MS}ms, width ${ANIMATION_LENGTH_MS}ms, opacity ${ANIMATION_LENGTH_MS}ms;
+  transition: opacity ${ANIMATION_LENGTH_MS}ms;
   background-color: #777;
   z-index: 1;`
 

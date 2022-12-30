@@ -5,7 +5,8 @@ import {
   NavHeaderRest, NavDivider, NavOptionList,
   NavOption, NavOptionIcon, NavOptionName,
   NavCover, NavSubOptionList, NavSubOption,
-  NavSubOptionName, NavToggleIcon, ElementsIcon
+  NavSubOptionName, NavToggleIcon, ElementsIcon,
+  TreeIcon, TreeSidebar
 } from './Nav.styles';
 
 export function Nav() {
@@ -13,6 +14,7 @@ export function Nav() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [coverVisible, setCoverVisible] = useState(false);
   const [elementsExpanded, setElementsExpanded] = useState(false);
+  const [treeExpanded, setTreeExpanded] = useState(false);
 
   // const location = useLocation();
 
@@ -50,6 +52,15 @@ export function Nav() {
     }
   }
 
+  function handleTreeClick() {
+    if (!isExpanded) {
+      changeNav();
+      setTreeExpanded(true);
+    } else {
+      setTreeExpanded(!treeExpanded);
+    }
+  }
+
   return (
     <Fragment>
       <NavSidebar isExpanded={isExpanded}>
@@ -69,6 +80,12 @@ export function Nav() {
               <NavOptionIcon className="bi bi-pen"></NavOptionIcon>
               <NavOptionName isExpanded={isExpanded}>Compose</NavOptionName>
             </NavOption>
+          </li>
+          <li>
+            <TreeIcon onClick={handleTreeClick}>
+              <NavOptionIcon className="bi bi-bar-chart-steps"></NavOptionIcon>
+              <NavOptionName isExpanded={isExpanded}>Notes</NavOptionName>
+            </TreeIcon>
           </li>
           <li>
             <ElementsIcon onClick={handleElementsClick}>
@@ -141,6 +158,8 @@ export function Nav() {
         </NavOptionList>
         <NavToggleIcon className={"bi bi-arrow-bar-" + (isExpanded ? 'left' : 'right')} onClick={changeNav}></NavToggleIcon>
       </NavSidebar>
+      <TreeSidebar isExpanded={isExpanded} treeExpanded={treeExpanded}>
+      </TreeSidebar>
       <NavCover isExpanded={isExpanded} coverVisible={coverVisible} onClick={changeNav}>
       </NavCover>
     </Fragment>
