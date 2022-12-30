@@ -5,15 +5,19 @@ from flask import Blueprint, request, current_app
 
 from shorthand import ShorthandServer
 from shorthand.elements.todos import analyze_todos
-from shorthand.types import JSONTOC, ACKResponse, JSONLinks, JSONSearchResults, JSONShorthandConfig, JSONShorthandConfigUpdates, JSONSubdirs, NotePath, RawNoteContent
+from shorthand.types import JSONTOC, ACKResponse, JSONLinks, \
+                            JSONSearchResults, JSONShorthandConfig, \
+                            JSONShorthandConfigUpdates, JSONSubdirs, \
+                            NotePath, RawNoteContent
 from shorthand.utils.api import wrap_response_data, get_request_argument
 from shorthand.utils.config import ShorthandConfigUpdates
+from shorthand.utils.csv import _convert_to_csv
 
 shorthand_api_blueprint = Blueprint('shorthand_api_blueprint', __name__)
 
 
 @shorthand_api_blueprint.after_request
-def after_request(response):
+def add_cors_header(response):
     response.headers['Access-Control-Allow-Origin'] = '*'
     return response
 
@@ -296,6 +300,19 @@ def fetch_definitions():
 
     definitions = server.get_definitions(directory_filter=directory_filter)
     return json.dumps(wrap_response_data(definitions))
+
+
+@shorthand_api_blueprint.route('/api/v1/definitions/csv', methods=['GET'])
+def fetch_definitions_csv():
+    server = ShorthandServer(current_app.config['config_path'])
+
+    directory_filter = get_request_argument(request.args,
+                                            name='directory_filter')
+    if directory_filter == 'ALL':
+        directory_filter = None
+
+    definitions = server.get_definitions(directory_filter=directory_filter)
+    return _convert_to_csv(definitions)
 
 
 @shorthand_api_blueprint.route('/api/v1/record_sets', methods=['GET'])

@@ -17,30 +17,63 @@
     + `/api/v1/config`
         * `GET` to get the current config of the notes server
         * `PUT` to update the configuration of the notes server
-- General Notes Features
-    + `/api/v1/search` 
-    + `/api/v1/note`
-        * `GET` to get the current state of a note
-        * `PUT` to update the content of a note
-    + `/api/v1/toc`
-    + `/api/v1/subdirs`
+- Filesystem API (New)
+    + GET `/api/v1/filesystem`
+    + PUT `/api/v1/filesystem/create`
+    + DELETE `/api/v1/filesystem/delete`
+    + POST `/api/v1/filesystem/move`
+- Search API
+    + `/api/v1/search/full_text`
+    + `/api/v1/search/filenames`
+    + `/api/v1/search/typeahead`
+- Favorites API (New)
+    + GET `/api/v1/favorites`
+    + PUT `/api/v1/favorites`
+    + DELETE `/api/v1/favorites`
+- Links API
     + `/api/v1/links`
     + `/api/v1/links/validate`
-    + `/api/v1/typeahead`
+- Notes API
+    + GET `/api/v1/note`
+    + PUT `/api/v1/note`
+    + GET `/api/v1/note/toc`
+    + GET `/api/v1/record_view`
+    + PUT `/api/v1/record_view`
+- Stamping API
     + `/api/v1/stamp`
-    + `/api/v1/files`
-    + `/api/v1/record_view`
+    + `/api/v1/stamp/raw`
+- Tags API
     + `/api/v1/tags`
+- Calendar API
     + `/api/v1/calendar`
-- Elements
+- Resource API
+    + `/api/v1/get_resource`: Get a non-note resource from the notes directory (images, audio, video, etc.)
+- Elements API
     + `/api/v1/todos`
-    + `/api/v1/locations`
     + `/api/v1/mark_todo`
     + `/api/v1/questions`
     + `/api/v1/definitions`
+    + `/api/v1/locations`
     + `/api/v1/record_sets`
     + `/api/v1/record_set`
-    + `/api/v1/locations`
+- Export API
+    + `/api/v1/export/csv/todos`
+    + `/api/v1/export/csv/questions`
+    + `/api/v1/export/csv/definitions`
+    + `/api/v1/export/csv/locations`
+    + `/api/v1/export/csv/record_sets`
+    + `/api/v1/export/csv/record_set`
+- Legacy
+    + `/api/v1/search` 
+        * Move to Search API
+    + `/api/v1/files`
+        * Move to Search API
+    + `/api/v1/typeahead`
+        * Move to Search API
+    + `/api/v1/toc`
+        * Move to Filesystem API
+    + `/api/v1/subdirs`
+        * Move to Filesystem API
 
 
 ## Frontend API
