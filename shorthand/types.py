@@ -48,6 +48,8 @@ ExternalURL = str
 # ------------------
 ACKResponse = str
 
+CSVData = str
+
 JSONShorthandConfig = str
 JSONShorthandConfigUpdates = str
 JSONSearchResults = str

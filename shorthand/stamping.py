@@ -2,7 +2,9 @@ import re
 import logging
 from datetime import datetime
 from subprocess import Popen, PIPE
-from shorthand.types import DirectoryPath, ExecutablePath, RawNoteContent, RawNoteLine
+from typing import TypedDict
+from shorthand.types import DirectoryPath, ExecutablePath, NotePath, \
+                            RawNoteContent, RawNoteLine
 
 from shorthand.utils.patterns import CATCH_ALL_PATTERN, \
     VALID_INCOMPLETE_PATTERN, VALID_COMPLETE_PATTERN, \
@@ -28,6 +30,15 @@ today_placeholder_regex = re.compile(TODAY_LINE_PATTERN)
 unstamped_question_regex = re.compile(UNSTAMPED_QUESTION)
 
 unstamped_answer_regex = re.compile(UNSTAMPED_ANSWER)
+
+
+class StampingChange(TypedDict):
+    type: str
+    line_number: int
+    before: RawNoteLine
+    after: RawNoteLine
+
+StampingChanges = dict[NotePath, list[StampingChange]]
 
 
 def _stamp_unfinished_todo(line: RawNoteLine) -> RawNoteLine:
@@ -107,7 +118,7 @@ def _stamp_raw_note(raw_note: RawNoteContent, stamp_todos=True,
 
 def _stamp_notes(notes_directory: DirectoryPath, stamp_todos=True,
                  stamp_today=True, stamp_questions=True, stamp_answers=True,
-                 grep_path: ExecutablePath = 'grep'):
+                 grep_path: ExecutablePath = 'grep') -> StampingChanges:
     r'''Stamp notes for the purpose of inserting date stamps
     as a convenience feature. This function makes the following
     replacements:

@@ -128,13 +128,14 @@ def get_rendered_markdown(markdown_content, note_path):
                 record_set_name = record_set.get_config().get(
                     'rec', {}).get('name')
                 if record_set_name:
-                    html_content_lines.append(f'##### Record Set: '
+                    html_content_lines.append(f'##### Record Set: ' +
                                               f'{record_set_name}')
-                record_set_html = f'<div class="record-set">'\
-                                  f'<div class="record-set-data">{record_set_data}</div>'\
-                                  f'<div class="record-set-columns">{column_config}</div>'\
-                                  f'<div class="record-set-display"></div>'\
-                                  f'</div>'
+                record_set_html = (
+                    f'<div class="record-set">' +
+                    f'<div class="record-set-data">{record_set_data}</div>' +
+                    f'<div class="record-set-columns">{column_config}</div>' +
+                    f'<div class="record-set-display"></div>' +
+                    f'</div>')
                 html_content_lines.append(record_set_html)
                 html_content_lines.append(line_span)
                 rec_data_lines = []
@@ -161,9 +162,9 @@ def get_rendered_markdown(markdown_content, note_path):
 
         if gps_regex.search(markdown_line):
             markdown_line = gps_regex.sub(
-                '<location lat="\\g<2>" lon="\\g<4>">'
-                '<span class="location-name"><i class="bi-geo-fill"></i>\\g<6></span>'
-                '(<span class="location-coordinates">\\g<2>, \\g<4></span>)'
+                '<location lat="\\g<2>" lon="\\g<4>">' +
+                '<span class="location-name"><i class="bi-geo-fill"></i>\\g<6></span>' +
+                '(<span class="location-coordinates">\\g<2>, \\g<4></span>)' +
                 '</location>',
                 markdown_line)
 
@@ -198,8 +199,8 @@ def get_rendered_markdown(markdown_content, note_path):
             heading_level = len(split_heading[0])
             element_id = split_heading[1].replace(' ', '-')
             heading_div = f'<span id="{element_id}"></span>'
-            toc_markdown_line = f'{"  " * (heading_level - 1)}- '\
-                                f'[{split_heading[1]}](#{element_id})'
+            toc_markdown_line = (f'{"  " * (heading_level - 1)}- ' +
+                                 f'[{split_heading[1]}](#{element_id})')
             html_content_lines.append(line_span)
             html_content_lines.append(heading_div)
             html_content_lines.append(markdown_line)
@@ -260,14 +261,15 @@ def get_todo_element(raw_todo):
 
     todo_timestamp = f'<div class="todo-start-date">{start}</div>'
     if end:
-        todo_timestamp += f' <i class="bi-arrow-right"></i> <div class="todo-end-date">{end}</div>'
+        todo_timestamp += (f' <i class="bi-arrow-right"></i>' +
+                           f' <div class="todo-end-date">{end}</div>')
 
-    todo_element = f'- <span style="display: none;">a</span>'\
-                   f'<div class="todo-element todo-{status}">'\
-                   f'<div class="todo-icon">{icon}</div>'\
-                   f'<div class="todo-text">{text}{tag_elements}</div>'\
-                   f'<div class="todo-timestamp">{todo_timestamp}</div>'\
-                   f'</div>'
+    todo_element = (f'- <span style="display: none;">a</span>' +
+                    f'<div class="todo-element todo-{status}">' +
+                    f'<div class="todo-icon">{icon}</div>' +
+                    f'<div class="todo-text">{text}{tag_elements}</div>' +
+                    f'<div class="todo-timestamp">{todo_timestamp}</div>' +
+                    f'</div>')
 
     todo_element = (' ' * leading_spaces) + todo_element
     return todo_element
@@ -280,9 +282,12 @@ def get_question_element(raw_question):
     if raw_question.strip()[2] == '?':
         element_type = 'question'
         icon = '<i class="bi-question-octagon"></i>'
-    if raw_question.strip()[2] == '@':
+    elif raw_question.strip()[2] == '@':
         element_type = 'answer'
         icon = '<i class="bi-arrow-return-right"></i>'
+    else:
+        log.error(f'Got invalid question {raw_question}')
+        return ''
 
     text = raw_question.strip()[4:]
     tags, text = extract_tags(text)
@@ -292,12 +297,12 @@ def get_question_element(raw_question):
 
     leading_spaces = len(raw_question) - len(raw_question.lstrip(' '))
 
-    question_element = f'- <span style="display: none;">a</span>'\
-                       f'<div class="qa-element qa-{element_type}">'\
-                       f'<div class="qa-icon">{icon}</div>'\
-                       f'<div class="qa-text">{text}{tag_elements}</div>'\
-                       f'<div class="qa-timestamp"><div class="qa-create-date">{timestamp}</div></div>'\
-                       f'</div>'
+    question_element = (f'- <span style="display: none;">a</span>' +
+                        f'<div class="qa-element qa-{element_type}">' +
+                        f'<div class="qa-icon">{icon}</div>' +
+                        f'<div class="qa-text">{text}{tag_elements}</div>' +
+                        f'<div class="qa-timestamp"><div class="qa-create-date">{timestamp}</div></div>' +
+                        f'</div>')
 
     question_element = (' ' * leading_spaces) + question_element
     return question_element
@@ -312,11 +317,11 @@ def get_definition_element(definition_match, markdown_line):
 
     leading_spaces = len(markdown_line) - len(markdown_line.lstrip(' '))
 
-    element = f'- <span style="display: none;">a</span>'\
-              f'<div class="definition-element">'\
-              f'<div class="definition-term">{term}</div>'\
-              f'<div class="definition-text">{definition}{tag_elements}</div>'\
-              f'</div>'
+    element = (f'- <span style="display: none;">a</span>' +
+               f'<div class="definition-element">' +
+               f'<div class="definition-term">{term}</div>' +
+               f'<div class="definition-text">{definition}{tag_elements}</div>' +
+               f'</div>')
 
     element = (' ' * leading_spaces) + element
     return element

@@ -23,7 +23,6 @@ class ShorthandConfig(TypedDict):
     frontend: ShorthandFrontendConfig
 
 class ShorthandConfigUpdates(TypedDict, total=False):
-    notes_directory: DirectoryPath
     cache_directory: DirectoryPath
     default_directory: Union[str, None]
     log_file_path: FilePath
@@ -113,6 +112,9 @@ def _modify_config(config: ShorthandConfig, updates: ShorthandConfigUpdates
 
     if not isinstance(updates, dict):
         raise ValueError('Config updates must be provided as a dictionary')
+
+    if 'notes_directory' in updates:
+        raise ValueError('Cannot modify the notes directory via the API')
 
     new_config = copy.deepcopy(config)
     for key, value in updates.items():
