@@ -1,6 +1,16 @@
 import { EditorView } from '@codemirror/view';
 import { HighlightStyle, syntaxHighlighting } from '@codemirror/language';
 import { tags } from '@lezer/highlight';
+import { todoIncompleteTag, todoIncompleteMarkerTag,
+         todoSkippedTag, todoSkippedMarkerTag,
+         todoCompleteTag, todoCompleteMarkerTag,
+         timestampTag, timestampMarkTag, latexInlineTag,
+         latexBlockTag, latexMarkTag, locationMarkTag,
+         locationNameTag, locationLatLonTag,
+         questionTag, questionMarkerTag,
+         answerTag, answerMarkerTag,
+         definitionTag, definitionTermTag, definitionMarkerTag,
+         todayPlaceholderTag } from './index';
 
 // Using https://github.com/one-dark/vscode-one-dark-theme/ as reference for the colors
 const chalky = "#e5c07b", coral = "#e06c75"
@@ -137,6 +147,49 @@ const shorthandDarkHighlightStyle = HighlightStyle.define([
     { tag: tags.processingInstruction,
       color: blue5 },
 
+    // Todos
+    { tag: todoIncompleteTag,
+      color: orange },
+    { tag: todoIncompleteMarkerTag,
+      color: red },
+    { tag: todoSkippedTag,
+      color: blue6 },
+    { tag: todoSkippedMarkerTag,
+      color: blue6 },
+    { tag: todoCompleteTag,
+      color: blue5 },
+    { tag: todoCompleteMarkerTag,
+      color: blue },
+
+    // Questions & Answers
+    { tag: questionTag,
+      color: pink },
+    { tag: questionMarkerTag,
+      color: orange },
+    { tag: answerTag,
+      color: green },
+    { tag: answerMarkerTag,
+      color: blue5 },
+
+    // Definitions
+    { tag: definitionTag,
+      color: orange },
+    { tag: definitionTermTag,
+      color: red },
+    { tag: definitionMarkerTag,
+      color: blue6 },
+
+    // Locations
+    { tag: locationNameTag,
+      color: green },
+
+    // Timestamps
+    { tag: timestampTag,
+      color: blue },
+
+    // Today Placeholder
+    { tag: todayPlaceholderTag,
+      color: red },
 
 
 // Original Values

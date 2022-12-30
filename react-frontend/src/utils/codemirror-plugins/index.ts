@@ -9,21 +9,40 @@ const LatexBlockDelim = {resolve: "Latex-block", mark: "LatexMark"}
 
 // Define Custom Tags
 // Todos
-const todoIncompleteMarkerTag = Tag.define(t.name);
-const todoIncompleteTag = Tag.define(t.number);
-const todoSkippedMarkerTag = Tag.define(t.comment);
-const todoSkippedTag = Tag.define(t.comment);
-const todoCompleteMarkerTag = Tag.define(t.comment);
-const todoCompleteTag = Tag.define(t.labelName);
+export const todoIncompleteMarkerTag = Tag.define(t.name);
+export const todoIncompleteTag = Tag.define(t.number);
+export const todoSkippedMarkerTag = Tag.define(t.comment);
+export const todoSkippedTag = Tag.define(t.comment);
+export const todoCompleteMarkerTag = Tag.define(t.comment);
+export const todoCompleteTag = Tag.define(t.labelName);
 
 // Questions
+export const questionTag = Tag.define(t.comment);
+export const questionMarkerTag = Tag.define(t.name);
+export const answerTag = Tag.define(t.comment);
+export const answerMarkerTag = Tag.define(t.name);
+
 // Definitions
+export const definitionTag = Tag.define(t.name);
+export const definitionTermTag = Tag.define(t.name);
+export const definitionMarkerTag = Tag.define(t.processingInstruction);
+
 // Timestamps
-const timestampMarkTag = Tag.define(t.processingInstruction);
-const timestampTag = Tag.define(t.operator);
+export const timestampMarkTag = Tag.define(t.processingInstruction);
+export const timestampTag = Tag.define(t.operator);
 
 // Latex
+export const latexInlineTag = Tag.define(t.character);
+export const latexBlockTag = Tag.define(t.character);
+export const latexMarkTag = Tag.define(t.processingInstruction);
+
 // Today placeholder
+export const todayPlaceholderTag = Tag.define(t.comment);
+
+// Locations
+export const locationMarkTag = Tag.define(t.processingInstruction);
+export const locationNameTag = Tag.define(t.name);
+export const locationLatLonTag = Tag.define(t.number);
 
 
 // Shorthand Todo Extensions
@@ -110,6 +129,101 @@ export const todoPlugin: MarkdownConfig = {
   }]
 }
 
+class QuestionParser implements LeafBlockParser {
+  nextLine() { return false }
+
+  finish(cx: BlockContext, leaf: LeafBlock) {
+    cx.addLeafElement(leaf, cx.elt("Question", leaf.start, leaf.start + leaf.content.length, [
+      cx.elt("Question-marker", leaf.start, leaf.start + 2),
+      ...cx.parser.parseInline(leaf.content.slice(2), leaf.start + 2)
+    ]))
+    return true
+  }
+}
+
+class AnswerParser implements LeafBlockParser {
+  nextLine() { return false }
+
+  finish(cx: BlockContext, leaf: LeafBlock) {
+    cx.addLeafElement(leaf, cx.elt("Answer", leaf.start, leaf.start + leaf.content.length, [
+      cx.elt("Answer-marker", leaf.start, leaf.start + 1),
+      ...cx.parser.parseInline(leaf.content.slice(1), leaf.start + 1)
+    ]))
+    return true
+  }
+}
+
+export const questionPlugin: MarkdownConfig = {
+  defineNodes: [{
+    name: "Question",
+    style: questionTag
+  }, {
+    name: "Question-marker",
+    style: questionMarkerTag
+  }, {
+    name: "Answer",
+    style: answerTag
+  }, {
+    name: "Answer-marker",
+    style: answerMarkerTag
+  }],
+  parseBlock: [{
+    name: "Question",
+    leaf(cx, leaf) {
+      return /^\? /.test(leaf.content) && (cx.parentType().name === "ListItem")
+        ? new QuestionParser()
+        : null
+    },
+    after: "SetextHeading"
+  }, {
+    name: "Answer",
+    leaf(cx, leaf) {
+      return /^@ /.test(leaf.content) && (cx.parentType().name === "ListItem")
+        ? new AnswerParser()
+        : null
+    },
+    after: "SetextHeading"
+  }]
+}
+
+class DefinitionParser implements LeafBlockParser {
+  nextLine() { return false }
+
+  finish(cx: BlockContext, leaf: LeafBlock) {
+    const termLength = leaf.content.indexOf('}') - 1;
+    const termEndIndex = leaf.start + termLength + 2;
+    cx.addLeafElement(leaf, cx.elt("Definition", leaf.start, leaf.start + leaf.content.length, [
+      cx.elt("Definition-marker", leaf.start, leaf.start + 1),
+      cx.elt("Definition-term", leaf.start + 1, leaf.start + termLength + 1),
+      cx.elt("Definition-marker", leaf.start + termLength + 1, termEndIndex),
+      ...cx.parser.parseInline(leaf.content.slice(termLength + 3), termEndIndex + 1)
+    ]))
+    return true
+  }
+}
+
+export const definitionPlugin: MarkdownConfig = {
+  defineNodes: [{
+    name: "Definition",
+    style: definitionTag
+  }, {
+    name: "Definition-term",
+    style: definitionTermTag
+  }, {
+    name: "Definition-marker",
+    style: definitionMarkerTag
+  }],
+  parseBlock: [{
+    name: "Definition",
+    leaf(cx, leaf) {
+      return /^\{[-_+()' \w]*?\} /.test(leaf.content) && (cx.parentType().name === "ListItem")
+        ? new DefinitionParser()
+        : null
+    },
+    after: "SetextHeading"
+  }]
+}
+
 // An extension that highlights
 // ISO 8604 date stamps for element metadata
 export const timestampPlugin: MarkdownConfig = {
@@ -157,18 +271,44 @@ export const timestampPlugin: MarkdownConfig = {
   ]
 }
 
+// An extension that highlights
+// ISO 8604 date stamps for element metadata
+export const todayPlaceholderPlugin: MarkdownConfig = {
+  defineNodes: [{
+    name: "TodayPlaceholder",
+    style: todayPlaceholderTag
+  }],
+  parseInline: [
+    {
+      name: "TodayPlaceholder",
+      parse(cx, next, pos) {
+        let match: RegExpMatchArray | null
+        if (next !== 92 /* `\` */ ||
+           !(match = /^\\today/.exec(cx.slice(pos, cx.end)))
+        ) {
+          return -1
+        }
+
+        return cx.addElement(cx.elt("TodayPlaceholder", pos, pos + match[0].length,
+          []
+        ))
+      }
+    }
+  ]
+}
+
 /// An extension that implements
 /// Latex syntax using `$` and `$$` delimiters.
 export const latexPlugin: MarkdownConfig = {
   defineNodes: [{
     name: "Latex-inline",
-    style: t.character
+    style: latexInlineTag
   }, {
     name: "Latex-block",
-    style: t.character
+    style: latexBlockTag
   },{
     name: "LatexMark",
-    style: t.processingInstruction
+    style: latexMarkTag
   }],
   parseInline: [
     {
@@ -201,16 +341,16 @@ export const latexPlugin: MarkdownConfig = {
 export const locationPlugin: MarkdownConfig = {
   defineNodes: [{
     name: "Location-lattitude",
-    style: t.number
+    style: locationLatLonTag
   },{
     name: "Location-longitude",
-    style: t.number
+    style: locationLatLonTag
   },{
     name: "Location-name",
-    style: t.name
+    style: locationNameTag
   },{
     name: "Location-delimiter",
-    style: t.processingInstruction
+    style: locationMarkTag
   }],
   parseInline: [
     {
