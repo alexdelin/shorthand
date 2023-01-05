@@ -39,7 +39,7 @@ const Content = styled.div`
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      suspense: true,
+      suspense: false,
     },
   },
 });

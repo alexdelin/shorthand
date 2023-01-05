@@ -15,16 +15,16 @@ import { TodosStatsSection } from '../components/TodosStats';
 import { SuspenseFallback } from '../components/SuspenseFallback';
 
 
-const TODO_STALE_TIME_SECONDS = 300;
-const CACHE_TIME_MINUTES = 60;
-export const TODO_QUERY_CONFIG = {
-  // How long responses are cached for
-  staleTime: 1000 * TODO_STALE_TIME_SECONDS,
+// const TODO_STALE_TIME_SECONDS = 300;
+// const CACHE_TIME_MINUTES = 60;
+// export const TODO_QUERY_CONFIG = {
+//   // How long responses are cached for
+//   staleTime: 1000 * TODO_STALE_TIME_SECONDS,
 
-  // How long Responses are kept in the cache
-  //   after a todo component is no longer shown
-  cacheTime: 1000 * 60 * CACHE_TIME_MINUTES,
-}
+//   // How long Responses are kept in the cache
+//   //   after a todo component is no longer shown
+//   cacheTime: 1000 * 60 * CACHE_TIME_MINUTES,
+// }
 
 
 export default function TodosPage() {
@@ -43,8 +43,8 @@ export default function TodosPage() {
   } = useQuery<GetConfigResponse, Error>(['config'], () =>
     fetch('http://localhost:8181/api/v1/config').then(res =>
       res.json()
-    ),
-    TODO_QUERY_CONFIG
+    )
+    // ,TODO_QUERY_CONFIG
   )
 
   let {
@@ -52,8 +52,8 @@ export default function TodosPage() {
   } = useQuery<GetTagsResponse, Error>(['tags'], () =>
     fetch('http://localhost:8181/api/v1/tags').then(res =>
       res.json()
-    ),
-    TODO_QUERY_CONFIG
+    )
+    // ,TODO_QUERY_CONFIG
   )
 
   if (tagsData === undefined) {
@@ -68,8 +68,8 @@ export default function TodosPage() {
   } = useQuery<GetSubdirsResponse, Error>(['subdirs'], () =>
     fetch('http://localhost:8181/api/v1/subdirs').then(res =>
       res.json()
-    ),
-    TODO_QUERY_CONFIG
+    )
+    // ,TODO_QUERY_CONFIG
   )
 
   if (subdirsData === undefined) {
