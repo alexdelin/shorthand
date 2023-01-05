@@ -11,16 +11,16 @@ import { GetSubdirsResponse,
 import { SuspenseFallback } from '../components/SuspenseFallback';
 
 
-const STALE_TIME_SECONDS = 300;
-const CACHE_TIME_MINUTES = 60;
-export const QUERY_CONFIG = {
-  // How long responses are cached for
-  staleTime: 1000 * STALE_TIME_SECONDS,
+// const STALE_TIME_SECONDS = 300;
+// const CACHE_TIME_MINUTES = 60;
+// export const QUERY_CONFIG = {
+//   // How long responses are cached for
+//   staleTime: 1000 * STALE_TIME_SECONDS,
 
-  // How long Responses are kept in the cache
-  //   after a definitions component is no longer shown
-  cacheTime: 1000 * 60 * CACHE_TIME_MINUTES,
-}
+//   // How long Responses are kept in the cache
+//   //   after a definitions component is no longer shown
+//   cacheTime: 1000 * 60 * CACHE_TIME_MINUTES,
+// }
 
 
 export const DefinitionsPageWrapper = styled.div`
@@ -55,8 +55,8 @@ export function DefinitionsPage() {
   } = useQuery<GetConfigResponse, Error>(['config'], () =>
     fetch('http://localhost:8181/api/v1/config').then(res =>
       res.json()
-    ),
-    QUERY_CONFIG
+    )
+    // ,QUERY_CONFIG
   )
 
   let {
@@ -64,8 +64,8 @@ export function DefinitionsPage() {
   } = useQuery<GetSubdirsResponse, Error>(['subdirs'], () =>
     fetch('http://localhost:8181/api/v1/subdirs').then(res =>
       res.json()
-    ),
-    QUERY_CONFIG
+    )
+    // ,QUERY_CONFIG
   )
 
   if (subdirsData === undefined) {

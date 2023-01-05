@@ -10,7 +10,7 @@ import {
   StyledTodoText,
   StyledTag, ActionButton
 } from './TodosGrid.styles';
-import { QUERY_CONFIG } from '../pages/DefinitionsPage';
+// import { QUERY_CONFIG } from '../pages/DefinitionsPage';
 
 type DefinitionsGridProps = {
   directory: string
@@ -73,8 +73,8 @@ export function DefinitionsGrid(props: DefinitionsGridProps) {
     // TODO - Replace with a better library
     fetch(`http://localhost:8181/api/v1/definitions?&directory_filter=${props.directory}`).then(res =>
       res.json()
-    ),
-    QUERY_CONFIG
+    )
+    // ,QUERY_CONFIG
   )
 
   const elements = useMemo(() => {
