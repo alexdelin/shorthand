@@ -6,7 +6,8 @@ import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import { DefinitionsGrid } from '../components/DefinitionsGrid';
-import { GetSubdirsResponse } from '../types';
+import { GetSubdirsResponse,
+         GetConfigResponse } from '../types';
 import { SuspenseFallback } from '../components/SuspenseFallback';
 
 
@@ -33,10 +34,6 @@ export const StyledForm = styled.form`
 
   & .MuiTextField-root {
     margin-left: 2rem;
-  }
-
-  & .MuiTextField-root:first-child {
-    margin-left: auto;
   }`
 
 export const RefreshIcon = styled.i`
@@ -51,6 +48,16 @@ export function DefinitionsPage() {
   const queryClient = useQueryClient();
 
   const [directory, setDirectory] = useState('ALL');
+  const [updatedDirectory, setUpdatedDirectory] = useState(false);
+
+  let {
+    data: configData
+  } = useQuery<GetConfigResponse, Error>(['config'], () =>
+    fetch('http://localhost:8181/api/v1/config').then(res =>
+      res.json()
+    ),
+    QUERY_CONFIG
+  )
 
   let {
     data: subdirsData
@@ -63,6 +70,14 @@ export function DefinitionsPage() {
 
   if (subdirsData === undefined) {
     subdirsData = ['ALL']
+  }
+
+  // Set the default directory, but only once when the page loads
+  if (configData?.default_directory !== undefined &&
+      configData.default_directory !== directory &&
+      !updatedDirectory) {
+    setDirectory(configData.default_directory);
+    setUpdatedDirectory(true);
   }
 
   const handleDirectoryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
