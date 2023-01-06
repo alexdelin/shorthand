@@ -41,7 +41,7 @@
     "react-query": "^3.39.0",
     "react-router-dom": "^6.3.0",
     "react-scripts": "^5.0.1",
-    "serve": "^13.0.2",
+    "serve": "^14.1.2",
     "source-map-explorer": "^2.5.2",
     "styled-components": "^5.3.5",
     "ts-jest": "^28.0.2",
