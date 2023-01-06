@@ -1,12 +1,17 @@
 # Path Utilities
 import os
 import logging
+from typing import Optional, Union
+
+from shorthand.types import DirectoryPath, DisplayPath, ExternalURL, \
+                            FilePath, NotePath, RelativeNotePath, Subdir
 
 
 log = logging.getLogger(__name__)
 
 
-def get_relative_path(notes_directory, path):
+def get_relative_path(notes_directory: DirectoryPath, path: FilePath
+                      ) -> NotePath:
     '''Produce a relative path within the notes directory
     from a full path on the filesystem
     '''
@@ -30,7 +35,8 @@ def get_relative_path(notes_directory, path):
     return path
 
 
-def get_full_path(notes_directory, relative_path):
+def get_full_path(notes_directory: DirectoryPath, relative_path: NotePath
+                  ) -> FilePath:
     '''Get a full path on the local filesystem from a
     relative path
     '''
@@ -54,7 +60,8 @@ def get_full_path(notes_directory, relative_path):
     return notes_directory + relative_path
 
 
-def get_display_path(path, directory_filter=None):
+def get_display_path(path: NotePath, directory_filter: Optional[str] = None
+                     ) -> DisplayPath:
     '''Produce a path that is nicer for display than an actual file path
     If a directory filter is specified, it produces a path that is relative
     to that directory
@@ -87,7 +94,9 @@ def get_display_path(path, directory_filter=None):
     return path
 
 
-def _get_subdirs(notes_directory, max_depth=2, exclude_hidden=True):
+def _get_subdirs(notes_directory: DirectoryPath, max_depth: int = 2,
+                 exclude_hidden=True
+                 ) -> list[Subdir]:
     '''Returns a list of all sub-directories within the notes directory
        up to the specified depth.
     '''
@@ -105,12 +114,15 @@ def _get_subdirs(notes_directory, max_depth=2, exclude_hidden=True):
     return all_directories
 
 
-def parse_relative_link_path(source, target):
+def parse_relative_link_path(source: NotePath,
+                             target: Union[NotePath, RelativeNotePath,
+                                           ExternalURL]
+                             ) -> Union[NotePath, ExternalURL]:
     '''Transform a relative path from a source note to a relative
        path within the notes directory
 
-       source: relative path to the source link
-       target: relative path from source note to target
+       source: Path within the notes directory to the link source
+       target: Relative path from source note to target
     '''
 
     # Handle external links
@@ -133,7 +145,8 @@ def parse_relative_link_path(source, target):
     return target_path
 
 
-def is_external_path(path):
+def is_external_path(path: Union[NotePath, RelativeNotePath, ExternalURL]
+                     ) -> bool:
     '''Determines whether or not a given path point to an external
        web page or an internal note (within the notes directory).
        Paths to internal notes can be either relative or absolute
@@ -145,7 +158,7 @@ def is_external_path(path):
         return False
 
 
-def is_note_path(notes_directory, path):
+def is_note_path(notes_directory: DirectoryPath, path: NotePath) -> bool:
     '''consumes a note path and ensures whether a note exists at that path.
        Ignores any #element tag after the filename
 

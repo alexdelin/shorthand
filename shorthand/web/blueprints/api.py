@@ -5,9 +5,21 @@ from flask import Blueprint, request, current_app
 
 from shorthand import ShorthandServer
 from shorthand.elements.todos import analyze_todos
+from shorthand.types import JSONTOC, ACKResponse, JSONLinks, \
+                            JSONSearchResults, JSONShorthandConfig, \
+                            JSONShorthandConfigUpdates, JSONSubdirs, \
+                            NotePath, RawNoteContent
 from shorthand.utils.api import wrap_response_data, get_request_argument
+from shorthand.utils.config import ShorthandConfigUpdates
+from shorthand.utils.csv import _convert_to_csv
 
 shorthand_api_blueprint = Blueprint('shorthand_api_blueprint', __name__)
+
+
+@shorthand_api_blueprint.after_request
+def add_cors_header(response):
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    return response
 
 
 @shorthand_api_blueprint.app_errorhandler(Exception)
@@ -26,22 +38,33 @@ def handle_exception(e):
 # --- General Notes Features ---
 # ------------------------------
 @shorthand_api_blueprint.route('/api/v1/config', methods=['GET'])
-def get_server_config():
+def get_server_config() -> JSONShorthandConfig:
     server = ShorthandServer(current_app.config['config_path'])
     current_app.logger.info('Returning config')
     return json.dumps(server.get_config())
 
 
+@shorthand_api_blueprint.route('/api/v1/config', methods=['PUT'])
+def update_server_config() -> ACKResponse:
+    server = ShorthandServer(current_app.config['config_path'])
+    current_app.logger.info('Updating config')
+    updates_json: JSONShorthandConfigUpdates = str(request.get_data())
+    updates: ShorthandConfigUpdates = json.loads(updates_json)
+    server.update_config(updates)
+    server.save_config()
+    return 'ack'
+
+
 @shorthand_api_blueprint.route('/api/v1/search', methods=['GET'])
-def get_search_results():
+def get_search_results() -> JSONSearchResults:
     server = ShorthandServer(current_app.config['config_path'])
 
     query_string = get_request_argument(request.args, name='query_string')
     case_sensitive = get_request_argument(request.args, name='case_sensitive',
-                                          arg_type='bool', default=False)
+                                          arg_type=bool, default=False)
     aggregate_by_file = get_request_argument(request.args,
                                              name='aggregate_by_file',
-                                             arg_type='bool', default=False)
+                                             arg_type=bool, default=False)
 
     search_results = server.search_full_text(
         query_string=query_string,
@@ -51,7 +74,7 @@ def get_search_results():
 
 
 @shorthand_api_blueprint.route('/api/v1/note', methods=['GET'])
-def get_full_note():
+def get_full_note() -> RawNoteContent:
     server = ShorthandServer(current_app.config['config_path'])
     path = get_request_argument(request.args, name='path', required=True)
     return server.get_note(path)
@@ -61,22 +84,28 @@ def get_full_note():
 def write_updated_note():
     server = ShorthandServer(current_app.config['config_path'])
 
-    path = get_request_argument(request.args, name='path', required=True)
+    path: NotePath = get_request_argument(request.args, name='path', required=True)
     request.get_data()
-    content = request.data.decode('utf-8')
+    content: RawNoteContent = request.data.decode('utf-8')
 
     server.update_note(path, content)
     return 'Note Updated'
 
 
 @shorthand_api_blueprint.route('/api/v1/toc', methods=['GET'])
-def get_toc_data():
+def get_toc_data() -> JSONTOC:
     server = ShorthandServer(current_app.config['config_path'])
     return json.dumps(server.get_toc())
 
 
+@shorthand_api_blueprint.route('/api/v1/subdirs', methods=['GET'])
+def get_subdirs_data() -> JSONSubdirs:
+    server = ShorthandServer(current_app.config['config_path'])
+    return json.dumps(server.get_subdirs())
+
+
 @shorthand_api_blueprint.route('/api/v1/links', methods=['GET'])
-def get_note_links():
+def get_note_links() -> JSONLinks:
     server = ShorthandServer(current_app.config['config_path'])
 
     source = get_request_argument(request.args, name='source')
@@ -84,18 +113,19 @@ def get_note_links():
     note = get_request_argument(request.args, name='note')
     include_external = get_request_argument(request.args,
                                             name='include_external',
-                                            arg_type='bool', default=False)
+                                            arg_type=bool, default=False)
     include_invalid = get_request_argument(request.args,
                                            name='include_invalid',
-                                           arg_type='bool', default=False)
+                                           arg_type=bool, default=False)
 
-    return json.dumps(server.get_links(source=source, target=target, note=note,
-                                       include_external=include_external,
-                                       include_invalid=include_invalid))
+    return json.dumps(
+        server.get_links(source=source, target=target, note=note,
+                         include_external=include_external,
+                         include_invalid=include_invalid))
 
 
 @shorthand_api_blueprint.route('/api/v1/links/validate', methods=['GET'])
-def validate_note_links():
+def validate_note_links() -> JSONLinks:
     server = ShorthandServer(current_app.config['config_path'])
     source = get_request_argument(request.args, name='source')
     return json.dumps(server.validate_internal_links(source=source))
@@ -105,15 +135,23 @@ def validate_note_links():
 def get_typeahead():
     server = ShorthandServer(current_app.config['config_path'])
     query_string = get_request_argument(request.args, name='query')
-    return json.dumps(server.get_typeahead_suggestions(
-        query_string=query_string))
+    return json.dumps(
+        server.get_typeahead_suggestions(
+            query_string=query_string))
 
 
 @shorthand_api_blueprint.route('/api/v1/stamp', methods=['GET'])
 def stamp():
     server = ShorthandServer(current_app.config['config_path'])
-    return server.stamp_notes(stamp_todos=True, stamp_today=True,
-                              stamp_questions=True, stamp_answers=True)
+    return server.stamp_notes()
+
+
+@shorthand_api_blueprint.route('/api/v1/stamp/raw', methods=['POST'])
+def stamp_raw() -> RawNoteContent:
+    server = ShorthandServer(current_app.config['config_path'])
+    request.get_data()
+    raw_note: RawNoteContent = request.data.decode('utf-8')
+    return server.stamp_raw_note(raw_note)
 
 
 @shorthand_api_blueprint.route('/api/v1/files', methods=['GET'])
@@ -122,9 +160,9 @@ def get_files():
 
     query_string = get_request_argument(request.args, name='query_string')
     prefer_recent = get_request_argument(request.args, name='prefer_recent',
-                                         arg_type='bool', default=True)
+                                         arg_type=bool, default=True)
     case_sensitive = get_request_argument(request.args, name='case_sensitive',
-                                          arg_type='bool', default=False)
+                                          arg_type=bool, default=False)
 
     files = server.search_filenames(
                 prefer_recent=prefer_recent,
@@ -197,11 +235,11 @@ def get_current_todos():
     tag = get_request_argument(request.args, name='tag')
     suppress_future = get_request_argument(request.args,
                                            name='suppress_future',
-                                           arg_type='bool', default=True)
+                                           arg_type=bool, default=True)
     case_sensitive = get_request_argument(request.args, name='case_sensitive',
-                                          arg_type='bool', default=False)
+                                          arg_type=bool, default=False)
 
-    if directory_filter == 'ALL':
+    if directory_filter in ['ALL', '']:
         directory_filter = None
     if tag == 'ALL':
         tag = None
@@ -215,17 +253,20 @@ def get_current_todos():
 
     wrapped_response = wrap_response_data(todos)
     wrapped_response['meta'] = analyze_todos(todos)
+
     return json.dumps(wrapped_response)
 
 
-@shorthand_api_blueprint.route('/api/v1/mark_todo', methods=['GET'])
+@shorthand_api_blueprint.route('/api/v1/mark_todo', methods=['POST'])
 def mark_todo_status():
     server = ShorthandServer(current_app.config['config_path'])
 
-    filename = get_request_argument(request.args, name='filename')
+    filename = get_request_argument(request.args, name='filename',
+                                    required=True)
     line_number = get_request_argument(request.args, name='line_number',
-                                       arg_type='int')
-    status = get_request_argument(request.args, name='status')
+                                       arg_type=int, default=None,
+                                       required=True)
+    status = get_request_argument(request.args, name='status', required=True)
 
     return server.mark_todo(filename, line_number, status)
 
@@ -239,7 +280,7 @@ def fetch_questions():
                                             name='directory_filter')
     if directory_filter == 'ALL':
         directory_filter = None
-    current_app.logger.info(f'Getting {status} questions in '
+    current_app.logger.info(f'Getting {status} questions in ' +
                             f'directory {directory_filter}')
 
     questions = server.get_questions(
@@ -261,6 +302,19 @@ def fetch_definitions():
     return json.dumps(wrap_response_data(definitions))
 
 
+@shorthand_api_blueprint.route('/api/v1/definitions/csv', methods=['GET'])
+def fetch_definitions_csv():
+    server = ShorthandServer(current_app.config['config_path'])
+
+    directory_filter = get_request_argument(request.args,
+                                            name='directory_filter')
+    if directory_filter == 'ALL':
+        directory_filter = None
+
+    definitions = server.get_definitions(directory_filter=directory_filter)
+    return _convert_to_csv(definitions)
+
+
 @shorthand_api_blueprint.route('/api/v1/record_sets', methods=['GET'])
 def fetch_record_sets():
     server = ShorthandServer(current_app.config['config_path'])
@@ -278,13 +332,15 @@ def fetch_record_sets():
 def fetch_record_set():
     server = ShorthandServer(current_app.config['config_path'])
 
-    file_path = get_request_argument(request.args, name='file_path')
+    file_path = get_request_argument(request.args, name='file_path',
+                                     required=True)
     line_number = get_request_argument(request.args, name='line_number',
-                                       arg_type='int')
-    parse = get_request_argument(request.args, name='parse', arg_type='bool',
+                                       arg_type=int, default=None,
+                                       required=True)
+    parse = get_request_argument(request.args, name='parse', arg_type=bool,
                                  default=True)
     include_config = get_request_argument(request.args, name='include_config',
-                                          arg_type='bool', default=False)
+                                          arg_type=bool, default=False)
     parse_format = get_request_argument(request.args, name='parse_format',
                                         default='json')
 

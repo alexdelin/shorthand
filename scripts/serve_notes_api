@@ -1,0 +1,7 @@
+#!/bin/zsh
+
+source ~/.zlogin
+workon shorthand
+
+cd ~/code/shorthand/shorthand/web/
+python app.py

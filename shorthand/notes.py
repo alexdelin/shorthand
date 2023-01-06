@@ -2,11 +2,13 @@ import re
 import os
 from subprocess import Popen, PIPE
 import logging
+from typing import Optional, TypedDict, cast, Union
 
 from shorthand.utils.paths import get_full_path, get_relative_path, \
                                   parse_relative_link_path, is_external_path, \
                                   is_note_path
 from shorthand.utils.patterns import INTERNAL_LINK_PATTERN, ALL_LINK_PATTERN
+from shorthand.types import DirectoryPath, ExecutablePath, ExternalURL, NotePath, RawNoteContent, RelativeNotePath
 
 
 link_regex = re.compile(ALL_LINK_PATTERN)
@@ -16,7 +18,17 @@ internal_link_regex = re.compile(INTERNAL_LINK_PATTERN)
 log = logging.getLogger(__name__)
 
 
-def _get_note(notes_directory, path):
+class Link(TypedDict):
+    line_number: str
+    source: NotePath
+    target: Union[NotePath, RelativeNotePath, ExternalURL]
+    text: str
+    internal: bool
+    valid: bool
+
+
+def _get_note(notes_directory: DirectoryPath, path: NotePath
+              ) -> RawNoteContent:
     '''Get the full raw content of a note as a string
     given:
         - The full path to the notes directory
@@ -35,7 +47,8 @@ def _get_note(notes_directory, path):
     return note_content
 
 
-def _update_note(notes_directory, file_path, content):
+def _update_note(notes_directory: DirectoryPath, file_path: NotePath,
+                 content: RawNoteContent) -> None:
     '''Update an existing note with the full contents provided
     '''
 
@@ -50,7 +63,8 @@ def _update_note(notes_directory, file_path, content):
         note_file.write(content)
 
 
-def _append_to_note(notes_directory, note_path, content, blank_lines=1):
+def _append_to_note(notes_directory: DirectoryPath, note_path: NotePath,
+                    content: RawNoteContent, blank_lines: int=1) -> None:
     '''Append the specified content to an existing note
     '''
     full_path = get_full_path(notes_directory, note_path)
@@ -66,7 +80,8 @@ def _append_to_note(notes_directory, note_path, content, blank_lines=1):
         note_file.write(content)
 
 
-def _create_note(notes_directory, note_path, content=None):
+def _create_note(notes_directory: DirectoryPath, note_path: NotePath,
+                 content: Optional[RawNoteContent]=None) -> None:
     '''Create a new note
     '''
     if not note_path:
@@ -82,7 +97,7 @@ def _create_note(notes_directory, note_path, content=None):
             f.write(content)
 
 
-def _delete_note(notes_directory, note_path):
+def _delete_note(notes_directory: DirectoryPath, note_path: NotePath) -> None:
     '''Deletes a note from the filesystem
     '''
     full_path = get_full_path(notes_directory, note_path)
@@ -93,10 +108,15 @@ def _delete_note(notes_directory, note_path):
     os.remove(full_path)
 
 
-def _validate_internal_links(notes_directory, source=None, grep_path='grep'):
+def _validate_internal_links(notes_directory: DirectoryPath,
+                             source: Optional[NotePath]=None,
+                             grep_path: ExecutablePath='grep'
+                             ) -> list[Link]:
     '''Validate that all of the internal links within notes point
        to files that actually exist within the notes directory (not
            necessarily other notes files)
+
+       Returns a list of all links with invalid targets
     '''
 
     all_internal_links = _get_links(notes_directory=notes_directory,
@@ -109,15 +129,15 @@ def _validate_internal_links(notes_directory, source=None, grep_path='grep'):
     return invalid_links
 
 
-def deduplicate_links(links):
+def deduplicate_links(links: list[Link]) -> list[Link]:
     # Need to convert to a list of tuples to de-duplicate a
     # list of dictionaries
-    return [dict(tupleized)
-            for tupleized in set(tuple(item.items())
-            for item in links)]
+    unique_tuples = set([tuple(item.items()) for item in links])
+    return [cast(Link, dict(tupleized)) for tupleized in unique_tuples]
 
 
-def _get_backlinks(notes_directory, note_path, grep_path='grep'):
+def _get_backlinks(notes_directory: DirectoryPath, note_path: NotePath,
+                   grep_path: ExecutablePath='grep') -> list[Link]:
     '''Get backlinks from various notes to the specified note
     '''
     return _get_links(notes_directory=notes_directory, target=note_path,
@@ -125,9 +145,10 @@ def _get_backlinks(notes_directory, note_path, grep_path='grep'):
                       grep_path=grep_path)
 
 
-def _get_links(notes_directory, source=None, target=None, note=None,
-               include_external=False, include_invalid=False,
-               grep_path='grep'):
+def _get_links(notes_directory: DirectoryPath, source: Optional[NotePath]=None,
+               target: Optional[NotePath]=None, note: Optional[NotePath]=None,
+               include_external: bool=False, include_invalid: bool=False,
+               grep_path: ExecutablePath='grep') -> list[Link]:
     '''Get all links between notes within the notes directory
 
        notes_directory: The directory to do the search within
@@ -187,13 +208,11 @@ def _get_links(notes_directory, source=None, target=None, note=None,
 
     links = []
 
-    if target:
-        target_filename = os.path.basename(target)
-
     LINK_PATTERN = r'(\[)([^\[]*?)(\]\()'
     if target:
         # Only include the target filename to catch both
         # relative and absolute references
+        target_filename = os.path.basename(target)
         LINK_PATTERN += rf'(.*?{target_filename})(#.+?)?'
     elif not include_external:
         # Only catch internal links which don't have http[s]://

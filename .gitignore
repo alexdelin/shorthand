@@ -1,3 +1,4 @@
 *.pyc
 shorthand.egg-info/
 web/shorthand.log
+pyrightconfig.json

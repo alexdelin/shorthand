@@ -192,70 +192,71 @@ contexts:
         - match: ^(?=\S)
           pop: true
         - include: list-paragraph
-    - match: '^([ ]{0,3})(\[ \]|\[\])(?=\s)'
-      captures:
-        1: markup.list.unnumbered.markdown
-        2: storage.shorthand.todo.incomplete.begin # The `[]` or `[ ]` at the beginning of an incomplete todo
-      push:
-        - meta_content_scope: entity.name.shorthand.todo.incomplete # The incomplete todo content
-        - match: ^(?=\S)
-          pop: true
-        - match: \n
-          pop: true
-        - include: list-paragraph
-    - match: '^([ ]{0,3})(\{)(.*?)(\})(?=\s)'
-      captures:
-        1: markup.list.unnumbered.markdown
-        2: comment.shorthand.definition.border # the leading `{` before the definition term
-        3: variable.language.shorthand.definition.term # The definition term
-        4: comment.shorthand.definition.border # the trailing `}` after the definition term
-      push:
-        - meta_content_scope: entity.name.markdown.shorthand.definition.content # The definition text
-        - match: ^(?=\S)
-          pop: true
-        - match: \n
-          pop: true
-        - include: list-paragraph
-    - match: '^([ ]{0,3})(\?)(?=\s)'
-      captures:
-        1: markup.list.unnumbered.markdown
-        2: entity.name.shorthand.question.begin # The `?` at the beginning of a question
-      push:
-        - meta_content_scope: constant.character.shorthand.question # The content of a question
-        - match: ^(?=\S)
-          pop: true
-        - match: \n
-          pop: true
-        - include: list-paragraph
-    - match: '^([ ]{0,3})(@)(?=\s)'
-      captures:
-        1: markup.list.unnumbered.markdown
-        2: punctuation.definition.shorthand.answer.begin # The `@` at the beginning of an answer
-      push:
-        - meta_content_scope: string.shorthand.answer # The content of an answer
-        - match: ^(?=\S)
-          pop: true
-        - match: \n
-          pop: true
-        - include: list-paragraph
-    - match: '^([ ]{0,3})(\[X\])(?=\s)'
-      captures:
-        1: markup.list.unnumbered.markdown
-        2: variable.function.shorthand.todo.complete.begin # The `[X]` at the beginning of a complete todo
-      push:
-        - meta_content_scope: entity.name.function.shorthand.todo.complete # The content of a completed Todo
-        - match: ^(?=\S)
-          pop: true
-        - include: list-paragraph
-    - match: '^([ ]{0,3})(\[S\])(?=\s)'
-      captures:
-        1: markup.list.unnumbered.markdown
-        2: comment.shorthand.todo.skipped.begin # the `[S]` at the beginning of a skipped todo
-      push:
-        - meta_content_scope: comment.shorthand.todo.skipped # the content of a skipped todo
-        - match: ^(?=\S)
-          pop: true
-        - include: list-paragraph
+    #- match: '^([ ]{0,3})([*+-] )(\[ \]|\[\])(?=\s)'
+    #  captures:
+    #    1: markup.list.unnumbered.markdown
+    #    2: markup.list.unnumbered.bullet.markdown punctuation.definition.list_item.markdown
+    #    3: storage.shorthand.todo.incomplete.begin # The `[]` or `[ ]` at the beginning of an incomplete todo
+    #  push:
+    #    - meta_content_scope: entity.name.shorthand.todo.incomplete # The incomplete todo content
+    #    - match: ^(?=\S)
+    #      pop: true
+    #    #- match: \n
+    #    #  pop: true
+    #    - include: list-paragraph
+    #- match: '^([ ]{0,3})(\{)(.*?)(\})(?=\s)'
+    #  captures:
+    #    1: markup.list.unnumbered.markdown
+    #    2: comment.shorthand.definition.border # the leading `{` before the definition term
+    #    3: variable.language.shorthand.definition.term # The definition term
+    #    4: comment.shorthand.definition.border # the trailing `}` after the definition term
+    #  push:
+    #    - meta_content_scope: entity.name.markdown.shorthand.definition.content # The definition text
+    #    - match: ^(?=\S)
+    #      pop: true
+    #    - match: \n
+    #      pop: true
+    #    - include: list-paragraph
+    #- match: '^([ ]{0,3})(\?)(?=\s)'
+    #  captures:
+    #    1: markup.list.unnumbered.markdown
+    #    2: entity.name.shorthand.question.begin # The `?` at the beginning of a question
+    #  push:
+    #    - meta_content_scope: constant.character.shorthand.question # The content of a question
+    #    - match: ^(?=\S)
+    #      pop: true
+    #    - match: \n
+    #      pop: true
+    #    - include: list-paragraph
+    #- match: '^([ ]{0,3})(@)(?=\s)'
+    #  captures:
+    #    1: markup.list.unnumbered.markdown
+    #    2: punctuation.definition.shorthand.answer.begin # The `@` at the beginning of an answer
+    #  push:
+    #    - meta_content_scope: string.shorthand.answer # The content of an answer
+    #    - match: ^(?=\S)
+    #      pop: true
+    #    - match: \n
+    #      pop: true
+    #    - include: list-paragraph
+    #- match: '^([ ]{0,3})(\[X\])(?=\s)'
+    #  captures:
+    #    1: markup.list.unnumbered.markdown
+    #    2: variable.function.shorthand.todo.complete.begin # The `[X]` at the beginning of a complete todo
+    #  push:
+    #    - meta_content_scope: entity.name.function.shorthand.todo.complete # The content of a completed Todo
+    #    - match: ^(?=\S)
+    #      pop: true
+    #    - include: list-paragraph
+    #- match: '^([ ]{0,3})(\[S\])(?=\s)'
+    #  captures:
+    #    1: markup.list.unnumbered.markdown
+    #    2: comment.shorthand.todo.skipped.begin # the `[S]` at the beginning of a skipped todo
+    #  push:
+    #    - meta_content_scope: comment.shorthand.todo.skipped # the content of a skipped todo
+    #    - match: ^(?=\S)
+    #      pop: true
+    #    - include: list-paragraph
     - match: '^([ ]{0,3})([\da-zA-Z]+([\.\)]))(?=\s)'
       captures:
         1: markup.list.numbered.markdown
@@ -1010,52 +1011,58 @@ contexts:
       push:
         - match: ^\s*$
           pop: true
-        - match: '([ ]*)(\?)(?=\s)'
+        - match: '([ ]*)([*+-] )?(\?)(?=\s)'
           captures:
             1: markup.list.unnumbered.markdown
-            2: entity.name.shorthand.question.begin # The `?` at the beginning of a question
+            2: markup.list.unnumbered.bullet.markdown punctuation.definition.list_item.markdown
+            3: entity.name.shorthand.question.begin # The `?` at the beginning of a question
           push:
             - clear_scopes: 1
             - meta_content_scope: constant.character.shorthand.question # The content of a question
             - include: list-content
-        - match: '([ ]*)(@)(?=\s)'
+        - match: '([ ]*)([*+-] )?(@)(?=\s)'
           captures:
             1: markup.list.unnumbered.markdown
-            2: punctuation.definition.shorthand.answer.begin # The `@` at the beginning of an answer
+            2: markup.list.unnumbered.bullet.markdown punctuation.definition.list_item.markdown
+            3: punctuation.definition.shorthand.answer.begin # The `@` at the beginning of an answer
           push:
             - clear_scopes: 1
             - meta_content_scope: string.shorthand.answer # The content of an answer
             - include: list-content
-        - match: '([ ]*)(\[ \]|\[\])(?=\s)'
+        - match: '([ ]*)([*+-] )?(\[ \]|\[\])(?=\s)'
           captures:
             1: markup.list.unnumbered.markdown
-            2: storage.shorthand.todo.incomplete.begin # The `[]` or `[ ]` at the beginning of an incomplete todo
+            2: markup.list.unnumbered.bullet.markdown punctuation.definition.list_item.markdown
+            3: storage.shorthand.todo.incomplete.begin # The `[]` or `[ ]` at the beginning of an incomplete todo
           push:
             - clear_scopes: 1
             - meta_content_scope: entity.name.shorthand.todo.incomplete # The incomplete todo content
             - include: list-content
-        - match: '([ ]*)(\[X\])(?=\s)'
+        - match: '([ ]*)([*+-] )?(\[X\])(?=\s)'
           captures:
             1: markup.list.unnumbered.markdown
-            2: variable.function.shorthand.todo.complete.begin # The `[X]` at the beginning of a complete todo
+            2: markup.list.unnumbered.bullet.markdown punctuation.definition.list_item.markdown
+            3: variable.function.shorthand.todo.complete.begin # The `[X]` at the beginning of a complete todo
           push:
             - clear_scopes: 1
             - meta_content_scope: entity.name.function.shorthand.todo.complete # The content of a completed Todo
             - include: list-content
-        - match: '([ ]*)(\[S\])(?=\s)'
+        - match: '([ ]*)([*+-] )?(\[S\])(?=\s)'
           captures:
             1: markup.list.unnumbered.markdown
-            2: comment.shorthand.todo.skipped.begin # the `[s]` at the beginning of a skipped todo
+            2: markup.list.unnumbered.bullet.markdown punctuation.definition.list_item.markdown
+            3: comment.shorthand.todo.skipped.begin # the `[s]` at the beginning of a skipped todo
           push:
             - clear_scopes: 1
             - meta_content_scope: comment.shorthand.todo.skipped # the content of a skipped todo
             - include: list-content
-        - match: '([ ]*)(\{)(.*?)(\})(?=\s)'
+        - match: '([ ]*)([*+-] )?(\{)(.*?)(\})(?=\s)'
           captures:
             1: markup.list.unnumbered.markdown
-            2: comment.shorthand.definition.border # The leading `{` before the definition term
-            3: variable.language.shorthand.definition.term # The definition term
-            4: comment.shorthand.definition.border # The trailing `}` after the definition term
+            2: markup.list.unnumbered.bullet.markdown punctuation.definition.list_item.markdown
+            3: comment.shorthand.definition.border # The leading `{` before the definition term
+            4: variable.language.shorthand.definition.term # The definition term
+            5: comment.shorthand.definition.border # The trailing `}` after the definition term
           push:
             - clear_scopes: 1
             - meta_content_scope: entity.name.markdown.shorthand.definition.content # The definition text

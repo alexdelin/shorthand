@@ -59,62 +59,62 @@ class TestSearch(unittest.TestCase):
 
         # Test single keyword search
         search_results = get_search_results('Food', False)
-        assert search_results['count'] == SEARCH_RESULTS_FOOD['count']
-        self.assertCountEqual(search_results, SEARCH_RESULTS_FOOD)
+        assert len(search_results) == len(SEARCH_RESULTS_FOOD)
+        assert search_results == SEARCH_RESULTS_FOOD
 
         # Test case-sensitive single keyword search
         search_results = get_search_results('Food', True)
-        assert search_results['count'] == SEARCH_RESULTS_FOOD_SENSITIVE['count']
-        self.assertCountEqual(search_results, SEARCH_RESULTS_FOOD_SENSITIVE)
+        assert len(search_results) == len(SEARCH_RESULTS_FOOD_SENSITIVE)
+        assert search_results == SEARCH_RESULTS_FOOD_SENSITIVE
 
         # Test quoted expression search
         search_results = get_search_results('"balanced diet"', False)
-        assert search_results['count'] == SEARCH_RESULTS_BALANCED_DIET['count']
-        self.assertCountEqual(search_results, SEARCH_RESULTS_BALANCED_DIET)
+        assert len(search_results) == len(SEARCH_RESULTS_BALANCED_DIET)
+        assert search_results == SEARCH_RESULTS_BALANCED_DIET
 
         # Test case-sensitive quoted expression search
         search_results = get_search_results('"balanced diet"', True)
-        self.assertCountEqual(search_results, SEARCH_RESULTS_BALANCED_DIET)
+        assert search_results == SEARCH_RESULTS_BALANCED_DIET
         search_results = get_search_results('"essential part"', True)
-        self.assertCountEqual(search_results, SEARCH_RESULTS_BALANCED_DIET)
+        assert search_results == SEARCH_RESULTS_BALANCED_DIET
         search_results = get_search_results('"Balanced diet"', True)
-        self.assertCountEqual(search_results, EMPTY_RESULTS)
+        assert search_results == []
         search_results = get_search_results('"essential Part"', True)
-        self.assertCountEqual(search_results, EMPTY_RESULTS)
+        assert search_results == []
 
         # Test combination
         search_results = get_search_results('"balanced diet" food', False)
-        self.assertCountEqual(search_results, SEARCH_RESULTS_BALANCED_DIET)
+        assert search_results == SEARCH_RESULTS_BALANCED_DIET
         search_results = get_search_results('"essential part" food', False)
-        self.assertCountEqual(search_results, SEARCH_RESULTS_BALANCED_DIET)
+        assert search_results == SEARCH_RESULTS_BALANCED_DIET
         search_results = get_search_results(
             '"essential part" "balanced diet"', False)
-        self.assertCountEqual(search_results, SEARCH_RESULTS_BALANCED_DIET)
+        assert search_results == SEARCH_RESULTS_BALANCED_DIET
         search_results = get_search_results(
             '"essential part" "balanced diet" food', False)
-        self.assertCountEqual(search_results, SEARCH_RESULTS_BALANCED_DIET)
+        assert search_results == SEARCH_RESULTS_BALANCED_DIET
 
         # Test case-sensitive combination
         search_results = get_search_results('"balanced diet" Food', True)
-        self.assertCountEqual(search_results, SEARCH_RESULTS_BALANCED_DIET)
+        assert search_results == SEARCH_RESULTS_BALANCED_DIET
         search_results = get_search_results('"balanced Diet" food', True)
-        self.assertCountEqual(search_results, EMPTY_RESULTS)
+        assert search_results == []
         search_results = get_search_results('"essential part" Food', True)
-        self.assertCountEqual(search_results, SEARCH_RESULTS_BALANCED_DIET)
+        assert search_results == SEARCH_RESULTS_BALANCED_DIET
         search_results = get_search_results('"essential part" food', True)
-        self.assertCountEqual(search_results, EMPTY_RESULTS)
+        assert search_results == []
         search_results = get_search_results(
             '"essential part" "balanced diet"', True)
-        self.assertCountEqual(search_results, SEARCH_RESULTS_BALANCED_DIET)
+        assert search_results == SEARCH_RESULTS_BALANCED_DIET
         search_results = get_search_results(
             '"essential pArt" "balanced diet"', True)
-        self.assertCountEqual(search_results, EMPTY_RESULTS)
+        assert search_results == []
         search_results = get_search_results(
             '"essential part" "balanced diet" Food', True)
-        self.assertCountEqual(search_results, SEARCH_RESULTS_BALANCED_DIET)
+        assert search_results == SEARCH_RESULTS_BALANCED_DIET
         search_results = get_search_results(
             '"essential part" "balanced diet" food', True)
-        self.assertCountEqual(search_results, EMPTY_RESULTS)
+        assert search_results == []
 
         # TODO- Test directory filter
 
@@ -139,14 +139,6 @@ class TestFileFinder(unittest.TestCase):
                 if all([query_component in file
                         for query_component in query_string.split(' ')])
                 ]
-
-    def test_find_all_files(self):
-        '''Test finding all notes files
-        '''
-        all_files_found = get_file_search_results(prefer_recent=True,
-                                                  query_string=None,
-                                                  case_sensitive=False)
-        assert set(all_files_found) == set(ALL_FILES)
 
     def test_file_search(self):
         '''Test searching for files via substrings (non case sensitive)
@@ -201,7 +193,7 @@ class TestFileFinder(unittest.TestCase):
         for _ in range(5):
             # View the last file returned
             all_files_found = get_file_search_results(prefer_recent=True,
-                                                      query_string=None,
+                                                      query_string='note',
                                                       case_sensitive=False)
             last_file = all_files_found[-1]
             _record_file_view(CONFIG['cache_directory'],

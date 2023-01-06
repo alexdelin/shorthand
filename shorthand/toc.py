@@ -1,11 +1,23 @@
 import os
 import logging
+from typing import TypedDict
+
+from shorthand.types import DirectoryPath, RelativeDirectoryPath
 
 
 log = logging.getLogger(__name__)
 
 
-def _get_toc(notes_directory, directory_filter=None):
+class TOC(TypedDict):
+    files: list[str]
+    dirs: list["TOC"]
+    path: RelativeDirectoryPath
+    text: str
+
+
+def _get_toc(notes_directory: DirectoryPath) -> TOC:
+    '''Get a TOC object
+    '''
 
     fs_lookup = {}
     ordered_dirs = []

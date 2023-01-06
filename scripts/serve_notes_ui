@@ -1,0 +1,4 @@
+#!/bin/zsh
+
+cd ~/code/shorthand/react-frontend/src/
+npm run start

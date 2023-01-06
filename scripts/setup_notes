@@ -1,6 +1,7 @@
-#!/bin/bash
+#!/bin/zsh
 
 set -e
 
 screen -dmS stamp_notes ~/bin/loop_stamp
-screen -dmS serve_notes ~/bin/serve_notes
+screen -dmS serve_notes_api ~/bin/serve_notes_api
+screen -dmS serve_notes_ui ~/bin/serve_notes_ui

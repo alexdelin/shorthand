@@ -1,9 +1,10 @@
 import logging
 import unittest
+from datetime import datetime
 
 from shorthand.elements.todos import _get_todos
 from shorthand.elements.questions import _get_questions
-from shorthand.stamping import _stamp_notes
+from shorthand.stamping import _stamp_notes, _stamp_raw_note
 from shorthand.notes import _get_note
 
 from utils import setup_environment, teardown_environment, validate_setup, \
@@ -98,3 +99,20 @@ class TestStamping(unittest.TestCase):
                                stamp_questions=True, stamp_answers=True,
                                grep_path=CONFIG['grep_path'])
         assert not changes
+
+    def test_stamp_raw_note(self):
+        unstamped_note = \
+'''# Test Raw Note \\today
+- [] An unstamped Todo :tag:
+    + ? A question
+        * @ An Answer
+- [X] A completed Todo
+Some text to keep'''
+        stamped_note = _stamp_raw_note(unstamped_note)
+        assert stamped_note == \
+'''# Test Raw Note {date}
+- [ ] ({date}) An unstamped Todo :tag:
+    + ? ({date}) A question
+        * @ ({date}) An Answer
+- [X] ({date} -> {date}) A completed Todo
+Some text to keep'''.format(date=datetime.now().isoformat()[:10])

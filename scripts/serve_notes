@@ -1,7 +1,0 @@
-#!/bin/bash
-
-source ~/.profile
-workon notes
-
-python ~/code/shorthand/shorthand/web/app.py
-# open http://localhost:8181

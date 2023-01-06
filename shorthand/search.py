@@ -3,15 +3,31 @@ import pathlib
 import shlex
 import logging
 from subprocess import Popen, PIPE
+from typing import Union, TypedDict
 
 from shorthand.utils.paths import get_relative_path, is_note_path
-
+from shorthand.types import DirectoryPath, NotePath, ExecutablePath
 
 log = logging.getLogger(__name__)
 
 
-def _record_file_view(cache_directory, notes_directory, note_path,
-                      history_limit=100):
+class AggregatedFullTextSearchMatch(TypedDict):
+    line_number: str
+    match_content: str
+
+class AggregatedFullTextSearchResult(TypedDict):
+  file_path: NotePath
+  matches: list[AggregatedFullTextSearchMatch]
+
+class FullTextSearchResult(TypedDict):
+  file_path: NotePath
+  line_number: str
+  match_content: str
+
+
+def _record_file_view(cache_directory: DirectoryPath, notes_directory: DirectoryPath,
+                      note_path: NotePath, history_limit: int=100
+                      ) -> None:
     '''Record a note being viewed, so that it can be preferred in
     future search results.
 
@@ -61,10 +77,13 @@ def _record_file_view(cache_directory, notes_directory, note_path,
         history_file_object.write(history_string)
 
 
-def _search_filenames(notes_directory, prefer_recent_files=True,
-                      cache_directory=None, query_string=None,
-                      case_sensitive=False, grep_path='grep',
-                      find_path='find'):
+def _search_filenames(notes_directory: DirectoryPath, prefer_recent_files=True,
+                      cache_directory: Union[DirectoryPath, None] = None,
+                      query_string: Union[str, None] = None,
+                      case_sensitive=False,
+                      grep_path: ExecutablePath = 'grep',
+                      find_path: ExecutablePath = 'find'
+                      ) -> list[NotePath]:
     '''Search for a note file in the notes directory
 
     "prefer_recent_files" if true, will bump the most rectly
@@ -75,6 +94,11 @@ def _search_filenames(notes_directory, prefer_recent_files=True,
     "case_sensitive" toggles whether the search terms should be
         matched case-sensitive
     '''
+
+    # Early exit for no query
+    if not query_string:
+        log.debug('No Query String Provided for finding files')
+        return []
 
     find_command = '{find_path} {notes_dir} -not -path \'*/\\.*\' ' \
                    '-type f -name "*.note"'.format(
@@ -95,12 +119,13 @@ def _search_filenames(notes_directory, prefer_recent_files=True,
     if prefer_recent_files:
         # Re-order the list of all notes based on which
         # were accessed most recently
-        recent_files_path = cache_directory + '/recent_files.txt'
-        if os.path.exists(recent_files_path):
-            with open(recent_files_path, 'r') as recent_files_object:
-                recent_files_data = recent_files_object.read()
-        else:
-            recent_files_data = ''
+        recent_files_data = ''
+        if cache_directory:
+            recent_files_path = cache_directory + '/recent_files.txt'
+            if os.path.exists(recent_files_path):
+                with open(recent_files_path, 'r') as recent_files_object:
+                    recent_files_data = recent_files_object.read()
+
         recent_files = [file.strip()
                         for file in recent_files_data.split('\n')
                         if file.strip()]
@@ -140,8 +165,11 @@ def _search_filenames(notes_directory, prefer_recent_files=True,
     return search_results
 
 
-def _search_full_text(notes_directory, query_string, case_sensitive=False,
-                      aggregate_by_file=False, grep_path='grep'):
+def _search_full_text(notes_directory: DirectoryPath, query_string: str,
+                      case_sensitive=False, aggregate_by_file=False,
+                      grep_path: ExecutablePath = 'grep'
+                      ) -> Union[list[FullTextSearchResult],
+                                 list[AggregatedFullTextSearchResult]]:
     '''Perform a full-text search through all notes and return
     matching lines with metadata
 
@@ -160,6 +188,7 @@ def _search_full_text(notes_directory, query_string, case_sensitive=False,
 
     # Early exit for empty query
     if not query_components:
+        log.debug('No query string provided for full text search')
         return []
 
     # Add safe handling of quoted phrases
@@ -253,7 +282,4 @@ def _search_full_text(notes_directory, query_string, case_sensitive=False,
                                 reverse=True)
         search_results = aggregated_results
 
-    return {
-        "items": search_results,
-        "count": len(search_results)
-    }
+    return search_results
