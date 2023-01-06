@@ -12,28 +12,32 @@ import {
 } from './TodosGrid.styles';
 // import { QUERY_CONFIG } from '../pages/DefinitionsPage';
 
-type DefinitionsGridProps = {
+type QuestionsGridProps = {
+  directory: string
+  status: string
+}
+
+type QuestionsQueryKey = {
   directory: string
 }
 
-type DefinitionsQueryKey = {
-  directory: string
-}
-
-type Definition = {
+type Question = {
   file_path: string,
   display_path: string,
   line_number: string,
-  term: string,
-  definition: string
+  question: string,
+  question_date: string,
+  answer: string,
+  answer_date: string,
+  tags: Array<string>
 }
 
-type GetDefinitionsResponse = {
+type GetQuestionsResponse = {
   count: number,
-  items: Array<Definition>
+  items: Array<Question>
 }
 
-export const StyledDefinition = styled.div`
+export const StyledQuestion = styled.div`
   display: inline;
   line-height: 1.3rem;
 
@@ -53,45 +57,45 @@ const writer = MarkdownIt({}).use(
   tm,{ delimiters: 'dollars', macros: {"\\RR": "\\mathbb{R}"}
 });
 
-function getDefinitionElement(definition: string) {
+function getQuestionElement(question: string) {
   return _(<Fragment>
-    <StyledDefinition
-      dangerouslySetInnerHTML={{__html: writer.render(definition)}}
+    <StyledQuestion
+      dangerouslySetInnerHTML={{__html: writer.render(question)}}
     />
   </Fragment>);
 }
 
-export function DefinitionsGrid(props: DefinitionsGridProps) {
+export function QuestionsGrid(props: QuestionsGridProps) {
 
   const queryClient = useQueryClient();
 
   const {
-    data: definitionsData
-  } = useQuery<GetDefinitionsResponse, Error>(
-    ['definitions', { directory: props.directory }], () =>
+    data: questionsData
+  } = useQuery<GetQuestionsResponse, Error>(
+    ['questions', { directory: props.directory, status: props.status }], () =>
 
     // TODO - Replace with a better library
-    fetch(`http://localhost:8181/api/v1/definitions?directory_filter=${props.directory}`).then(res =>
+    fetch(`http://localhost:8181/api/v1/questions?status=${props.status}&directory_filter=${props.directory}`).then(res =>
       res.json()
     )
     // ,QUERY_CONFIG
   )
 
   const elements = useMemo(() => {
-    if (definitionsData === undefined) {
+    if (questionsData === undefined) {
       return [];
     } else {
-      return definitionsData.items.map((definition) => (
-        [`${definition.display_path}: ${definition.line_number}`,
-          definition.term,
-          getDefinitionElement(definition.definition)]
+      return questionsData.items.map((question) => (
+        [`${question.display_path}: ${question.line_number}`,
+          getQuestionElement(question.question),
+          question.answer ? getQuestionElement(question.answer) : 'None']
       ))
     }
   // eslint-disable-next-line
-  }, [definitionsData]);
+  }, [questionsData]);
 
 
-  if (definitionsData === undefined) return <div>Loading...</div>
+  if (questionsData === undefined) return <div>Loading...</div>
 
   return <Fragment>
     <Grid
@@ -100,7 +104,7 @@ export function DefinitionsGrid(props: DefinitionsGridProps) {
         enabled: true,
         limit: 50
       }}
-      columns={['Path', 'Term', 'Definition']}
+      columns={['Path', 'Question', 'Answer']}
     />
   </Fragment>
 
