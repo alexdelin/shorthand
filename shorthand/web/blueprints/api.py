@@ -311,7 +311,8 @@ def fetch_definitions_csv():
     if directory_filter == 'ALL':
         directory_filter = None
 
-    definitions = server.get_definitions(directory_filter=directory_filter)
+    definitions = server.get_definitions(directory_filter=directory_filter,
+                                         include_sub_elements=True)
     return _convert_to_csv(definitions)
 
 
