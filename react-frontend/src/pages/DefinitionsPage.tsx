@@ -28,19 +28,34 @@ export const DefinitionsPageWrapper = styled.div`
 
 export const StyledForm = styled.form`
   display: flex;
-  justify-content: center;
   align-items: center;
   margin-bottom: 2rem;
 
-  & .MuiTextField-root {
+  & .MuiButton-root {
     margin-left: 2rem;
-  }`
+  }
+
+  & :first-child {
+    margin-left: auto;
+  }
+
+  & :last-child {
+    margin-left: auto;
+  }
+  `
 
 export const RefreshIcon = styled.i`
   font-size: 1.35rem;
   display: flex;
   margin-top: 0.2rem;
   margin-bottom: 0.2rem;`
+
+export const DownloadIcon = styled.i`
+  font-size: 1.35rem;
+  display: flex;
+  margin-top: 0.2rem;
+  margin-bottom: 0.2rem;
+  margin-right: 0.2rem;`
 
 
 export function DefinitionsPage() {
@@ -108,12 +123,22 @@ export function DefinitionsPage() {
         </TextField>
         <Button
           variant="contained"
-          sx={{ ml: '2rem' }}
           color="success"
           onClick={handleRefreshClick}
         >
           <RefreshIcon className="bi bi-arrow-clockwise"></RefreshIcon>
         </Button>
+        <a
+          href={"http://localhost:8181/api/v1/definitions/csv?directory_filter=" + directory}
+          download={"definitions_" + directory + ".csv"}
+        >
+          <Button
+            variant="outlined"
+            color="secondary"
+          >
+            <DownloadIcon className="bi bi-download"></DownloadIcon>CSV
+          </Button>
+        </a>
       </StyledForm>
       <Suspense fallback={SuspenseFallback}>
         <DefinitionsGrid

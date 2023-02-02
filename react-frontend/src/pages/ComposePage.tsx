@@ -82,12 +82,13 @@ export function ComposePage() {
   useEffect(() => {
     if (!notePath) {
       if (openFiles && openFiles.length) {
+        console.log('Setting Open File');
         const targetFile = openFiles[0];
         setSelectedTab(targetFile);
         setSearchParams({path: targetFile});
       }
     }
-  }, [])
+  }, [openFiles])
 
   // Update the editor content exactly once when the page
   //   loads for the first time, or you change to a different note
@@ -97,8 +98,7 @@ export function ComposePage() {
       setEditorText(rawNote);
       setChangesSaved(true);
     }
-  // eslint-disable-next-line
-  }, [notePath]);
+  }, [notePath, rawNote]);
 
   // Check if you leave the page with pending changes
   useBeforeunload((event) => {

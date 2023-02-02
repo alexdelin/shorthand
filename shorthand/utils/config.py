@@ -2,9 +2,9 @@ import os
 import copy
 import json
 import logging
-from typing import TypedDict, Union, NewType
+from typing import Optional, TypedDict, NewType
 
-from shorthand.types import FilePath, DirectoryPath
+from shorthand.types import FilePath, DirectoryPath, RelativeDirectoryPath
 
 
 class ShorthandFrontendConfig(TypedDict):
@@ -14,7 +14,7 @@ class ShorthandFrontendConfig(TypedDict):
 class ShorthandConfig(TypedDict):
     notes_directory: DirectoryPath
     cache_directory: DirectoryPath
-    default_directory: Union[str, None]
+    default_directory: Optional[RelativeDirectoryPath]
     log_file_path: FilePath
     log_level: str
     log_format: str
@@ -24,7 +24,7 @@ class ShorthandConfig(TypedDict):
 
 class ShorthandConfigUpdates(TypedDict, total=False):
     cache_directory: DirectoryPath
-    default_directory: Union[str, None]
+    default_directory: Optional[RelativeDirectoryPath]
     log_file_path: FilePath
     log_level: str
     log_format: str

@@ -25,7 +25,8 @@ type Definition = {
   display_path: string,
   line_number: string,
   term: string,
-  definition: string
+  definition: string,
+  sub_elements: string
 }
 
 type GetDefinitionsResponse = {
@@ -53,11 +54,28 @@ const writer = MarkdownIt({}).use(
   tm,{ delimiters: 'dollars', macros: {"\\RR": "\\mathbb{R}"}
 });
 
-function getDefinitionElement(definition: string) {
+function reduceSubElementIndent(sub_elements: string) {
+  const rawLines = sub_elements.split('\n')
+  // const lines: string[] = [];
+  const indentLevels = rawLines.map(line => line.length - line.trimStart().length)
+  const minIndent = Math.min(...indentLevels)
+  const dedentedLines = rawLines.map(line => line.slice(minIndent))
+  return dedentedLines.join('\n')
+}
+
+function getDefinitionElement(definition: string, sub_elements?: string) {
   return _(<Fragment>
     <StyledDefinition
       dangerouslySetInnerHTML={{__html: writer.render(definition)}}
     />
+    {sub_elements && (
+      <Fragment>
+        <hr />
+        <StyledDefinition
+          dangerouslySetInnerHTML={{__html: writer.render(reduceSubElementIndent(sub_elements))}}
+        />
+      </Fragment>
+    )}
   </Fragment>);
 }
 
@@ -71,7 +89,7 @@ export function DefinitionsGrid(props: DefinitionsGridProps) {
     ['definitions', { directory: props.directory }], () =>
 
     // TODO - Replace with a better library
-    fetch(`http://localhost:8181/api/v1/definitions?directory_filter=${props.directory}`).then(res =>
+    fetch(`http://localhost:8181/api/v1/definitions?include_sub_elements=True&directory_filter=${props.directory}`).then(res =>
       res.json()
     )
     // ,QUERY_CONFIG
@@ -84,7 +102,7 @@ export function DefinitionsGrid(props: DefinitionsGridProps) {
       return definitionsData.items.map((definition) => (
         [`${definition.display_path}: ${definition.line_number}`,
           definition.term,
-          getDefinitionElement(definition.definition)]
+          getDefinitionElement(definition.definition, definition.sub_elements)]
       ))
     }
   // eslint-disable-next-line
