@@ -1,7 +1,7 @@
 import json
 
 from werkzeug.exceptions import HTTPException
-from flask import Blueprint, request, current_app
+from flask import Blueprint, request, current_app, Response
 
 from shorthand import ShorthandServer
 from shorthand.elements.todos import analyze_todos
@@ -298,7 +298,13 @@ def fetch_definitions():
     if directory_filter == 'ALL':
         directory_filter = None
 
-    definitions = server.get_definitions(directory_filter=directory_filter)
+    include_sub_elements = get_request_argument(request.args,
+                                                name='include_sub_elements',
+                                                arg_type=bool, default=False)
+
+    definitions = server.get_definitions(
+        directory_filter=directory_filter,
+        include_sub_elements=include_sub_elements)
     return json.dumps(wrap_response_data(definitions))
 
 
@@ -311,8 +317,12 @@ def fetch_definitions_csv():
     if directory_filter == 'ALL':
         directory_filter = None
 
-    definitions = server.get_definitions(directory_filter=directory_filter)
-    return _convert_to_csv(definitions)
+    definitions = server.get_definitions(directory_filter=directory_filter,
+                                         include_sub_elements=True)
+    response = Response(_convert_to_csv(definitions))
+    response.headers['Content-Type'] = 'text/csv'
+    response.headers['Content-Disposition'] = 'attachment'
+    return response
 
 
 @shorthand_api_blueprint.route('/api/v1/record_sets', methods=['GET'])

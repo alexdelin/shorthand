@@ -242,10 +242,12 @@ class ShorthandServer(object):
                               grep_path=self.config['grep_path'])
 
     # Definitions
-    def get_definitions(self, directory_filter=None):
+    def get_definitions(self, directory_filter=None,
+                        include_sub_elements=False):
         return _get_definitions(notes_directory=self.config['notes_directory'],
                                 directory_filter=directory_filter,
-                                grep_path=self.config['grep_path'])
+                                grep_path=self.config['grep_path'],
+                                include_sub_elements=include_sub_elements)
 
     # Locations
     def get_locations(self, directory_filter=None):
