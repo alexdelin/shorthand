@@ -9,23 +9,28 @@ const DirectoryWrapper = styled.div`
   font-size: 1.25rem;
   margin: 0.25rem;
   width: 35rem;`
+
 const DirectoryNameWrapper = styled.div``
+
 const DirectoryContentsWrapper = styled.div`
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  // height: auto;
-  transition: height ${ANIMATION_LENGTH_MS}ms;
+  flex-wrap: nowrap;
+  // max-height: 1000rem;
+  // transition: max-height ${ANIMATION_LENGTH_MS}ms;
 
   & .collapsed {
     height: 0rem;
   }`
+
 const FileWrapper = styled(Link)`
   padding-left: 1rem;
   font-size: 1.25rem;
   margin: 0.2rem;
   text-decoration: none;
   color: white;`
+
 const FileTreeIcon = styled.i`
   margin-right: 0.2rem;`
 
@@ -37,20 +42,34 @@ type TOC = {
   text: string
 };
 
-function handleDirectoryClick(e: any) { // React.MouseEvent<HTMLDivElement, MouseEvent>) {
-  // This is a hack, but there is no easier way to do it via common react patterns
-  e.currentTarget.parentElement.childNodes[1].classList.toggle('collapsed')
+type FileTreeProps = {
+  collapseFunction: () => void
 }
 
-function renderDirectory(directory: TOC, expanded: boolean, collapseFunction: any) {
+
+function handleDirectoryClick(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+  // This is a hack, but there is no easier way to do it via common react patterns
+  const directoryWrapperEl = e.currentTarget.parentElement;
+  const directoryContentsNode = directoryWrapperEl?.childNodes[1] as HTMLDivElement | undefined;
+  if (directoryContentsNode) {
+    const classes = directoryContentsNode.classList;
+    classes.toggle('collapsed');
+  }
+}
+
+function renderDirectory(directory: TOC, expanded: boolean, collapseFunction: () => void) {
   return (
-  <DirectoryWrapper>
+  <DirectoryWrapper key={directory.path}>
     <DirectoryNameWrapper onClick={handleDirectoryClick}>
       <FileTreeIcon className="bi bi-folder2"></FileTreeIcon>{directory.text}
     </DirectoryNameWrapper>
     <DirectoryContentsWrapper className={expanded ? '' : 'collapsed'}>
       {directory.files.map(file =>
-        <FileWrapper to={`/compose?path=${directory.path}/${file}`}>
+        <FileWrapper
+          key={`${directory.path}/${file}`}
+          to={`/compose?path=${directory.path}/${file}`}
+          onClick={collapseFunction}
+        >
           <FileTreeIcon className="bi bi-file-earmark-text"></FileTreeIcon>{file}
         </FileWrapper>
       )}
@@ -59,7 +78,8 @@ function renderDirectory(directory: TOC, expanded: boolean, collapseFunction: an
   </DirectoryWrapper>)
 }
 
-export function FileTree(collapseFunction: any) {
+
+export function FileTree(props: FileTreeProps) {
 
   const {
     data: fileTreeData
@@ -74,5 +94,5 @@ export function FileTree(collapseFunction: any) {
 
   if (fileTreeData === undefined) return <div>Loading...</div>
 
-  return renderDirectory(fileTreeData, true, collapseFunction)
+  return renderDirectory(fileTreeData, true, props.collapseFunction)
 }
