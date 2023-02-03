@@ -30,21 +30,21 @@ export const NavSidebar = styled.div`
   align-items: center;`
 
 export const TreeSidebar = styled.div`
-  width: ${(props: TreeSidebarSCProps) => (props.isExpanded && props.treeExpanded ? '15rem' : '0rem')};
+  width: ${(props: TreeSidebarSCProps) => (props.isExpanded && props.treeExpanded ? '35rem' : '0rem')};
   height: 100vh;
   z-index: 10;
   position: absolute;
   top: 0;
   left: ${(props: TreeSidebarSCProps) => (props.isExpanded ? '15rem' : '5rem')};;
   float: left;
-  overflow: hidden;
+  overflow-y: scroll;
+  overflow-x: visible;
   transition: width ${ANIMATION_LENGTH_MS}ms, left ${ANIMATION_LENGTH_MS}ms;
   background-color: rgb(33, 37, 61);
   // background-color: red;
   color: white;
   display: flex;
-  flex-direction: column;
-  align-items: center;`
+  flex-direction: column;`
 
 export const NavHeader = styled.a`
   font-size: 2.25rem;
