@@ -1,6 +1,6 @@
 import { useSearchParams } from "react-router-dom";
 import { useQuery } from 'react-query';
-import { useLayoutEffect, useState, Suspense } from 'react';
+import React, { useLayoutEffect, useState, Suspense, useRef } from 'react';
 import 'highlight.js/styles/atom-one-light.css';
 import 'katex/dist/katex.min.css';
 import "gridjs/dist/theme/mermaid.css";
@@ -12,6 +12,7 @@ import tm from 'markdown-it-texmath';
 import mermaid from 'mermaid';
 import { mermaidPlugin, highlighter as hljs } from '../utils/markdown';
 import { Grid } from "gridjs";
+import ReactToPrint from 'react-to-print';
 import { LinksGraph } from '../components/LinksGraph';
 import { GetRenderedMarkdownResponse,
          RecordSetColumns,
@@ -70,6 +71,7 @@ export default function ViewPage() {
   const notePath = searchParams.get('path');
   const [tocShown, setTocShown] = useState(false);
   const [linksShown, setLinksShown] = useState(false);
+  const renderedMarkdownRef = useRef(null);
 
   const {
     data: noteContent
@@ -108,10 +110,20 @@ export default function ViewPage() {
         <Button
           href={`/compose?path=${notePath}`}
           variant="text"
-          style={{marginRight: '1rem'}}
         >
           Edit
         </Button>
+        <ReactToPrint
+          documentTitle={notePath || 'Unknown Note'}
+          trigger={() =>
+            <Button
+              variant="text"
+              style={{marginRight: '1rem'}}
+            >
+              Print
+            </Button>}
+          content={() => renderedMarkdownRef.current}
+        />
       </ViewNoteHeader>
       <hr style={{margin: '0'}} />
       {linksShown ? (
@@ -134,6 +146,7 @@ export default function ViewPage() {
       ) : null}
       <ShorthandMarkdown
         source={noteContent.file_content}
+        ref={renderedMarkdownRef}
       />
     </ViewNoteWrapper>
   )
@@ -144,7 +157,7 @@ type RenderMarkdownProps = {
   className?: string
 }
 
-export function RenderedMarkdown(props: RenderMarkdownProps) {
+export const RenderedMarkdown = React.forwardRef((props: RenderMarkdownProps, ref: React.ForwardedRef<HTMLDivElement>) => {
 
   const [hasScrolled, setHasScrolled] = useState(false);
 
@@ -212,5 +225,5 @@ export function RenderedMarkdown(props: RenderMarkdownProps) {
     }
   }, [props.source, hasScrolled]);
 
-  return <div className={props.className} dangerouslySetInnerHTML={{__html: writer.render(props.source ? props.source : '')}} />
-}
+  return <div ref={ref} className={props.className} dangerouslySetInnerHTML={{__html: writer.render(props.source ? props.source : '')}} />
+})

@@ -89,7 +89,8 @@ export function FileTree(props: FileTreeProps) {
     // TODO - Replace with a better library
     fetch(`http://localhost:8181/api/v1/toc`).then(res =>
       res.json()
-    )
+    ),
+    {cacheTime: 10 * 60 * 1000, refetchOnWindowFocus: false}
   )
 
   if (fileTreeData === undefined) return <div>Loading...</div>
