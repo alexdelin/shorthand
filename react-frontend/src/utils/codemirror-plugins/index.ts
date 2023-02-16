@@ -216,7 +216,7 @@ export const definitionPlugin: MarkdownConfig = {
   parseBlock: [{
     name: "Definition",
     leaf(cx, leaf) {
-      return /^\{[-_+()' \w]*?\} /.test(leaf.content) && (cx.parentType().name === "ListItem")
+      return /^\{[\p{L}\-_+&*:()/' \w]*?\} /u.test(leaf.content) && (cx.parentType().name === "ListItem")
         ? new DefinitionParser()
         : null
     },
