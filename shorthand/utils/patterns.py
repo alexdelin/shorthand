@@ -61,7 +61,7 @@ TAG_FILTER = r'( :\w+:)'
 TAG_PATTERN = r'( :\w+:)($|(?= ))'
 
 #   Matches a definition
-DEFINITION_PATTERN = r"^(\s*)([-+*] )(\{[\-_+&*:()/\\p\{L\}' \w]*?\} )(.*)"
+DEFINITION_PATTERN = r"^(\s*)([-+*] )(\{[\-_+&*:()/\\p{L}' \w]*?\} )(.*)"
 
 #   Matches any heading
 HEADING_PATTERN = r'^(#+)( )(.*)'
