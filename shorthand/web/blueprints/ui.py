@@ -1,4 +1,5 @@
 import json
+import os
 
 from flask import request, render_template, send_from_directory, Blueprint, \
                   current_app, abort, Response
@@ -11,7 +12,8 @@ from shorthand.frontend import is_image_path, get_open_files, open_file, \
 from shorthand.frontend.render import get_rendered_markdown
 
 
-shorthand_ui_blueprint = Blueprint('shorthand_ui_blueprint', __name__)
+shorthand_ui_blueprint = Blueprint('shorthand_ui_blueprint', __name__,
+                                   static_folder='../../../react-frontend/build')
 
 
 @shorthand_ui_blueprint.after_request
@@ -19,6 +21,32 @@ def after_request(response):
     header = response.headers
     header['Access-Control-Allow-Origin'] = '*'
     return response
+
+
+# Serve React App
+@shorthand_ui_blueprint.route('/', defaults={'path': ''})
+@shorthand_ui_blueprint.route('/<path:path>')
+def serve_react(path):
+    if path != "" and os.path.exists(shorthand_ui_blueprint.static_folder + '/' + path):
+        return send_from_directory(shorthand_ui_blueprint.static_folder, path)
+    else:
+        return send_from_directory(shorthand_ui_blueprint.static_folder, 'index.html')
+
+
+@shorthand_ui_blueprint.route('/static/js/<path:path>')
+def serve_react_js(path):
+    return send_from_directory(shorthand_ui_blueprint.static_folder + '/static/js', path)
+
+
+@shorthand_ui_blueprint.route('/static/css/<path:path>')
+def serve_react_css(path):
+    return send_from_directory(shorthand_ui_blueprint.static_folder + '/static/css', path)
+
+
+@shorthand_ui_blueprint.route('/static/media/<path:path>')
+def serve_react_media(path):
+    return send_from_directory(shorthand_ui_blueprint.static_folder + '/static/media', path)
+
 
 # Frontend API Methods which should all eventually be
 # replaced with proper API methods
