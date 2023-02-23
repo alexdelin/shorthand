@@ -8,7 +8,6 @@ from results_unstamped import TOC
 
 
 CONFIG = setup_environment()
-setup_logging(CONFIG)
 log = logging.getLogger(__name__)
 
 

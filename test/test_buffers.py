@@ -13,7 +13,6 @@ from utils import setup_environment, validate_setup, setup_logging
 
 
 CONFIG = setup_environment()
-setup_logging(CONFIG)
 log = logging.getLogger(__name__)
 
 NUM_TEST_BUFFERS = 3

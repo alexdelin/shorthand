@@ -16,7 +16,6 @@ from results_unstamped import ALL_LINKS
 
 
 CONFIG = setup_environment()
-setup_logging(CONFIG)
 log = logging.getLogger(__name__)
 MODEL = ShorthandModel()
 

@@ -8,7 +8,6 @@ from utils import setup_environment, teardown_environment, setup_logging
 
 
 ORIGINAL_CONFIG = setup_environment()
-setup_logging(ORIGINAL_CONFIG)
 log = logging.getLogger(__name__)
 
 

@@ -14,7 +14,6 @@ from results_unstamped import EMPTY_RESULTS, SEARCH_RESULTS_FOOD, \
 
 
 CONFIG = setup_environment()
-setup_logging(CONFIG)
 log = logging.getLogger(__name__)
 
 

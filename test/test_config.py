@@ -11,7 +11,6 @@ from utils import setup_environment, validate_setup, setup_logging
 
 
 ORIGINAL_CONFIG = setup_environment()
-setup_logging(ORIGINAL_CONFIG)
 log = logging.getLogger(__name__)
 
 
