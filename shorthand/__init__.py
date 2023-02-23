@@ -61,6 +61,8 @@ class ShorthandServer(object):
         '''
         self.log.setLevel(log_level_from_string(self.config['log_level']))
         if self.log.handlers:
+            for h in self.log.handlers:
+                h.close()
             self.log.handlers.clear()
         log_handler = get_handler(self.config)
         self.log.addHandler(log_handler)

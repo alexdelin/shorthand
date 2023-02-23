@@ -37,7 +37,10 @@ def get_test_config():
 
 def setup_logging(config):
     root_logger = logging.getLogger('shorthand')
-    root_logger.handlers.clear()
+    if root_logger.handlers:
+        for h in root_logger.handlers:
+            h.close()
+        root_logger.handlers.clear()
     handler = get_handler(config)
     root_logger.addHandler(handler)
 
