@@ -1,3 +1,5 @@
+import logging
+
 from shorthand.notes import _get_note, _update_note, \
                             _validate_internal_links, _append_to_note, \
                             _create_note, _get_backlinks, _get_links
@@ -28,7 +30,7 @@ from shorthand.utils.buffers import _new_buffer, _get_buffers, \
 # Set up the default module-level logger which the rest of the library
 #   will inherit. This will be updated with the settings specified in the
 #   config when the server object is initialized.
-log = get_default_logger()
+log = logging.getLogger(__name__)
 
 
 class ShorthandServer(object):
