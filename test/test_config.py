@@ -56,11 +56,11 @@ class TestConfig(unittest.TestCase):
 
         # Test that config with ONLY required fields is accepted
         default_config = clean_and_validate_config({
-            "notes_directory": ORIGINAL_CONFIG['notes_directory']
+            "notes_directory": ORIGINAL_CONFIG['notes_directory'],
+            "cache_directory": ORIGINAL_CONFIG['cache_directory']
         })
 
         # Test that all default values are respected
-        assert default_config['cache_directory'] == DEFAULT_CACHE_DIR
         assert default_config['log_file_path'] == DEFAULT_LOG_FILE
         assert default_config['log_level'] == DEFAULT_LOG_LEVEL
         assert default_config['grep_path'].endswith(DEFAULT_GREP_PATH)

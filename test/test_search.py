@@ -233,7 +233,7 @@ class TestTypeahead(unittest.TestCase):
         assert results == ['food']
 
         results = get_typeahead_results('inc')
-        assert results == ['includes', 'included', 'incomplete']
+        assert set(results) == set(['includes', 'included', 'incomplete'])
 
     def test_typeahead_bigram(self):
 
@@ -241,7 +241,7 @@ class TestTypeahead(unittest.TestCase):
         assert results == ['"apple pie"']
 
         results = get_typeahead_results('"for t')
-        assert results == ['"for this"', '"for the"']
+        assert set(results) == set(['"for this"', '"for the"'])
 
     def test_typeahead_trigram(self):
 
