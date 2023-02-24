@@ -33,4 +33,4 @@ jobs:
         cache: 'npm'
         cache-dependency-path: './react-frontend/package-lock.json'
     - run: npm install
-    - run: npm run test
+    - run: npm run ci

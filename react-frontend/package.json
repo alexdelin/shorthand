@@ -55,6 +55,7 @@
     "build": "react-scripts build",
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "test": "jest --testEnvironment=jsdom --collectCoverage=true --coverageDirectory=coverage --coverageProvider=v8",
+    "ci": "jest --testEnvironment=jsdom",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
