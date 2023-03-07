@@ -3,6 +3,23 @@ Shorthand is a note-taking and personal organization tool. Yes... another one
 
 Its based off of the idea that taking notes in plain-text formats (markdown) is great, and simpler is better when it comes to tooling that you use every day to stay organized. 
 
+## Try it
+If you want to try Shorthand locally, its easiest to run it in docker
+```bash
+docker pull alexdelin/shorthand:0.0.2
+
+# Run with sample data
+docker run \
+    --publish 8181:8181 \
+    alexdelin/shorthand:0.0.2
+
+# Run with your own notes
+docker run \
+    --publish 8181:8181 \
+    -v </path/to/your/notes>:/notes \
+    alexdelin/shorthand:0.0.2
+```
+
 ## Why another note-taking tool?
 There are already a lot of great tools out there, and Shorthand was inspired by many of them. However, most tools fall into one of these two buckets:
 1. Ways to turn plain-text notes into polished documents that look great and you can share with other people
