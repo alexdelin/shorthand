@@ -1,0 +1,79 @@
+# Sample Shorthand Note
+
+## Markdown
+
+### Text Decoration
+Text can _sort of_ be modified **whenever needed** by adding ~~just a few~~ extra `characters` to add additional emphasis to ***content***
+
+### Links
+Links work when they are either [absolute](/sample2.note) or [relative](sample2.note) or [external](https://nytimes.com)
+
+Links can also be [Invalid](/foo/bar.note)
+
+### Simple Tables
+| First Name | Last Name |
+| ---------- | --------- |
+| John       | Smith     |
+| Jane       | Doe       |
+
+### Lists
+Groceries:
+- Bread
+- Milk
+- Apples
+    1. Granny Smith
+    2. Red Delicious
+    3. Gala
+- Steak
+
+### Quotes
+My favorite author once said:
+> Virtue itself turns vice being misapplied, and vice sometimes through action ... dignified
+
+### Code Blocks
+```python
+# This is a comment!
+def say_hello(name):
+    print(f"Hello {name}!")
+```
+
+## Equations
+There are a few options for adding equations to documents. First, you can have inline math: $y = mx + b$,
+
+You can have single-line display-style equations:
+
+$$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$
+
+or longer blocks of display-style equations:
+
+$$\begin{array}{lcl}
+f(x) & = & (a+b)^2 \\
+& = & a^2+2ab+b^2 \\
+\end{array}$$
+
+## Diagrams
+Fenced code blocks can be used for mermaid diagrams
+
+```mermaid
+flowchart TD
+    A[Start] --> B{Is it?}
+    B -->|Yes| C[OK]
+    C --> D[Rethink]
+    D --> B
+    B ---->|No| E[End]
+```
+
+## Shorthand Elements
+
+### Todos
+- [ ] An incomplete todo with no date stamp :sample:
+- [ ] (2021-04-11) An incomplete todo created a long time ago
+
+### Questions & Answers
+None of these have dates stamped, so if you change this file via the UI and save it, they will be added
+- ? What color is the sky
+    + @ Blue
+- ? What is the meaning of life
+
+### Definitions
+- {Shorthand} A new plain-text note taking system

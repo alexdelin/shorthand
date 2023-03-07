@@ -8,7 +8,6 @@ from shorthand.elements.todos import _get_todos
 from shorthand.stamping import _stamp_notes
 
 
-SHORTHAND_CONFIG = _get_notes_config()
 log = logging.getLogger(__name__)
 
 

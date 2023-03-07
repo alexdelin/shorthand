@@ -12,7 +12,6 @@ from utils import setup_environment, TEMP_DIR, validate_setup, setup_logging
 
 
 ORIGINAL_CONFIG = setup_environment()
-setup_logging(ORIGINAL_CONFIG)
 log = logging.getLogger(__name__)
 
 server_config_path = TEMP_DIR + '/server_config.json'

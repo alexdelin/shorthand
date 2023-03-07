@@ -10,7 +10,6 @@ from model import ShorthandModel
 
 
 CONFIG = setup_environment()
-setup_logging(CONFIG)
 log = logging.getLogger(__name__)
 MODEL = ShorthandModel()
 

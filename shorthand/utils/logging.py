@@ -6,6 +6,11 @@ from shorthand.utils.config import DEFAULT_LOG_FILE, DEFAULT_LOG_LEVEL, \
 
 
 def get_default_logger():
+    '''Construct a default logger, which will **only**
+       be used in the case of an error before the regular logger is
+       instantiated
+    '''
+
     log = logging.getLogger('shorthand')
     log.setLevel(DEFAULT_LOG_LEVEL)
     default_handler = logging.FileHandler(DEFAULT_LOG_FILE)
@@ -34,12 +39,13 @@ def log_level_from_string(log_level_string):
 def get_handler(config):
     log_file_path = config.get('log_file_path', 'shorthand.log')
     log_level_string = config.get('log_level', 'info')
+    log_format = config.get('log_format', DEFAULT_LOG_FORMAT)
     log_level = log_level_from_string(log_level_string)
 
     fh = logging.FileHandler(log_file_path)
     fh.setLevel(log_level)
 
-    formatter = logging.Formatter('%(asctime)s %(name)s %(levelname)-8s %(message)s')
+    formatter = logging.Formatter(log_format)
     formatter.converter = time.gmtime
     fh.setFormatter(formatter)
     return fh

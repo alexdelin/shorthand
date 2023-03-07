@@ -6,7 +6,8 @@ import logging
 
 import pytest
 
-from shorthand.utils.logging import log_level_from_string
+from shorthand.utils.logging import log_level_from_string, get_handler
+from shorthand.utils.config import DEFAULT_LOG_FORMAT
 
 
 SAMPLE_DATA_DIR = 'sample_data'
@@ -21,6 +22,7 @@ TEST_CONFIG = {
     "notes_directory": NOTES_DIR,
     "cache_directory": CACHE_DIR,
     "log_file_path": LOG_PATH,
+    "log_format": DEFAULT_LOG_FORMAT,
     "log_level": "info",
     "grep_path": "grep",
     "find_path": "find"
@@ -34,15 +36,13 @@ def get_test_config():
 
 
 def setup_logging(config):
-    log_file_path = config.get('log_file_path', 'shorthand.log')
-    log_level_string = config.get('log_level', 'info')
-    log_level = log_level_from_string(log_level_string)
-
-    log_format = '%(asctime)s %(name)s %(levelname)-8s %(message)s'
-    logging.basicConfig(filename=log_file_path, filemode='a',
-                        level=log_level, format=log_format)
-    # Log in UTC time
-    logging.Formatter.converter = time.gmtime
+    root_logger = logging.getLogger('shorthand')
+    if root_logger.handlers:
+        for h in root_logger.handlers:
+            h.close()
+        root_logger.handlers.clear()
+    handler = get_handler(config)
+    root_logger.addHandler(handler)
 
 
 def validate_setup():
@@ -77,6 +77,8 @@ def setup_environment():
 
     with open(TEST_CONFIG_PATH, 'w') as f:
         json.dump(TEST_CONFIG, f)
+
+    setup_logging(TEST_CONFIG)
 
     return TEST_CONFIG
 

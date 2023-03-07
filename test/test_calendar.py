@@ -8,7 +8,6 @@ from results_unstamped import CALENDAR
 
 
 CONFIG = setup_environment()
-setup_logging(CONFIG)
 log = logging.getLogger(__name__)
 
 

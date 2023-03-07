@@ -14,17 +14,14 @@ from shorthand.web.blueprints.api import shorthand_api_blueprint
 from shorthand.web.blueprints.ui import shorthand_ui_blueprint
 
 
-def create_app(config_path):
+log = logging.getLogger(__name__)
 
+
+def create_app(config_path):
     config = _get_notes_config(config_path)
 
-    logger = logging.getLogger('shorthand-flask')
-    logger.setLevel(logging.DEBUG)
-
-    if logger.handlers:
-        logger.handlers.clear()
+    logger = log
     handler = get_handler(config)
-    logger.addHandler(handler)
 
     wz_logger = logging.getLogger('werkzeug')
     wz_logger.addHandler(handler)
@@ -38,8 +35,6 @@ def create_app(config_path):
     return app
 
 
-app = create_app(CONFIG_FILE_LOCATION)
-
-
 if __name__ == "__main__":
+    app = create_app(CONFIG_FILE_LOCATION)
     app.run(port=8181, debug=True, threaded=True)

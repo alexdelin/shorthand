@@ -1,8 +1,12 @@
 {
-    "notes_directory": "/home/user/notes/",
-    "ngram_db_directory": "/home/user/ngram_db",
-    "default_directory": "",
-    "grep_path": "/usr/local/bin/grep",
+    "notes_directory": "/notes/",
+    "cache_directory": "/var/lib/shorthand/cache/",
+    "default_directory": null,
+    "grep_path": "grep",
+    "find_path": "find",
     "log_file_path": "/var/log/shorthand/shorthand.log",
-    "log_level": "INFO"
+    "log_level": "INFO",
+    "frontend": {
+        "view_history_limit": 100
+    }
 }
