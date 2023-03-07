@@ -25,7 +25,6 @@ def create_app(config_path):
 
     wz_logger = logging.getLogger('werkzeug')
     wz_logger.addHandler(handler)
-    print(wz_logger.handlers)
 
     app = Flask(__name__)
     app.config['config_path'] = config_path

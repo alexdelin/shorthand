@@ -15,4 +15,9 @@ RUN mkdir -p /var/lib/shorthand/cache/
 RUN mkdir /etc/shorthand
 COPY sample_config.json /etc/shorthand/shorthand_config.json
 
-CMD [ "python3", "-m" , "flask", "--app=shorthand/web/app", "run", "--host=0.0.0.0", "--port=8181"]
+RUN mkdir /notes
+COPY sample-notes /notes
+
+ENV FLASK_APP="shorthand/web/app:create_app('/etc/shorthand/shorthand_config.json')"
+
+CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0", "--port=8181"]
