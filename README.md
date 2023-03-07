@@ -40,6 +40,19 @@ The character inside of the brackets indicates the state of the todo:
 - `X`: A Completed todo
 - `S`: A Skipped todo
 
+#### Questions & Answers
+A new workflow tool added by shorthand are questions. They are list elements prefixed with `?` characters, then a space, then the text of the question. These can represent unknowns, questions that are asked in meetings, etc.
+```
+- ? A question
+```
+An answer can be "attached" to a question by adding answer on the following line right after the question. Via the API, Questions can be queried based on whether or not they have answers attached to them.
+
+An answer is a list element prefixed with a `@` character, then a space, then the text of the answer.
+```
+- ? What is the greatest advantage of shorthand
+    + @ Simplicity
+```
+
 #### Definitions
 Definitions are also list elements, with the term in braces followed by the definition
 ```
@@ -65,6 +78,12 @@ Todos can have timestamps for both when the todo was created, and when it was ma
 ```
 - [ ] (2023-02-16) Something to do
 - [X] (2023-02-16 -> 2023-02-16) Something Done
+```
+
+Questions and Answers can each have a creation stamp, for when the element was created. This is particularly useful for long research tasks which can span multiple days or longer
+```
+- ? (2023-02-16) Question
+    + @ (2023-02-18) Answer
 ```
 
 ### Elements / Retrieval
