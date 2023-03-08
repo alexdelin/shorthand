@@ -205,7 +205,7 @@ export const RenderedMarkdown = React.forwardRef((props: RenderMarkdownProps, re
         columns: columns,
         data: parsedData,
         pagination: {
-          enabled: true,
+          // enabled: true,
           limit: 50
         }
       }).render(displayEl);
