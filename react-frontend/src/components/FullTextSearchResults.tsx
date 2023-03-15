@@ -75,7 +75,7 @@ export function FullTextSearchResults(props: FullTextSearchResultsProps) {
 
   const { data: FullTextSearchData } =
     useQuery<AggregatedFullTextSearchResult[], Error>(['fullTextSearch', { query: props.query }], () =>
-    fetch('http://localhost:8181/api/v1/search' +
+    fetch('/api/v1/search' +
           '?query_string=' + props.query +
           '&aggregate_by_file=true').then(res =>
       res.json()
@@ -92,7 +92,7 @@ export function FullTextSearchResults(props: FullTextSearchResultsProps) {
     event.stopPropagation();
 
     // Record the file view
-    let recordViewUrl = `http://localhost:8181/api/v1/record_view?note_path=${notePath}`
+    let recordViewUrl = `/api/v1/record_view?note_path=${notePath}`
     fetch(
       recordViewUrl,
       { method: 'POST' }

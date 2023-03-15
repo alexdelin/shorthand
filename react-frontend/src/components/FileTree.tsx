@@ -87,7 +87,7 @@ export function FileTree(props: FileTreeProps) {
     ['toc'], () =>
 
     // TODO - Replace with a better library
-    fetch(`http://localhost:8181/api/v1/toc`).then(res =>
+    fetch(`/api/v1/toc`).then(res =>
       res.json()
     ),
     {cacheTime: 10 * 60 * 1000, refetchOnWindowFocus: false}

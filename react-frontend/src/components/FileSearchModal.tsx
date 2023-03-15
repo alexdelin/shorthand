@@ -78,7 +78,7 @@ export function FileSearchModal() {
   function onFileResultClick(notePath: string) {
     // Record the file view
     fetch(
-      'http://localhost:8181/api/v1/record_view?note_path=' + notePath,
+      '/api/v1/record_view?note_path=' + notePath,
       { method: 'POST' }
     ).then(async res => {
       if (await res.text() === 'ack') {

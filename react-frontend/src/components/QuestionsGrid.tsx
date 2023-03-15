@@ -75,7 +75,7 @@ export function QuestionsGrid(props: QuestionsGridProps) {
     ['questions', { directory: props.directory, status: props.status }], () =>
 
     // TODO - Replace with a better library
-    fetch(`http://localhost:8181/api/v1/questions?status=${props.status}&directory_filter=${props.directory}`).then(res =>
+    fetch(`/api/v1/questions?status=${props.status}&directory_filter=${props.directory}`).then(res =>
       res.json()
     )
     // ,QUERY_CONFIG
