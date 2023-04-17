@@ -213,10 +213,6 @@ SEARCH_RESULTS_FOOD = [
         'line_number': '7',
         'match_content': r'- {food} Something that you eat when you are hungry'
     }, {
-        'file_path': '/section/mixed.note',
-        'line_number': '23',
-        'match_content': '- [] Test different cooking times for this recipe :food: :baking:'
-    }, {
         'file_path': '/questions.note',
         'line_number': '17',
         'match_content': '* ? What is the best kind of cereal :food:'
@@ -224,6 +220,10 @@ SEARCH_RESULTS_FOOD = [
         'file_path': '/questions.note',
         'line_number': '19',
         'match_content': 'Food is an essential part of a balanced diet'
+    }, {
+        'file_path': '/section/mixed.note',
+        'line_number': '23',
+        'match_content': '- [] Test different cooking times for this recipe :food: :baking:'
     }
 ]
 
