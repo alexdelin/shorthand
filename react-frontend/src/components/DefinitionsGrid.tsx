@@ -89,7 +89,7 @@ export function DefinitionsGrid(props: DefinitionsGridProps) {
     ['definitions', { directory: props.directory }], () =>
 
     // TODO - Replace with a better library
-    fetch(`http://localhost:8181/api/v1/definitions?include_sub_elements=True&directory_filter=${props.directory}`).then(res =>
+    fetch(`/api/v1/definitions?include_sub_elements=True&directory_filter=${props.directory}`).then(res =>
       res.json()
     )
     // ,QUERY_CONFIG

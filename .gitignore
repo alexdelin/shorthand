@@ -3,3 +3,4 @@ shorthand.egg-info/
 web/shorthand.log
 pyrightconfig.json
 *_docker_image.sh
+*_uwsgi_image.sh

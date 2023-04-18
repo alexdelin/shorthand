@@ -68,7 +68,7 @@ export function DefinitionsPage() {
   let {
     data: configData
   } = useQuery<GetConfigResponse, Error>(['config'], () =>
-    fetch('http://localhost:8181/api/v1/config').then(res =>
+    fetch('/api/v1/config').then(res =>
       res.json()
     )
     // ,QUERY_CONFIG
@@ -77,7 +77,7 @@ export function DefinitionsPage() {
   let {
     data: subdirsData
   } = useQuery<GetSubdirsResponse, Error>(['subdirs'], () =>
-    fetch('http://localhost:8181/api/v1/subdirs').then(res =>
+    fetch('/api/v1/subdirs').then(res =>
       res.json()
     )
     // ,QUERY_CONFIG
@@ -129,7 +129,7 @@ export function DefinitionsPage() {
           <RefreshIcon className="bi bi-arrow-clockwise"></RefreshIcon>
         </Button>
         <a
-          href={"http://localhost:8181/api/v1/definitions/csv?directory_filter=" + directory}
+          href={"/api/v1/definitions/csv?directory_filter=" + directory}
           download={"definitions_" + directory + ".csv"}
         >
           <Button

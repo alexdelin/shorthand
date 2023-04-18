@@ -76,7 +76,7 @@ export default function ViewPage() {
   const {
     data: noteContent
   } = useQuery<GetRenderedMarkdownResponse, Error>(['note', { path: notePath }], () =>
-    fetch('http://localhost:8181/frontend-api/redered-markdown?path=' + notePath).then(res =>
+    fetch('/frontend-api/redered-markdown?path=' + notePath).then(res =>
       res.json()
     )
   )

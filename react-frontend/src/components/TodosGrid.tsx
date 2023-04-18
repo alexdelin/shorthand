@@ -55,7 +55,7 @@ export function TodosGrid(props: TodosGridProps) {
     mutationFn: async (input) => {
       const todo = input.todo;
       const res = await fetch(
-        `http://localhost:8181/api/v1/mark_todo?filename=${todo.file_path}&line_number=${todo.line_number}&status=${input.status}`,
+        `/api/v1/mark_todo?filename=${todo.file_path}&line_number=${todo.line_number}&status=${input.status}`,
         { method: 'POST' }
       )
       return res.text();
@@ -92,7 +92,7 @@ export function TodosGrid(props: TodosGridProps) {
     }], () =>
 
     // TODO - Replace with a better library
-    fetch(`http://localhost:8181/api/v1/todos?status=${props.status}&directory_filter=${props.directory}&query_string=${props.search}&sort_by=start_date&tag=${props.tags}`).then(res =>
+    fetch(`/api/v1/todos?status=${props.status}&directory_filter=${props.directory}&query_string=${props.search}&sort_by=start_date&tag=${props.tags}`).then(res =>
       res.json()
     )
     // ,TODO_QUERY_CONFIG

@@ -282,4 +282,8 @@ def _search_full_text(notes_directory: DirectoryPath, query_string: str,
                                 reverse=True)
         search_results = aggregated_results
 
+    else:
+        # Sort un-aggregated results
+        search_results.sort(key=lambda result: f"{result['file_path']}:{result['line_number']}")
+
     return search_results

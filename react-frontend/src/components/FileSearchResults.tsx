@@ -43,7 +43,7 @@ export function FileSearchResults({query, showHeader=true, onResultClick}: FileS
 
   const { data: FileSearchData } =
     useQuery<FileSearchResponse, Error>(['fileSearch', { query }], () =>
-      fetch('http://localhost:8181/api/v1/files?query_string=' + query
+      fetch('/api/v1/files?query_string=' + query
             ).then(res =>
         res.json()
       ),
@@ -67,7 +67,7 @@ export function FileSearchResults({query, showHeader=true, onResultClick}: FileS
       // Else, fall back to the default
       // Record the file view
       fetch(
-        'http://localhost:8181/api/v1/record_view?note_path=' + notePath,
+        '/api/v1/record_view?note_path=' + notePath,
         { method: 'POST' }
       ).then(async res => {
         if (await res.text() === 'ack') {

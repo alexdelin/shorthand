@@ -45,21 +45,21 @@ export function ComposePage() {
 
   const { data: renderedMarkdown } =
     useQuery<GetRenderedMarkdownResponse, Error>(['note', { path: notePath }], () =>
-      fetch('http://localhost:8181/frontend-api/redered-markdown?path=' + notePath)
+      fetch('/frontend-api/redered-markdown?path=' + notePath)
         .then(async res => res.json()),
       {cacheTime: 10 * 60 * 1000, refetchOnWindowFocus: false}
     )
 
   const { data: rawNote } =
     useQuery<string, Error>(['raw-note', { path: notePath }], () =>
-      fetch('http://localhost:8181/api/v1/note?path=' + notePath)
+      fetch('/api/v1/note?path=' + notePath)
         .then(async res => res.text()),
       {cacheTime: 10 * 60 * 1000, refetchOnWindowFocus: false}
     )
 
   const { data: openFiles } =
     useQuery<string[], Error>(['open-files'], () =>
-      fetch('http://localhost:8181/frontend-api/get-open-files')
+      fetch('/frontend-api/get-open-files')
         .then(async res => res.json()),
       {cacheTime: 10 * 60 * 1000, refetchOnWindowFocus: false}
     )
@@ -69,7 +69,7 @@ export function ComposePage() {
       !openFiles.includes(notePath)) {
     // Open the file in the URL path via the API
     fetch(
-      'http://localhost:8181/frontend-api/open-file?path=' + notePath,
+      '/frontend-api/open-file?path=' + notePath,
       { method: 'POST' }
     ).then(async res => {
       if (await res.text() === 'ack') {
@@ -119,7 +119,7 @@ export function ComposePage() {
     const currentNoteContent = editorRef.current.view.state.doc.toString();
 
     fetch(
-      'http://localhost:8181/api/v1/stamp/raw',
+      '/api/v1/stamp/raw',
       {
         method: 'POST',
         body: currentNoteContent
@@ -132,7 +132,7 @@ export function ComposePage() {
       }
 
       fetch(
-        'http://localhost:8181/api/v1/note?path=' + notePath,
+        '/api/v1/note?path=' + notePath,
         {
           method: 'POST',
           body: stampedNoteContent
@@ -238,7 +238,7 @@ export function ComposePage() {
 
     // Close file via the API
     fetch(
-      'http://localhost:8181/frontend-api/close-file?path=' + file,
+      '/frontend-api/close-file?path=' + file,
       {
         method: 'POST'
       }
