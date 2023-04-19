@@ -140,7 +140,7 @@ export function DefinitionsPage() {
           </Button>
         </a>
       </StyledForm>
-      <Suspense fallback={SuspenseFallback}>
+      <Suspense fallback={<div>Loading...</div>}>
         <DefinitionsGrid
           directory={directory}
         />

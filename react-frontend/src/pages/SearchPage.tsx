@@ -34,10 +34,10 @@ export function SearchPage() {
       </SearchBarWrapper>
       {search !== '' && (
         <SearchResultsWrapper>
-          <Suspense fallback={SuspenseFallback}>
+          <Suspense fallback={<div>Loading...</div>}>
             <FileSearchResults query={search} />
           </Suspense>
-          <Suspense fallback={SuspenseFallback}>
+          <Suspense fallback={<div>Loading...</div>}>
             <FullTextSearchResults query={search} />
           </Suspense>
         </SearchResultsWrapper>
