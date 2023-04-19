@@ -66,7 +66,7 @@ function App() {
             // reset the state of your app so the error doesn't happen again
           }}
         >
-          <Suspense fallback={SuspenseFallback}>
+          <Suspense fallback={<div>Loading...</div>}>
             <Routes>
               <Route path="/home" element={<HomePage />} />
               <Route path="/compose" element={<ComposePage />} />

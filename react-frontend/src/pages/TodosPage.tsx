@@ -181,7 +181,7 @@ export default function TodosPage() {
         </Button>
       </StyledForm>
       {showStats ? (
-        <Suspense fallback={SuspenseFallback}>
+        <Suspense fallback={<div>Loading...</div>}>
           <TodosStatsSection
             status={status}
             search={search}
@@ -190,7 +190,7 @@ export default function TodosPage() {
           />
         </Suspense>
       ) : null}
-      <Suspense fallback={SuspenseFallback}>
+      <Suspense fallback={<div>Loading...</div>}>
         <TodosGrid
           status={status}
           search={search}

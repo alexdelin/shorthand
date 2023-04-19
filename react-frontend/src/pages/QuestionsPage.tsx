@@ -119,7 +119,7 @@ export function QuestionsPage() {
           <RefreshIcon className="bi bi-arrow-clockwise"></RefreshIcon>
         </Button>
       </StyledForm>
-      <Suspense fallback={SuspenseFallback}>
+      <Suspense fallback={<div>Loading...</div>}>
         <QuestionsGrid
           directory={directory}
           status={status}
