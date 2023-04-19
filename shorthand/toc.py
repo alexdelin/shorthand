@@ -34,6 +34,8 @@ def _get_toc(notes_directory: DirectoryPath) -> TOC:
         notes_filenames = [filename
                            for filename in filenames
                            if filename[-5:] == '.note']
+        notes_filenames.sort()
+        dirnames.sort()
 
         fs_lookup[dir_path] = {
             'files': notes_filenames,
