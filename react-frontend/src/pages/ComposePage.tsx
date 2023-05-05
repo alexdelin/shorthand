@@ -319,6 +319,7 @@ export function ComposePage() {
             open={saveSnackbarOpen}
             autoHideDuration={3000}
             onClose={handleSaveSnackbarClose}
+            sx={{ marginTop: '2rem' }}
             anchorOrigin={{vertical: 'top', horizontal: 'right'}}
            >
             <Alert onClose={handleSaveSnackbarClose} severity="success" sx={{ width: '100%' }}>
