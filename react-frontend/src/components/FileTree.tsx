@@ -2,7 +2,13 @@ import styled from 'styled-components';
 import { Fragment, useState } from 'react';
 import { useQuery } from 'react-query';
 import { Link } from "react-router-dom";
-import Backdrop from '@mui/material/Backdrop';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 import { ANIMATION_LENGTH_MS } from './Nav.styles';
 
 
@@ -140,13 +146,28 @@ export function FileTree(props: FileTreeProps) {
         collapseFunction={props.collapseFunction}
         openCreateBackdrop={openCreateBackdrop}
       />
-      <Backdrop
-        sx={{ color: '#fff', zIndex: 11 }}
-        open={createBackdropOpen}
-        onClick={closeCreateBackdrop}
-      >
-        Test
-      </Backdrop>
+      <Dialog open={createBackdropOpen} onClose={closeCreateBackdrop}>
+        <DialogTitle>Create</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            To subscribe to this website, please enter your email address here. We
+            will send updates occasionally.
+          </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="name"
+            label="Email Address"
+            type="email"
+            fullWidth
+            variant="standard"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closeCreateBackdrop}>Cancel</Button>
+          <Button onClick={closeCreateBackdrop}>Create</Button>
+        </DialogActions>
+      </Dialog>
     </Fragment>
   )
 }
