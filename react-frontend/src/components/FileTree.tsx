@@ -78,10 +78,19 @@ type RenderedDirectoryProps = {
   directory: TOC,
   expanded: boolean,
   collapseFunction: () => void,
-  openCreateBackdrop: () => void
+  openCreateBackdrop: (parentDir: string) => void
 }
 
 function RenderedDirectory(props: RenderedDirectoryProps) {
+
+  const handleCreateButtonClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    if (props.directory.path === '') {
+      props.openCreateBackdrop('/');
+    } else {
+      props.openCreateBackdrop(props.directory.path);
+    }
+  }
+
   return (
   <DirectoryWrapper key={props.directory.path}>
     <DirectoryNameWrapper onClick={handleDirectoryClick}>
@@ -105,7 +114,7 @@ function RenderedDirectory(props: RenderedDirectoryProps) {
           openCreateBackdrop={props.openCreateBackdrop}
         />
        )}
-      <CreateButtonWrapper onClick={props.openCreateBackdrop}>
+      <CreateButtonWrapper onClick={handleCreateButtonClick}>
         <FileTreeIcon className="bi bi-plus-circle-dotted"></FileTreeIcon>New
       </CreateButtonWrapper>
     </DirectoryContentsWrapper>
@@ -116,6 +125,7 @@ function RenderedDirectory(props: RenderedDirectoryProps) {
 export function FileTree(props: FileTreeProps) {
 
   const [createBackdropOpen, setCreateBackdropOpen] = useState(false);
+  const [createParentDir, setCreateParentDir] = useState('/');
 
   const {
     data: fileTreeData
@@ -132,7 +142,9 @@ export function FileTree(props: FileTreeProps) {
   const closeCreateBackdrop = () => {
     setCreateBackdropOpen(false);
   };
-  const openCreateBackdrop = () => {
+
+  const openCreateBackdrop = (parentDir: string) => {
+    setCreateParentDir(parentDir);
     setCreateBackdropOpen(true);
   };
 
@@ -150,15 +162,14 @@ export function FileTree(props: FileTreeProps) {
         <DialogTitle>Create</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            To subscribe to this website, please enter your email address here. We
-            will send updates occasionally.
+            Create new file or directory in {createParentDir}
           </DialogContentText>
           <TextField
             autoFocus
             margin="dense"
-            id="name"
-            label="Email Address"
-            type="email"
+            id="createInput"
+            label="File Name"
+            type="text"
             fullWidth
             variant="standard"
           />
