@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, forwardRef } from 'react';
 import { useQuery } from 'react-query';
 import { useQueryClient } from 'react-query';
 import { useSearchParams } from "react-router-dom";
@@ -19,6 +19,8 @@ import Switch from '@mui/material/Switch';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Button from '@mui/material/Button';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import { latexPlugin, locationPlugin, todoPlugin,
          timestampPlugin, questionPlugin, definitionPlugin,
          todayPlaceholderPlugin
@@ -28,6 +30,13 @@ import { ComposePageWrapper, ComposeHeader, ComposeNoteWrapper,
          StyledFormGroup, SwitchLabel, PreviewBottomMarker,
          StyledCodeMirror } from './ComposePage.styles';
 
+// Boilerpalte from: https://mui.com/material-ui/react-snackbar/
+const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
+  props,
+  ref,
+) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 export function ComposePage() {
   console.log('rendering...')
@@ -40,6 +49,7 @@ export function ComposePage() {
   const [scrollPreview, setScrollPreview] = useState(true);
   const [selectedTab, setSelectedTab] = useState(notePath);
   const editorRef = useRef<ReactCodeMirrorRef>(null);
+  const [saveSnackbarOpen, setSaveSnackbarOpen] = useState(false);
 
   const queryClient = useQueryClient();
 
@@ -142,6 +152,7 @@ export function ComposePage() {
           queryClient.invalidateQueries(['note', { path: notePath }]);
           queryClient.invalidateQueries(['raw-note', { path: notePath }]);
           setChangesSaved(true);
+          showSaveSnackbar();
         }
       })
 
@@ -250,6 +261,17 @@ export function ComposePage() {
     })
   }
 
+  const showSaveSnackbar = () => {
+    setSaveSnackbarOpen(true);
+  };
+
+  const handleSaveSnackbarClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setSaveSnackbarOpen(false);
+  };
+
   if (renderedMarkdown === undefined) return <div>No note found</div>;
 
   if (!selectedTab || openFiles && selectedTab && !openFiles.includes(selectedTab)) return <SuspenseFallback />;
@@ -287,6 +309,23 @@ export function ComposePage() {
           })}
         </Tabs>
         <StyledFormGroup row={true}>
+          <Button
+            variant="text"
+            onClick={saveNote}
+          >
+            Save
+          </Button>
+          <Snackbar
+            open={saveSnackbarOpen}
+            autoHideDuration={3000}
+            onClose={handleSaveSnackbarClose}
+            sx={{ marginTop: '2rem' }}
+            anchorOrigin={{vertical: 'top', horizontal: 'right'}}
+           >
+            <Alert onClose={handleSaveSnackbarClose} severity="success" sx={{ width: '100%' }}>
+              Note Updated
+            </Alert>
+          </Snackbar>
           <SwitchLabel>Show Preview</SwitchLabel>
           <Switch
             checked={showPreview}
