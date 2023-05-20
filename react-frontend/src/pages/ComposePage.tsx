@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef, forwardRef } from 'react';
-import { useQuery } from 'react-query';
-import { useQueryClient } from 'react-query';
+import { useQuery, useQueryClient } from 'react-query';
 import { useSearchParams } from "react-router-dom";
 import { useBeforeunload } from 'react-beforeunload';
 import { ShorthandMarkdown } from './ViewPage.styles';
@@ -317,7 +316,7 @@ export function ComposePage() {
           </Button>
           <Snackbar
             open={saveSnackbarOpen}
-            autoHideDuration={3000}
+            autoHideDuration={1000}
             onClose={handleSaveSnackbarClose}
             sx={{ marginTop: '2rem' }}
             anchorOrigin={{vertical: 'top', horizontal: 'right'}}
