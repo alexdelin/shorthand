@@ -1,17 +1,18 @@
 # Path Utilities
 import os
 import logging
-from typing import Optional, Union
+from typing import Optional, Union, List
 
 from shorthand.types import DirectoryPath, DisplayPath, ExternalURL, \
-                            FilePath, NotePath, RelativeNotePath, Subdir
+                            FilePath, NotePath, RelativeNotePath, Subdir, \
+                            InternalAbsolutePath
 
 
 log = logging.getLogger(__name__)
 
 
 def get_relative_path(notes_directory: DirectoryPath, path: FilePath
-                      ) -> NotePath:
+                      ) -> InternalAbsolutePath:
     '''Produce a relative path within the notes directory
     from a full path on the filesystem
     '''
@@ -35,10 +36,11 @@ def get_relative_path(notes_directory: DirectoryPath, path: FilePath
     return path
 
 
-def get_full_path(notes_directory: DirectoryPath, relative_path: NotePath
-                  ) -> FilePath:
-    '''Get a full path on the local filesystem from a
-    relative path
+def get_full_path(notes_directory: DirectoryPath,
+                  relative_path: InternalAbsolutePath
+                  ) -> Union[FilePath, DirectoryPath]:
+    '''Get a full path on the local filesystem from an
+       internal absolute path within the notes directory
     '''
 
     if not relative_path:
@@ -69,7 +71,7 @@ def get_display_path(path: NotePath, directory_filter: Optional[str] = None
 
     if isinstance(directory_filter, str):
         if not directory_filter.strip('/'):
-            raise ValueError(f'Invalid directory filter '
+            raise ValueError(f'Invalid directory filter ' +
                              f'{directory_filter} specified')
 
     # Always work with paths that start with slashes, and
@@ -95,8 +97,8 @@ def get_display_path(path: NotePath, directory_filter: Optional[str] = None
 
 
 def _get_subdirs(notes_directory: DirectoryPath, max_depth: int = 2,
-                 exclude_hidden=True
-                 ) -> list[Subdir]:
+                 exclude_hidden: bool = True
+                 ) -> List[Subdir]:
     '''Returns a list of all sub-directories within the notes directory
        up to the specified depth.
     '''

@@ -4,7 +4,7 @@ import json
 import logging
 from typing import Optional, TypedDict, NewType
 
-from shorthand.types import FilePath, DirectoryPath, RelativeDirectoryPath
+from shorthand.types import ExecutablePath, FilePath, DirectoryPath, RelativeDirectoryPath
 
 
 class ShorthandFrontendConfig(TypedDict):
@@ -18,8 +18,8 @@ class ShorthandConfig(TypedDict):
     log_file_path: FilePath
     log_level: str
     log_format: str
-    grep_path: str
-    find_path: str
+    grep_path: ExecutablePath
+    find_path: ExecutablePath
     frontend: ShorthandFrontendConfig
 
 class ShorthandConfigUpdates(TypedDict, total=False):
@@ -28,8 +28,8 @@ class ShorthandConfigUpdates(TypedDict, total=False):
     log_file_path: FilePath
     log_level: str
     log_format: str
-    grep_path: str
-    find_path: str
+    grep_path: ExecutablePath
+    find_path: ExecutablePath
     frontend: ShorthandFrontendConfig
 
 
@@ -94,7 +94,7 @@ def _write_config(config_location: FilePath, config: ShorthandConfig) -> None:
     # Check that the parent directory exists
     parent_dir = os.path.dirname(config_location)
     if not os.path.exists(parent_dir):
-        log.warning(f'Config directory {parent_dir} '
+        log.warning(f'Config directory {parent_dir} ' +
                     f'does not exist, creating it')
         os.makedirs(parent_dir)
 
@@ -128,11 +128,11 @@ def _modify_config(config: ShorthandConfig, updates: ShorthandConfigUpdates
     if 'frontend' in updates:
         # Validate Provided frontend updates
         if not isinstance(updates['frontend'], dict):
-            raise ValueError('Frontend config must be provided '
+            raise ValueError('Frontend config must be provided ' +
                              'as a dictionary')
         for key in updates['frontend'].keys():
             if key not in DEFAULT_FRONTEND_CONFIG.keys():
-                raise ValueError(f'Config update has unknown frontend '
+                raise ValueError(f'Config update has unknown frontend ' +
                                  f'config key {key}')
         if new_config.get('frontend'):
             new_config['frontend'].update(updates['frontend'])
