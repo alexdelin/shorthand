@@ -18,10 +18,10 @@
         * `GET` to get the current config of the notes server
         * `PUT` to update the configuration of the notes server
 - Filesystem API (New)
-    + GET `/api/v1/filesystem`
+    + GET `/api/v1/filesystem` (toc)
     + PUT `/api/v1/filesystem/create`
-    + DELETE `/api/v1/filesystem/delete`
     + POST `/api/v1/filesystem/move`
+    + DELETE `/api/v1/filesystem/delete`
 - Search API
     + `/api/v1/search/full_text`
     + `/api/v1/search/filenames`
