@@ -16,6 +16,7 @@ from shorthand.elements.locations import _get_locations
 from shorthand.elements.record_sets import _get_record_sets, _get_record_set
 from shorthand.frontend.typeahead import _update_ngram_database, \
                                          _get_typeahead_suggestions
+from shorthand.types import InternalAbsoluteFilePath, InternalAbsolutePath, Subdir
 from shorthand.utils.config import _get_notes_config, _write_config, \
                                    _modify_config
 from shorthand.utils.paths import _get_subdirs
@@ -25,6 +26,9 @@ from shorthand.utils.buffers import _new_buffer, _get_buffers, \
                                     _get_buffer_content, \
                                     _update_buffer_content, \
                                     _delete_buffer, _write_buffer
+from shorthand.utils.filesystem import _create_file, _create_directory, \
+                                       _move_file_or_directory, _delete_file, \
+                                       _delete_directory
 
 
 # Set up the default module-level logger which the rest of the library
@@ -100,7 +104,7 @@ class ShorthandServer(object):
         '''Validate that config is present
         '''
         if not self.config:
-            raise ValueError('Shorthand Server is not yet '
+            raise ValueError('Shorthand Server is not yet ' +
                              'initialized with config')
 
     # ---------------------------
@@ -212,7 +216,7 @@ class ShorthandServer(object):
             ngram_db_dir=self.config['cache_directory'],
             query_string=query_string, limit=limit)
 
-    #
+    # Subdirs
     def get_subdirs(self, max_depth=2, exclude_hidden=True):
         return _get_subdirs(notes_directory=self.config['notes_directory'],
                             max_depth=max_depth, exclude_hidden=exclude_hidden)
@@ -275,28 +279,56 @@ class ShorthandServer(object):
     # ---------------
     # --- Buffers ---
     # ---------------
-    def new_buffer(self) -> str:
+    def new_buffer(self):
         return _new_buffer(cache_directory=self.config['cache_directory'])
 
-    def get_buffers(self) -> list:
+    def get_buffers(self):
         return _get_buffers(cache_directory=self.config['cache_directory'])
 
-    def get_buffer_content(self, buffer_id: str) -> str:
+    def get_buffer_content(self, buffer_id: str):
         return _get_buffer_content(
             cache_directory=self.config['cache_directory'],
             buffer_id=buffer_id)
 
-    def update_buffer_content(self, buffer_id: str, content: str) -> bool:
+    def update_buffer_content(self, buffer_id: str, content: str):
         return _update_buffer_content(
             cache_directory=self.config['cache_directory'],
             buffer_id=buffer_id, content=content)
 
-    def delete_buffer(self, buffer_id: str) -> bool:
+    def delete_buffer(self, buffer_id: str):
         return _delete_buffer(cache_directory=self.config['cache_directory'],
                               buffer_id=buffer_id)
 
     def write_buffer(self, notes_directory: str, buffer_id: str,
-                     note_path: str) -> bool:
+                     note_path: str):
         return _write_buffer(cache_directory=self.config['cache_directory'],
                              notes_directory=self.config['notes_directory'],
                              buffer_id=buffer_id, note_path=note_path)
+
+    # ------------------------
+    # --- Filesystem Utils ---
+    # ------------------------
+    def create_file(self, file_path: InternalAbsoluteFilePath):
+        return _create_file(notes_directory=self.config['notes_directory'],
+                            file_path=file_path)
+
+    def create_directory(self, directory_path: Subdir):
+        return _create_directory(notes_directory=self.config['notes_directory'],
+                                 directory_path=directory_path)
+
+    def move_file_or_directory(self, source: InternalAbsolutePath,
+                               destination: InternalAbsolutePath):
+        return _move_file_or_directory(
+            notes_directory=self.config['notes_directory'],
+            source=source, destination=destination)
+
+    def delete_file(self, file_path: InternalAbsoluteFilePath):
+        return _delete_file(notes_directory=self.config['notes_directory'],
+                            file_path=file_path)
+
+    def delete_directory(self, directory_path: Subdir,
+                         recursive: bool = False):
+        return _delete_directory(
+            notes_directory=self.config['notes_directory'],
+            directory_path=directory_path, recursive=recursive)
+
