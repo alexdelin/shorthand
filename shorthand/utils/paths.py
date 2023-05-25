@@ -104,12 +104,12 @@ def _get_subdirs(notes_directory: DirectoryPath, max_depth: int = 2,
     '''
     all_directories = []
     for subdir in os.walk(notes_directory):
-        subdir_path = subdir[0][len(notes_directory) + 1:]
+        subdir_path = subdir[0][len(notes_directory):]
         if not subdir_path:
             continue
         elif exclude_hidden and subdir_path.startswith('.'):
             continue
-        elif len(subdir_path.split('/')) > max_depth:
+        elif len(subdir_path.split('/')) > max_depth + 1:
             continue
         else:
             all_directories.append(subdir_path)
