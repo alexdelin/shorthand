@@ -8,6 +8,7 @@ from shorthand.utils.paths import get_full_path, get_relative_path, \
                                   parse_relative_link_path, is_external_path, \
                                   is_note_path
 from shorthand.utils.patterns import INTERNAL_LINK_PATTERN, ALL_LINK_PATTERN
+from shorthand.utils.filesystem import _delete_file
 from shorthand.types import DirectoryPath, ExecutablePath, ExternalURL, NotePath, RawNoteContent, RelativeNotePath
 
 
@@ -70,7 +71,7 @@ def _append_to_note(notes_directory: DirectoryPath, note_path: NotePath,
     full_path = get_full_path(notes_directory, note_path)
 
     if not os.path.exists(full_path):
-        raise ValueError(f'Note to append to at path {note_path} does '
+        raise ValueError(f'Note to append to at path {note_path} does ' +
                          f'not exist')
 
     if blank_lines:
@@ -100,12 +101,7 @@ def _create_note(notes_directory: DirectoryPath, note_path: NotePath,
 def _delete_note(notes_directory: DirectoryPath, note_path: NotePath) -> None:
     '''Deletes a note from the filesystem
     '''
-    full_path = get_full_path(notes_directory, note_path)
-
-    if not os.path.exists(full_path):
-        raise ValueError(f'Note to delete at path {note_path} does not exist')
-
-    os.remove(full_path)
+    _delete_file(notes_directory, note_path)
 
 
 def _validate_internal_links(notes_directory: DirectoryPath,
@@ -185,7 +181,7 @@ def _get_links(notes_directory: DirectoryPath, source: Optional[NotePath]=None,
 
     if note:
         if source or target:
-            raise ValueError('Parameter `note` cannot be combined '
+            raise ValueError('Parameter `note` cannot be combined ' +
                              'with `source` or `target`')
 
         # Get the set of all links where the specified note is either
@@ -228,7 +224,7 @@ def _get_links(notes_directory: DirectoryPath, source: Optional[NotePath]=None,
         search_path = notes_directory
 
     # Use Grep to find all links
-    grep_command = '{grep_path} -Prn "{pattern}" '\
+    grep_command = '{grep_path} -Prn "{pattern}" ' \
                    '--include="*.note" --exclude-dir=\'.*\' {dir}'.format(
                         grep_path=grep_path,
                         pattern=LINK_PATTERN,

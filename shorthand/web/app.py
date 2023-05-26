@@ -37,4 +37,4 @@ def create_app(config_path):
 
 if __name__ == "__main__":
     app = create_app(CONFIG_FILE_LOCATION)
-    app.run(port=8181, debug=True, threaded=True)
+    app.run(port=8182, debug=True, threaded=True)

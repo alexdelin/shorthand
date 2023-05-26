@@ -4,24 +4,25 @@ import { tags } from '@lezer/highlight';
 import { todoIncompleteTag, todoIncompleteMarkerTag,
          todoSkippedTag, todoSkippedMarkerTag,
          todoCompleteTag, todoCompleteMarkerTag,
-         timestampTag, timestampMarkTag, latexInlineTag,
-         latexBlockTag, latexMarkTag, locationMarkTag,
-         locationNameTag, locationLatLonTag,
+         timestampTag, locationNameTag,
          questionTag, questionMarkerTag,
          answerTag, answerMarkerTag,
          definitionTag, definitionTermTag, definitionMarkerTag,
          todayPlaceholderTag } from './index';
 
 // Using https://github.com/one-dark/vscode-one-dark-theme/ as reference for the colors
-const chalky = "#e5c07b", coral = "#e06c75"
-const cyan = "#56b6c2", invalid = "#ffffff"
-const ivory = "#abb2bf", stone = "#7d8799"
-const malibu = "#61afef", sage = "#98c379"
-const whiskey = "#d19a66", violet = "#c678dd"
-const darkBackground = "#21252b"
+// const chalky = "#e5c07b", coral = "#e06c75"
+// const cyan = "#56b6c2", invalid = "#ffffff"
+// const malibu = "#61afef", sage = "#98c379"
+// const whiskey = "#d19a66", violet = "#c678dd"
+// const darkBackground = "#21252b"
+const ivory = "#abb2bf"
+const stone = "#7d8799"
 const highlightBackground = "#2c313a"
-const background = "hsl(210, 15%, 20%)", tooltipBackground = "#353a42"
-const selection = "#3E4451", cursor = "#528bff"
+const background = "hsl(210, 15%, 20%)"
+const tooltipBackground = "#353a42"
+const selection = "#434956"
+const cursor = "#528bff"
 
 // Colors from Sublime Mariana theme
 const white = "hsl(0, 0%, 100%)";
@@ -47,11 +48,8 @@ const shorthandDarkTheme = EditorView.theme({
     ".cm-content": {
         caretColor: cursor
     },
-    ".cm-cursor, .cm-dropCursor": { borderLeftColor: cursor },
-    "&.cm-focused .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection": { backgroundColor: selection },
-    ".cm-panels": { backgroundColor: darkBackground, color: ivory },
-    ".cm-panels.cm-panels-top": { borderBottom: "2px solid black" },
-    ".cm-panels.cm-panels-bottom": { borderTop: "2px solid black" },
+    ".cm-cursor, .cm-dropCursor": { borderLeft: '1.5px solid ' + orange },
+    "&.cm-focused .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection": { backgroundColor: selection + ' !important' },
     ".cm-searchMatch": {
         backgroundColor: "#72a1ff59",
         outline: "1px solid #457dff"
@@ -59,7 +57,7 @@ const shorthandDarkTheme = EditorView.theme({
     ".cm-searchMatch.cm-searchMatch-selected": {
         backgroundColor: "#6199ff2f"
     },
-    ".cm-activeLine": { backgroundColor: highlightBackground },
+    ".cm-activeLine": { backgroundColor: 'transparent' },
     ".cm-selectionMatch": { backgroundColor: "#aafe661a" },
     "&.cm-focused .cm-matchingBracket, &.cm-focused .cm-nonmatchingBracket": {
         backgroundColor: "#bad0f847",
@@ -97,6 +95,7 @@ const shorthandDarkTheme = EditorView.theme({
         }
     }
 }, { dark: true });
+
 /**
 The highlighting style for code in the Shorthand Dark theme.
 */

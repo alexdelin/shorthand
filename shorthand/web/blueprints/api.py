@@ -80,6 +80,18 @@ def get_full_note() -> RawNoteContent:
     return server.get_note(path)
 
 
+@shorthand_api_blueprint.route('/api/v1/note', methods=['PUT'])
+def create_new_note():
+    server = ShorthandServer(current_app.config['config_path'])
+
+    path = get_request_argument(request.args, name='path', required=True)
+    request.get_data()
+    content: RawNoteContent = request.data.decode('utf-8')
+
+    server.create_note(path, content)
+    return 'Note Created'
+
+
 @shorthand_api_blueprint.route('/api/v1/note', methods=['POST'])
 def write_updated_note():
     server = ShorthandServer(current_app.config['config_path'])
@@ -360,3 +372,46 @@ def fetch_record_set():
         parse=parse,
         parse_format=parse_format,
         include_config=include_config)
+
+
+# Filesystem API
+@shorthand_api_blueprint.route('/api/v1/filesystem/create', methods=['PUT'])
+def filesystem_create() -> ACKResponse:
+    server = ShorthandServer(current_app.config['config_path'])
+
+    resource_type = get_request_argument(request.args, name='type', required=False, default='file')
+    path = get_request_argument(request.args, name='path', required=True)
+    if resource_type == 'file':
+        server.create_file(path)
+    elif resource_type == 'directory':
+        server.create_directory(path)
+    else:
+        raise ValueError(f'Got unknown resource type {resource_type}')
+    return 'ack'
+
+
+@shorthand_api_blueprint.route('/api/v1/filesystem/move', methods=['POST'])
+def filesystem_move() -> ACKResponse:
+    server = ShorthandServer(current_app.config['config_path'])
+
+    source = get_request_argument(request.args, name='source', required=True)
+    destination = get_request_argument(request.args, name='destination', required=True)
+    server.move_file_or_directory(source, destination)
+    return 'ack'
+
+
+@shorthand_api_blueprint.route('/api/v1/filesystem/delete', methods=['DELETE'])
+def filesystem_delete() -> ACKResponse:
+    server = ShorthandServer(current_app.config['config_path'])
+
+    resource_type = get_request_argument(request.args, name='type', required=False, default='file')
+    path = get_request_argument(request.args, name='path', required=True)
+    if resource_type == 'file':
+        server.delete_file(path)
+    elif resource_type == 'directory':
+        recursive = get_request_argument(request.args, name='recursive',
+                                         arg_type=bool, default=False)
+        server.delete_directory(path, recursive)
+    else:
+        raise ValueError(f'Got unknown resource type {resource_type}')
+    return 'ack'

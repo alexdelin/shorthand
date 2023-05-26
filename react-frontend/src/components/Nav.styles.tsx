@@ -38,13 +38,18 @@ export const TreeSidebar = styled.div`
   left: ${(props: TreeSidebarSCProps) => (props.isExpanded ? '15rem' : '5rem')};;
   float: left;
   overflow-y: scroll;
-  overflow-x: visible;
+  overflow-x: hidden;
   transition: width ${ANIMATION_LENGTH_MS}ms, left ${ANIMATION_LENGTH_MS}ms;
   background-color: rgb(33, 37, 61);
-  // background-color: red;
   color: white;
   display: flex;
-  flex-direction: column;`
+  flex-direction: column;
+  scrollbar-width: none;  /* Hide Scrollbars - Firefox */
+  -ms-overflow-style: none;  /* Hide Scrollbars - IE 10+ */
+
+  &::-webkit-scrollbar {
+    display: none;  /* Hide Scrollbars - Safari and Chrome */
+  }`
 
 export const NavHeader = styled.a`
   font-size: 2.25rem;
