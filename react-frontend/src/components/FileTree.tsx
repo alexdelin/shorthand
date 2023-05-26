@@ -52,7 +52,7 @@ type FolderActionsIconProps = {
 }
 
 const FolderActionsIcon = styled.i`
-  margin-right: 0.2rem;
+  margin-right: 0.6rem;
   color: ${(props: FolderActionsIconProps) => (props.menuOpen ? 'white' : 'rgb(33, 37, 61)')};`
 
 
@@ -537,6 +537,9 @@ function DeleteDialog(props: DeleteDialogProps) {
 }
 
 
+const FileTreeWrapper = styled.div`
+  width: 35rem;`
+
 type FileTreeProps = {
   collapseFunction: () => void
 }
@@ -591,14 +594,16 @@ export function FileTree(props: FileTreeProps) {
 
   return (
     <Fragment>
-      <RenderedDirectory
-        directory={fileTreeData}
-        expanded={true}
-        collapseFunction={props.collapseFunction}
-        openCreateDialog={openCreateDialog}
-        openMoveDialog={openMoveDialog}
-        openDeleteDialog={openDeleteDialog}
-      />
+      <FileTreeWrapper>
+        <RenderedDirectory
+          directory={fileTreeData}
+          expanded={true}
+          collapseFunction={props.collapseFunction}
+          openCreateDialog={openCreateDialog}
+          openMoveDialog={openMoveDialog}
+          openDeleteDialog={openDeleteDialog}
+        />
+      </FileTreeWrapper>
       <CreateDialog
         createDialogOpen={createDialogOpen}
         setCreateDialogOpen={setCreateDialogOpen}
