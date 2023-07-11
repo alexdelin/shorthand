@@ -42,7 +42,7 @@ export const StyledFormGroup = styled(FormGroup)`
   align-items: center;
   height: 3rem;
   margin-left: auto;
-  min-width: 25rem;`
+  min-width: 29rem;`
 
 export const SwitchLabel = styled.span`
   margin-left: 1rem;`
