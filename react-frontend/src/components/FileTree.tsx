@@ -538,7 +538,10 @@ function DeleteDialog(props: DeleteDialogProps) {
 
 
 const FileTreeWrapper = styled.div`
-  width: 35rem;`
+  background-color: rgb(33, 37, 61);
+  color: white;
+  width: min(35rem, 100vw);
+  line-break: anywhere;`
 
 type FileTreeProps = {
   collapseFunction: () => void
