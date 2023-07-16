@@ -42,7 +42,10 @@ const FileRowWrapper = styled.div`
 const FileWrapper = styled(Link)`
   font-size: 1.25rem;
   text-decoration: none;
-  color: white;`
+  color: white;
+  display: flex;`
+
+const FileName = styled.div``
 
 const FileTreeIcon = styled.i`
   margin-right: 0.2rem;`
@@ -110,7 +113,8 @@ function FileRow(props: FileRowProps) {
         to={`/compose?path=${props.directory.path}/${props.file}`}
         onClick={props.collapseFunction}
       >
-        <FileTreeIcon className="bi bi-file-earmark-text"></FileTreeIcon>{breakableFileName}
+        <FileTreeIcon className="bi bi-file-earmark-text"></FileTreeIcon>
+        <FileName>{breakableFileName}</FileName>
       </FileWrapper>
       <FolderActionsIcon menuOpen={fileMenuOpen} onClick={handleFileActionsClick} className="bi bi-three-dots"></FolderActionsIcon>
       <Menu
@@ -146,7 +150,10 @@ const DirectoryRowWrapper = styled.div`
     color: white;
   }`
 
-const DirectoryNameWrapper = styled.div``
+const DirectoryNameWrapper = styled.div`
+  display: flex;`
+
+const DirectoryName = styled.div``
 
 type DirectoryRowProps = {
   directory: TOC,
@@ -208,7 +215,8 @@ function DirectoryRow(props: DirectoryRowProps) {
   return (
     <DirectoryRowWrapper menuOpen={dirMenuOpen}>
       <DirectoryNameWrapper onClick={handleDirectoryClick}>
-        <FileTreeIcon className="bi bi-folder2"></FileTreeIcon>{breakableDirName}
+        <FileTreeIcon className="bi bi-folder2"></FileTreeIcon>
+        <DirectoryName>{breakableDirName}</DirectoryName>
       </DirectoryNameWrapper>
       <FolderActionsIcon menuOpen={dirMenuOpen} onClick={handleDirActionsClick} className="bi bi-three-dots"></FolderActionsIcon>
       <Menu
@@ -556,8 +564,7 @@ function DeleteDialog(props: DeleteDialogProps) {
 const FileTreeWrapper = styled.div`
   background-color: rgb(33, 37, 61);
   color: white;
-  width: min(35rem, 100vw);
-  // word-break: break-all;`
+  width: 100%;`
 
 type FileTreeProps = {
   collapseFunction: () => void

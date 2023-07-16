@@ -6,7 +6,7 @@ import {
   NavOption, NavOptionIcon, NavOptionName,
   NavCover, NavSubOptionList, NavSubOption,
   NavSubOptionName, NavToggleIcon, ElementsIcon,
-  TreeIcon, TreeSidebar
+  TreeIcon, TreeSidebar, TreeSidebarInner
 } from './Nav.styles';
 import { FileTree } from './FileTree';
 
@@ -160,7 +160,9 @@ export function Nav() {
         <NavToggleIcon className={"bi bi-arrow-bar-" + (isExpanded ? 'left' : 'right')} onClick={changeNav}></NavToggleIcon>
       </NavSidebar>
       <TreeSidebar isExpanded={isExpanded} treeExpanded={treeExpanded}>
-        <FileTree collapseFunction={collapseNav} />
+        <TreeSidebarInner>
+          <FileTree collapseFunction={collapseNav} />
+        </TreeSidebarInner>
       </TreeSidebar>
       <NavCover isExpanded={isExpanded} coverVisible={coverVisible} onClick={changeNav}>
       </NavCover>
