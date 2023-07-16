@@ -30,7 +30,7 @@ export const NavSidebar = styled.div`
   align-items: center;`
 
 export const TreeSidebar = styled.div`
-  width: ${(props: TreeSidebarSCProps) => (props.isExpanded && props.treeExpanded ? '35rem' : '0rem')};
+  width: ${(props: TreeSidebarSCProps) => (props.isExpanded && props.treeExpanded ? '25rem' : '0rem')};
   height: 100vh;
   z-index: 10;
   position: absolute;
@@ -50,6 +50,10 @@ export const TreeSidebar = styled.div`
   &::-webkit-scrollbar {
     display: none;  /* Hide Scrollbars - Safari and Chrome */
   }`
+
+export const TreeSidebarInner = styled.div`
+  width: 25rem;
+  height: 100%;`
 
 export const NavHeader = styled.a`
   font-size: 2.25rem;

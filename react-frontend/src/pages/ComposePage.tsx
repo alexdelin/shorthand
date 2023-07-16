@@ -49,6 +49,7 @@ export function ComposePage() {
   const [selectedTab, setSelectedTab] = useState(notePath);
   const editorRef = useRef<ReactCodeMirrorRef>(null);
   const [saveSnackbarOpen, setSaveSnackbarOpen] = useState(false);
+  const [noChagesSnackbarOpen, setNoChangesSnackbarOpen] = useState(false);
 
   const queryClient = useQueryClient();
 
@@ -73,9 +74,10 @@ export function ComposePage() {
       {cacheTime: 10 * 60 * 1000, refetchOnWindowFocus: false}
     )
 
-  // Handle the file in the URL path param not being open
+  // Handle the file in the URL path param not being the
+  // most recently opened file
   if (openFiles && notePath &&
-      !openFiles.includes(notePath)) {
+      openFiles[openFiles.length - 1] !== notePath) {
     // Open the file in the URL path via the API
     fetch(
       '/frontend-api/open-file?path=' + notePath,
@@ -92,7 +94,7 @@ export function ComposePage() {
     if (!notePath) {
       if (openFiles && openFiles.length) {
         console.log('Setting Open File');
-        const targetFile = openFiles[0];
+        const targetFile = openFiles[openFiles.length - 1];
         setSelectedTab(targetFile);
         setSearchParams({path: targetFile});
       }
@@ -125,7 +127,16 @@ export function ComposePage() {
       return false
     }
 
+    // Early exit for no changes
+    if (changesSaved) {
+      console.log('No changes, skipping save');
+      showNoChangesSnackbar();
+      return false;
+    }
+
     const currentNoteContent = editorRef.current.view.state.doc.toString();
+    const currentCursorPosition = editorRef.current?.view?.state.selection.ranges[0].from;
+    let contentGetsStamped = false;
 
     fetch(
       '/api/v1/stamp/raw',
@@ -137,6 +148,7 @@ export function ComposePage() {
 
       const stampedNoteContent = await res.text();
       if (stampedNoteContent !== currentNoteContent) {
+        contentGetsStamped = true;
         setEditorText(stampedNoteContent);
       }
 
@@ -152,6 +164,15 @@ export function ComposePage() {
           queryClient.invalidateQueries(['raw-note', { path: notePath }]);
           setChangesSaved(true);
           showSaveSnackbar();
+          if (currentCursorPosition && contentGetsStamped) {
+            console.log('setting cursor position to ' + currentCursorPosition);
+            editorRef.current?.view?.dispatch({
+              selection: {
+                anchor: currentCursorPosition,
+                head: currentCursorPosition,
+              },
+            });
+          }
         }
       })
 
@@ -264,11 +285,22 @@ export function ComposePage() {
     setSaveSnackbarOpen(true);
   };
 
+  const showNoChangesSnackbar = () => {
+    setNoChangesSnackbarOpen(true);
+  };
+
   const handleSaveSnackbarClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
       return;
     }
     setSaveSnackbarOpen(false);
+  };
+
+  const handleNoChangesSnackbarClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setNoChangesSnackbarOpen(false);
   };
 
   if (renderedMarkdown === undefined) return <div>No note found</div>;
@@ -323,6 +355,17 @@ export function ComposePage() {
            >
             <Alert onClose={handleSaveSnackbarClose} severity="success" sx={{ width: '100%' }}>
               Note Updated
+            </Alert>
+          </Snackbar>
+          <Snackbar
+            open={noChagesSnackbarOpen}
+            autoHideDuration={1000}
+            onClose={handleNoChangesSnackbarClose}
+            sx={{ marginTop: '2rem' }}
+            anchorOrigin={{vertical: 'top', horizontal: 'right'}}
+           >
+            <Alert onClose={handleNoChangesSnackbarClose} severity="info" sx={{ width: '100%' }}>
+              No Changes To Save
             </Alert>
           </Snackbar>
           <SwitchLabel>Show Preview</SwitchLabel>

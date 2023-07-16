@@ -42,7 +42,10 @@ const FileRowWrapper = styled.div`
 const FileWrapper = styled(Link)`
   font-size: 1.25rem;
   text-decoration: none;
-  color: white;`
+  color: white;
+  display: flex;`
+
+const FileName = styled.div``
 
 const FileTreeIcon = styled.i`
   margin-right: 0.2rem;`
@@ -77,6 +80,14 @@ function FileRow(props: FileRowProps) {
   const [fileMenuAnchorEl, setFileMenuAnchorEl] = useState<null | HTMLElement>(null);
   const fileMenuOpen = Boolean(fileMenuAnchorEl);
 
+  const breakableFileName = props.file.split('').map((char) => {
+    if (char !== '_') {
+      return char;
+    } else {
+      return  '​' + char; // Insert a zero-length space to allow the line to be broken
+    }
+  }).join('');
+
   const handleFileActionsClick = (event: React.MouseEvent<HTMLElement>) => {
     setFileMenuAnchorEl(event.currentTarget);
   };
@@ -102,7 +113,8 @@ function FileRow(props: FileRowProps) {
         to={`/compose?path=${props.directory.path}/${props.file}`}
         onClick={props.collapseFunction}
       >
-        <FileTreeIcon className="bi bi-file-earmark-text"></FileTreeIcon>{props.file}
+        <FileTreeIcon className="bi bi-file-earmark-text"></FileTreeIcon>
+        <FileName>{breakableFileName}</FileName>
       </FileWrapper>
       <FolderActionsIcon menuOpen={fileMenuOpen} onClick={handleFileActionsClick} className="bi bi-three-dots"></FolderActionsIcon>
       <Menu
@@ -138,7 +150,10 @@ const DirectoryRowWrapper = styled.div`
     color: white;
   }`
 
-const DirectoryNameWrapper = styled.div``
+const DirectoryNameWrapper = styled.div`
+  display: flex;`
+
+const DirectoryName = styled.div``
 
 type DirectoryRowProps = {
   directory: TOC,
@@ -151,6 +166,14 @@ function DirectoryRow(props: DirectoryRowProps) {
 
   const [dirMenuAnchorEl, setDirMenuAnchorEl] = useState<null | HTMLElement>(null);
   const dirMenuOpen = Boolean(dirMenuAnchorEl);
+
+  const breakableDirName = props.directory.text.split('').map((char) => {
+    if (char !== '_') {
+      return char;
+    } else {
+      return  '​' + char; // Insert a zero-length space to allow the line to be broken
+    }
+  }).join('')
 
   function handleDirectoryClick(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
     // This is a hack, but there is no easier way to do it via common react patterns
@@ -192,7 +215,8 @@ function DirectoryRow(props: DirectoryRowProps) {
   return (
     <DirectoryRowWrapper menuOpen={dirMenuOpen}>
       <DirectoryNameWrapper onClick={handleDirectoryClick}>
-        <FileTreeIcon className="bi bi-folder2"></FileTreeIcon>{props.directory.text}
+        <FileTreeIcon className="bi bi-folder2"></FileTreeIcon>
+        <DirectoryName>{breakableDirName}</DirectoryName>
       </DirectoryNameWrapper>
       <FolderActionsIcon menuOpen={dirMenuOpen} onClick={handleDirActionsClick} className="bi bi-three-dots"></FolderActionsIcon>
       <Menu
@@ -538,7 +562,9 @@ function DeleteDialog(props: DeleteDialogProps) {
 
 
 const FileTreeWrapper = styled.div`
-  width: 35rem;`
+  background-color: rgb(33, 37, 61);
+  color: white;
+  width: 100%;`
 
 type FileTreeProps = {
   collapseFunction: () => void

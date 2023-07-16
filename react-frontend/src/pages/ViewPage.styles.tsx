@@ -6,11 +6,24 @@ export const ViewNoteWrapper = styled.div``
 
 export const ViewNoteHeader = styled.div`
   display: flex;
-  align-items: center;`
+  align-items: center;
+  justify-content: space-between;
+  height: 3rem;`
 
 export const NoteTitle = styled.h2`
   margin-right: auto;
-  margin-left: 1.5rem;`
+  margin-left: 1.5rem;
+  break-word: anywhere;`
+
+export const NotePath = styled.div`
+  margin-left: 1rem;
+  padding-right: 1rem;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  direction: rtl;
+  text-align: left;`
 
 export const ShorthandTOC = styled(RenderedMarkdown)`
   margin: 1.5rem;
@@ -236,6 +249,8 @@ const codeCss = css`
 const latexCss = css`
   .katex-display {
       font-size: 1.25rem;
+      overflow-y: hidden;
+      overflow-x: scroll;
   }`
 
 const mermaidCss = css`
@@ -248,6 +263,10 @@ const mermaidCss = css`
   }`
 
 const recordSetCss = css`
+  & .record-set {
+    margin-right: 3px;
+  }
+
   .record-set .record-set-data {
     display: none;
   }
@@ -263,6 +282,11 @@ const recordSetCss = css`
 export const ShorthandMarkdown = styled(RenderedMarkdown)`
   margin: 1.5rem;
   font-family: palatino;
+  overflow-x: hidden;
+
+  & img {
+    width: 100%;
+  }
 
   // Core elements
   ${tableCss}
