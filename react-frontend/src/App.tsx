@@ -1,6 +1,6 @@
 import { lazy, Suspense, useState } from 'react';
 import { ErrorBoundary, FallbackProps } from 'react-error-boundary';
-import { Routes, Route, Link } from "react-router-dom";
+import { Routes, Route, Link, useLocation } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import BottomNavigation from '@mui/material/BottomNavigation';
@@ -71,8 +71,16 @@ function App() {
 }
 
 const MobileContent = styled.div`
-  height: calc(100vh - 3.5rem);
-`
+  height: 100%;
+  width: 100vw;
+  overflow-y: scroll;
+  margin-bottom: 3.5rem;`
+
+const StyledBottomNavigation = styled(BottomNavigation)`
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: 3.5rem;`
 
 const mobileDarkTheme = createTheme({
   palette: {
@@ -82,7 +90,16 @@ const mobileDarkTheme = createTheme({
 
 function MobileApp() {
 
-  const [navPage, setNavPage] = useState(0);
+  const location = useLocation();
+  const page = location.pathname.replace('/', '') || 'notes';
+
+  // // From https://css-tricks.com/the-trick-to-viewport-units-on-mobile/
+  // // We listen to the resize event
+  // window.addEventListener('resize', () => {
+  //   // We execute the same script as before
+  //   let vh = window.innerHeight * 0.01;
+  //   document.documentElement.style.setProperty('--vh', `${vh}px`);
+  // });
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -94,31 +111,29 @@ function MobileApp() {
             <Route path="/view" element={<MobileViewPage />} />
           </Routes>
         </MobileContent>
-        <BottomNavigation
-          value={navPage}
-          onChange={(event, newValue) => {
-            setNavPage(newValue);
-          }}
-        >
+        <StyledBottomNavigation value={page}>
           <BottomNavigationAction
             component={Link}
-            label="Files"
+            value="notes"
+            label="Notes"
             icon={<i className="bi bi-bar-chart-steps" />}
             to="/notes"
           />
           <BottomNavigationAction
             component={Link}
+            value="compose"
             label="Compose"
             icon={<i className="bi bi-pen" />}
             to="/compose"
           />
           <BottomNavigationAction
             component={Link}
+            value="view"
             label="View"
             icon={<i className="bi bi-file-earmark-richtext" />}
             to="/view"
           />
-        </BottomNavigation>
+        </StyledBottomNavigation>
       </ThemeProvider>
     </QueryClientProvider>
   )

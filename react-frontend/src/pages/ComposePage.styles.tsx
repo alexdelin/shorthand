@@ -14,7 +14,8 @@ export const ComposeHeader = styled.div`
   height: 3rem;
   display: flex;
   flex-direction: row;
-  border-bottom: 1px solid black;`
+  border-bottom: 1px solid black;
+  justify-content: space-between;`
 
 export const ComposeNoteWrapper = styled.div`
   width: 100%;
@@ -41,7 +42,6 @@ export const ComposePreviewWrapper = styled.div`
 export const StyledFormGroup = styled(FormGroup)`
   align-items: center;
   height: 3rem;
-  margin-left: auto;
   min-width: 29rem;`
 
 export const SwitchLabel = styled.span`
