@@ -89,7 +89,7 @@ def open_file(cache_directory, notes_directory, note_path):
     with open(open_files_path, 'r') as f:
         open_files = json.load(f)
 
-    if note_path == open_files[-1]:
+    if open_files and note_path == open_files[-1]:
         log.info(f'Note file {note_path} is already the most '
                  f'recently opened file, nothing to do...')
         return 'ack'
