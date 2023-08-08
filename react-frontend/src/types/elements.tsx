@@ -33,3 +33,20 @@ export type Config = {
   frontend: FrontendConfig,
   log_format: string
 }
+
+export type CalendarEvent = {
+  file_path: string,
+  line_number: string,
+  event: string,
+  date: string,
+  element_id: string,
+  type: "section" | "incomplete_todo" | "completed_todo" | "skipped_todo" | "question" | "answer"
+}
+
+export type Calendar = {
+  [key: string]: {
+    [key: string]: {
+      [key: string]: CalendarEvent[]
+    }
+  }
+}

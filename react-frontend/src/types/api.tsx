@@ -1,5 +1,6 @@
 // Type definitions for interacting with
 //   the Shorthand API
+
 import * as ELEMENTS from './elements';
 
 
@@ -34,6 +35,8 @@ export type GetSubdirsResponse = ELEMENTS.Subdir[];
 export type GetConfigResponse = ELEMENTS.Config;
 
 export type GetNoteResponse = ELEMENTS.Note;
+
+export type GetCalendarResponse = ELEMENTS.Calendar;
 
 // Types for data received from the Frontend API
 export type GetRenderedMarkdownResponse = {
