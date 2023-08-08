@@ -29,7 +29,7 @@ export function CalendarPage() {
     subdirsData = ['ALL']
   }
 
-  let { data: calendarData } = useQuery<GetCalendarResponse, Error>(['calendar'], () =>
+  let { data: calendarData } = useQuery<GetCalendarResponse, Error>(['calendar', directory], () =>
     fetch('/api/v1/calendar?directory_filter=' + directory).then(res =>
       res.json()
     )
@@ -100,7 +100,7 @@ export function CalendarPage() {
       <FullCalendar
         plugins={[ dayGridPlugin ]}
         initialView="dayGridMonth"
-        weekends={false}
+        weekends={true}
         eventDidMount={(info) => {
           var tooltip = new Tooltip(info.el, {
             title: info.event.extendedProps.description,
