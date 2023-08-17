@@ -49,7 +49,7 @@ export function CalendarPage() {
                     const formattedEvent = {
                         title: event['event'],
                         start: year + '-' + month + '-' + day,
-                        url: '/render?path=' + event["file_path"] + '#line-number-' + event["line_number"],
+                        url: '/view?path=' + event["file_path"] + '#line-number-' + event["line_number"],
                         type: event['type'],
                         textColor: 'black',
                         color: '#abeeff',
