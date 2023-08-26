@@ -13,7 +13,6 @@ import { EditorView, keymap } from "@codemirror/view";
 import { selectSubwordBackward, selectSubwordForward
          } from '@codemirror/commands';
 import { shorthandDark } from '../utils/codemirror-plugins/theme-shorthand-dark';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -44,7 +43,7 @@ export function ComposePage() {
   const notePath = searchParams.get('path');
   const [editorText, setEditorText] = useState('');
   const [changesSaved, setChangesSaved] = useState(true);
-  const [showPreview, setShowPreview] = useState(true);
+  const [showPreview, setShowPreview] = useState(false);
   const [scrollPreview, setScrollPreview] = useState(true);
   const [selectedTab, setSelectedTab] = useState(notePath);
   const editorRef = useRef<ReactCodeMirrorRef>(null);
@@ -305,7 +304,7 @@ export function ComposePage() {
 
   if (renderedMarkdown === undefined) return <div>No note found</div>;
 
-  if (!selectedTab || openFiles && selectedTab && !openFiles.includes(selectedTab)) return <SuspenseFallback />;
+  if ((!selectedTab) || (openFiles && selectedTab && !openFiles.includes(selectedTab))) return <SuspenseFallback />;
 
   return (
     <ComposePageWrapper>
@@ -315,7 +314,6 @@ export function ComposePage() {
           onChange={handleTabChange}
           variant="scrollable"
           scrollButtons="auto"
-          aria-label="scrollable auto tabs example"
         >
           {openFiles && openFiles.map((file) => {
             if (file !== null) {
@@ -394,7 +392,6 @@ export function ComposePage() {
             height="100%"
             style={{fontSize: '18px', width: '100%'}}
             theme={shorthandDark}
-
             extensions={[
               markdown({
                 base: markdownLanguage,
