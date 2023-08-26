@@ -53,19 +53,34 @@ export function CalendarPage() {
                         type: event['type'],
                         textColor: 'black',
                         color: '#abeeff',
-                        description: ''
+                        description: '',
+                        index: 0
                     };
 
+                    const indexLookup = {
+                      section: 1,
+                      incomplete_todo: 2,
+                      completed_todo: 3,
+                      skipped_todo: 6,
+                      question: 4,
+                      answer: 5,
+                    }
+
                     const colorLookup = {
-                      section: '#abeeff',  // Light Blue
-                      incomplete_todo: '#ffb2ab', // Red
-                      completed_todo: '#c4c5ff', // Blue
+                      section: 'rgb(31, 58, 202)',  // Dark Blue
+                      incomplete_todo: 'rgb(253, 225, 191)', // Orange
+                      completed_todo: 'rgb(171, 225, 255)', // Light Blue
                       skipped_todo: '#c4c4c4', // Grey
                       question: '#f4b8ff', // Purple
                       answer: '#afffa3' // Green
                     }
 
+                    if (formattedEvent.type === 'section') {
+                      formattedEvent.textColor = 'white';
+                    }
+
                     formattedEvent.color = colorLookup[formattedEvent.type];
+                    formattedEvent.index = indexLookup[formattedEvent.type];
 
                     formattedEvent.description = `${formattedEvent.type} in ${event.file_path}<br /><br />${formattedEvent.title}`;
                     eventData.push(formattedEvent);
@@ -102,7 +117,7 @@ export function CalendarPage() {
         initialView="dayGridMonth"
         weekends={true}
         eventDidMount={(info) => {
-          var tooltip = new Tooltip(info.el, {
+          return new Tooltip(info.el, {
             title: info.event.extendedProps.description,
             html: true,
             delay: {
@@ -115,6 +130,7 @@ export function CalendarPage() {
           });
         }}
         events={calendarEvents}
+        eventOrder={'index'}
       />
     </CalendarWrapper>
   )
