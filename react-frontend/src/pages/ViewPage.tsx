@@ -247,9 +247,9 @@ export const RenderedMarkdown = React.forwardRef((props: RenderMarkdownProps, re
     }
 
     // Initialize Locations
-    for (const locationEl of document.querySelectorAll('location')) {
-      // TODO - Add popover modal for each location
-    }
+    // TODO - Add popover modal for each location
+    // for (const locationEl of document.querySelectorAll('location')) {
+    // }
 
     // Ensure we only scroll to the target id once
     if (props.source !== undefined && !hasScrolled) {
