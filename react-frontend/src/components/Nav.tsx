@@ -36,6 +36,11 @@ export function Nav() {
     if (elementsExpanded) {
       setElementsExpanded(false);
     }
+
+    if (treeExpanded) {
+      setTreeExpanded(false);
+    }
+
   }
 
   function collapseNav() {
