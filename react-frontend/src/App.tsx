@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState } from 'react';
+import { lazy, Suspense } from 'react';
 import { ErrorBoundary, FallbackProps } from 'react-error-boundary';
 import { Routes, Route, Link, useLocation } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from 'react-query';
@@ -106,6 +106,7 @@ function MobileApp() {
       <ThemeProvider theme={mobileDarkTheme}>
         <MobileContent>
           <Routes>
+            <Route path="/" element={<MobileNotesPage />} />
             <Route path="/notes" element={<MobileNotesPage />} />
             <Route path="/compose" element={<MobileComposePage />} />
             <Route path="/view" element={<MobileViewPage />} />

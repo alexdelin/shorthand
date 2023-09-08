@@ -1,6 +1,6 @@
 // Latex parser extension
-import {InlineContext, BlockContext, MarkdownConfig,
-        LeafBlockParser, LeafBlock, Line, Element} from "@lezer/markdown"
+import {BlockContext, MarkdownConfig,
+        LeafBlockParser, LeafBlock} from "@lezer/markdown"
 import {tags as t, Tag} from "@lezer/highlight"
 
 const LatexInlineDelim = {resolve: "Latex-inline", mark: "LatexMark"}
@@ -239,13 +239,17 @@ export const timestampPlugin: MarkdownConfig = {
       name: "Timestamp",
       parse(cx, next, pos) {
         let match: RegExpMatchArray | null
-        if (![40, 49, 50 /* `(,1,2` */].includes(next) &&
-            (next !== 32 ||
-              cx.char(pos + 1) !== 45 ||
-              cx.char(pos + 2) !== 62 ||
-              cx.char(pos + 3) !== 32
-            ) ||
+        if (
+          (
+            ![40, 49, 50 /* `(,1,2` */].includes(next) &&
+                    (next !== 32 ||
+                      cx.char(pos + 1) !== 45 ||
+                      cx.char(pos + 2) !== 62 ||
+                      cx.char(pos + 3) !== 32
+                    )
+          ) || (
             !(match = /^( -> )?(\(?)\b((-?(?:[1-9][0-9]*)?[0-9]{4})-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9]))\b(\)?)/.exec(cx.slice(pos, cx.end)))
+          )
         ) {
           return -1
         }
@@ -314,7 +318,7 @@ export const latexPlugin: MarkdownConfig = {
     {
       name: "Latex-inline",
       parse(cx, next, pos) {
-        let match: RegExpMatchArray | null
+        // let match: RegExpMatchArray | null
         if (next !== 36 /* '$' */ ||
             (next === 36 && cx.char(pos + 1) === 36) ||
             (next === 36 && cx.char(pos - 1) === 36)) {

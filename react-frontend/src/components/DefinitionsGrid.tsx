@@ -1,22 +1,12 @@
 import { Fragment, useMemo } from 'react';
 import { Grid, _ } from 'gridjs-react';
 import styled from 'styled-components';
-import { useQuery, useMutation } from 'react-query';
-import { useQueryClient } from 'react-query';
+import { useQuery } from 'react-query';
 import MarkdownIt from 'markdown-it';
 import tm from 'markdown-it-texmath';
-import { GetTodosResponse, Tag, Todo, ShorthandApiError } from '../types';
-import {
-  StyledTodoText,
-  StyledTag, ActionButton
-} from './TodosGrid.styles';
 // import { QUERY_CONFIG } from '../pages/DefinitionsPage';
 
 type DefinitionsGridProps = {
-  directory: string
-}
-
-type DefinitionsQueryKey = {
   directory: string
 }
 
@@ -80,8 +70,6 @@ function getDefinitionElement(definition: string, sub_elements?: string) {
 }
 
 export function DefinitionsGrid(props: DefinitionsGridProps) {
-
-  const queryClient = useQueryClient();
 
   const {
     data: definitionsData
