@@ -39,14 +39,20 @@ export type CalendarEvent = {
   line_number: string,
   event: string,
   date: string,
+  start?: string,
+  end?: string,
   element_id: string,
   type: "section" | "incomplete_todo" | "completed_todo" | "skipped_todo" | "question" | "answer"
 }
 
+type YearIndex = string
+type MonthIndex = string
+type DayIndex = string
+
 export type Calendar = {
-  [key: string]: {
-    [key: string]: {
-      [key: string]: CalendarEvent[]
+  [key: YearIndex]: {
+    [key: MonthIndex]: {
+      [key: DayIndex]: CalendarEvent[]
     }
   }
 }

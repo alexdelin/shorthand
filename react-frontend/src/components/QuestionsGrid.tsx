@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { useQuery } from 'react-query';
 import MarkdownIt from 'markdown-it';
 import tm from 'markdown-it-texmath';
+import { NoteLink, StyledTag } from './TodosGrid.styles';
 // import { QUERY_CONFIG } from '../pages/DefinitionsPage';
 
 type QuestionsGridProps = {
@@ -47,13 +48,26 @@ const writer = MarkdownIt({}).use(
   tm,{ delimiters: 'dollars', macros: {"\\RR": "\\mathbb{R}"}
 });
 
-function getQuestionElement(question: string) {
+function getQuestionElement(question: string, tags: string[]) {
   return _(<Fragment>
     <StyledQuestion
       dangerouslySetInnerHTML={{__html: writer.render(question)}}
     />
+    {tags.map((tag) => <StyledTag>{tag}</StyledTag>)}
   </Fragment>);
 }
+
+function getQuestionLink(question: Question) {
+    return _(
+      <NoteLink
+        target='_blank'
+        rel='noreferrer'
+        href={`/view?path=${question.file_path}#line-number-${question.line_number}`}
+      >
+        {question.display_path}<br />Line {question.line_number}
+      </NoteLink>
+    );
+  }
 
 export function QuestionsGrid(props: QuestionsGridProps) {
 
@@ -74,14 +88,13 @@ export function QuestionsGrid(props: QuestionsGridProps) {
       return [];
     } else {
       return questionsData.items.map((question) => (
-        [`${question.display_path}: ${question.line_number}`,
-          getQuestionElement(question.question),
-          question.answer ? getQuestionElement(question.answer) : 'None']
+        [getQuestionLink(question),
+          getQuestionElement(question.question, question.tags),
+          question.answer ? getQuestionElement(question.answer, []) : '']
       ))
     }
   // eslint-disable-next-line
   }, [questionsData]);
-
 
   if (questionsData === undefined) return <div>Loading...</div>
 

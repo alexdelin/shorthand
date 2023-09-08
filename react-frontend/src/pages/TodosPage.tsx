@@ -31,7 +31,7 @@ export default function TodosPage() {
 
   const queryClient = useQueryClient();
 
-  const [status, setStatus] = useState('Incomplete');
+  const [status, setStatus] = useState('incomplete');
   const [search, setSearch] = useState('');
   const [directory, setDirectory] = useState('ALL');
   const [tags, setTags] = useState('ALL');
@@ -126,9 +126,9 @@ export default function TodosPage() {
           onChange={handleStatusChange}
           size="small"
         >
-          <MenuItem key="Incomplete" value="Incomplete">Incomplete</MenuItem>
-          <MenuItem key="Complete" value="Complete">Complete</MenuItem>
-          <MenuItem key="Skipped" value="Skipped">Skipped</MenuItem>
+          <MenuItem key="Incomplete" value="incomplete">Incomplete</MenuItem>
+          <MenuItem key="Complete" value="complete">Complete</MenuItem>
+          <MenuItem key="Skipped" value="skipped">Skipped</MenuItem>
         </TextField>
         <TextField
           type="text"

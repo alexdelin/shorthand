@@ -83,7 +83,7 @@ export function QuestionsPage() {
 
   return (
     <QuestionsPageWrapper>
-      <h2>Definitions</h2>
+      <h2>Questions & Answers</h2>
       <StyledForm>
         <TextField
           select
