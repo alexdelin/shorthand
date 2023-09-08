@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
-import { SuspenseFallback } from './components/SuspenseFallback';
+// import { SuspenseFallback } from './components/SuspenseFallback';
 import { Nav } from './components/Nav';
 import { FileSearchModal } from './components/FileSearchModal';
 import { HomePage } from './pages/HomePage';

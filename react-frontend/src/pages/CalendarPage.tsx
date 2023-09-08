@@ -10,12 +10,20 @@ import { GetSubdirsResponse, GetCalendarResponse } from '../types';
 
 export const CalendarWrapper = styled.div`
   width: calc(100% - 4rem);
+  height: 100%;
   padding: 2rem;
+  `
+
+export const OptionsWrapper = styled.div`
+  margin-bottom: 1rem;
+  display: flex;
+  gap: 1rem;
   `
 
 export function CalendarPage() {
 
   const [directory, setDirectory] = useState('ALL');
+  const [mode, setMode] = useState('recent');
 
   let {
     data: subdirsData
@@ -29,8 +37,8 @@ export function CalendarPage() {
     subdirsData = ['ALL']
   }
 
-  let { data: calendarData } = useQuery<GetCalendarResponse, Error>(['calendar', directory], () =>
-    fetch('/api/v1/calendar?directory_filter=' + directory).then(res =>
+  let { data: calendarData } = useQuery<GetCalendarResponse, Error>(['calendar', directory, mode], () =>
+    fetch(`/api/v1/calendar?mode=${mode}&directory_filter=${directory}`).then(res =>
       res.json()
     )
   )
@@ -49,6 +57,7 @@ export function CalendarPage() {
                     const formattedEvent = {
                         title: event['event'],
                         start: year + '-' + month + '-' + day,
+                        end: '',
                         url: '/view?path=' + event["file_path"] + '#line-number-' + event["line_number"],
                         type: event['type'],
                         textColor: 'black',
@@ -56,6 +65,18 @@ export function CalendarPage() {
                         description: '',
                         index: 0
                     };
+
+                    if (event.start) formattedEvent.start = event.start;
+                    if (event.end) {
+                      formattedEvent.end = event.end;
+                      if (mode === 'wip') {
+                        // End dates are exclusive, so we have to increment the end date
+                        // by one day for them to display correctly
+                        const endDate = new Date(Date.parse(event.end));
+                        endDate.setDate(endDate.getDate() + 1);
+                        formattedEvent.end = endDate.toISOString().slice(0,10);
+                      }
+                    }
 
                     const indexLookup = {
                       section: 1,
@@ -88,7 +109,7 @@ export function CalendarPage() {
             }
         }
     }
-
+    console.log(eventData);
     return eventData
 
   }, [calendarData])
@@ -97,24 +118,49 @@ export function CalendarPage() {
     setDirectory(event.target.value);
   }
 
+  const handleModeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setMode(event.target.value);
+  }
+
   return (
     <CalendarWrapper>
-      <TextField
-        select
-        name="directory"
-        value={directory}
-        onChange={handleDirectoryChange}
-        label="Directory"
-        size="small"
-      >
-        <MenuItem key="ALL" value="ALL">ALL</MenuItem>
-        {subdirsData.map((subdir) =>
-           <MenuItem key={subdir} value={subdir}>{subdir}</MenuItem>
-        )}
-      </TextField>
+      <OptionsWrapper>
+        <TextField
+          select
+          name="directory"
+          value={directory}
+          onChange={handleDirectoryChange}
+          label="Directory"
+          size="small"
+        >
+          <MenuItem key="ALL" value="ALL">ALL</MenuItem>
+          {subdirsData.map((subdir) =>
+             <MenuItem key={subdir} value={subdir}>{subdir}</MenuItem>
+          )}
+        </TextField>
+        <TextField
+          select
+          name="mode"
+          value={mode}
+          onChange={handleModeChange}
+          label="Mode"
+          size="small"
+        >
+          <MenuItem key="creation" value="creation">Creation</MenuItem>
+          <MenuItem key="closing" value="closing">Closing</MenuItem>
+          <MenuItem key="recent" value="recent">Recent</MenuItem>
+          <MenuItem key="wip" value="wip">WIP</MenuItem>
+        </TextField>
+      </OptionsWrapper>
       <FullCalendar
         plugins={[ dayGridPlugin ]}
+        contentHeight={'auto'}
         initialView="dayGridMonth"
+        headerToolbar={{
+          left: 'dayGridWeek,dayGridMonth,dayGridYear',
+          center: 'title',
+          right: 'today prev,next',
+        }}
         weekends={true}
         eventDidMount={(info) => {
           return new Tooltip(info.el, {
