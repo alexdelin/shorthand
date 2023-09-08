@@ -3,8 +3,11 @@ import logging
 from datetime import datetime
 from subprocess import Popen, PIPE
 import shlex
+from typing import Any, Dict, Literal, TypedDict, List, Union, Optional
 
 from shorthand.tags import extract_tags
+from shorthand.types import DirectoryPath, ExecutablePath, InternalAbsoluteFilePath, InternalAbsolutePath, RawNoteLine, \
+                            RelativeDirectoryPath
 from shorthand.utils.paths import get_relative_path, get_display_path, \
                                   get_full_path
 from shorthand.utils.patterns import INCOMPLETE_PREFIX_GREP, \
@@ -24,7 +27,20 @@ SUPPORTED_SORT_FIELDS = ['start_date']
 log = logging.getLogger(__name__)
 
 
-def parse_todo(todo_line):
+TodoStatus = Union[Literal['incomplete'], Literal['complete'], Literal['skipped']]
+
+class Todo(TypedDict):
+    file_path: str
+    display_path: str
+    line_number: str
+    todo_text: str
+    start_date: Optional[str]
+    end_date: Optional[str]
+    status: TodoStatus
+    tags: List[str]
+
+
+def parse_todo(todo_line: RawNoteLine):
     '''A standalone parser for a single line todo element
     '''
 
@@ -72,22 +88,25 @@ def parse_todo(todo_line):
     return processed_todo
 
 
-def _get_todos(notes_directory, todo_status='incomplete',
-               directory_filter=None, query_string=None, case_sensitive=False,
-               sort_by=None, suppress_future=True, tag=None,
-               grep_path='grep'):
+def _get_todos(notes_directory: DirectoryPath,
+               todo_status: TodoStatus = 'incomplete',
+               directory_filter: Optional[RelativeDirectoryPath] = None,
+               query_string: Optional[str] = None, case_sensitive=False,
+               sort_by: Optional[str] = None, suppress_future=True,
+               tag: Optional[str]=None, grep_path: ExecutablePath = 'grep'
+               ) -> List[Todo]:
     '''Get a specified set of todos using grep on the filesystem
     '''
 
-    log.info(f'Getting {todo_status} todos in directory {directory_filter}'
+    log.info(f'Getting {todo_status} todos in directory {directory_filter}' +
              f' with query string "{query_string}" sorted by {sort_by}')
 
-    todo_status = todo_status.lower()
+    # todo_status = todo_status.lower()
 
     if todo_status not in PATTERN_MAPPING.keys():
         log.error(f'Got invalid todo type {todo_status}')
-        raise ValueError(f'Invalid todo type {todo_status} specified. '
-                         f'Valid options are: '
+        raise ValueError(f'Invalid todo type {todo_status} specified. ' +
+                         f'Valid options are: ' +
                          f'{", ".join(PATTERN_MAPPING.keys())}')
 
     todo_items = []
@@ -98,7 +117,7 @@ def _get_todos(notes_directory, todo_status='incomplete',
             search_directory += '/'
         search_directory += directory_filter
 
-    grep_command = '{grep_path} -Prn "{pattern}" '\
+    grep_command = '{grep_path} -Prn "{pattern}" ' \
                    '--include="*.note" --exclude-dir=\'.*\' {dir}'.format(
                         grep_path=grep_path,
                         pattern=PATTERN_MAPPING[todo_status],
@@ -179,7 +198,7 @@ def _get_todos(notes_directory, todo_status='incomplete',
 
         display_path = get_display_path(file_path, directory_filter)
 
-        processed_todo = {
+        processed_todo: Todo = {
             'file_path': file_path,
             'display_path': display_path,
             'line_number': line_number,
@@ -212,7 +231,13 @@ def _get_todos(notes_directory, todo_status='incomplete',
     return todo_items
 
 
-def analyze_todos(todos):
+class TodoStats(TypedDict):
+    tag_counts: Dict[str, int]
+    month_counts: Dict[str, int]
+    timeline_data: List[List[int]]
+
+
+def analyze_todos(todos: List[Todo]) -> TodoStats:
     '''Analyze todos and generate basic statistics
     '''
 
@@ -256,7 +281,8 @@ def analyze_todos(todos):
     }
 
 
-def _mark_todo(notes_directory, note_path, line_number, status):
+def _mark_todo(notes_directory: DirectoryPath, note_path: InternalAbsoluteFilePath,
+               line_number: int, status: TodoStatus) -> RawNoteLine:
 
     full_path = get_full_path(notes_directory, note_path)
 
@@ -284,7 +310,7 @@ def _mark_todo(notes_directory, note_path, line_number, status):
         '\\g<1>\\g<2>[{}]'.format(sub_character),
         line_content)
 
-    split_content[line_number-1] = line_content
+    split_content[line_number - 1] = line_content
     with open(full_path, 'w') as file_object:
         file_object.write('\n'.join(split_content))
 

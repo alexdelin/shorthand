@@ -1,4 +1,5 @@
 import json
+from shorthand.history import CalendarMode
 
 from werkzeug.exceptions import HTTPException
 from flask import Blueprint, request, current_app, Response
@@ -210,12 +211,14 @@ def fetch_tags():
 def fetch_calendar():
     server = ShorthandServer(current_app.config['config_path'])
 
+    mode = get_request_argument(request.args, name='mode')
+    mode = [x for x in CalendarMode if x.value == mode][0]
     directory_filter = get_request_argument(request.args,
                                             name='directory_filter')
     if directory_filter == 'ALL':
         directory_filter = None
 
-    calendar = server.get_calendar(directory_filter=directory_filter)
+    calendar = server.get_calendar(mode=mode, directory_filter=directory_filter)
     return json.dumps(calendar)
 
 
@@ -256,7 +259,7 @@ def get_current_todos():
     if tag == 'ALL':
         tag = None
 
-    todos = server.get_todos(todo_status=status,
+    todos = server.get_todos(todo_status=status.lower(),
                              directory_filter=directory_filter,
                              query_string=query_string,
                              case_sensitive=case_sensitive, sort_by=sort_by,
