@@ -1,3 +1,5 @@
+import { LinksGraph } from '../components/LinksGraph';
+
 export function LinksPage() {
-  return <div>Links Page</div>
+  return <LinksGraph />
 }

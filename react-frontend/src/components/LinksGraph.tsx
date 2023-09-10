@@ -1,11 +1,11 @@
 import { useRef, useEffect } from 'react';
 import { useQuery } from 'react-query';
 import Cytoscape from 'cytoscape';
-import klay from 'cytoscape-klay';
+import elk from 'cytoscape-elk';
 import CytoscapeComponent from 'react-cytoscapejs';
+import styled from 'styled-components';
 
-
-Cytoscape.use(klay);
+Cytoscape.use(elk);
 
 type LinkInfo = {
   internal: boolean
@@ -19,8 +19,16 @@ type LinkInfo = {
 type GetLinksResponse = LinkInfo[]
 
 type LinksGraphProps = {
-  notePath: string | null
+  notePath?: string
 }
+
+type StyledCytoscapeComponentProps = {
+  maxHeight: number
+}
+
+const StyledCytoscapeComponent = styled(CytoscapeComponent)`
+  width: 100%;
+  height: ${(props: StyledCytoscapeComponentProps) => (props.maxHeight ? props.maxHeight * 7 + 'rem' : '100%')};`
 
 // The type any is used as a workaround for broken type definitions in the library
 //     which don't allow for `text-valign` and `text-halign` to be set
@@ -48,10 +56,14 @@ const baseStyle: any = [
 
 export function LinksGraph(props: LinksGraphProps) {
 
+  let endpoint = '/api/v1/links?include_external=true&include_invalid=true';
+  if (props.notePath) {
+    endpoint += '&note=' + props.notePath;
+  }
+
   const { data: linksData } =
     useQuery<GetLinksResponse, Error>(['links', { path: props.notePath }], () =>
-    fetch('/api/v1/links?note=' + props.notePath +
-          '&include_external=true&include_invalid=true').then(res =>
+    fetch(endpoint).then(res =>
       res.json()
     )
   )
@@ -85,20 +97,25 @@ export function LinksGraph(props: LinksGraphProps) {
     [linksData, props.notePath]
   )
 
-  if (props.notePath === null || linksData === undefined) {
+  if (!linksData) {
     return <div>No Links Data</div>
   }
 
   const [linkElements, maxHeight] = transformLinks(linksData, props.notePath);
 
+  // maxHeight will be set to 0 if there is no note specified (because you are viewing all links)
+  const layout = maxHeight ?
+    {name: 'elk', elk: {algorithm: 'elk.layered', 'elk.direction': 'RIGHT'}} :
+    {name: 'elk', elk: {algorithm: 'elk.stress'}}
+
   return  (
-    <CytoscapeComponent
+    <StyledCytoscapeComponent
+      maxHeight={maxHeight}
       elements={linkElements}
-      style={{ width: '100%', height: maxHeight * 7 + 'rem' }}
       stylesheet={baseStyle}
-      layout={{name: 'klay'}}
-      userZoomingEnabled={false}
-      userPanningEnabled={false}
+      layout={layout}
+      userZoomingEnabled={maxHeight ? false : true}
+      userPanningEnabled={maxHeight ? false : true}
       cy={(cy): void => {
         cyRef.current = cy;
       }}
@@ -135,97 +152,99 @@ type FormattedNode = {
 
 type CytoscapeElements = Array<FormattedNode | LinkEdge>;
 
-function transformLinks(linksData: GetLinksResponse, filePath: string): [CytoscapeElements, number] {
+function transformLinks(linksData: GetLinksResponse, filePath?: string): [CytoscapeElements, number] {
 
-    let nodes: Array<RawNode> = [];
-    let edges: Array<LinkEdge> = [];
-    let elements: CytoscapeElements = [];
+  let nodes: Array<RawNode> = [];
+  let edges: Array<LinkEdge> = [];
+  let elements: CytoscapeElements = [];
 
-    // Populate raw list of node names and edges
-    for (const [index, link] of linksData.entries()) {
-        let source: RawNode = {
-            name: removeInternalLinkSections(link.source),
-            internal: true,
-            valid: true,
-        }
-        let target: RawNode = {
-            name: removeInternalLinkSections(link.target),
-            internal: link.internal,
-            valid: link.valid
-        }
-        if (!nodes.includes(source)) {
-            nodes.push(source);
-        }
-        if (!nodes.includes(target)) {
-            nodes.push(target);
-        }
-        let edge: LinkEdge = {
-            data: {
-                id: 'link-' + index,
-                source: source.name,
-                target: target.name
-            }
-        }
-        edges.push(edge);
+  // Populate raw list of node names and edges
+  for (const [index, link] of linksData.entries()) {
+    let source: RawNode = {
+      name: removeInternalLinkSections(link.source),
+      internal: true,
+      valid: true,
     }
+    let target: RawNode = {
+      name: removeInternalLinkSections(link.target),
+      internal: link.internal,
+      valid: link.valid
+    }
+    if (!nodes.includes(source)) {
+      nodes.push(source);
+    }
+    if (!nodes.includes(target)) {
+      nodes.push(target);
+    }
+    let edge: LinkEdge = {
+      data: {
+        id: 'link-' + index,
+        source: source.name,
+        target: target.name
+      }
+    }
+    edges.push(edge);
+  }
 
-    // Calculate max height (in units of links)
-    // Deduplicate list of objects https://stackoverflow.com/a/36744732
-    const uniqueEdges = edges.filter((value, index, self) =>
-      index === self.findIndex((t) => (
-        t.data.source === value.data.source && t.data.target === value.data.target
-      ))
-    )
-    let maxHeightSrc = 0;
-    let maxHeightTgt = 0;
+  // Calculate max height (in units of links)
+  // Deduplicate list of objects https://stackoverflow.com/a/36744732
+  const uniqueEdges = edges.filter((value, index, self) =>
+    index === self.findIndex((t) => (
+      t.data.source === value.data.source && t.data.target === value.data.target
+    ))
+  )
+  let maxHeightSrc = 0;
+  let maxHeightTgt = 0;
+  if (filePath) {
     for (const edge of uniqueEdges) {
-        if (edge.data.source.includes(filePath)) {
-            maxHeightSrc += 1;
-        } else if (edge.data.target.includes(filePath)) {
-            maxHeightTgt += 1;
-        };
+      if (edge.data.source.includes(filePath)) {
+        maxHeightSrc += 1;
+      } else if (edge.data.target.includes(filePath)) {
+        maxHeightTgt += 1;
+      };
     }
-    const maxHeight = Math.max(maxHeightSrc, maxHeightTgt);
+  }
+  const maxHeight = Math.max(maxHeightSrc, maxHeightTgt);
 
-    // Re-format nodes into the format the libarary needs
-    for (const node of nodes) {
-        const fullPath = node.name;
-        const splitpath = fullPath.split('/');
-        let filename = splitpath[splitpath.length - 1];
-        let nodeColor = "#508ef2";
-        let nodeType = 'internal';
-        if (!node.internal) {
-            nodeColor = "#70e094";
-            nodeType = 'external';
-            filename = decodeURI(fullPath).replace(/^https?:\/\//, '');
-        }
-        if (!node.valid) {
-            nodeColor = '#c91a0a';
-            nodeType = 'invalid';
-        }
-        const formattedNode: FormattedNode = {
-          data: {
-            id: node.name,
-            label: filename,
-            color: nodeColor,
-            nodeType: nodeType
-          }
-        }
-        elements.push(formattedNode);
+  // Re-format nodes into the format the libarary needs
+  for (const node of nodes) {
+    const fullPath = node.name;
+    const splitpath = fullPath.split('/');
+    let filename = splitpath[splitpath.length - 1];
+    let nodeColor = "#508ef2";
+    let nodeType = 'internal';
+    if (!node.internal) {
+      nodeColor = "#70e094";
+      nodeType = 'external';
+      filename = decodeURI(fullPath).replace(/^https?:\/\//, '');
     }
+    if (!node.valid) {
+      nodeColor = '#c91a0a';
+      nodeType = 'invalid';
+    }
+    const formattedNode: FormattedNode = {
+      data: {
+        id: node.name,
+        label: filename,
+        color: nodeColor,
+        nodeType: nodeType
+      }
+    }
+    elements.push(formattedNode);
+  }
 
-    return [elements.concat(edges), maxHeight]
+  return [elements.concat(edges), maxHeight]
 }
 
 
 function removeInternalLinkSections(linkTarget: string) {
-    if (linkTarget.startsWith("http://") || linkTarget.startsWith("https://")) {
-        return linkTarget;
+  if (linkTarget.startsWith("http://") || linkTarget.startsWith("https://")) {
+    return linkTarget;
+  } else {
+    if (linkTarget.includes('#')) {
+      return linkTarget.split('#')[0];
     } else {
-        if (linkTarget.includes('#')) {
-            return linkTarget.split('#')[0];
-        } else {
-            return linkTarget;
-        }
+      return linkTarget;
     }
+  }
 }
