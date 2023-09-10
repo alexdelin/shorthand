@@ -36,7 +36,7 @@ export function QuestionsPage() {
   const queryClient = useQueryClient();
 
   const [directory, setDirectory] = useState('ALL');
-  const [status, setStatus] = useState('ALL');
+  const [status, setStatus] = useState('unanswered');
   const [updatedDirectory, setUpdatedDirectory] = useState(false);
 
   let {
@@ -63,6 +63,7 @@ export function QuestionsPage() {
   // Set the default directory, but only once when the page loads
   if (configData?.default_directory &&
       configData.default_directory !== directory &&
+      subdirsData.includes(configData.default_directory) &&
       !updatedDirectory) {
     setDirectory(configData.default_directory);
     setUpdatedDirectory(true);
@@ -107,8 +108,8 @@ export function QuestionsPage() {
           size="small"
         >
           <MenuItem key="ALL" value="ALL">ALL</MenuItem>
-          <MenuItem key="Unanswered" value="Unanswered">Unanswered</MenuItem>
-          <MenuItem key="Answered" value="Answered">Answered</MenuItem>
+          <MenuItem key="Unanswered" value="unanswered">Unanswered</MenuItem>
+          <MenuItem key="Answered" value="answered">Answered</MenuItem>
         </TextField>
         <Button
           variant="contained"

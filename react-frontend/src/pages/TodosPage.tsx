@@ -79,6 +79,7 @@ export default function TodosPage() {
   // Set the default directory, but only once when the page loads
   if (configData?.default_directory &&
       configData.default_directory !== directory &&
+      subdirsData.includes(configData.default_directory) &&
       !updatedDirectory) {
     console.log('Setting directory!');
     setDirectory(configData.default_directory);

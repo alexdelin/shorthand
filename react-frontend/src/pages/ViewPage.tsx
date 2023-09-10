@@ -124,7 +124,7 @@ export default function ViewPage() {
     setLinksShown(!linksShown);
   }
 
-  if (noteContent === undefined) return <div>No note found</div>
+  if (!notePath || !noteContent) return <div>No note found</div>
 
   return (
     <ViewNoteWrapper id="ViewNoteWrapper">

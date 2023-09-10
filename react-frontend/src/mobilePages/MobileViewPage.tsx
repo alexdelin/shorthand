@@ -72,7 +72,7 @@ export function MobileViewPage() {
     setLinksShown(!linksShown);
   }
 
-  if (noteContent === undefined) return <div>No note found</div>
+  if (!noteContent || !notePath) return <div>No note found</div>
 
   return (
     <ViewNoteWrapper id="ViewNoteWrapper">
