@@ -54,12 +54,11 @@ def _get_calendar(notes_directory: DirectoryPath,
             search_directory += '/'
         search_directory += directory_filter
 
-    grep_command = '{grep_path} -Prn "{pattern}" ' + \
-                   '--include="*.note" --exclude-dir=\'.*\' {dir}'.format(
+    grep_command = ('{grep_path} -Prn "{pattern}" ' \
+                   '--include="*.note" --exclude-dir=\'.*\' {dir}').format(
                         grep_path=grep_path,
                         pattern=DATED_HEADING_PATTERN,
                         dir=search_directory)
-
     proc = Popen(
         grep_command,
         stdout=PIPE, stderr=PIPE,
@@ -224,9 +223,9 @@ def _get_calendar(notes_directory: DirectoryPath,
         elif mode == CalendarMode.WIP:
             if question.get('question_date'):
                 if question.get('answer_date'):
-                        parsed_answer["start"] = question['question_date']
-                        parsed_answer["end"] = question['answer_date']
-                        events.append(parsed_answer)
+                    parsed_answer["start"] = question['question_date']
+                    parsed_answer["end"] = question['answer_date']
+                    events.append(parsed_answer)
                 else:
                     parsed_question["start"] = question['question_date']
                     parsed_question["end"] = todays_date
