@@ -49,7 +49,7 @@ def get_server_config() -> JSONShorthandConfig:
 def update_server_config() -> ACKResponse:
     server = ShorthandServer(current_app.config['config_path'])
     current_app.logger.info('Updating config')
-    updates_json: JSONShorthandConfigUpdates = str(request.get_data())
+    updates_json: JSONShorthandConfigUpdates = request.get_data().decode('utf-8')
     updates: ShorthandConfigUpdates = json.loads(updates_json)
     server.update_config(updates)
     server.save_config()

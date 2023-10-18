@@ -1,17 +1,19 @@
 import { useState } from 'react';
-import { useQuery } from 'react-query';
+import { useQuery, useQueryClient, useMutation } from 'react-query';
 import styled from 'styled-components';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
-import { GetConfigResponse, GetSubdirsResponse } from '../types';
+import { GetConfigResponse, GetSubdirsResponse, ShorthandApiError } from '../types';
 
 export const SettingsPageWrapper = styled.div`
   padding: 2rem;`
 
 export function SettingsPage() {
 
-  const [defaultDir, setDefaultDir] = useState('');
+  const [defaultDir, setDefaultDir] = useState('none');
   const [updatedDirectory, setUpdatedDirectory] = useState(false);
+
+  const queryClient = useQueryClient();
 
   let {
     data: configData
@@ -45,9 +47,32 @@ export function SettingsPage() {
     setUpdatedDirectory(true);
   }
 
+  const updateDefaultDirMutation = useMutation<string, ShorthandApiError, string>({
+    mutationFn: async (input) => {
+      const parsedInput = input === 'none' ? null : input
+      const res = await fetch(
+        '/api/v1/config',
+        { method: 'PUT', body: JSON.stringify({default_directory: parsedInput}) }
+      )
+      return res.text();
+    },
+    onSuccess: async (data, input) => {
+      console.log(`Updated todo to ${data}`);
+      queryClient.invalidateQueries(['config'])
+    },
+    onError: async (error: ShorthandApiError) => {
+      //TODO - build real error handling
+      console.log(`Got an error from the API: ${JSON.stringify(error)}`)
+    },
+  })
+
   const handleDefaultDirChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    updateDefaultDirMutation.mutate(event.target.value);
     setDefaultDir(event.target.value);
   }
+
+  if (configData && !configData?.default_directory) configData.default_directory = 'none';
+  console.log(defaultDir);
 
   if (!configData || !subdirsData) return <div>Loading...</div>;
 
@@ -55,20 +80,22 @@ export function SettingsPage() {
     <SettingsPageWrapper>
       <h1>Settings</h1>
       <h3>User Settings</h3>
-      <div>
-      Default Directory:
-      <TextField
-        select
-        name="defaultDir"
-        value={defaultDir}
-        onChange={handleDefaultDirChange}
-        // label="Default Directory"
-        size="small"
-      >
-        {subdirsData.map((subdir) =>
-           <MenuItem key={subdir} value={subdir}>{subdir}</MenuItem>
-        )}
-      </TextField>
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        Default Directory:
+        <TextField
+          select
+          name="defaultDir"
+          value={defaultDir}
+          onChange={handleDefaultDirChange}
+          // label="Default Directory"
+          size="small"
+          sx={{ marginLeft: '1rem' }}
+        >
+          <MenuItem key={'none'} value={'none'}>None</MenuItem>
+          {subdirsData.map((subdir) =>
+            <MenuItem key={subdir} value={subdir}>{subdir}</MenuItem>
+          )}
+        </TextField>
       </div>
       <h3>Server Settings</h3>
       <div>
