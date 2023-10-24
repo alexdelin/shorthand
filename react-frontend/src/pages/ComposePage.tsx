@@ -318,13 +318,14 @@ export function ComposePage() {
           {openFiles && openFiles.map((file) => {
             if (file !== null) {
               const splitPath = file.split('/');
-              const fileName = splitPath[splitPath.length -1];
+              const fullFileName = splitPath[splitPath.length -1];
+              const trimmedFileName = fullFileName.length > 15 ? fullFileName.slice(0, 15) + '...' : fullFileName;
               return (
                 <Tab
                   key={file}
                   value={file}
                   label={
-                    <span>{fileName}
+                    <span title={fullFileName}>{trimmedFileName}
                       <span
                         onClick={(e) => {
                           handleCloseTabClick(file, e);
