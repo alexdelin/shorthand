@@ -114,6 +114,7 @@ export default function ViewPage() {
         setSearchParams({path: targetFile});
       }
     }
+  // eslint-disable-next-line
   }, [openFiles])
 
   function handleTOCClick() {

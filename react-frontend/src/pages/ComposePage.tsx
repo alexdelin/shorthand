@@ -28,6 +28,8 @@ import { ComposePageWrapper, ComposeHeader, ComposeNoteWrapper,
          StyledFormGroup, SwitchLabel, PreviewBottomMarker,
          StyledCodeMirror } from './ComposePage.styles';
 
+const FILE_NAME_LENGTH_LIMIT = 15;
+
 // Boilerpalte from: https://mui.com/material-ui/react-snackbar/
 const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
   props,
@@ -98,6 +100,7 @@ export function ComposePage() {
         setSearchParams({path: targetFile});
       }
     }
+  // eslint-disable-next-line
   }, [openFiles])
 
   // Update the editor content exactly once when the page
@@ -108,6 +111,7 @@ export function ComposePage() {
       setEditorText(rawNote);
       setChangesSaved(true);
     }
+  // eslint-disable-next-line
   }, [notePath, rawNote]);
 
   // Check if you leave the page with pending changes
@@ -319,7 +323,7 @@ export function ComposePage() {
             if (file !== null) {
               const splitPath = file.split('/');
               const fullFileName = splitPath[splitPath.length -1];
-              const trimmedFileName = fullFileName.length > 15 ? fullFileName.slice(0, 15) + '...' : fullFileName;
+              const trimmedFileName = fullFileName.length > FILE_NAME_LENGTH_LIMIT ? fullFileName.slice(0, 15) + '...' : fullFileName;
               return (
                 <Tab
                   key={file}

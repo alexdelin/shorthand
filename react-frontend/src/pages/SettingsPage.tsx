@@ -6,7 +6,15 @@ import MenuItem from '@mui/material/MenuItem';
 import { GetConfigResponse, GetSubdirsResponse, ShorthandApiError } from '../types';
 
 export const SettingsPageWrapper = styled.div`
-  padding: 2rem;`
+  padding: 2rem;
+  `;
+
+const SettingRow = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.6rem;
+  gap: 1rem;
+  `;
 
 export function SettingsPage() {
 
@@ -80,52 +88,94 @@ export function SettingsPage() {
     <SettingsPageWrapper>
       <h1>Settings</h1>
       <h3>User Settings</h3>
-      <div style={{ display: 'flex', alignItems: 'center' }}>
+      <SettingRow>
         Default Directory:
         <TextField
           select
           name="defaultDir"
           value={defaultDir}
           onChange={handleDefaultDirChange}
-          // label="Default Directory"
           size="small"
-          sx={{ marginLeft: '1rem' }}
         >
           <MenuItem key={'none'} value={'none'}>None</MenuItem>
           {subdirsData.map((subdir) =>
             <MenuItem key={subdir} value={subdir}>{subdir}</MenuItem>
           )}
         </TextField>
-      </div>
+      </SettingRow>
       <h3>Server Settings</h3>
-      <div>
-        Notes Directory: <code>{configData.notes_directory}</code>
-      </div>
-      <div>
-        Cache Directory: <code>{configData.cache_directory}</code>
-      </div>
-      <div>
-        Grep Path: <code>{configData.grep_path}</code>
-      </div>
-      <div>
-        Find Path: <code>{configData.find_path}</code>
-      </div>
-      <div>
-        Log File: <code>{configData.log_file_path}</code>
-      </div>
-      <div>
-        Log Level: <code>{configData.log_level}</code>
-      </div>
-      <div>
-        Log Format: <code>{configData.log_format}</code>
-      </div>
+      <SettingRow>
+        Notes Directory:
+        <TextField
+          disabled
+          size='small'
+          defaultValue={configData.notes_directory}
+        />
+      </SettingRow>
+      <SettingRow>
+        Cache Directory:
+        <TextField
+          disabled
+          size='small'
+          defaultValue={configData.cache_directory}
+        />
+      </SettingRow>
+      <SettingRow>
+        Grep Path:
+        <TextField
+          disabled
+          size='small'
+          defaultValue={configData.grep_path}
+        />
+      </SettingRow>
+      <SettingRow>
+        Find Path:
+        <TextField
+          disabled
+          size='small'
+          defaultValue={configData.find_path}
+        />
+      </SettingRow>
+      <SettingRow>
+        Log File:
+        <TextField
+          disabled
+          size='small'
+          defaultValue={configData.log_file_path}
+        />
+      </SettingRow>
+      <SettingRow>
+        Log Level:
+        <TextField
+          disabled
+          size='small'
+          defaultValue={configData.log_level}
+        />
+      </SettingRow>
+      <SettingRow>
+        Log Format: <TextField
+          disabled
+          size='small'
+          defaultValue={configData.log_format}
+        />
+      </SettingRow>
       <h3>Frontend Settings</h3>
-      <div>
-        View History Limit: <code>{configData.frontend.view_history_limit}</code>
-      </div>
-      <div>
-        Map Tileserver URL: <code>{configData.frontend.map_tileserver_url}</code>
-      </div>
+      <SettingRow>
+        View History Limit:
+        <TextField
+          disabled
+          size='small'
+          defaultValue={configData.frontend.view_history_limit}
+        />
+      </SettingRow>
+      <SettingRow>
+        Map Tileserver URL:
+        <TextField
+          disabled
+          size='small'
+          defaultValue={configData.frontend.map_tileserver_url}
+        />
+      </SettingRow>
     </SettingsPageWrapper>
   )
 }
