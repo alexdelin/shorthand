@@ -1,24 +1,15 @@
 import { Fragment, useMemo } from 'react';
 import { Grid, _ } from 'gridjs-react';
 import styled from 'styled-components';
-import { useQuery, useMutation } from 'react-query';
-import { useQueryClient } from 'react-query';
+import { useQuery } from 'react-query';
 import MarkdownIt from 'markdown-it';
 import tm from 'markdown-it-texmath';
-import { GetTodosResponse, Tag, Todo, ShorthandApiError } from '../types';
-import {
-  StyledTodoText,
-  StyledTag, ActionButton
-} from './TodosGrid.styles';
+import { NoteLink, StyledTag } from './TodosGrid.styles';
 // import { QUERY_CONFIG } from '../pages/DefinitionsPage';
 
 type QuestionsGridProps = {
   directory: string
   status: string
-}
-
-type QuestionsQueryKey = {
-  directory: string
 }
 
 type Question = {
@@ -57,17 +48,28 @@ const writer = MarkdownIt({}).use(
   tm,{ delimiters: 'dollars', macros: {"\\RR": "\\mathbb{R}"}
 });
 
-function getQuestionElement(question: string) {
+function getQuestionElement(question: string, tags: string[]) {
   return _(<Fragment>
     <StyledQuestion
       dangerouslySetInnerHTML={{__html: writer.render(question)}}
     />
+    {tags.map((tag) => <StyledTag>{tag}</StyledTag>)}
   </Fragment>);
 }
 
-export function QuestionsGrid(props: QuestionsGridProps) {
+function getQuestionLink(question: Question) {
+    return _(
+      <NoteLink
+        target='_blank'
+        rel='noreferrer'
+        href={`/view?path=${question.file_path}#line-number-${question.line_number}`}
+      >
+        {question.display_path}<br />Line {question.line_number}
+      </NoteLink>
+    );
+  }
 
-  const queryClient = useQueryClient();
+export function QuestionsGrid(props: QuestionsGridProps) {
 
   const {
     data: questionsData
@@ -86,14 +88,13 @@ export function QuestionsGrid(props: QuestionsGridProps) {
       return [];
     } else {
       return questionsData.items.map((question) => (
-        [`${question.display_path}: ${question.line_number}`,
-          getQuestionElement(question.question),
-          question.answer ? getQuestionElement(question.answer) : 'None']
+        [getQuestionLink(question),
+          getQuestionElement(question.question, question.tags),
+          question.answer ? getQuestionElement(question.answer, []) : '']
       ))
     }
   // eslint-disable-next-line
   }, [questionsData]);
-
 
   if (questionsData === undefined) return <div>Loading...</div>
 

@@ -3,7 +3,7 @@ import logging
 from shorthand.notes import _get_note, _update_note, \
                             _validate_internal_links, _append_to_note, \
                             _create_note, _get_backlinks, _get_links
-from shorthand.history import _get_calendar
+from shorthand.history import CalendarMode, _get_calendar
 from shorthand.tags import _get_tags
 from shorthand.toc import _get_toc
 from shorthand.stamping import _stamp_notes, _stamp_raw_note
@@ -190,8 +190,10 @@ class ShorthandServer(object):
             history_limit=self.config['frontend']['view_history_limit'])
 
     # Calendar
-    def get_calendar(self, directory_filter=None):
+    def get_calendar(self, mode: CalendarMode = CalendarMode.Recent,
+                     directory_filter=None):
         return _get_calendar(notes_directory=self.config['notes_directory'],
+                             mode=mode,
                              directory_filter=directory_filter,
                              grep_path=self.config['grep_path'])
 

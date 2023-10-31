@@ -25,7 +25,7 @@ ResourcePath = str
 # An absolute path to any file from the root of the notes directory
 InternalAbsoluteFilePath = Union[NotePath, ResourcePath]
 
-# A subdirectory within the notes directory
+# An absolute path to a subdirectory within the notes directory
 Subdir = str
 
 # An absolute path to any file or directory from the root of the notes directory

@@ -90,6 +90,7 @@ export function DefinitionsPage() {
   // Set the default directory, but only once when the page loads
   if (configData?.default_directory &&
       configData.default_directory !== directory &&
+      subdirsData.includes(configData.default_directory) &&
       !updatedDirectory) {
     setDirectory(configData.default_directory);
     setUpdatedDirectory(true);

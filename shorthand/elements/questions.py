@@ -1,8 +1,10 @@
 import re
 import logging
 from subprocess import Popen, PIPE
+from typing import Literal, Optional, Tuple, Union
 
 from shorthand.tags import extract_tags
+from shorthand.types import DirectoryPath, ExecutablePath, RelativeDirectoryPath
 from shorthand.utils.patterns import ALL_QUESTIONS, ANSWER_PATTERN, \
                                      START_STAMP_ONLY_PATTERN
 from shorthand.utils.paths import get_relative_path, get_display_path
@@ -11,11 +13,13 @@ from shorthand.utils.paths import get_relative_path, get_display_path
 ANSWER_REGEX = re.compile(ANSWER_PATTERN)
 TIMESTAMP_REGEX = re.compile(START_STAMP_ONLY_PATTERN)
 
+QuestionStatus = Union[Literal['all'], Literal['answered'], Literal['unanswered']]
+
 
 log = logging.getLogger(__name__)
 
 
-def is_question_line(line_content):
+def is_question_line(line_content: str) -> bool:
     '''If a `:` character occurs before the first space,
     it's an output line (from grep) for a match
     '''
@@ -24,7 +28,7 @@ def is_question_line(line_content):
     return False
 
 
-def is_answer_line(line_content):
+def is_answer_line(line_content: str) -> Tuple[bool, Optional[str]]:
 
     if line_content.strip() == '--':
         # Grep adds these lines to separate match results
@@ -43,10 +47,11 @@ def is_answer_line(line_content):
     return False, None
 
 
-def _get_questions(notes_directory, question_status='all',
-                   directory_filter=None, grep_path='grep'):
+def _get_questions(notes_directory: DirectoryPath, question_status: QuestionStatus = 'all',
+                   directory_filter: Optional[RelativeDirectoryPath] = None,
+                   grep_path: ExecutablePath = 'grep'):
 
-    question_status = question_status.lower()
+    # question_status = question_status.lower()
 
     if question_status not in ['all', 'answered', 'unanswered']:
         raise ValueError('Invalid question status ' + question_status)
@@ -60,8 +65,8 @@ def _get_questions(notes_directory, question_status='all',
         search_directory += directory_filter
 
     proc = Popen(
-        '{grep_path} -Prn -A 1 "{pattern}" --include="*.note" '
-        '--exclude-dir=\'.*\' {dir}'.format(
+        ('{grep_path} -Prn -A 1 "{pattern}" --include="*.note" '
+         '--exclude-dir=\'.*\' {dir}').format(
             grep_path=grep_path,
             pattern=ALL_QUESTIONS,
             dir=search_directory),
@@ -116,7 +121,7 @@ def _get_questions(notes_directory, question_status='all',
             # text as metadata to the question
             if idx < len(output_lines) - 1:
                 is_answer, answer_content = is_answer_line(output_lines[idx+1])
-                if is_answer:
+                if is_answer and answer_content:
 
                     # Extract the date stamp from the answer if present
                     answer_date_match = TIMESTAMP_REGEX.match(answer_content)

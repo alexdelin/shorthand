@@ -1,11 +1,11 @@
-import { lazy, Suspense, useState } from 'react';
+import { lazy, Suspense } from 'react';
 import { ErrorBoundary, FallbackProps } from 'react-error-boundary';
 import { Routes, Route, Link, useLocation } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
-import { SuspenseFallback } from './components/SuspenseFallback';
+// import { SuspenseFallback } from './components/SuspenseFallback';
 import { Nav } from './components/Nav';
 import { FileSearchModal } from './components/FileSearchModal';
 import { HomePage } from './pages/HomePage';
@@ -106,6 +106,7 @@ function MobileApp() {
       <ThemeProvider theme={mobileDarkTheme}>
         <MobileContent>
           <Routes>
+            <Route path="/" element={<MobileNotesPage />} />
             <Route path="/notes" element={<MobileNotesPage />} />
             <Route path="/compose" element={<MobileComposePage />} />
             <Route path="/view" element={<MobileViewPage />} />

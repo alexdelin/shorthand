@@ -1,5 +1,6 @@
 import logging
-from typing import Generic, Optional, TypeVar, TypedDict, Union, Type
+from typing import Generic, List, Optional, TypeVar, TypedDict, Union, Type, Required
+from shorthand.elements.todos import TodoStats
 
 from werkzeug.datastructures import MultiDict
 
@@ -8,9 +9,10 @@ log = logging.getLogger(__name__)
 
 
 T = TypeVar('T')
-class WrappedResponse(TypedDict, Generic[T]):
-    count: int
-    items: list[T]
+class WrappedResponse(TypedDict, Generic[T], total=False):
+    count: Required[int]
+    items: Required[List[T]]
+    meta: TodoStats
 
 
 ArgType = TypeVar('ArgType', int, float, bool, str)

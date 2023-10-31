@@ -7,7 +7,6 @@ import { useBeforeunload } from 'react-beforeunload';
 import CodeMirror from '@uiw/react-codemirror';
 import Button from '@mui/material/Button';
 import Snackbar from '@mui/material/Snackbar';
-import Switch from '@mui/material/Switch';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import FormGroup from '@mui/material/FormGroup';
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
@@ -129,6 +128,7 @@ export function MobileComposePage() {
         setSearchParams({path: targetFile});
       }
     }
+  // eslint-disable-next-line
   }, [openFiles])
 
   // Update the editor content exactly once when the page
@@ -138,6 +138,7 @@ export function MobileComposePage() {
       setEditorText(rawNote);
       setChangesSaved(true);
     }
+  // eslint-disable-next-line
   }, [notePath, rawNote]);
 
   // Check if you leave the page with pending changes

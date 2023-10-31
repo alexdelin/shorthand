@@ -62,6 +62,7 @@ export function MobileViewPage() {
         setSearchParams({path: targetFile});
       }
     }
+  // eslint-disable-next-line
   }, [openFiles])
 
   function handleTOCClick() {
@@ -72,7 +73,7 @@ export function MobileViewPage() {
     setLinksShown(!linksShown);
   }
 
-  if (noteContent === undefined) return <div>No note found</div>
+  if (!noteContent || !notePath) return <div>No note found</div>
 
   return (
     <ViewNoteWrapper id="ViewNoteWrapper">

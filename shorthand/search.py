@@ -36,7 +36,7 @@ def _record_file_view(cache_directory: DirectoryPath, notes_directory: Directory
     '''
 
     if not is_note_path(notes_directory=notes_directory, path=note_path):
-        raise ValueError(f'Cannot record view for note {note_path}. '
+        raise ValueError(f'Cannot record view for note {note_path}. ' +
                          f'Note does not exist')
 
     history_file = cache_directory + '/recent_files.txt'
@@ -205,7 +205,7 @@ def _search_full_text(notes_directory: DirectoryPath, query_string: str,
         grep_mode += 'i'
         grep_filter_mode += ' -i'
 
-    grep_command = '{grep_path} {mode} "{pattern}" '\
+    grep_command = '{grep_path} {mode} "{pattern}" ' \
                    '--include="*.note" --exclude-dir=\'.*\' {dir}'.format(
                         grep_path=grep_path,
                         mode=grep_mode,

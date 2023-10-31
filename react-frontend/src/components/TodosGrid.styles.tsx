@@ -33,3 +33,7 @@ export const StyledTag = styled.span`
 export const ActionButton = styled.i`
   margin-right: 0.5rem;
   font-size: 1.3rem;`
+
+export const NoteLink = styled.a`
+  text-decoration: none;
+  color: black;`

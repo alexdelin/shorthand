@@ -7,7 +7,8 @@ import tm from 'markdown-it-texmath';
 import { GetTodosResponse, Tag, Todo, ShorthandApiError } from '../types';
 import {
   StyledTodoText,
-  StyledTag, ActionButton
+  StyledTag, ActionButton,
+  NoteLink
 } from './TodosGrid.styles';
 // import { TODO_QUERY_CONFIG } from '../pages/TodosPage';
 
@@ -66,7 +67,7 @@ export function TodosGrid(props: TodosGridProps) {
         predicate: (query) => {
           const key0 = query.queryKey[0];
           const key1 = query.queryKey[1] as TodosQueryKey;
-          return query.queryKey[0] === 'todos' && (
+          return key0 === 'todos' && (
             key1.status === props.status ||
             key1.status === input.status ||
             key1.directory === props.directory ||
@@ -103,13 +104,13 @@ export function TodosGrid(props: TodosGridProps) {
       return [];
     } else {
       return todoData.items.map((todo) => (
-        props.status === 'Incomplete' ? [
-          `${todo.display_path}: ${todo.line_number}`,
+        props.status === 'incomplete' ? [
+          getTodoLink(todo),
           getTodoElement(todo.todo_text, todo.tags),
           processDateString(todo.start_date),
           getActionButtons(todo)
         ] : [
-          `${todo.display_path}: ${todo.line_number}`,
+          getTodoLink(todo),
           getTodoElement(todo.todo_text, todo.tags),
           processDateString(todo.start_date),
           processDateString(todo.end_date),
@@ -137,6 +138,18 @@ export function TodosGrid(props: TodosGridProps) {
       </div>);
   }
 
+  function getTodoLink(todo: Todo) {
+    return _(
+      <NoteLink
+        target='_blank'
+        rel='noreferrer'
+        href={`/view?path=${todo.file_path}#line-number-${todo.line_number}`}
+      >
+        {todo.display_path}<br />Line {todo.line_number}
+      </NoteLink>
+    );
+  }
+
   if (todoData === undefined) return <div>Loading...</div>
 
   return <Fragment>
@@ -146,7 +159,7 @@ export function TodosGrid(props: TodosGridProps) {
         enabled: true,
         limit: 50
       }}
-      columns={props.status === 'Incomplete' ? [
+      columns={props.status === 'incomplete' ? [
         'Path', 'Todo', 'Start Date',
         'Actions'
       ] : [
