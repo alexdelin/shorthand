@@ -6,18 +6,18 @@ Its based off of the idea that taking notes in plain-text formats (markdown) is 
 ## Try it
 If you want to try Shorthand locally, its easiest to run it in docker
 ```bash
-docker pull alexdelin/shorthand:0.0.7
+docker pull alexdelin/shorthand:0.0.8
 
 # Run with sample data
 docker run \
     --publish 8181:8181 \
-    alexdelin/shorthand:0.0.7
+    alexdelin/shorthand:0.0.8
 
 # Run with your own notes
 docker run \
     --publish 8181:8181 \
     -v </path/to/your/notes>:/notes \
-    alexdelin/shorthand:0.0.7
+    alexdelin/shorthand:0.0.8
 ```
 
 ## Why another note-taking tool?
