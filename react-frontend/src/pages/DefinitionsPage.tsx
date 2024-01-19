@@ -35,13 +35,13 @@ export const StyledForm = styled.form`
     margin-left: 2rem;
   }
 
-  & :first-child {
-    margin-left: auto;
-  }
+  // & :first-child {
+  //   margin-left: auto;
+  // }
 
-  & :last-child {
-    margin-left: auto;
-  }
+  // & :last-child {
+  //   margin-left: auto;
+  // }
   `
 
 export const RefreshIcon = styled.i`
@@ -63,6 +63,7 @@ export function DefinitionsPage() {
   const queryClient = useQueryClient();
 
   const [directory, setDirectory] = useState('ALL');
+  const [search, setSearch] = useState('');
   const [updatedDirectory, setUpdatedDirectory] = useState(false);
 
   let {
@@ -101,8 +102,16 @@ export function DefinitionsPage() {
     queryClient.invalidateQueries(['definitions']);
   }
 
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setTimeout(() => {
+        setSearch(event.target.value)
+      },
+      500
+    );
+  }
+
   function handleRefreshClick() {
-    queryClient.invalidateQueries(['definitions', { directory }]);
+    queryClient.invalidateQueries(['definitions', { directory, search }]);
   }
 
   return (
@@ -122,6 +131,14 @@ export function DefinitionsPage() {
              <MenuItem key={subdir} value={subdir}>{subdir}</MenuItem>
           )}
         </TextField>
+        <TextField
+          type="text"
+          name="search"
+          onChange={handleSearchChange}
+          label="Search"
+          variant="outlined"
+          size="small"
+        />
         <Button
           variant="contained"
           color="success"
@@ -144,6 +161,7 @@ export function DefinitionsPage() {
       <Suspense fallback={<div>Loading...</div>}>
         <DefinitionsGrid
           directory={directory}
+          search={search}
         />
       </Suspense>
     </DefinitionsPageWrapper>

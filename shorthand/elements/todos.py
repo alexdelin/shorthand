@@ -6,7 +6,7 @@ import shlex
 from typing import Any, Dict, Literal, TypedDict, List, Union, Optional
 
 from shorthand.tags import extract_tags
-from shorthand.types import DirectoryPath, ExecutablePath, InternalAbsoluteFilePath, InternalAbsolutePath, RawNoteLine, \
+from shorthand.types import DirectoryPath, DisplayPath, ExecutablePath, InternalAbsoluteFilePath, InternalAbsolutePath, NotePath, RawNoteLine, \
                             RelativeDirectoryPath
 from shorthand.utils.paths import get_relative_path, get_display_path, \
                                   get_full_path
@@ -30,8 +30,8 @@ log = logging.getLogger(__name__)
 TodoStatus = Union[Literal['incomplete'], Literal['complete'], Literal['skipped']]
 
 class Todo(TypedDict):
-    file_path: str
-    display_path: str
+    file_path: NotePath
+    display_path: DisplayPath
     line_number: str
     todo_text: str
     start_date: Optional[str]
@@ -91,9 +91,9 @@ def parse_todo(todo_line: RawNoteLine):
 def _get_todos(notes_directory: DirectoryPath,
                todo_status: TodoStatus = 'incomplete',
                directory_filter: Optional[RelativeDirectoryPath] = None,
-               query_string: Optional[str] = None, case_sensitive=False,
-               sort_by: Optional[str] = None, suppress_future=True,
-               tag: Optional[str]=None, grep_path: ExecutablePath = 'grep'
+               query_string: Optional[str] = None, case_sensitive: bool = False,
+               sort_by: Optional[str] = None, suppress_future: bool = True,
+               tag: Optional[str] = None, grep_path: ExecutablePath = 'grep'
                ) -> List[Todo]:
     '''Get a specified set of todos using grep on the filesystem
     '''

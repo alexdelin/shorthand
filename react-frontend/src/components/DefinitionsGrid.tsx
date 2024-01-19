@@ -7,7 +7,8 @@ import tm from 'markdown-it-texmath';
 // import { QUERY_CONFIG } from '../pages/DefinitionsPage';
 
 type DefinitionsGridProps = {
-  directory: string
+  directory: string,
+  search: string
 }
 
 type Definition = {
@@ -70,14 +71,14 @@ function getDefinitionElement(definition: string, sub_elements?: string) {
 }
 
 export function DefinitionsGrid(props: DefinitionsGridProps) {
-
+  console.log(props);
   const {
     data: definitionsData
   } = useQuery<GetDefinitionsResponse, Error>(
-    ['definitions', { directory: props.directory }], () =>
+    ['definitions', { directory: props.directory, search: props.search }], () =>
 
     // TODO - Replace with a better library
-    fetch(`/api/v1/definitions?include_sub_elements=True&directory_filter=${props.directory}`).then(res =>
+    fetch(`/api/v1/definitions?include_sub_elements=True&directory_filter=${props.directory}&query_string=${props.search}`).then(res =>
       res.json()
     )
     // ,QUERY_CONFIG

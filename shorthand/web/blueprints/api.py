@@ -310,6 +310,15 @@ def fetch_definitions():
 
     directory_filter = get_request_argument(request.args,
                                             name='directory_filter')
+    query_string = get_request_argument(request.args,
+                                        name='query_string')
+    case_sensitive = get_request_argument(request.args,
+                                          name='case_sensitive',
+                                          arg_type=bool, default=False)
+    search_term_only = get_request_argument(request.args,
+                                            name='search_term_only',
+                                            arg_type=bool, default=True)
+
     if directory_filter == 'ALL':
         directory_filter = None
 
@@ -319,6 +328,9 @@ def fetch_definitions():
 
     definitions = server.get_definitions(
         directory_filter=directory_filter,
+        query_string=query_string,
+        case_sensitive=case_sensitive,
+        search_term_only=search_term_only,
         include_sub_elements=include_sub_elements)
     return json.dumps(wrap_response_data(definitions))
 

@@ -1,4 +1,5 @@
 import re
+import shlex
 from subprocess import Popen, PIPE
 import logging
 from typing import List, Optional, TypedDict, Required
@@ -25,6 +26,9 @@ class Definition(TypedDict, total=False):
 
 def _get_definitions(notes_directory: DirectoryPath,
                      directory_filter: Optional[RelativeDirectoryPath] = None,
+                     query_string: Optional[str] = None,
+                     search_term_only: bool = True,
+                     case_sensitive: bool = False,
                      grep_path: ExecutablePath = 'grep',
                      include_sub_elements: bool = False) -> List[Definition]:
 
@@ -41,6 +45,35 @@ def _get_definitions(notes_directory: DirectoryPath,
                         grep_path=grep_path,
                         pattern=DEFINITION_PATTERN,
                         dir=search_directory)
+
+    if query_string:
+        query_components = shlex.split(query_string)
+        # Add safe handling of quoted phrases
+        safe_components = []
+        for component in query_components:
+            if component[0] == '"' and component[-1] == '"':
+                safe_components.append(component[1:-1])
+            else:
+                safe_components.append(component)
+
+        if not case_sensitive:
+            grep_filter_mode = ' -i'
+        else:
+            grep_filter_mode = ''
+
+        for additional_filter in query_components:
+            if search_term_only:
+                new_filter = ' | {grep_path}{mode} "{{.*{pattern}.*}}"'.format(
+                                grep_path=grep_path,
+                                mode=grep_filter_mode,
+                                pattern=additional_filter)
+                grep_command = grep_command + new_filter
+            else:
+                new_filter = ' | {grep_path}{mode} "{pattern}"'.format(
+                                grep_path=grep_path,
+                                mode=grep_filter_mode,
+                                pattern=additional_filter)
+                grep_command = grep_command + new_filter
 
     log.debug(f'Running grep command {grep_command} to get definitions')
     proc = Popen(

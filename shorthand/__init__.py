@@ -1,4 +1,5 @@
 import logging
+from typing import Optional
 
 from shorthand.notes import _get_note, _update_note, \
                             _validate_internal_links, _append_to_note, \
@@ -20,8 +21,7 @@ from shorthand.types import InternalAbsoluteFilePath, InternalAbsolutePath, Subd
 from shorthand.utils.config import _get_notes_config, _write_config, \
                                    _modify_config
 from shorthand.utils.paths import _get_subdirs
-from shorthand.utils.logging import get_handler, log_level_from_string, \
-                                    get_default_logger
+from shorthand.utils.logging import get_handler, log_level_from_string
 from shorthand.utils.buffers import _new_buffer, _get_buffers, \
                                     _get_buffer_content, \
                                     _update_buffer_content, \
@@ -253,9 +253,15 @@ class ShorthandServer(object):
 
     # Definitions
     def get_definitions(self, directory_filter=None,
-                        include_sub_elements=False):
+                        query_string: Optional[str] = None,
+                        case_sensitive: bool = False,
+                        search_term_only: bool = True,
+                        include_sub_elements: bool = False):
         return _get_definitions(notes_directory=self.config['notes_directory'],
                                 directory_filter=directory_filter,
+                                query_string=query_string,
+                                case_sensitive=case_sensitive,
+                                search_term_only=search_term_only,
                                 grep_path=self.config['grep_path'],
                                 include_sub_elements=include_sub_elements)
 
