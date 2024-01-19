@@ -1,6 +1,9 @@
 import os
 import json
 import logging
+from typing import List
+from shorthand.types import ACKResponse, DirectoryPath, FilePath, NotePath, \
+                            ResourcePath
 
 from shorthand.utils.paths import get_full_path, is_note_path
 
@@ -11,7 +14,7 @@ log = logging.getLogger(__name__)
 IMAGE_FILE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'tiff', 'svg', 'pdf']
 
 
-def _ensure_file_exists(file_path, default_content):
+def _ensure_file_exists(file_path: FilePath, default_content) -> None:
     ''' Utility to handle file not existing
         If a file exist at the specified path, do nothing
         If not, create a file populated with the default
@@ -24,7 +27,7 @@ def _ensure_file_exists(file_path, default_content):
             json.dump(default_content, f)
 
 
-def is_image_path(notes_directory, path):
+def is_image_path(notes_directory: DirectoryPath, path: ResourcePath) -> bool:
     # Check the file extension
     extension = path.split('.')[-1]
     if extension not in IMAGE_FILE_EXTENSIONS:
@@ -38,12 +41,18 @@ def is_image_path(notes_directory, path):
     return True
 
 
-def get_open_files(cache_directory, notes_directory):
+def get_open_files(cache_directory: DirectoryPath,
+                   notes_directory: DirectoryPath) -> List[NotePath]:
     open_files_path = f'{cache_directory}/open_files.json'
     _ensure_file_exists(open_files_path, [])
 
     with open(open_files_path, 'r') as f:
-        open_files = json.load(f)
+        try:
+            open_files = json.load(f)
+        except json.JSONDecodeError:
+            log.error('Open Files list is corrupted, resetting...')
+            clear_open_files(cache_directory)
+            return []
 
     # Manual Type Checking
     if not isinstance(open_files, list):
@@ -58,7 +67,7 @@ def get_open_files(cache_directory, notes_directory):
             found_invalid_paths = True
             log.info(f'Found invalid open file path: {note}, '
                      f'removing...')
-            close_file(cache_directory, note)
+            close_file(cache_directory, notes_directory, note)
 
     # Re-read open files if we found invalid paths
     #   that we had to remove
@@ -69,7 +78,7 @@ def get_open_files(cache_directory, notes_directory):
     return open_files
 
 
-def clear_open_files(cache_directory):
+def clear_open_files(cache_directory: DirectoryPath) -> ACKResponse:
     open_files_path = f'{cache_directory}/open_files.json'
     _ensure_file_exists(open_files_path, [])
 
@@ -79,15 +88,15 @@ def clear_open_files(cache_directory):
     return 'ack'
 
 
-def open_file(cache_directory, notes_directory, note_path):
+def open_file(cache_directory: DirectoryPath, notes_directory: DirectoryPath,
+              note_path: NotePath) -> ACKResponse:
     if not is_note_path(notes_directory, note_path):
         raise ValueError(f'Cannot open non-existent file at path: {note_path}')
 
     open_files_path = f'{cache_directory}/open_files.json'
     _ensure_file_exists(open_files_path, [])
 
-    with open(open_files_path, 'r') as f:
-        open_files = json.load(f)
+    open_files = get_open_files(cache_directory, notes_directory)
 
     if open_files and note_path == open_files[-1]:
         log.info(f'Note file {note_path} is already the most '
@@ -105,12 +114,12 @@ def open_file(cache_directory, notes_directory, note_path):
     return 'ack'
 
 
-def close_file(cache_directory, note_path):
+def close_file(cache_directory: DirectoryPath, notes_directory: DirectoryPath,
+               note_path: NotePath) -> ACKResponse:
     open_files_path = f'{cache_directory}/open_files.json'
     _ensure_file_exists(open_files_path, [])
 
-    with open(open_files_path, 'r') as f:
-        open_files = json.load(f)
+    open_files = get_open_files(cache_directory, notes_directory)
 
     if note_path not in open_files:
         log.info(f'Note file {note_path} is not open, skipping...')

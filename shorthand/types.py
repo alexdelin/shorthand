@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Literal, Union
 
 # System level concepts
 # ---------------------
@@ -67,7 +67,7 @@ ExternalURL = str
 
 # API level concepts
 # ------------------
-ACKResponse = str
+ACKResponse = Literal["ack"]
 
 CSVData = str
 

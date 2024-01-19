@@ -94,6 +94,7 @@ def call_close_file():
     SHORTHAND_CONFIG = _get_notes_config(current_app.config['config_path'])
     path = get_request_argument(request.args, name='path')
     return close_file(SHORTHAND_CONFIG['cache_directory'],
+                      SHORTHAND_CONFIG['notes_directory'],
                       path)
 
 @shorthand_ui_blueprint.route('/frontend-api/clear-open-files', methods=['POST'])
