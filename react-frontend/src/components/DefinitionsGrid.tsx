@@ -1,7 +1,6 @@
-import { Fragment, useMemo } from 'react';
+import { Fragment } from 'react';
 import { Grid, _ } from 'gridjs-react';
 import styled from 'styled-components';
-import { useQuery } from 'react-query';
 import MarkdownIt from 'markdown-it';
 import tm from 'markdown-it-texmath';
 // import { QUERY_CONFIG } from '../pages/DefinitionsPage';
@@ -76,13 +75,22 @@ export function DefinitionsGrid(props: DefinitionsGridProps) {
       pagination={{
         limit: 50
       }}
-      columns={['Path', 'Term', 'Definition']}
+      columns={[
+        'Path', 'Term',
+        {
+          name: 'Definition',
+          width: '60%',
+          formatter: (cell: [string, string]) => {
+            return getDefinitionElement(cell[0], cell[1])
+          }
+        }
+      ]}
       server={{
         url: `/api/v1/definitions?include_sub_elements=True&directory_filter=${props.directory}&query_string=${props.search}`,
         then: (data: GetDefinitionsResponse) => data.items.map(definition => [
           `${definition.display_path}: ${definition.line_number}`,
           definition.term,
-          getDefinitionElement(definition.definition, definition.sub_elements)
+          [definition.definition, definition.sub_elements]
         ])
       }}
     />

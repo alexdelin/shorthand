@@ -54,6 +54,8 @@ export const DownloadIcon = styled.i`
 
 export function DefinitionsPage() {
 
+  console.log('rendering')
+
   const queryClient = useQueryClient();
 
   const [directory, setDirectory] = useState('ALL');
