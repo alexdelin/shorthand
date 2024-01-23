@@ -156,7 +156,6 @@ export function TodosGrid(props: TodosGridProps) {
     <Grid
       data={elements}
       pagination={{
-        enabled: true,
         limit: 50
       }}
       columns={props.status === 'incomplete' ? [

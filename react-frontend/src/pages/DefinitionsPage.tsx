@@ -29,20 +29,14 @@ export const DefinitionsPageWrapper = styled.div`
 export const StyledForm = styled.form`
   display: flex;
   align-items: center;
+  justify-content: center;
+  gap: 2rem;
   margin-bottom: 2rem;
 
-  & .MuiButton-root {
-    margin-left: 2rem;
-  }
-
-  // & :first-child {
-  //   margin-left: auto;
-  // }
-
-  // & :last-child {
-  //   margin-left: auto;
-  // }
-  `
+  & :first-child,
+  & :last-child {
+    margin-left: auto;
+  }`
 
 export const RefreshIcon = styled.i`
   font-size: 1.35rem;

@@ -102,7 +102,6 @@ export function QuestionsGrid(props: QuestionsGridProps) {
     <Grid
       data={elements}
       pagination={{
-        enabled: true,
         limit: 50
       }}
       columns={['Path', 'Question', 'Answer']}

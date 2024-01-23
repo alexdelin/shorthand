@@ -80,7 +80,7 @@ export function DefinitionsGrid(props: DefinitionsGridProps) {
     // TODO - Replace with a better library
     fetch(`/api/v1/definitions?include_sub_elements=True&directory_filter=${props.directory}&query_string=${props.search}`).then(res =>
       res.json()
-    )
+    ),
     // ,QUERY_CONFIG
   )
 
@@ -104,7 +104,6 @@ export function DefinitionsGrid(props: DefinitionsGridProps) {
     <Grid
       data={elements}
       pagination={{
-        enabled: true,
         limit: 50
       }}
       columns={['Path', 'Term', 'Definition']}
