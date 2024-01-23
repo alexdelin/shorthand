@@ -159,10 +159,10 @@ export function TodosGrid(props: TodosGridProps) {
         limit: 50
       }}
       columns={props.status === 'incomplete' ? [
-        'Path', 'Todo', 'Start Date',
+        { name: 'Path', width: '25%' }, { name: 'Todo', width: '50%' }, 'Start Date',
         'Actions'
       ] : [
-        'Path', 'Todo', 'Start Date', 'End Date',
+        { name: 'Path', width: '25%' }, { name: 'Todo', width: '45%' }, 'Start Date', 'End Date',
         'Actions'
       ]}
     />
