@@ -33,8 +33,8 @@ export const StyledForm = styled.form`
   gap: 2rem;
   margin-bottom: 2rem;
 
-  & :first-child,
-  & :last-child {
+  & > div:first-child,
+  & > a:last-child {
     margin-left: auto;
   }`
 
@@ -133,13 +133,6 @@ export function DefinitionsPage() {
           variant="outlined"
           size="small"
         />
-        <Button
-          variant="contained"
-          color="success"
-          onClick={handleRefreshClick}
-        >
-          <RefreshIcon className="bi bi-arrow-clockwise"></RefreshIcon>
-        </Button>
         <a
           href={"/api/v1/definitions/csv?directory_filter=" + directory}
           download={"definitions_" + directory + ".csv"}
