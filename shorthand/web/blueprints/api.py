@@ -430,3 +430,14 @@ def filesystem_delete() -> ACKResponse:
     else:
         raise ValueError(f'Got unknown resource type {resource_type}')
     return 'ack'
+
+
+@shorthand_api_blueprint.route('/api/v1/archive', methods=['GET'])
+def get_archive() -> bytes:
+    server = ShorthandServer(current_app.config['config_path'])
+
+    response = Response(server.get_note_archive())
+    response.headers['Content-Type'] = 'application/x-xz'
+    response.headers['Content-Disposition'] = 'attachment'
+    return response
+
