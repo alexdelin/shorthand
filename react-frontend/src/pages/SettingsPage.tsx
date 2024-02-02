@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useQueryClient, useMutation } from 'react-query';
 import styled from 'styled-components';
+import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import { GetConfigResponse, GetSubdirsResponse, ShorthandApiError } from '../types';
@@ -158,6 +159,20 @@ export function SettingsPage() {
           size='small'
           defaultValue={configData.log_format}
         />
+      </SettingRow>
+      <SettingRow>
+        Download Archive:
+        <a
+          href={"/api/v1/archive"}
+          download={"notes_archive.tar.xz"}
+        >
+          <Button
+            variant="contained"
+            color="primary"
+          >
+            <i className="bi bi-download"></i>
+          </Button>
+        </a>
       </SettingRow>
       <h3>Frontend Settings</h3>
       <SettingRow>
