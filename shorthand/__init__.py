@@ -205,8 +205,9 @@ class ShorthandServer(object):
                          grep_path=self.config['grep_path'])
 
     # TOC
-    def get_toc(self, directory_filter=None):
-        return _get_toc(notes_directory=self.config['notes_directory'])
+    def get_toc(self, include_resources=False):
+        return _get_toc(notes_directory=self.config['notes_directory'],
+                        include_resources=include_resources)
 
     # Typeahead
     def update_ngram_database(self):

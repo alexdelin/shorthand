@@ -108,7 +108,10 @@ def write_updated_note():
 @shorthand_api_blueprint.route('/api/v1/toc', methods=['GET'])
 def get_toc_data() -> JSONTOC:
     server = ShorthandServer(current_app.config['config_path'])
-    return json.dumps(server.get_toc())
+    include_resources = get_request_argument(request.args,
+                                             name='include_resources',
+                                             arg_type=bool, default=False)
+    return json.dumps(server.get_toc(include_resources=include_resources))
 
 
 @shorthand_api_blueprint.route('/api/v1/subdirs', methods=['GET'])
