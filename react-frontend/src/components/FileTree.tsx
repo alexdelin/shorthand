@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { Fragment, useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from 'react-query';
 import { Link } from "react-router-dom";
+import { Input } from '@mui/material';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Menu from '@mui/material/Menu';
@@ -15,6 +16,7 @@ import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import InputAdornment from '@mui/material/InputAdornment';
 import Autocomplete from '@mui/material/Autocomplete';
+
 import { ANIMATION_LENGTH_MS } from './Nav.styles';
 import { GetSubdirsResponse } from '../types';
 
@@ -118,7 +120,7 @@ function FileRow(props: FileRowProps) {
       </FileWrapper>
       <FolderActionsIcon menuOpen={fileMenuOpen} onClick={handleFileActionsClick} className="bi bi-three-dots"></FolderActionsIcon>
       <Menu
-        id="folder-actions-menu"
+        id="file-actions-menu"
         anchorEl={fileMenuAnchorEl}
         open={fileMenuOpen}
         onClose={handleFileMenuClose}
@@ -160,6 +162,7 @@ type DirectoryRowProps = {
   openCreateDialog: (parentDir: string) => void,
   openMoveDialog: (sourceType: string, sourcePath: string) => void,
   openDeleteDialog: (deleteType: string, deletePath: string) => void,
+  openUploadDialog: (parentDir: string) => void,
 }
 
 function DirectoryRow(props: DirectoryRowProps) {
@@ -212,6 +215,11 @@ function DirectoryRow(props: DirectoryRowProps) {
     props.openDeleteDialog('directory', props.directory.path);
   };
 
+  const handleUploadButtonClick = () => {
+    setDirMenuAnchorEl(null);
+    props.openUploadDialog(props.directory.path);
+  };
+
   return (
     <DirectoryRowWrapper menuOpen={dirMenuOpen}>
       <DirectoryNameWrapper onClick={handleDirectoryClick}>
@@ -232,6 +240,7 @@ function DirectoryRow(props: DirectoryRowProps) {
         {props.directory.path !== '' && (
           <MenuItem onClick={handleDeleteButtonClick}>Delete</MenuItem>
         )}
+        <MenuItem onClick={handleUploadButtonClick}>Upload</MenuItem>
       </Menu>
     </DirectoryRowWrapper>
   )
@@ -261,6 +270,7 @@ type RenderedDirectoryProps = {
   openCreateDialog: (parentDir: string) => void,
   openMoveDialog: (sourceType: string, sourcePath: string) => void,
   openDeleteDialog: (deleteType: string, deletePath: string) => void,
+  openUploadDialog: (parentDir: string) => void,
 }
 
 function RenderedDirectory(props: RenderedDirectoryProps) {
@@ -272,6 +282,7 @@ function RenderedDirectory(props: RenderedDirectoryProps) {
       openCreateDialog={props.openCreateDialog}
       openMoveDialog={props.openMoveDialog}
       openDeleteDialog={props.openDeleteDialog}
+      openUploadDialog={props.openUploadDialog}
     />
     <DirectoryContentsWrapper className={props.expanded ? '' : 'collapsed'}>
       {props.directory.files.map(file =>
@@ -293,6 +304,7 @@ function RenderedDirectory(props: RenderedDirectoryProps) {
           openCreateDialog={props.openCreateDialog}
           openMoveDialog={props.openMoveDialog}
           openDeleteDialog={props.openDeleteDialog}
+          openUploadDialog={props.openUploadDialog}
         />
       )}
     </DirectoryContentsWrapper>
@@ -335,6 +347,7 @@ function CreateDialog(props: CreateDialogProps) {
       ).then(async res => {
         if (await res.text() === 'ack') {
           queryClient.invalidateQueries(['toc']);
+          setCreateName('');
           closeCreateDialog();
         }
       })
@@ -346,6 +359,7 @@ function CreateDialog(props: CreateDialogProps) {
         if (await res.text() === 'ack') {
           queryClient.invalidateQueries(['toc']);
           queryClient.invalidateQueries(['subdirs']);
+          setCreateName('');
           closeCreateDialog();
         }
       })
@@ -561,6 +575,70 @@ function DeleteDialog(props: DeleteDialogProps) {
 }
 
 
+type UploadDialogProps = {
+  uploadDialogOpen: boolean,
+  setUploadDialogOpen: (value: boolean) => void,
+  uploadParentDir: string
+}
+
+function UploadDialog(props: UploadDialogProps) {
+  /* Upload a new file to a directory
+  */
+
+  const [file, setFile] = useState<File>();
+
+  const queryClient = useQueryClient();
+
+  const closeUploadDialog = () => {
+    setFile(undefined);
+    props.setUploadDialogOpen(false);
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      setFile(event.target.files[0]);
+    }
+  }
+
+  const handleUploadSubmit = () => {
+    if (!file) {
+      return;
+    }
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('fileName', file.name);
+    fetch('/api/v1/filesystem/upload?directory=' + props.uploadParentDir , {
+      method: 'POST',
+      body: formData
+    }).then(async res => {
+      if (await res.text() === 'ack') {
+        queryClient.invalidateQueries(['toc']);
+        closeUploadDialog();
+      }
+    })
+  };
+
+  return (
+    <Dialog open={props.uploadDialogOpen} onClose={closeUploadDialog}>
+      <DialogTitle>Create</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          Upload new file to: <code>{props.uploadParentDir}</code>
+        </DialogContentText>
+        <Input
+          type="file"
+          onChange={handleFileChange}
+        />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={closeUploadDialog}>Cancel</Button>
+        <Button onClick={handleUploadSubmit}>Upload</Button>
+      </DialogActions>
+    </Dialog>
+  );
+}
+
+
 const FileTreeWrapper = styled.div`
   background-color: rgb(33, 37, 61);
   color: white;
@@ -587,13 +665,16 @@ export function FileTree(props: FileTreeProps) {
   const [deleteType, setDeleteType] = useState('note');
   const [deletePath, setDeletePath] = useState('')
 
+  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
+  const [uploadParentDir, setUploadParentDir] = useState('/');
+
   const {
     data: fileTreeData
   } = useQuery<TOC, Error>(
     ['toc'], () =>
 
     // TODO - Replace with a better library
-    fetch(`/api/v1/toc`).then(res =>
+    fetch(`/api/v1/toc?include_resources=True`).then(res =>
       res.json()
     ),
     {cacheTime: 10 * 60 * 1000, refetchOnWindowFocus: false}
@@ -616,6 +697,11 @@ export function FileTree(props: FileTreeProps) {
     setDeleteDialogOpen(true);
   }
 
+  const openUploadDialog = (parentDir: string) => {
+    setUploadParentDir(parentDir);
+    setUploadDialogOpen(true);
+  }
+
   if (fileTreeData === undefined) return <div>Loading...</div>
 
   return (
@@ -628,6 +714,7 @@ export function FileTree(props: FileTreeProps) {
           openCreateDialog={openCreateDialog}
           openMoveDialog={openMoveDialog}
           openDeleteDialog={openDeleteDialog}
+          openUploadDialog={openUploadDialog}
         />
       </FileTreeWrapper>
       <CreateDialog
@@ -646,6 +733,11 @@ export function FileTree(props: FileTreeProps) {
         setDeleteDialogOpen={setDeleteDialogOpen}
         deletePath={deletePath}
         deleteType={deleteType}
+      />
+      <UploadDialog
+        uploadDialogOpen={uploadDialogOpen}
+        setUploadDialogOpen={setUploadDialogOpen}
+        uploadParentDir={uploadParentDir}
       />
     </Fragment>
   )
