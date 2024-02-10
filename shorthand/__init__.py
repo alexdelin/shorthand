@@ -29,7 +29,7 @@ from shorthand.utils.buffers import _new_buffer, _get_buffers, \
                                     _delete_buffer, _write_buffer
 from shorthand.utils.filesystem import _create_file, _create_directory, \
                                        _move_file_or_directory, _delete_file, \
-                                       _delete_directory
+                                       _delete_directory, _upload_resource
 
 
 # Set up the default module-level logger which the rest of the library
@@ -324,6 +324,11 @@ class ShorthandServer(object):
     def create_directory(self, directory_path: Subdir):
         return _create_directory(notes_directory=self.config['notes_directory'],
                                  directory_path=directory_path)
+
+    def upload_resource(self, resource_path, content):
+        return _upload_resource(notes_directory=self.config['notes_directory'],
+                                path=resource_path,
+                                content=content)
 
     def move_file_or_directory(self, source: InternalAbsolutePath,
                                destination: InternalAbsolutePath):
