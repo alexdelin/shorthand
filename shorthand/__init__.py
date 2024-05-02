@@ -18,6 +18,7 @@ from shorthand.elements.record_sets import _get_record_sets, _get_record_set
 from shorthand.frontend.typeahead import _update_ngram_database, \
                                          _get_typeahead_suggestions
 from shorthand.types import InternalAbsoluteFilePath, InternalAbsolutePath, Subdir
+from shorthand.utils.archive import _get_note_archive
 from shorthand.utils.config import _get_notes_config, _write_config, \
                                    _modify_config
 from shorthand.utils.paths import _get_subdirs
@@ -28,7 +29,7 @@ from shorthand.utils.buffers import _new_buffer, _get_buffers, \
                                     _delete_buffer, _write_buffer
 from shorthand.utils.filesystem import _create_file, _create_directory, \
                                        _move_file_or_directory, _delete_file, \
-                                       _delete_directory
+                                       _delete_directory, _upload_resource
 
 
 # Set up the default module-level logger which the rest of the library
@@ -204,8 +205,9 @@ class ShorthandServer(object):
                          grep_path=self.config['grep_path'])
 
     # TOC
-    def get_toc(self, directory_filter=None):
-        return _get_toc(notes_directory=self.config['notes_directory'])
+    def get_toc(self, include_resources=False):
+        return _get_toc(notes_directory=self.config['notes_directory'],
+                        include_resources=include_resources)
 
     # Typeahead
     def update_ngram_database(self):
@@ -324,6 +326,11 @@ class ShorthandServer(object):
         return _create_directory(notes_directory=self.config['notes_directory'],
                                  directory_path=directory_path)
 
+    def upload_resource(self, resource_path, content):
+        return _upload_resource(notes_directory=self.config['notes_directory'],
+                                path=resource_path,
+                                content=content)
+
     def move_file_or_directory(self, source: InternalAbsolutePath,
                                destination: InternalAbsolutePath):
         return _move_file_or_directory(
@@ -340,3 +347,5 @@ class ShorthandServer(object):
             notes_directory=self.config['notes_directory'],
             directory_path=directory_path, recursive=recursive)
 
+    def get_note_archive(self):
+        return _get_note_archive(notes_directory=self.config['notes_directory'])

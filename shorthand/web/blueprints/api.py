@@ -108,7 +108,10 @@ def write_updated_note():
 @shorthand_api_blueprint.route('/api/v1/toc', methods=['GET'])
 def get_toc_data() -> JSONTOC:
     server = ShorthandServer(current_app.config['config_path'])
-    return json.dumps(server.get_toc())
+    include_resources = get_request_argument(request.args,
+                                             name='include_resources',
+                                             arg_type=bool, default=False)
+    return json.dumps(server.get_toc(include_resources=include_resources))
 
 
 @shorthand_api_blueprint.route('/api/v1/subdirs', methods=['GET'])
@@ -430,3 +433,34 @@ def filesystem_delete() -> ACKResponse:
     else:
         raise ValueError(f'Got unknown resource type {resource_type}')
     return 'ack'
+
+
+@shorthand_api_blueprint.route('/api/v1/filesystem/upload', methods=['POST'])
+def filesystem_upload() -> ACKResponse:
+    server = ShorthandServer(current_app.config['config_path'])
+
+    directory = get_request_argument(request.args, name='directory', required=True)
+
+    # check if the post request has the file part
+    if 'file' not in request.files:
+        raise ValueError('No File part')
+    file = request.files['file']
+    # If the user does not select a file, the browser submits an
+    # empty file without a filename.
+    if file.filename == '':
+        raise ValueError('No selected file')
+
+    server.upload_resource(f'{directory}/{file.filename}', file.read())
+
+    return 'ack'
+
+
+@shorthand_api_blueprint.route('/api/v1/archive', methods=['GET'])
+def get_archive() -> bytes:
+    server = ShorthandServer(current_app.config['config_path'])
+
+    response = Response(server.get_note_archive())
+    response.headers['Content-Type'] = 'application/x-xz'
+    response.headers['Content-Disposition'] = 'attachment'
+    return response
+

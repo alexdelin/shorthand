@@ -15,8 +15,9 @@ class TOC(TypedDict):
     text: str
 
 
-def _get_toc(notes_directory: DirectoryPath) -> TOC:
-    '''Get a TOC object
+def _get_toc(notes_directory: DirectoryPath, include_resources: bool = False) -> TOC:
+    '''Get a Table of Contents (TOC) object which describes the
+       entire notes directory
     '''
 
     fs_lookup = {}
@@ -31,14 +32,19 @@ def _get_toc(notes_directory: DirectoryPath) -> TOC:
         if notes_directory in dir_path:
             dir_path = dir_path[len(notes_directory):]
 
-        notes_filenames = [filename
-                           for filename in filenames
-                           if filename[-5:] == '.note']
-        notes_filenames.sort()
+        if include_resources:
+            included_filenames = [filename
+                                  for filename in filenames
+                                  if filename[0] != '.']
+        else:
+            included_filenames = [filename
+                                  for filename in filenames
+                                  if filename[-5:] == '.note']
+        included_filenames.sort()
         dirnames.sort()
 
         fs_lookup[dir_path] = {
-            'files': notes_filenames,
+            'files': included_filenames,
             'dirs': dirnames,
             'path': dir_path,
             'text': dir_path.split('/')[-1]

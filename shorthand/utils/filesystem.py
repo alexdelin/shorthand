@@ -1,8 +1,12 @@
 import os
 import shutil
+import logging
 
 from shorthand.types import DirectoryPath, Subdir, InternalAbsoluteFilePath, InternalAbsolutePath
 from shorthand.utils.paths import get_full_path
+
+
+log = logging.getLogger(__name__)
 
 
 def _create_file(notes_directory: DirectoryPath,
@@ -17,6 +21,25 @@ def _create_file(notes_directory: DirectoryPath,
 
     with open(full_path, 'w') as f:
         pass
+
+
+def _upload_resource(notes_directory: DirectoryPath,
+                     path: InternalAbsoluteFilePath,
+                     content: bytes,
+                     allow_overwrite: bool = False
+                     ) -> None:
+    '''Create a new resource file at a specific internal path
+       with the specified content
+    '''
+    full_path = get_full_path(notes_directory, path)
+    log.warning(f'Uploading resource to {full_path}')
+    if not allow_overwrite:
+        if os.path.exists(full_path):
+            raise ValueError(f'Cannot create resource, a file ' +
+                             f'already exists at path {path}')
+
+    with open(full_path, 'wb') as f:
+        f.write(content)
 
 
 def _move_file_or_directory(notes_directory: DirectoryPath,
