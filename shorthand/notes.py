@@ -65,7 +65,7 @@ def _update_note(notes_directory: DirectoryPath, file_path: NotePath,
 
 
 def _append_to_note(notes_directory: DirectoryPath, note_path: NotePath,
-                    content: RawNoteContent, blank_lines: int=1) -> None:
+                    content: RawNoteContent, blank_lines: int = 1) -> None:
     '''Append the specified content to an existing note
     '''
     full_path = get_full_path(notes_directory, note_path)
@@ -82,7 +82,7 @@ def _append_to_note(notes_directory: DirectoryPath, note_path: NotePath,
 
 
 def _create_note(notes_directory: DirectoryPath, note_path: NotePath,
-                 content: Optional[RawNoteContent]=None) -> None:
+                 content: Optional[RawNoteContent] = None) -> None:
     '''Create a new note
     '''
     if not note_path:

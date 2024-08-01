@@ -1,7 +1,7 @@
 import re
 import logging
 from subprocess import Popen, PIPE
-from typing import Literal, Optional, Tuple, Union
+from typing import Literal, Optional, Tuple
 
 from shorthand.tags import extract_tags
 from shorthand.types import DirectoryPath, ExecutablePath, RelativeDirectoryPath
@@ -13,7 +13,7 @@ from shorthand.utils.paths import get_relative_path, get_display_path
 ANSWER_REGEX = re.compile(ANSWER_PATTERN)
 TIMESTAMP_REGEX = re.compile(START_STAMP_ONLY_PATTERN)
 
-QuestionStatus = Union[Literal['all'], Literal['answered'], Literal['unanswered']]
+QuestionStatus = Literal['all', 'answered', 'unanswered']
 
 
 log = logging.getLogger(__name__)
