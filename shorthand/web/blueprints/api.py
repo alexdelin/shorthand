@@ -1,5 +1,5 @@
 import json
-from shorthand.history import CalendarMode
+from shorthand.calendar import CalendarMode
 
 from werkzeug.exceptions import HTTPException
 from flask import Blueprint, request, current_app, Response

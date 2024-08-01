@@ -4,7 +4,7 @@ from typing import Optional
 from shorthand.notes import _get_note, _update_note, \
                             _validate_internal_links, _append_to_note, \
                             _create_note, _get_backlinks, _get_links
-from shorthand.history import CalendarMode, _get_calendar
+from shorthand.calendar import CalendarMode, _get_calendar
 from shorthand.tags import _get_tags
 from shorthand.toc import _get_toc
 from shorthand.stamping import _stamp_notes, _stamp_raw_note

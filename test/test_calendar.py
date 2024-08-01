@@ -1,7 +1,7 @@
 import logging
 import unittest
 
-from shorthand.history import _get_calendar
+from shorthand.calendar import _get_calendar
 
 from utils import setup_environment, validate_setup, setup_logging
 from results_unstamped import CALENDAR
