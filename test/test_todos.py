@@ -8,7 +8,7 @@ from shorthand.stamping import _stamp_notes
 from shorthand.web.app import create_app
 
 from utils import setup_environment, teardown_environment, validate_setup, \
-                  TEST_CONFIG_PATH, setup_logging
+                  TEST_CONFIG_PATH
 from model import ShorthandModel
 
 

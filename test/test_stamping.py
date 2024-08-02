@@ -21,7 +21,7 @@ class TestStamping(unittest.TestCase):
     """Test stamping functionality"""
 
     @classmethod
-    def setup_class(self):
+    def setup_class(cls):
         '''ensure that we have a clean environment
         before running any tests
         '''
@@ -33,7 +33,7 @@ class TestStamping(unittest.TestCase):
         assert response.keys()
 
     @classmethod
-    def teardown_class(self):
+    def teardown_class(cls):
         '''Ensure that we don't leave stamped
         notes around after the tests are run
         '''

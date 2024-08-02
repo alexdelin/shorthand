@@ -2,10 +2,10 @@ from enum import StrEnum
 import re
 import logging
 from subprocess import Popen, PIPE
-from typing import Dict, List, Optional, Required, TypedDict, Union
+from typing import Dict, List, Optional, Required, TypedDict
 from datetime import datetime
 
-from shorthand.elements.todos import _get_todos, parse_todo
+from shorthand.elements.todos import _get_todos
 from shorthand.elements.questions import _get_questions
 from shorthand.types import DirectoryPath, ExecutablePath, RelativeDirectoryPath
 from shorthand.utils.patterns import DATED_HEADING_PATTERN
