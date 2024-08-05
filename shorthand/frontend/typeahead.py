@@ -3,6 +3,7 @@ from collections import OrderedDict
 import json
 import codecs
 import logging
+from typing import List
 
 from nltk import bigrams, trigrams
 from nltk.tokenize import sent_tokenize, WhitespaceTokenizer, \
@@ -19,7 +20,7 @@ FORBIDDEN_CHARS = [
 log = logging.getLogger(__name__)
 
 
-def _get_typeahead_suggestions(ngram_db_dir, query_string, limit=10):
+def _get_typeahead_suggestions(ngram_db_dir, query_string, limit=10) -> List[str]:
     '''Get typeahead suggestions for the current active query.
     This can be a large query that we only want to provide
     suggestions for extending the last word or term of

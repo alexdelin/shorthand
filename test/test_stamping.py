@@ -7,12 +7,10 @@ from shorthand.elements.questions import _get_questions
 from shorthand.stamping import _stamp_notes, _stamp_raw_note
 from shorthand.notes import _get_note
 
-from utils import setup_environment, teardown_environment, validate_setup, \
-                  setup_logging
+from utils import setup_environment, teardown_environment, validate_setup
 from model import ShorthandModel
 
 
-CONFIG = setup_environment()
 log = logging.getLogger(__name__)
 MODEL = ShorthandModel()
 
@@ -25,11 +23,17 @@ class TestStamping(unittest.TestCase):
         '''ensure that we have a clean environment
         before running any tests
         '''
-        _ = setup_environment()
-        response = _stamp_notes(CONFIG['notes_directory'],
+        cls.config = setup_environment()
+        cls.notes_dir = cls.config['notes_directory']
+        cls.cache_dir = cls.config['cache_directory']
+        cls.grep_path = cls.config['grep_path']
+        cls.find_path = cls.config['find_path']
+
+        # Stamp notes before running tests
+        response = _stamp_notes(cls.notes_dir,
                                 stamp_todos=True, stamp_today=True,
                                 stamp_questions=True, stamp_answers=True,
-                                grep_path=CONFIG['grep_path'])
+                                grep_path=cls.grep_path)
         assert response.keys()
 
     @classmethod
@@ -46,57 +50,57 @@ class TestStamping(unittest.TestCase):
 
     def test_todos_stamped(self):
         incomplete_todos = _get_todos(
-            notes_directory=CONFIG['notes_directory'],
+            notes_directory=self.notes_dir,
             todo_status='incomplete',
-            grep_path=CONFIG['grep_path'])
+            grep_path=self.grep_path)
 
         for todo in incomplete_todos:
             assert todo.get('start_date')
             assert not todo.get('end_date')
 
         complete_todos = _get_todos(
-            notes_directory=CONFIG['notes_directory'],
+            notes_directory=self.notes_dir,
             todo_status='complete',
-            grep_path=CONFIG['grep_path'])
+            grep_path=self.grep_path)
         skipped_todos = _get_todos(
-            notes_directory=CONFIG['notes_directory'],
+            notes_directory=self.notes_dir,
             todo_status='skipped',
-            grep_path=CONFIG['grep_path'])
+            grep_path=self.grep_path)
 
         for todo in complete_todos + skipped_todos:
             assert todo.get('start_date')
             assert todo.get('end_date')
 
     def test_today_replaced(self):
-        sample_note_path = CONFIG['notes_directory'] + '/todos.note'
-        content = _get_note(CONFIG['notes_directory'], sample_note_path)
+        sample_note_path = self.notes_dir + '/todos.note'
+        content = _get_note(self.notes_dir, sample_note_path)
         assert '\\today' not in content
 
     def test_questions_stamped(self):
 
         unanswered_qs = _get_questions(
-            notes_directory=CONFIG['notes_directory'],
+            notes_directory=self.notes_dir,
             question_status='unanswered',
-            grep_path=CONFIG['grep_path'])
+            grep_path=self.grep_path)
 
         for question in unanswered_qs:
             assert question.get('question_date')
             assert not question.get('answer_date')
 
         answered_qs = _get_questions(
-            notes_directory=CONFIG['notes_directory'],
+            notes_directory=self.notes_dir,
             question_status='answered',
-            grep_path=CONFIG['grep_path'])
+            grep_path=self.grep_path)
 
         for question in answered_qs:
             assert question.get('question_date')
             assert question.get('answer_date')
 
     def test_restamp(self):
-        changes = _stamp_notes(CONFIG['notes_directory'],
+        changes = _stamp_notes(self.notes_dir,
                                stamp_todos=True, stamp_today=True,
                                stamp_questions=True, stamp_answers=True,
-                               grep_path=CONFIG['grep_path'])
+                               grep_path=self.grep_path)
         assert not changes
 
     def test_stamp_raw_note(self):

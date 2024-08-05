@@ -7,10 +7,9 @@ from shorthand.utils.config import clean_and_validate_config, \
     DEFAULT_LOG_LEVEL, DEFAULT_GREP_PATH, DEFAULT_FIND_PATH, \
     DEFAULT_FRONTEND_CONFIG, DEFAULT_CONFIG
 
-from utils import setup_environment, validate_setup, setup_logging
+from utils import setup_environment, validate_setup
 
 
-ORIGINAL_CONFIG = setup_environment()
 log = logging.getLogger(__name__)
 
 
@@ -20,7 +19,11 @@ class TestConfig(unittest.TestCase):
     @classmethod
     def setup_class(cls):
         # ensure that we have a clean environment before running any tests
-        _ = setup_environment()
+        cls.config = setup_environment()
+        cls.notes_dir = cls.config['notes_directory']
+        cls.cache_dir = cls.config['cache_directory']
+        cls.grep_path = cls.config['grep_path']
+        cls.find_path = cls.config['find_path']
 
     def setup_method(self, method):
         '''Validate that the environment has been set up correctly
@@ -28,7 +31,7 @@ class TestConfig(unittest.TestCase):
         validate_setup()
 
     def test_basic_config_validation(self):
-        cleaned_config = clean_and_validate_config(ORIGINAL_CONFIG)
+        cleaned_config = clean_and_validate_config(self.config)
         # Check basic format of cleaned config
         assert isinstance(cleaned_config, dict)
         assert len(cleaned_config.keys()) > 0
@@ -56,8 +59,8 @@ class TestConfig(unittest.TestCase):
 
         # Test that config with ONLY required fields is accepted
         default_config = clean_and_validate_config({
-            "notes_directory": ORIGINAL_CONFIG['notes_directory'],
-            "cache_directory": ORIGINAL_CONFIG['cache_directory']
+            "notes_directory": self.notes_dir,
+            "cache_directory": self.cache_dir
         })
 
         # Test that all default values are respected
@@ -69,8 +72,8 @@ class TestConfig(unittest.TestCase):
 
     def test_path_cleaning(self):
         cleaned_config = clean_and_validate_config({
-            "notes_directory": ORIGINAL_CONFIG['notes_directory'] + '/',
-            "cache_directory": ORIGINAL_CONFIG['cache_directory'] + '/'
+            "notes_directory": self.notes_dir + '/',
+            "cache_directory": self.cache_dir + '/'
         })
         assert cleaned_config['notes_directory'][-1] != '/'
         assert cleaned_config['notes_directory'][0] == '/'
@@ -86,7 +89,7 @@ class TestConfig(unittest.TestCase):
         assert 'does not exist' in str(e.value)
         with pytest.raises(ValueError) as e:
             _ = clean_and_validate_config({
-                "notes_directory": ORIGINAL_CONFIG['notes_directory'],
+                "notes_directory": self.notes_dir,
                 "cache_directory": "foo"
             })
         assert 'does not exist' in str(e.value)
@@ -95,8 +98,8 @@ class TestConfig(unittest.TestCase):
         # Test an invalid log level being specified
         with pytest.raises(ValueError) as e:
             _ = clean_and_validate_config({
-                "notes_directory": ORIGINAL_CONFIG['notes_directory'],
-                "cache_directory": ORIGINAL_CONFIG['cache_directory'],
+                "notes_directory": self.notes_dir,
+                "cache_directory": self.cache_dir,
                 "log_level": 'foo'
             })
         assert 'Invalid log level' in str(e.value)
@@ -105,8 +108,8 @@ class TestConfig(unittest.TestCase):
         for level in ['DEBUG', 'INFO', 'WARNING',
                       'ERROR', 'CRITICAL']:
             cleaned_config = clean_and_validate_config({
-                "notes_directory": ORIGINAL_CONFIG['notes_directory'],
-                "cache_directory": ORIGINAL_CONFIG['cache_directory'],
+                "notes_directory": self.notes_dir,
+                "cache_directory": self.cache_dir,
                 "log_level": level
             })
             assert cleaned_config['log_level'] == level
@@ -114,8 +117,8 @@ class TestConfig(unittest.TestCase):
     def test_default_dir_validation(self):
         # Test that a valid default dir is accepted
         cleaned_config = clean_and_validate_config({
-            "notes_directory": ORIGINAL_CONFIG['notes_directory'],
-            "cache_directory": ORIGINAL_CONFIG['cache_directory'],
+            "notes_directory": self.notes_dir,
+            "cache_directory": self.cache_dir,
             "default_directory": "section"
         })
         assert cleaned_config['default_directory'] == 'section'
@@ -123,8 +126,8 @@ class TestConfig(unittest.TestCase):
         # Test that an invalid default dir throws an error
         with pytest.raises(ValueError) as e:
             _ = clean_and_validate_config({
-                "notes_directory": ORIGINAL_CONFIG['notes_directory'],
-                "cache_directory": ORIGINAL_CONFIG['cache_directory'],
+                "notes_directory": self.notes_dir,
+                "cache_directory": self.cache_dir,
                 "default_directory": "foo"
             })
         assert 'does not exist within notes directory' in str(e.value)
@@ -132,8 +135,8 @@ class TestConfig(unittest.TestCase):
     def test_utility_path_validation(self):
         # Test using the name of each executable
         _ = clean_and_validate_config({
-            "notes_directory": ORIGINAL_CONFIG['notes_directory'],
-            "cache_directory": ORIGINAL_CONFIG['cache_directory'],
+            "notes_directory": self.notes_dir,
+            "cache_directory": self.cache_dir,
             "grep_path": "grep",
             "find_path": "find"
         })
@@ -141,8 +144,8 @@ class TestConfig(unittest.TestCase):
         # Test invalid names
         with pytest.raises(ValueError) as e:
             _ = clean_and_validate_config({
-                "notes_directory": ORIGINAL_CONFIG['notes_directory'],
-                "cache_directory": ORIGINAL_CONFIG['cache_directory'],
+                "notes_directory": self.notes_dir,
+                "cache_directory": self.cache_dir,
                 "grep_path": "asdfghjkl",
                 "find_path": "find"
             })
@@ -150,8 +153,8 @@ class TestConfig(unittest.TestCase):
 
         with pytest.raises(ValueError) as e:
             _ = clean_and_validate_config({
-                "notes_directory": ORIGINAL_CONFIG['notes_directory'],
-                "cache_directory": ORIGINAL_CONFIG['cache_directory'],
+                "notes_directory": self.notes_dir,
+                "cache_directory": self.cache_dir,
                 "grep_path": "grep",
                 "find_path": "lkjhgfdsa"
             })
@@ -160,8 +163,8 @@ class TestConfig(unittest.TestCase):
         # Test an invalid full path
         with pytest.raises(ValueError) as e:
             _ = clean_and_validate_config({
-                "notes_directory": ORIGINAL_CONFIG['notes_directory'],
-                "cache_directory": ORIGINAL_CONFIG['cache_directory'],
+                "notes_directory": self.notes_dir,
+                "cache_directory": self.cache_dir,
                 "grep_path": "/path/that/doesnt/exist",
                 "find_path": "find"
             })
@@ -169,8 +172,8 @@ class TestConfig(unittest.TestCase):
 
         with pytest.raises(ValueError) as e:
             _ = clean_and_validate_config({
-                "notes_directory": ORIGINAL_CONFIG['notes_directory'],
-                "cache_directory": ORIGINAL_CONFIG['cache_directory'],
+                "notes_directory": self.notes_dir,
+                "cache_directory": self.cache_dir,
                 "grep_path": "grep",
                 "find_path": "/path/that/doesnt/exist"
             })
@@ -180,8 +183,8 @@ class TestConfig(unittest.TestCase):
 
         # Test Passing Valid config
         cleaned_config = clean_and_validate_config({
-            "notes_directory": ORIGINAL_CONFIG['notes_directory'],
-            "cache_directory": ORIGINAL_CONFIG['cache_directory'],
+            "notes_directory": self.notes_dir,
+            "cache_directory": self.cache_dir,
             "frontend": DEFAULT_FRONTEND_CONFIG
         })
         assert cleaned_config['frontend'] == DEFAULT_FRONTEND_CONFIG
@@ -190,8 +193,8 @@ class TestConfig(unittest.TestCase):
         # added with defaults
         for field in DEFAULT_FRONTEND_CONFIG.keys():
             cleaned_config = clean_and_validate_config({
-                "notes_directory": ORIGINAL_CONFIG['notes_directory'],
-                "cache_directory": ORIGINAL_CONFIG['cache_directory'],
+                "notes_directory": self.notes_dir,
+                "cache_directory": self.cache_dir,
                 "frontend": {
                     field: DEFAULT_FRONTEND_CONFIG[field]
                 }
@@ -205,8 +208,8 @@ class TestConfig(unittest.TestCase):
 
         # Test an integer view history limit
         _ = clean_and_validate_config({
-            "notes_directory": ORIGINAL_CONFIG['notes_directory'],
-            "cache_directory": ORIGINAL_CONFIG['cache_directory'],
+            "notes_directory": self.notes_dir,
+            "cache_directory": self.cache_dir,
             "frontend": {
                 "view_history_limit": 5
             }
@@ -214,8 +217,8 @@ class TestConfig(unittest.TestCase):
 
         # Test a string view history limit
         _ = clean_and_validate_config({
-            "notes_directory": ORIGINAL_CONFIG['notes_directory'],
-            "cache_directory": ORIGINAL_CONFIG['cache_directory'],
+            "notes_directory": self.notes_dir,
+            "cache_directory": self.cache_dir,
             "frontend": {
                 "view_history_limit": '37'
             }
@@ -224,8 +227,8 @@ class TestConfig(unittest.TestCase):
         # Test an invalid view history limit
         with pytest.raises(ValueError) as e:
             _ = clean_and_validate_config({
-                "notes_directory": ORIGINAL_CONFIG['notes_directory'],
-                "cache_directory": ORIGINAL_CONFIG['cache_directory'],
+                "notes_directory": self.notes_dir,
+                "cache_directory": self.cache_dir,
                 "frontend": {
                     "view_history_limit": "foo"
                 }
@@ -235,8 +238,8 @@ class TestConfig(unittest.TestCase):
         # Test an invalid map tileserver URL
         with pytest.raises(ValueError) as e:
             _ = clean_and_validate_config({
-                "notes_directory": ORIGINAL_CONFIG['notes_directory'],
-                "cache_directory": ORIGINAL_CONFIG['cache_directory'],
+                "notes_directory": self.notes_dir,
+                "cache_directory": self.cache_dir,
                 "frontend": {
                     "map_tileserver_url": "foo"
                 }
@@ -245,7 +248,7 @@ class TestConfig(unittest.TestCase):
 
     def test_valid_config_updates(self):
 
-        config = clean_and_validate_config(ORIGINAL_CONFIG)
+        config = clean_and_validate_config(self.config)
         updates = {
             'log_level': 'WARNING',
             'frontend': {
@@ -259,7 +262,7 @@ class TestConfig(unittest.TestCase):
 
     def test_invalid_config_updates(self):
 
-        config = clean_and_validate_config(ORIGINAL_CONFIG)
+        config = clean_and_validate_config(self.config)
 
         updates = {
             'log_level': 'INVALID'

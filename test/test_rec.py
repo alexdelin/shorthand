@@ -7,10 +7,9 @@ import pytest
 
 from shorthand.elements.record_sets import _get_record_set, _get_record_sets
 from shorthand.utils.rec import load_from_string
-from utils import setup_environment, validate_setup, setup_logging
+from utils import setup_environment, validate_setup
 
 
-CONFIG = setup_environment()
 log = logging.getLogger(__name__)
 
 
@@ -205,7 +204,11 @@ class TestAPI(unittest.TestCase):
     @classmethod
     def setup_class(cls):
         # ensure that we have a clean environment before running any tests
-        _ = setup_environment()
+        cls.config = setup_environment()
+        cls.notes_dir = cls.config['notes_directory']
+        cls.cache_dir = cls.config['cache_directory']
+        cls.grep_path = cls.config['grep_path']
+        cls.find_path = cls.config['find_path']
 
     def setup_method(self, method):
         '''Validate that the environment has been set up correctly
@@ -215,9 +218,9 @@ class TestAPI(unittest.TestCase):
     def test_list_record_sets(self):
         '''Test listing all record sets within notes
         '''
-        sets_found = _get_record_sets(CONFIG['notes_directory'],
+        sets_found = _get_record_sets(self.notes_dir,
                                       directory_filter=None,
-                                      grep_path=CONFIG['grep_path'])
+                                      grep_path=self.grep_path)
         all_sets = [{'display_path': 'rec.note',
                      'file_path': '/rec.note',
                      'line_number': '4'}]
@@ -227,7 +230,7 @@ class TestAPI(unittest.TestCase):
     def test_get_record_set(self):
         '''Test getting the contents of an individual record set
         '''
-        loaded_record_set = _get_record_set(CONFIG['notes_directory'],
+        loaded_record_set = _get_record_set(self.notes_dir,
                                             file_path='/rec.note',
                                             line_number=4,
                                             parse=True,

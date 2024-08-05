@@ -7,7 +7,6 @@ from utils import setup_environment, validate_setup, setup_logging
 from results_unstamped import CALENDAR
 
 
-CONFIG = setup_environment()
 log = logging.getLogger(__name__)
 
 
@@ -17,7 +16,11 @@ class TestCalendar(unittest.TestCase):
     @classmethod
     def setup_class(cls):
         # ensure that we have a clean environment before running any tests
-        _ = setup_environment()
+        cls.config = setup_environment()
+        cls.notes_dir = cls.config['notes_directory']
+        cls.cache_dir = cls.config['cache_directory']
+        cls.grep_path = cls.config['grep_path']
+        cls.find_path = cls.config['find_path']
 
     def setup_method(self, method):
         '''Validate that the environment has been set up correctly
@@ -26,7 +29,7 @@ class TestCalendar(unittest.TestCase):
 
     def test_get_calendar(self):
         calendar = _get_calendar(
-            CONFIG['notes_directory'],
+            self.notes_dir,
             directory_filter=None,
-            grep_path=CONFIG['grep_path'])
+            grep_path=self.grep_path)
         assert calendar == CALENDAR

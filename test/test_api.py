@@ -9,7 +9,6 @@ from utils import setup_environment, validate_setup, TEST_CONFIG_PATH, \
                   LOG_PATH, setup_logging
 
 
-CONFIG = setup_environment()
 log = logging.getLogger(__name__)
 
 
@@ -19,7 +18,12 @@ class TestAPIBasic(unittest.TestCase):
     @classmethod
     def setup_class(cls):
         # ensure that we have a clean environment before running any tests
-        _ = setup_environment()
+        cls.config = setup_environment()
+        cls.notes_dir = cls.config['notes_directory']
+        cls.cache_dir = cls.config['cache_directory']
+        cls.grep_path = cls.config['grep_path']
+        cls.find_path = cls.config['find_path']
+
         app = create_app(TEST_CONFIG_PATH)
         cls.api_client = app.test_client()
 
@@ -33,7 +37,7 @@ class TestAPIBasic(unittest.TestCase):
         loaded_response = json.loads(response.data)
         assert isinstance(loaded_response, dict)
         assert 'notes_directory' in loaded_response.keys()
-        assert loaded_response == clean_and_validate_config(CONFIG)
+        assert loaded_response == clean_and_validate_config(self.config)
 
     def test_logging(self):
         response = self.api_client.get('/api/v1/config')

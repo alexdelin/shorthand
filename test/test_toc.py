@@ -3,11 +3,10 @@ import unittest
 
 from shorthand.toc import _get_toc
 
-from utils import setup_environment, validate_setup, setup_logging
+from utils import setup_environment, validate_setup
 from results_unstamped import TOC
 
 
-CONFIG = setup_environment()
 log = logging.getLogger(__name__)
 
 
@@ -34,7 +33,11 @@ class TestToc(unittest.TestCase):
     @classmethod
     def setup_class(cls):
         # ensure that we have a clean environment before running any tests
-        _ = setup_environment()
+        cls.config = setup_environment()
+        cls.notes_dir = cls.config['notes_directory']
+        cls.cache_dir = cls.config['cache_directory']
+        cls.grep_path = cls.config['grep_path']
+        cls.find_path = cls.config['find_path']
 
     def setup_method(self, method):
         '''Validate that the environment has been set up correctly
@@ -42,6 +45,6 @@ class TestToc(unittest.TestCase):
         validate_setup()
 
     def test_get_toc(self):
-        toc = _get_toc(CONFIG['notes_directory'])
+        toc = _get_toc(self.notes_dir)
 
         compare_dicts(toc, TOC)

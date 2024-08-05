@@ -4,7 +4,7 @@ import logging
 import os
 import unittest
 
-from shorthand.edit_history import HISTORY_PATH, ensure_daily_starting_version, _list_versions_for_note, _store_history_for_note_edit, _list_diffs_for_note
+from shorthand.edit_history import HISTORY_PATH, _get_note_diff, ensure_daily_starting_version, _list_versions_for_note, _store_history_for_note_edit, _list_diffs_for_note
 from utils import setup_environment, teardown_environment, validate_setup
 
 
@@ -19,6 +19,8 @@ class TestEditHistory(unittest.TestCase):
         # ensure that we have a clean environment before running any tests
         cls.config = setup_environment()
         cls.notes_dir = cls.config['notes_directory']
+        cls.cache_dir = cls.config['cache_directory']
+        cls.grep_path = cls.config['grep_path']
         cls.find_path = cls.config['find_path']
 
     @classmethod
@@ -61,8 +63,14 @@ class TestEditHistory(unittest.TestCase):
             find_path=self.find_path)
         assert len(note_versions) == 1
 
-        note_diffs = _list_diffs_for_note(
+        note_diff_timestamps = _list_diffs_for_note(
             notes_directory=self.notes_dir,
             note_path='/todos.note',
             find_path=self.find_path)
-        assert len(note_diffs) == 1
+        assert len(note_diff_timestamps) == 1
+
+        note_diff = _get_note_diff(
+            notes_directory=self.notes_dir,
+            note_path='/todos.note',
+            timestamp=note_diff_timestamps[0])
+        assert note_diff

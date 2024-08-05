@@ -12,30 +12,30 @@ from utils import setup_environment, teardown_environment, validate_setup, \
 from model import ShorthandModel
 
 
-CONFIG = setup_environment()
 log = logging.getLogger(__name__)
 MODEL = ShorthandModel()
 
 
-# Helper to make the tests simpler
-def get_todo_results(todo_status='incomplete', directory_filter=None,
-                     query_string=None, sort_by=None, suppress_future=False,
-                     stamp=False):
-    return _get_todos(notes_directory=CONFIG['notes_directory'],
-                      todo_status=todo_status,
-                      directory_filter=directory_filter,
-                      query_string=query_string, sort_by=sort_by,
-                      suppress_future=suppress_future,
-                      grep_path=CONFIG['grep_path'])
+class TodoTestSuite(unittest.TestCase):
 
-
-class TestUnstampedTodos(unittest.TestCase):
-    """Test basic search functionality of the library"""
+    def get_todo_results(self, todo_status='incomplete', directory_filter=None,
+                         query_string=None, sort_by=None, suppress_future=False,
+                         stamp=False):
+        return _get_todos(notes_directory=self.notes_dir,
+                          todo_status=todo_status,
+                          directory_filter=directory_filter,
+                          query_string=query_string, sort_by=sort_by,
+                          suppress_future=suppress_future,
+                          grep_path=self.grep_path)
 
     @classmethod
     def setup_class(cls):
         # ensure that we have a clean environment before running any tests
-        _ = setup_environment()
+        cls.config = setup_environment()
+        cls.notes_dir = cls.config['notes_directory']
+        cls.cache_dir = cls.config['cache_directory']
+        cls.grep_path = cls.config['grep_path']
+        cls.find_path = cls.config['find_path']
 
     @classmethod
     def teardown_class(cls):
@@ -49,13 +49,17 @@ class TestUnstampedTodos(unittest.TestCase):
         '''
         validate_setup()
 
+
+class TestUnstampedTodos(TodoTestSuite):
+    """Test basic search functionality of the library"""
+
     def test_unstamped_incomplete_todos_basic(self):
 
         # Test Getting all incomplete todos
         args = {
             'todo_status': 'incomplete'
         }
-        library_results = get_todo_results(**args)
+        library_results = self.get_todo_results(**args)
         model_results = MODEL.search_todos(**args)
         assert set(library_results[0].keys()) == set(model_results[0].keys())
         assert len(library_results) == len(model_results)
@@ -66,7 +70,7 @@ class TestUnstampedTodos(unittest.TestCase):
             'todo_status': 'incomplete',
             'directory_filter': 'section'
         }
-        self.assertCountEqual(get_todo_results(**args),
+        self.assertCountEqual(self.get_todo_results(**args),
                               MODEL.search_todos(**args))
 
         # Test Query String
@@ -76,7 +80,7 @@ class TestUnstampedTodos(unittest.TestCase):
                 'todo_status': 'incomplete',
                 'query_string': query_test
             }
-            self.assertCountEqual(get_todo_results(**args),
+            self.assertCountEqual(self.get_todo_results(**args),
                                   MODEL.search_todos(**args))
 
         # Test Sort Order
@@ -84,7 +88,7 @@ class TestUnstampedTodos(unittest.TestCase):
             'todo_status': 'incomplete',
             'sort_by': 'start_date'
         }
-        self.assertCountEqual(get_todo_results(**args),
+        self.assertCountEqual(self.get_todo_results(**args),
                               MODEL.search_todos(**args))
 
         # Test Suppress Future
@@ -92,72 +96,53 @@ class TestUnstampedTodos(unittest.TestCase):
             'todo_status': 'incomplete',
             'suppress_future': True
         }
-        self.assertCountEqual(get_todo_results(**args),
+        self.assertCountEqual(self.get_todo_results(**args),
                               MODEL.search_todos(**args))
 
     def test_unstamped_skipped_todos_basic(self):
         args = {
             'todo_status': 'skipped'
         }
-        self.assertCountEqual(get_todo_results(**args),
+        self.assertCountEqual(self.get_todo_results(**args),
                               MODEL.search_todos(**args))
 
     def test_unstamped_complete_todos_basic(self):
         args = {
             'todo_status': 'complete'
         }
-        self.assertCountEqual(get_todo_results(**args),
+        self.assertCountEqual(self.get_todo_results(**args),
                               MODEL.search_todos(**args))
 
 
-class TestMarkTodos(unittest.TestCase):
+class TestMarkTodos(TodoTestSuite):
     """Test Marking the status of a todo
     """
 
-    @classmethod
-    def setup_class(cls):
-        '''ensure that we have a clean environment
-        before running any tests
-        '''
-        _ = setup_environment()
-
-    @classmethod
-    def teardown_class(cls):
-        '''Ensure that we don't leave stamped
-        notes around after the tests are run
-        '''
-        teardown_environment()
-
-    def setup_method(self, method):
-        '''Validate that the environment has been set up correctly
-        '''
-        validate_setup()
-
     def test_mark_todo(self):
         # Mark a specific todo as completed
-        _mark_todo(notes_directory=CONFIG['notes_directory'],
+        _mark_todo(notes_directory=self.notes_dir,
                    note_path='/todos.note', line_number=6, status='complete')
 
         # Get all completed todos
-        results = get_todo_results(todo_status='complete')
+        results = self.get_todo_results(todo_status='complete')
 
         # Check that the todo we modified now appears completed
         assert any(['Something to do' in todo['todo_text']
                     for todo in results])
 
         # Mark a specific todo as skipped
-        _mark_todo(notes_directory=CONFIG['notes_directory'],
+        _mark_todo(notes_directory=self.notes_dir,
                    note_path='/todos.note', line_number=6, status='skipped')
 
         # Get all skipped todos
-        results = get_todo_results(todo_status='skipped')
+        results = self.get_todo_results(todo_status='skipped')
 
         # Check that the todo we modified now appears skipped
         assert any(['Something to do' in todo['todo_text']
                     for todo in results])
 
 
-class TestStampedTodos(unittest.TestCase):
+class TestStampedTodos(TodoTestSuite):
     """Repeat all tests for unstamped todos to ensure that
        nothing unexpected has changed.
     """
@@ -167,23 +152,15 @@ class TestStampedTodos(unittest.TestCase):
         '''ensure that we have a clean environment
         before running any tests
         '''
-        _ = setup_environment()
-        _ = _stamp_notes(CONFIG['notes_directory'],
+        cls.config = setup_environment()
+        cls.notes_dir = cls.config['notes_directory']
+        cls.cache_dir = cls.config['cache_directory']
+        cls.grep_path = cls.config['grep_path']
+        cls.find_path = cls.config['find_path']
+        _ = _stamp_notes(cls.notes_dir,
                          stamp_todos=True, stamp_today=True,
                          stamp_questions=False, stamp_answers=False,
-                         grep_path=CONFIG['grep_path'])
-
-    @classmethod
-    def teardown_class(cls):
-        '''Ensure that we don't leave stamped
-        notes around after the tests are run
-        '''
-        teardown_environment()
-
-    def setup_method(self, method):
-        '''Validate that the environment has been set up correctly
-        '''
-        validate_setup()
+                         grep_path=cls.grep_path)
 
     def test_stamped_incomplete_todos_basic(self):
         # Test Getting all incomplete todos
@@ -191,7 +168,7 @@ class TestStampedTodos(unittest.TestCase):
             'todo_status': 'incomplete',
             'stamp': True
         }
-        self.assertCountEqual(get_todo_results(**args),
+        self.assertCountEqual(self.get_todo_results(**args),
                               MODEL.search_todos(**args))
 
         # Test Directory filter
@@ -200,7 +177,7 @@ class TestStampedTodos(unittest.TestCase):
             'directory_filter': 'section',
             'stamp': True
         }
-        self.assertCountEqual(get_todo_results(**args),
+        self.assertCountEqual(self.get_todo_results(**args),
                               MODEL.search_todos(**args))
 
         # Test Query String
@@ -211,7 +188,7 @@ class TestStampedTodos(unittest.TestCase):
                 'query_string': query_test,
                 'stamp': True
             }
-            self.assertCountEqual(get_todo_results(**args),
+            self.assertCountEqual(self.get_todo_results(**args),
                                   MODEL.search_todos(**args))
 
         # Test Sort Order
@@ -220,7 +197,7 @@ class TestStampedTodos(unittest.TestCase):
             'sort_by': 'start_date',
             'stamp': True
         }
-        self.assertCountEqual(get_todo_results(**args),
+        self.assertCountEqual(self.get_todo_results(**args),
                               MODEL.search_todos(**args))
 
         # Test Suppress Future
@@ -229,7 +206,7 @@ class TestStampedTodos(unittest.TestCase):
             'suppress_future': True,
             'stamp': True
         }
-        self.assertCountEqual(get_todo_results(**args),
+        self.assertCountEqual(self.get_todo_results(**args),
                               MODEL.search_todos(**args))
 
     def test_stamped_skipped_todos_basic(self):
@@ -237,7 +214,7 @@ class TestStampedTodos(unittest.TestCase):
             'todo_status': 'skipped',
             'stamp': True
         }
-        self.assertCountEqual(get_todo_results(**args),
+        self.assertCountEqual(self.get_todo_results(**args),
                               MODEL.search_todos(**args))
 
     def test_stamped_complete_todos_basic(self):
@@ -245,31 +222,23 @@ class TestStampedTodos(unittest.TestCase):
             'todo_status': 'complete',
             'stamp': True
         }
-        self.assertCountEqual(get_todo_results(**args),
+        self.assertCountEqual(self.get_todo_results(**args),
                               MODEL.search_todos(**args))
 
 
-class TestTodosUnstampedFlask(unittest.TestCase):
+class TestTodosUnstampedFlask(TodoTestSuite):
     """Test getting unstamped todos via the HTTP API"""
 
     @classmethod
     def setup_class(cls):
         # ensure that we have a clean environment before running any tests
-        _ = setup_environment()
+        cls.config = setup_environment()
+        cls.notes_dir = cls.config['notes_directory']
+        cls.cache_dir = cls.config['cache_directory']
+        cls.grep_path = cls.config['grep_path']
+        cls.find_path = cls.config['find_path']
         app = create_app(TEST_CONFIG_PATH)
         cls.api_client = app.test_client()
-
-    @classmethod
-    def teardown_class(cls):
-        '''Ensure that we don't leave stamped
-        notes around after the tests are run
-        '''
-        teardown_environment()
-
-    def setup_method(self, method):
-        '''Validate that the environment has been set up correctly
-        '''
-        validate_setup()
 
     def get_api_results(self, todo_status='incomplete', directory_filter=None,
                         query_string=None, case_sensitive=False, sort_by=None,
@@ -392,25 +361,17 @@ class TestTodosStampedFlask(unittest.TestCase):
     @classmethod
     def setup_class(cls):
         # ensure that we have a clean environment before running any tests
-        _ = setup_environment()
-        _ = _stamp_notes(CONFIG['notes_directory'],
+        cls.config = setup_environment()
+        cls.notes_dir = cls.config['notes_directory']
+        cls.cache_dir = cls.config['cache_directory']
+        cls.grep_path = cls.config['grep_path']
+        cls.find_path = cls.config['find_path']
+        _ = _stamp_notes(cls.notes_dir,
                          stamp_todos=True, stamp_today=True,
                          stamp_questions=False, stamp_answers=False,
-                         grep_path=CONFIG['grep_path'])
+                         grep_path=cls.grep_path)
         app = create_app(TEST_CONFIG_PATH)
         cls.api_client = app.test_client()
-
-    @classmethod
-    def teardown_class(cls):
-        '''Ensure that we don't leave stamped
-        notes around after the tests are run
-        '''
-        teardown_environment()
-
-    def setup_method(self, method):
-        '''Validate that the environment has been set up correctly
-        '''
-        validate_setup()
 
     def get_api_results(self, todo_status='incomplete', directory_filter=None,
                         query_string=None, case_sensitive=False, sort_by=None,
@@ -531,21 +492,13 @@ class TestMarkTodosFlask(unittest.TestCase):
         '''ensure that we have a clean environment
         before running any tests
         '''
-        _ = setup_environment()
+        cls.config = setup_environment()
+        cls.notes_dir = cls.config['notes_directory']
+        cls.cache_dir = cls.config['cache_directory']
+        cls.grep_path = cls.config['grep_path']
+        cls.find_path = cls.config['find_path']
         app = create_app(TEST_CONFIG_PATH)
         cls.api_client = app.test_client()
-
-    @classmethod
-    def teardown_class(cls):
-        '''Ensure that we don't leave stamped
-        notes around after the tests are run
-        '''
-        teardown_environment()
-
-    def setup_method(self, method):
-        '''Validate that the environment has been set up correctly
-        '''
-        validate_setup()
 
     def test_mark_todo(self):
         # Mark a specific todo as completed

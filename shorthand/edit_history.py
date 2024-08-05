@@ -204,4 +204,15 @@ def _list_diffs_for_note(notes_directory: DirectoryPath,
 def _get_note_diff(notes_directory: DirectoryPath,
                    note_path: NotePath,
                    timestamp: NoteDiffTimestamp) -> NoteDiff:
-    return ''
+    parsed_diff_time = datetime.fromisoformat(timestamp)
+
+    diff_path = f'{notes_directory}/' + \
+            f'{HISTORY_PATH}' + \
+            f'{note_path}/diffs/' + \
+            f'{parsed_diff_time.year}/' + \
+            f'{parsed_diff_time.month}/' + \
+            f'{parsed_diff_time.day}/' + \
+            f'{timestamp}.diff'
+
+    with open(diff_path, 'r') as f:
+        return f.read()
