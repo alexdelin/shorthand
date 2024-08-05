@@ -76,8 +76,7 @@ def send_image():
 @shorthand_ui_blueprint.route('/frontend-api/get-open-files', methods=['GET'])
 def send_get_open_files():
     SHORTHAND_CONFIG = _get_notes_config(current_app.config['config_path'])
-    open_files = get_open_files(SHORTHAND_CONFIG['cache_directory'],
-                                SHORTHAND_CONFIG['notes_directory'])
+    open_files = get_open_files(SHORTHAND_CONFIG['notes_directory'])
     return json.dumps(open_files)
 
 
@@ -85,19 +84,17 @@ def send_get_open_files():
 def call_open_file():
     SHORTHAND_CONFIG = _get_notes_config(current_app.config['config_path'])
     path = get_request_argument(request.args, name='path')
-    return open_file(SHORTHAND_CONFIG['cache_directory'],
-                     SHORTHAND_CONFIG['notes_directory'],
+    return open_file(SHORTHAND_CONFIG['notes_directory'],
                      path)
 
 @shorthand_ui_blueprint.route('/frontend-api/close-file', methods=['POST'])
 def call_close_file():
     SHORTHAND_CONFIG = _get_notes_config(current_app.config['config_path'])
     path = get_request_argument(request.args, name='path')
-    return close_file(SHORTHAND_CONFIG['cache_directory'],
-                      SHORTHAND_CONFIG['notes_directory'],
+    return close_file(SHORTHAND_CONFIG['notes_directory'],
                       path)
 
 @shorthand_ui_blueprint.route('/frontend-api/clear-open-files', methods=['POST'])
 def call_clear_open_files():
     SHORTHAND_CONFIG = _get_notes_config(current_app.config['config_path'])
-    return clear_open_files(SHORTHAND_CONFIG['cache_directory'])
+    return clear_open_files(SHORTHAND_CONFIG['notes_directory'])

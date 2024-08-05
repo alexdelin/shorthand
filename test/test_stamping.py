@@ -25,7 +25,6 @@ class TestStamping(unittest.TestCase):
         '''
         cls.config = setup_environment()
         cls.notes_dir = cls.config['notes_directory']
-        cls.cache_dir = cls.config['cache_directory']
         cls.grep_path = cls.config['grep_path']
         cls.find_path = cls.config['find_path']
 

@@ -1,3 +1,4 @@
+import os
 from subprocess import Popen, PIPE
 from collections import OrderedDict
 import json
@@ -8,6 +9,7 @@ from typing import List
 from nltk import bigrams, trigrams
 from nltk.tokenize import sent_tokenize, WhitespaceTokenizer, \
         LineTokenizer
+from shorthand.types import DirectoryPath
 
 
 FORBIDDEN_CHARS = [
@@ -20,11 +22,13 @@ FORBIDDEN_CHARS = [
 log = logging.getLogger(__name__)
 
 
-def _get_typeahead_suggestions(ngram_db_dir, query_string, limit=10) -> List[str]:
+def _get_typeahead_suggestions(notes_directory: DirectoryPath, query_string, limit=10) -> List[str]:
     '''Get typeahead suggestions for the current active query.
     This can be a large query that we only want to provide
     suggestions for extending the last word or term of
     '''
+
+    ngram_db_dir = f'{notes_directory}/.shorthand/typeahead'
 
     num_quotes = query_string.count('"')
     if num_quotes % 2 != 0:
@@ -92,7 +96,12 @@ def search_ngram_db(database_file, search_string, limit):
     return matching_terms
 
 
-def _update_ngram_database(notes_directory, ngram_db_dir):
+def _update_ngram_database(notes_directory: DirectoryPath) -> None:
+
+    ngram_db_dir = f'{notes_directory}/.shorthand/typeahead'
+
+    if not os.path.exists(ngram_db_dir):
+        os.makedirs(ngram_db_dir)
 
     line_tokenizer = LineTokenizer(blanklines='discard')
     word_tokenizer = WhitespaceTokenizer()

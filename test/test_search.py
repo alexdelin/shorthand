@@ -31,7 +31,6 @@ class TestSearch(unittest.TestCase):
         # ensure that we have a clean environment before running any tests
         cls.config = setup_environment()
         cls.notes_dir = cls.config['notes_directory']
-        cls.cache_dir = cls.config['cache_directory']
         cls.grep_path = cls.config['grep_path']
         cls.find_path = cls.config['find_path']
 
@@ -112,7 +111,6 @@ class TestFileFinder(unittest.TestCase):
         return _search_filenames(
                     notes_directory=self.notes_dir,
                     prefer_recent_files=prefer_recent,
-                    cache_directory=self.cache_dir,
                     query_string=query_string, case_sensitive=case_sensitive,
                     grep_path=self.grep_path)
 
@@ -121,7 +119,6 @@ class TestFileFinder(unittest.TestCase):
         # ensure that we have a clean environment before running any tests
         cls.config = setup_environment()
         cls.notes_dir = cls.config['notes_directory']
-        cls.cache_dir = cls.config['cache_directory']
         cls.grep_path = cls.config['grep_path']
         cls.find_path = cls.config['find_path']
 
@@ -190,7 +187,7 @@ class TestFileFinder(unittest.TestCase):
         '''
 
         # Test that the history file starts off not existing
-        history_file = self.cache_dir + '/recent_files.txt'
+        history_file = self.notes_dir + '/.shorthand/state/recent_files.txt'
         assert not os.path.exists(history_file)
 
         # Verify that most recent views get bumped to the top
@@ -200,8 +197,7 @@ class TestFileFinder(unittest.TestCase):
                                                            query_string='note',
                                                            case_sensitive=False)
             last_file = all_files_found[-1]
-            _record_file_view(self.cache_dir,
-                              self.notes_dir,
+            _record_file_view(self.notes_dir,
                               last_file, history_limit=100)
 
             # Verify that the view was recorded in the history file
@@ -221,18 +217,16 @@ class TestFileFinder(unittest.TestCase):
 class TestTypeahead(unittest.TestCase):
 
     def get_typeahead_results(self, string):
-        return _get_typeahead_suggestions(self.cache_dir, string)
+        return _get_typeahead_suggestions(self.notes_dir, string)
 
     @classmethod
     def setup_class(cls):
         # ensure that we have a clean environment before running any tests
         cls.config = setup_environment()
         cls.notes_dir = cls.config['notes_directory']
-        cls.cache_dir = cls.config['cache_directory']
         cls.grep_path = cls.config['grep_path']
         cls.find_path = cls.config['find_path']
-        _ = _update_ngram_database(cls.notes_dir,
-                                   cls.cache_dir)
+        _ = _update_ngram_database(cls.notes_dir)
 
     def setup_method(self, method):
         '''Validate that the environment has been set up correctly

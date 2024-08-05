@@ -26,7 +26,6 @@ class TestQuestions(unittest.TestCase):
         # ensure that we have a clean environment before running any tests
         cls.config = setup_environment()
         cls.notes_dir = cls.config['notes_directory']
-        cls.cache_dir = cls.config['cache_directory']
         cls.grep_path = cls.config['grep_path']
         cls.find_path = cls.config['find_path']
 
@@ -103,7 +102,6 @@ class TestStampedQuestions(unittest.TestCase):
         '''
         cls.config = setup_environment()
         cls.notes_dir = cls.config['notes_directory']
-        cls.cache_dir = cls.config['cache_directory']
         cls.grep_path = cls.config['grep_path']
         cls.find_path = cls.config['find_path']
         _ = _stamp_notes(cls.notes_dir,

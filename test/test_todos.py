@@ -33,7 +33,6 @@ class TodoTestSuite(unittest.TestCase):
         # ensure that we have a clean environment before running any tests
         cls.config = setup_environment()
         cls.notes_dir = cls.config['notes_directory']
-        cls.cache_dir = cls.config['cache_directory']
         cls.grep_path = cls.config['grep_path']
         cls.find_path = cls.config['find_path']
 
@@ -154,7 +153,6 @@ class TestStampedTodos(TodoTestSuite):
         '''
         cls.config = setup_environment()
         cls.notes_dir = cls.config['notes_directory']
-        cls.cache_dir = cls.config['cache_directory']
         cls.grep_path = cls.config['grep_path']
         cls.find_path = cls.config['find_path']
         _ = _stamp_notes(cls.notes_dir,
@@ -234,7 +232,6 @@ class TestTodosUnstampedFlask(TodoTestSuite):
         # ensure that we have a clean environment before running any tests
         cls.config = setup_environment()
         cls.notes_dir = cls.config['notes_directory']
-        cls.cache_dir = cls.config['cache_directory']
         cls.grep_path = cls.config['grep_path']
         cls.find_path = cls.config['find_path']
         app = create_app(TEST_CONFIG_PATH)
@@ -363,7 +360,6 @@ class TestTodosStampedFlask(unittest.TestCase):
         # ensure that we have a clean environment before running any tests
         cls.config = setup_environment()
         cls.notes_dir = cls.config['notes_directory']
-        cls.cache_dir = cls.config['cache_directory']
         cls.grep_path = cls.config['grep_path']
         cls.find_path = cls.config['find_path']
         _ = _stamp_notes(cls.notes_dir,
@@ -494,7 +490,6 @@ class TestMarkTodosFlask(unittest.TestCase):
         '''
         cls.config = setup_environment()
         cls.notes_dir = cls.config['notes_directory']
-        cls.cache_dir = cls.config['cache_directory']
         cls.grep_path = cls.config['grep_path']
         cls.find_path = cls.config['find_path']
         app = create_app(TEST_CONFIG_PATH)

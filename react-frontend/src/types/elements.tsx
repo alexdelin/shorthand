@@ -24,7 +24,6 @@ export type FrontendConfig = {
 
 export type Config = {
   notes_directory: string,
-  cache_directory: string,
   default_directory: string,
   log_file_path: string,
   log_level: string,

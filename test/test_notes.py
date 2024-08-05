@@ -10,7 +10,7 @@ from shorthand.notes import _get_note, _update_note, \
 from shorthand.web.app import create_app
 
 from utils import setup_environment, teardown_environment, validate_setup, \
-                  TEST_CONFIG_PATH, setup_logging
+                  TEST_CONFIG_PATH
 from model import ShorthandModel
 from results_unstamped import ALL_LINKS
 
@@ -35,7 +35,6 @@ class TestNotesOperations(unittest.TestCase):
         '''
         self.config = setup_environment()
         self.notes_dir = self.config['notes_directory']
-        self.cache_dir = self.config['cache_directory']
         self.grep_path = self.config['grep_path']
         self.find_path = self.config['find_path']
         validate_setup()
@@ -121,7 +120,6 @@ class TestLinkOperations(unittest.TestCase):
         # ensure that we have a clean environment before running any tests
         cls.config = setup_environment()
         cls.notes_dir = cls.config['notes_directory']
-        cls.cache_dir = cls.config['cache_directory']
         cls.grep_path = cls.config['grep_path']
         cls.find_path = cls.config['find_path']
 
@@ -260,7 +258,6 @@ class TestNotesOperationsFlask(unittest.TestCase):
         # ensure that we have a clean environment before running any tests
         cls.config = setup_environment()
         cls.notes_dir = cls.config['notes_directory']
-        cls.cache_dir = cls.config['cache_directory']
         cls.grep_path = cls.config['grep_path']
         cls.find_path = cls.config['find_path']
         app = create_app(TEST_CONFIG_PATH)

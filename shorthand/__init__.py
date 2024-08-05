@@ -23,7 +23,7 @@ from shorthand.utils.config import _get_notes_config, _write_config, \
                                    _modify_config
 from shorthand.utils.paths import _get_subdirs
 from shorthand.utils.logging import get_handler, log_level_from_string
-from shorthand.utils.buffers import _new_buffer, _get_buffers, \
+from shorthand.utils.buffers import _new_buffer, _list_buffers, \
                                     _get_buffer_content, \
                                     _update_buffer_content, \
                                     _delete_buffer, _write_buffer
@@ -178,14 +178,12 @@ class ShorthandServer(object):
         return _search_filenames(
                 notes_directory=self.config['notes_directory'],
                 prefer_recent_files=prefer_recent,
-                cache_directory=self.config['cache_directory'],
                 query_string=query_string, case_sensitive=case_sensitive,
                 grep_path=self.config['grep_path'],
                 find_path=self.config['find_path'])
 
     def record_file_view(self, note_path):
         return _record_file_view(
-            cache_directory=self.config['cache_directory'],
             notes_directory=self.config['notes_directory'],
             note_path=note_path,
             history_limit=self.config['frontend']['view_history_limit'])
@@ -212,12 +210,11 @@ class ShorthandServer(object):
     # Typeahead
     def update_ngram_database(self):
         return _update_ngram_database(
-            notes_directory=self.config['notes_directory'],
-            ngram_db_dir=self.config['cache_directory'])
+            notes_directory=self.config['notes_directory'])
 
     def get_typeahead_suggestions(self, query_string, limit=10):
         return _get_typeahead_suggestions(
-            ngram_db_dir=self.config['cache_directory'],
+            notes_directory=self.config['notes_directory'],
             query_string=query_string, limit=limit)
 
     # Subdirs
@@ -290,29 +287,28 @@ class ShorthandServer(object):
     # --- Buffers ---
     # ---------------
     def new_buffer(self):
-        return _new_buffer(cache_directory=self.config['cache_directory'])
+        return _new_buffer(notes_directory=self.config['notes_directory'])
 
-    def get_buffers(self):
-        return _get_buffers(cache_directory=self.config['cache_directory'])
+    def list_buffers(self):
+        return _list_buffers(notes_directory=self.config['notes_directory'])
 
     def get_buffer_content(self, buffer_id: str):
         return _get_buffer_content(
-            cache_directory=self.config['cache_directory'],
+            notes_directory=self.config['notes_directory'],
             buffer_id=buffer_id)
 
     def update_buffer_content(self, buffer_id: str, content: str):
         return _update_buffer_content(
-            cache_directory=self.config['cache_directory'],
+            notes_directory=self.config['notes_directory'],
             buffer_id=buffer_id, content=content)
 
     def delete_buffer(self, buffer_id: str):
-        return _delete_buffer(cache_directory=self.config['cache_directory'],
+        return _delete_buffer(notes_directory=self.config['notes_directory'],
                               buffer_id=buffer_id)
 
     def write_buffer(self, notes_directory: str, buffer_id: str,
                      note_path: str):
-        return _write_buffer(cache_directory=self.config['cache_directory'],
-                             notes_directory=self.config['notes_directory'],
+        return _write_buffer(notes_directory=self.config['notes_directory'],
                              buffer_id=buffer_id, note_path=note_path)
 
     # ------------------------

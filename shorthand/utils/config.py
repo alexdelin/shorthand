@@ -2,7 +2,7 @@ import os
 import copy
 import json
 import logging
-from typing import Optional, TypedDict, NewType
+from typing import Optional, Required, TypedDict
 
 from shorthand.types import ExecutablePath, FilePath, DirectoryPath, RelativeDirectoryPath
 
@@ -11,9 +11,29 @@ class ShorthandFrontendConfig(TypedDict):
     view_history_limit: int
     map_tileserver_url: str
 
+class ShorthandConfigInput(TypedDict, total=False):
+    '''The minimal config which must be provided by a user
+       or specified in a config file in order to produce a valid
+       ShorthandConfig which can be used by the application
+
+       Same schema as ShorthandConfig but with fewer required fields
+    '''
+    notes_directory: Required[DirectoryPath]
+    default_directory: Optional[RelativeDirectoryPath]
+    log_file_path: FilePath
+    log_level: str
+    log_format: str
+    grep_path: ExecutablePath
+    find_path: ExecutablePath
+    frontend: ShorthandFrontendConfig
+
 class ShorthandConfig(TypedDict):
+    '''The config used by the application.
+       Includes the same information as the ShorthandConfigInput
+       provided, but with default values used for fields which were
+       omitted in the provided input
+    '''
     notes_directory: DirectoryPath
-    cache_directory: DirectoryPath
     default_directory: Optional[RelativeDirectoryPath]
     log_file_path: FilePath
     log_level: str
@@ -23,7 +43,6 @@ class ShorthandConfig(TypedDict):
     frontend: ShorthandFrontendConfig
 
 class ShorthandConfigUpdates(TypedDict, total=False):
-    cache_directory: DirectoryPath
     default_directory: Optional[RelativeDirectoryPath]
     log_file_path: FilePath
     log_level: str
@@ -35,7 +54,6 @@ class ShorthandConfigUpdates(TypedDict, total=False):
 
 CONFIG_FILE_LOCATION = '/etc/shorthand/shorthand_config.json'
 DEFAULT_NOTES_DIR = '/var/lib/shorthand/notes'
-DEFAULT_CACHE_DIR = '/var/lib/shorthand/cache'
 DEFAULT_LOG_FILE = '/var/log/shorthand/shorthand.log'
 DEFAULT_LOG_FORMAT = '%(asctime)s %(name)s %(levelname)-8s %(message)s'
 DEFAULT_LOG_LEVEL = 'INFO'
@@ -48,7 +66,6 @@ DEFAULT_FRONTEND_CONFIG: ShorthandFrontendConfig = {
 
 DEFAULT_CONFIG: ShorthandConfig = {
     "notes_directory": DEFAULT_NOTES_DIR,
-    "cache_directory": DEFAULT_CACHE_DIR,
     "default_directory": None,
     "log_file_path": DEFAULT_LOG_FILE,
     "log_level": DEFAULT_LOG_LEVEL,
@@ -144,7 +161,7 @@ def _modify_config(config: ShorthandConfig, updates: ShorthandConfigUpdates
     return new_config
 
 
-def clean_and_validate_config(config: ShorthandConfig) -> ShorthandConfig:
+def clean_and_validate_config(config: ShorthandConfigInput | ShorthandConfig) -> ShorthandConfig:
     '''Clean and validate values from the config file as needed
     Return the config if there are no issues, and raise an error
     if an issue is found
@@ -168,16 +185,8 @@ def clean_and_validate_config(config: ShorthandConfig) -> ShorthandConfig:
     notes_dir = config['notes_directory']
     config['notes_directory'] = notes_dir.rstrip('/')
 
-    cache_dir = config.get('cache_directory', '')
-    if cache_dir:
-        config['cache_directory'] = cache_dir.rstrip('/')
-    else:
-        log.info(f'No cache directory specified, falling back to '
-                 f'default of {DEFAULT_CACHE_DIR}')
-        config['cache_directory'] = DEFAULT_CACHE_DIR
-
     # Check config values that point to directories that must exist
-    directory_fields = ['notes_directory', 'cache_directory']
+    directory_fields = ['notes_directory']
     for field in directory_fields:
         if not os.path.exists(config[field]):
             raise ValueError(f'Directory {config[field]} specified for '

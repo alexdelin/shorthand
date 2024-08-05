@@ -500,10 +500,6 @@
             "type": "string",
             "example": "/var/lib/shorthand/notes"
           },
-          "cache_directory": {
-            "type": "string",
-            "example": "/var/lib/shorthand/cache"
-          },
           "default_directory": {
             "type": "string",
             "nullable": true,

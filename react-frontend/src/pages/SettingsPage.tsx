@@ -114,14 +114,6 @@ export function SettingsPage() {
         />
       </SettingRow>
       <SettingRow>
-        Cache Directory:
-        <TextField
-          disabled
-          size='small'
-          defaultValue={configData.cache_directory}
-        />
-      </SettingRow>
-      <SettingRow>
         Grep Path:
         <TextField
           disabled

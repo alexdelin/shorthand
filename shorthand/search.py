@@ -25,9 +25,8 @@ class FullTextSearchResult(TypedDict):
   match_content: str
 
 
-def _record_file_view(cache_directory: DirectoryPath, notes_directory: DirectoryPath,
-                      note_path: NotePath, history_limit: int=100
-                      ) -> None:
+def _record_file_view(notes_directory: DirectoryPath, note_path: NotePath,
+                      history_limit: int = 100) -> None:
     '''Record a note being viewed, so that it can be preferred in
     future search results.
 
@@ -39,7 +38,7 @@ def _record_file_view(cache_directory: DirectoryPath, notes_directory: Directory
         raise ValueError(f'Cannot record view for note {note_path}. ' +
                          f'Note does not exist')
 
-    history_file = cache_directory + '/recent_files.txt'
+    history_file = f'{notes_directory}/.shorthand/state/recent_files.txt'
     if os.path.exists(history_file):
         with open(history_file, 'r') as history_file_object:
             history_data = history_file_object.read()
@@ -78,7 +77,6 @@ def _record_file_view(cache_directory: DirectoryPath, notes_directory: Directory
 
 
 def _search_filenames(notes_directory: DirectoryPath, prefer_recent_files=True,
-                      cache_directory: Union[DirectoryPath, None] = None,
                       query_string: Union[str, None] = None,
                       case_sensitive=False,
                       grep_path: ExecutablePath = 'grep',
@@ -120,11 +118,10 @@ def _search_filenames(notes_directory: DirectoryPath, prefer_recent_files=True,
         # Re-order the list of all notes based on which
         # were accessed most recently
         recent_files_data = ''
-        if cache_directory:
-            recent_files_path = cache_directory + '/recent_files.txt'
-            if os.path.exists(recent_files_path):
-                with open(recent_files_path, 'r') as recent_files_object:
-                    recent_files_data = recent_files_object.read()
+        recent_files_path = f'{notes_directory}/.shorthand/state/recent_files.txt'
+        if os.path.exists(recent_files_path):
+            with open(recent_files_path, 'r') as recent_files_object:
+                recent_files_data = recent_files_object.read()
 
         recent_files = [file.strip()
                         for file in recent_files_data.split('\n')
