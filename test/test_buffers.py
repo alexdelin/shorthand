@@ -5,11 +5,8 @@ import logging
 import unittest
 import pytest
 
-from shorthand.utils.buffers import _new_buffer, _list_buffers, \
-                                    _get_buffer_content, _write_buffer, \
-                                    _update_buffer_content, _delete_buffer
-from shorthand.notes import _get_note
-from utils import setup_environment, validate_setup, setup_logging
+from shorthand import ShorthandServer
+from utils import TEST_CONFIG_PATH, setup_environment, validate_setup
 
 
 log = logging.getLogger(__name__)
@@ -27,6 +24,7 @@ class TestBuffers(unittest.TestCase):
         cls.notes_dir = cls.config['notes_directory']
         cls.grep_path = cls.config['grep_path']
         cls.find_path = cls.config['find_path']
+        cls.server = ShorthandServer(TEST_CONFIG_PATH)
 
     def setup_method(self, method):
         '''Validate that the environment has been set up correctly
@@ -40,67 +38,63 @@ class TestBuffers(unittest.TestCase):
         for i in range(NUM_TEST_BUFFERS):
             if i != 0:
                 time.sleep(0.002)
-            buffer_id = _new_buffer(self.notes_dir)
+            buffer_id = self.server.new_buffer()
             assert buffer_id
             buffer_ids.append(buffer_id)
         assert len(buffer_ids) == len(set(buffer_ids))
         assert len(buffer_ids) == NUM_TEST_BUFFERS
 
         # Basic Test for retrieving buffers
-        buffers_found = _list_buffers(self.notes_dir)
+        buffers_found = self.server.list_buffers()
         assert set(buffers_found) == set(buffer_ids)
 
         # Test that two buffers can't be created in the same second.
         # May be flaky in extremely show situations
         with pytest.raises(ValueError) as e:
             for i in range(NUM_TEST_BUFFERS):
-                buffer_id = _new_buffer(self.notes_dir)
+                buffer_id = self.server.new_buffer()
                 assert buffer_id
         assert 'already exists' in str(e.value)
 
     def test_update_and_get_buffers(self):
 
         # Get Empty Contents of a single buffer
-        first_buffer = _list_buffers(self.notes_dir)[0]
-        content = _get_buffer_content(self.notes_dir, first_buffer)
+        first_buffer = self.server.list_buffers()[0]
+        content = self.server.get_buffer_content(first_buffer)
         assert content == ''
 
         # Try to get the content of a non-existent buffer
         with pytest.raises(ValueError) as e:
-            _ = _get_buffer_content(self.notes_dir, 'foobar')
+            _ = self.server.get_buffer_content('foobar')
         assert 'not found' in str(e.value)
 
         # Write some content into a buffer
         TEST_CONTENT = 'Test Content'
-        _update_buffer_content(self.notes_dir, first_buffer,
-                               TEST_CONTENT)
+        self.server.update_buffer_content(first_buffer, TEST_CONTENT)
 
         # Get the buffer's contents to check for the added content
-        updated_content = _get_buffer_content(self.notes_dir,
-                                              first_buffer)
+        updated_content = self.server.get_buffer_content(first_buffer)
         assert updated_content == TEST_CONTENT
 
     def test_delete_buffers(self):
-        all_buffers = _list_buffers(self.notes_dir)
+        all_buffers = self.server.list_buffers()
         buffer_to_delete = random.choice(all_buffers)
-        _delete_buffer(self.notes_dir, buffer_to_delete)
+        self.server.delete_buffer(buffer_to_delete)
 
-        updated_buffers = _list_buffers(self.notes_dir)
+        updated_buffers = self.server.list_buffers()
         assert buffer_to_delete not in updated_buffers
         assert len(updated_buffers) == len(all_buffers) - 1
 
     def test_write_buffer_to_file(self):
         # Write some test content into a buffer
-        first_buffer = _list_buffers(self.notes_dir)[0]
+        first_buffer = self.server.list_buffers()[0]
         TEST_CONTENT = 'Test Content'
-        _update_buffer_content(self.notes_dir, first_buffer,
-                               TEST_CONTENT)
+        self.server.update_buffer_content(first_buffer, TEST_CONTENT)
 
         # Append the Buffer to an existing note file
         NOTE_PATH = '/todos.note'
-        _write_buffer(self.notes_dir,
-                      first_buffer, NOTE_PATH)
+        self.server.write_buffer(first_buffer, NOTE_PATH)
 
         # Read the note file and check for the added content
-        updated_note = _get_note(self.notes_dir, NOTE_PATH)
+        updated_note = self.server.get_note(NOTE_PATH)
         assert updated_note.endswith(TEST_CONTENT)

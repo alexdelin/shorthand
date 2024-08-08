@@ -367,16 +367,24 @@ def _store_history_for_note_move(notes_directory: DirectoryPath,
        displayed incorrectly
     '''
 
+    if not _is_note_path(notes_directory, old_note_path) and not \
+           _is_note_path(notes_directory, new_note_path, must_exist=False):
+        raise ValueError(f'Cannot track move history. Neither {old_note_path} ' + \
+                         f'or {new_note_path} are valid note paths')
+
     # For safety, we need to fail if a version already exists for the
     # target note in the current day
     if datetime.now(UTC).date().isoformat() in _list_note_versions(
             notes_directory=notes_directory, note_path=new_note_path,
             find_path=find_path):
         raise ValueError(f'A version file for today already exists for note {new_note_path}')
-    ensure_note_version(notes_directory, old_note_path)
+    if _is_note_path(notes_directory, old_note_path):
+        ensure_note_version(notes_directory, old_note_path)
     diff = calculate_diff_for_move(old_note_path, new_note_path)
-    save_diff(notes_directory, old_note_path, diff, 'move')
-    save_diff(notes_directory, new_note_path, diff, 'move')
+    if _is_note_path(notes_directory, old_note_path):
+        save_diff(notes_directory, old_note_path, diff, 'move')
+    if _is_note_path(notes_directory, new_note_path, must_exist=False):
+        save_diff(notes_directory, new_note_path, diff, 'move')
 
 
 def _store_history_for_note_create(notes_directory: DirectoryPath,

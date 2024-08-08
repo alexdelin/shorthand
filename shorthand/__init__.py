@@ -344,7 +344,7 @@ class ShorthandServer(object):
 
     def move_file_or_directory(self, source: InternalAbsolutePath,
                                destination: InternalAbsolutePath):
-        if self.is_note_path(source) and self.is_note_path(destination):
+        if self.is_note_path(source) or self.is_note_path(destination, must_exist=False):
             self.store_history_for_note_move(
                 old_note_path=source, new_note_path=destination)
         return _move_file_or_directory(

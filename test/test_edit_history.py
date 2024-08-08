@@ -70,7 +70,7 @@ class TestEditHistory(unittest.TestCase):
         assert note_diff
         assert 'new file mode' in note_diff
 
-    def test_no_create_diffs_stored_for_resources(self):
+    def test_cannot_get_versions_or_diffs_for_resources(self):
         test_note = '/new.txt'
         current_utc_day = datetime.now(UTC).date().isoformat()
         self.server.create_file(test_note)
@@ -78,20 +78,68 @@ class TestEditHistory(unittest.TestCase):
         assert not os.path.exists(f'{self.notes_dir}/{HISTORY_PATH}/{test_note}/{current_utc_day}.version')
 
         with pytest.raises(ValueError) as e:
+            self.server.list_note_versions(note_path='/new.txt')
+        assert e
+
+        with pytest.raises(ValueError) as e:
             self.server.list_diffs_for_note(note_path='/new.txt')
         assert e
 
     def test_storing_move_diffs(self):
-        pass
+        self.server.create_file('/new.note')
+        self.server.move_file_or_directory(source='/new.note', destination='/new2.note')
 
-    def test_no_move_diffs_stored_for_resources(self):
-        pass
+        note_diffs = self.server.list_diffs_for_note(note_path='/new.note')
+        assert len(note_diffs) == 2
+        assert note_diffs[0]['diff_type'] == 'move'
+
+        note_diff = self.server.get_note_diff(
+            note_path='/new.note',
+            timestamp=note_diffs[0]['timestamp'],
+            diff_type=note_diffs[0]['diff_type'])
+        assert note_diff
+        assert 'similarity index 100%' in note_diff
+
+    def test_storing_move_diffs_for_file_type_change(self):
+        # Start as a resource and move to a note and check that there is a diff
+        self.server.create_file('/new.txt')
+        self.server.move_file_or_directory(source='/new.txt', destination='/new.note')
+
+        note_diffs = self.server.list_diffs_for_note(note_path='/new.note')
+        assert len(note_diffs) == 1
+        assert note_diffs[0]['diff_type'] == 'move'
+
+        note_diff = self.server.get_note_diff(
+            note_path='/new.note',
+            timestamp=note_diffs[0]['timestamp'],
+            diff_type=note_diffs[0]['diff_type'])
+        assert note_diff
+        assert 'similarity index 100%' in note_diff
+
+    def test_moving_to_path_with_existing_version_fails(self):
+        self.server.create_file('/new.note')
+        self.server.update_note('/todos.note', 'foobar')
+        self.server.delete_file('/todos.note')
+
+        with pytest.raises(ValueError) as e:
+            self.server.move_file_or_directory('/new.note', '/todos.note')
+        assert e
 
     def test_storing_delete_diffs(self):
-        pass
+        self.server.create_file('/new.note')
+        self.server.update_note('/new.note', 'foo bar baz')
+        self.server.delete_file('/new.note')
 
-    def test_no_delete_diffs_stored_for_resources(self):
-        pass
+        note_diffs = self.server.list_diffs_for_note(note_path='/new.note')
+        assert len(note_diffs) == 3
+        assert note_diffs[0]['diff_type'] == 'delete'
+
+        note_diff = self.server.get_note_diff(
+            note_path='/new.note',
+            timestamp=note_diffs[0]['timestamp'],
+            diff_type=note_diffs[0]['diff_type'])
+        assert note_diff
+        assert 'deleted file mode' in note_diff
 
     def test_storing_edit_diffs(self):
         self.server.store_history_for_note_edit(

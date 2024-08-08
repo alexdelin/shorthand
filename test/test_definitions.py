@@ -1,9 +1,10 @@
 import logging
 import unittest
 
+from shorthand import ShorthandServer
 from shorthand.elements.definitions import _get_definitions
 
-from utils import setup_environment, validate_setup
+from utils import TEST_CONFIG_PATH, setup_environment, validate_setup
 from results_unstamped import ALL_DEFINITIONS
 
 
@@ -20,6 +21,7 @@ class TestDefinitions(unittest.TestCase):
         cls.notes_dir = cls.config['notes_directory']
         cls.grep_path = cls.config['grep_path']
         cls.find_path = cls.config['find_path']
+        cls.server = ShorthandServer(TEST_CONFIG_PATH)
 
     def setup_method(self, method):
         '''Validate that the environment has been set up correctly
@@ -28,9 +30,6 @@ class TestDefinitions(unittest.TestCase):
 
     def test_get_definitions(self):
 
-        definitions = _get_definitions(
-                        self.notes_dir,
-                        directory_filter=None,
-                        grep_path=self.grep_path)
+        definitions = self.server.get_definitions()
         assert len(ALL_DEFINITIONS) == len(definitions)
         self.assertCountEqual(definitions, ALL_DEFINITIONS)
