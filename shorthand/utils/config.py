@@ -25,6 +25,7 @@ class ShorthandConfigInput(TypedDict, total=False):
     log_format: str
     grep_path: ExecutablePath
     find_path: ExecutablePath
+    patch_path: ExecutablePath
     frontend: ShorthandFrontendConfig
 
 class ShorthandConfig(TypedDict):
@@ -40,6 +41,7 @@ class ShorthandConfig(TypedDict):
     log_format: str
     grep_path: ExecutablePath
     find_path: ExecutablePath
+    patch_path: ExecutablePath
     frontend: ShorthandFrontendConfig
 
 class ShorthandConfigUpdates(TypedDict, total=False):
@@ -49,6 +51,7 @@ class ShorthandConfigUpdates(TypedDict, total=False):
     log_format: str
     grep_path: ExecutablePath
     find_path: ExecutablePath
+    patch_path: ExecutablePath
     frontend: ShorthandFrontendConfig
 
 
@@ -59,6 +62,7 @@ DEFAULT_LOG_FORMAT = '%(asctime)s %(name)s %(levelname)-8s %(message)s'
 DEFAULT_LOG_LEVEL = 'INFO'
 DEFAULT_GREP_PATH = 'grep'
 DEFAULT_FIND_PATH = 'find'
+DEFAULT_PATCH_PATH = 'patch'
 DEFAULT_FRONTEND_CONFIG: ShorthandFrontendConfig = {
     'view_history_limit': 100,
     'map_tileserver_url': 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
@@ -72,6 +76,7 @@ DEFAULT_CONFIG: ShorthandConfig = {
     "log_format": DEFAULT_LOG_FORMAT,
     "grep_path": DEFAULT_GREP_PATH,
     "find_path": DEFAULT_FIND_PATH,
+    "patch_path": DEFAULT_PATCH_PATH,
     "frontend": DEFAULT_FRONTEND_CONFIG
 }
 
@@ -293,6 +298,36 @@ def clean_and_validate_config(config: ShorthandConfigInput | ShorthandConfig) ->
                                      f'not executable')
         if not find_found:
             raise ValueError(f'Find executable specified as {find_path} '
+                             f'could not be located')
+
+    patch_path = config.get('patch_path')
+    if not patch_path:
+        log.info(f'Patch path not specified, falling back to ' + \
+                 f'default of {DEFAULT_PATCH_PATH}')
+        patch_path = DEFAULT_PATCH_PATH
+    # Check for the patch path as the full path to an executable
+    if os.path.isfile(patch_path):
+        if not os.access(patch_path, os.X_OK):
+            raise ValueError(f'Patch at {patch_path} is not executable')
+        else:
+            log.debug(f'Found patch executable at {patch_path}')
+    else:
+        # Check for the patch path as an executable name within our system path
+        patch_found = False
+        for path in os.environ["PATH"].split(os.pathsep):
+            patch_executable = os.path.join(path, patch_path)
+            if os.path.isfile(patch_executable):
+                if os.access(patch_executable, os.X_OK):
+                    patch_path = patch_executable
+                    config['patch_path'] = patch_path
+                    patch_found = True
+                    log.debug(f'Found patch executable at {patch_path}')
+                    break
+                else:
+                    raise ValueError(f'Patch at {patch_executable} is ' + \
+                                     f'not executable')
+        if not patch_found:
+            raise ValueError(f'Patch executable specified as {patch_path} ' + \
                              f'could not be located')
 
     # Validate frontend config

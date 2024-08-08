@@ -4,8 +4,11 @@ import logging
 import os
 import unittest
 
-from shorthand.edit_history import HISTORY_PATH, _get_note_diff, ensure_daily_starting_version, _list_versions_for_note, _store_history_for_note_edit, _list_diffs_for_note
-from utils import setup_environment, teardown_environment, validate_setup
+import pytest
+
+from shorthand import ShorthandServer
+from shorthand.edit_history import HISTORY_PATH, ensure_note_version
+from utils import TEST_CONFIG_PATH, setup_environment, teardown_environment, validate_setup
 
 
 log = logging.getLogger(__name__)
@@ -21,6 +24,7 @@ class TestEditHistory(unittest.TestCase):
         cls.notes_dir = cls.config['notes_directory']
         cls.grep_path = cls.config['grep_path']
         cls.find_path = cls.config['find_path']
+        cls.server = ShorthandServer(TEST_CONFIG_PATH)
 
     @classmethod
     def teardown_class(cls):
@@ -32,44 +36,153 @@ class TestEditHistory(unittest.TestCase):
     def setup_method(self, method):
         '''Validate that the environment has been set up correctly
         '''
+        setup_environment()
         validate_setup()
 
     def test_storing_daily_note_version(self):
         for test_note in ['/section/mixed.note', '/bugs.note']:
-            ensure_daily_starting_version(notes_directory=self.notes_dir,
-                                          note_path=test_note)
+            note_content = self.server.get_note(test_note)
+            ensure_note_version(notes_directory=self.notes_dir,
+                                note_path=test_note)
             current_utc_day = datetime.now(UTC).date().isoformat()
 
             # Check the version file was written
             assert os.path.exists(f'{self.notes_dir}/{HISTORY_PATH}/{test_note}/{current_utc_day}.version')
 
             # Check we can get the version via the API
-            note_versions = _list_versions_for_note(
-                notes_directory=self.notes_dir,
-                note_path=test_note,
-                find_path=self.find_path)
+            note_versions = self.server.list_note_versions(note_path=test_note)
             assert note_versions == [current_utc_day]
 
+            version_content = self.server.get_note_version(test_note, current_utc_day)
+            assert version_content == note_content
+
+    def test_storing_create_diffs_for_notes(self):
+        self.server.create_file('/new.note')
+
+        note_diffs = self.server.list_diffs_for_note(note_path='/new.note')
+        assert len(note_diffs) == 1
+        assert note_diffs[0]['diff_type'] == 'create'
+
+        note_diff = self.server.get_note_diff(
+            note_path='/new.note',
+            timestamp=note_diffs[0]['timestamp'],
+            diff_type=note_diffs[0]['diff_type'])
+        assert note_diff
+        assert 'new file mode' in note_diff
+
+    def test_no_create_diffs_stored_for_resources(self):
+        test_note = '/new.txt'
+        current_utc_day = datetime.now(UTC).date().isoformat()
+        self.server.create_file(test_note)
+
+        assert not os.path.exists(f'{self.notes_dir}/{HISTORY_PATH}/{test_note}/{current_utc_day}.version')
+
+        with pytest.raises(ValueError) as e:
+            self.server.list_diffs_for_note(note_path='/new.txt')
+        assert e
+
+    def test_storing_move_diffs(self):
+        pass
+
+    def test_no_move_diffs_stored_for_resources(self):
+        pass
+
+    def test_storing_delete_diffs(self):
+        pass
+
+    def test_no_delete_diffs_stored_for_resources(self):
+        pass
+
     def test_storing_edit_diffs(self):
-        _store_history_for_note_edit(
-            notes_directory=self.notes_dir,
+        self.server.store_history_for_note_edit(
             note_path='/todos.note',
             new_content='foo bar')
 
-        note_versions = _list_versions_for_note(
-            notes_directory=self.notes_dir,
-            note_path='/todos.note',
-            find_path=self.find_path)
+        note_versions = self.server.list_note_versions(note_path='/todos.note')
         assert len(note_versions) == 1
 
-        note_diff_timestamps = _list_diffs_for_note(
-            notes_directory=self.notes_dir,
-            note_path='/todos.note',
-            find_path=self.find_path)
-        assert len(note_diff_timestamps) == 1
+        note_diffs = self.server.list_diffs_for_note(note_path='/todos.note')
+        assert len(note_diffs) == 1
+        assert note_diffs[0]['diff_type'] == 'edit'
 
-        note_diff = _get_note_diff(
-            notes_directory=self.notes_dir,
+        note_diff = self.server.get_note_diff(
             note_path='/todos.note',
-            timestamp=note_diff_timestamps[0])
+            timestamp=note_diffs[0]['timestamp'],
+            diff_type=note_diffs[0]['diff_type'])
         assert note_diff
+        assert 'Author: ' in note_diff
+        assert 'Time: ' in note_diff
+        assert '---' in note_diff
+
+    def test_merging_edit_diffs(self):
+        # Make 3 edits to a note in rapid succession
+        self.server.update_note(note_path='/todos.note', content='foo bar')
+
+        self.server.update_note(note_path='/todos.note', content='foo baz bam')
+
+        self.server.update_note(note_path='/todos.note', content='foo baz bam bar')
+
+        note_versions = self.server.list_note_versions(note_path='/todos.note')
+        assert len(note_versions) == 1
+
+        note_diffs = self.server.list_diffs_for_note(note_path='/todos.note')
+        assert len(note_diffs) == 1
+
+        note_diff = self.server.get_note_diff(
+            note_path='/todos.note',
+            timestamp=note_diffs[0]['timestamp'],
+            diff_type=note_diffs[0]['diff_type'])
+        assert note_diff
+
+    def test_empty_update(self):
+        original = self.server.get_note(note_path='/todos.note')
+
+        # Update a note, but with the existing content
+        self.server.update_note(note_path='/todos.note', content=original)
+
+        note_versions = self.server.list_note_versions(note_path='/todos.note')
+        assert len(note_versions) == 1
+
+        note_diffs = self.server.list_diffs_for_note(note_path='/todos.note')
+        assert len(note_diffs) == 0
+
+    def test_change_and_undo_edit(self):
+        original = self.server.get_note(note_path='/todos.note')
+
+        # Create an edit diff
+        self.server.update_note(note_path='/todos.note', content='foo bar')
+
+        # Revert so the edit diff is empty
+        self.server.update_note(note_path='/todos.note', content=original)
+
+        note_diffs = self.server.list_diffs_for_note(note_path='/todos.note')
+        assert len(note_diffs) == 1
+
+        note_diff = self.server.get_note_diff(
+            note_path='/todos.note',
+            timestamp=note_diffs[0]['timestamp'],
+            diff_type=note_diffs[0]['diff_type'])
+        assert note_diff
+        assert 'no changes made' in note_diff
+
+    def test_merge_into_empty_diff(self):
+        original = self.server.get_note(note_path='/todos.note')
+
+        # Create an edit diff
+        self.server.update_note(note_path='/todos.note', content='foo bar')
+
+        # Revert so the edit diff is empty
+        self.server.update_note(note_path='/todos.note', content=original)
+
+        # Merge a new change into the empty diff
+        self.server.update_note(note_path='/todos.note', content='baz')
+
+        note_diffs = self.server.list_diffs_for_note(note_path='/todos.note')
+        assert len(note_diffs) == 1
+
+        note_diff = self.server.get_note_diff(
+            note_path='/todos.note',
+            timestamp=note_diffs[0]['timestamp'],
+            diff_type=note_diffs[0]['diff_type'])
+        assert note_diff
+        assert '---' in note_diff

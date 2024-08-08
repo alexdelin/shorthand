@@ -4,9 +4,10 @@ import pytest
 import random
 
 from shorthand.notes import _get_note, _update_note, \
-                            _validate_internal_links, _create_note, \
-                            _append_to_note, _delete_note, _get_links, \
+                            _validate_internal_links, \
+                            _append_to_note, _get_links, \
                             _get_backlinks
+from shorthand.utils.filesystem import _create_file, _delete_file
 from shorthand.web.app import create_app
 
 from utils import setup_environment, teardown_environment, validate_setup, \
@@ -57,25 +58,24 @@ class TestNotesOperations(unittest.TestCase):
 
     def test_create_note(self):
         new_note_path = '/new.note'
-        new_note_content = 'This is a new note added via the API'
-        _create_note(notes_directory=self.notes_dir,
-                     note_path=new_note_path, content=new_note_content)
+        _create_file(notes_directory=self.notes_dir,
+                     file_path=new_note_path)
         note_content = _get_note(notes_directory=self.notes_dir,
                                  path=new_note_path)
-        assert note_content == new_note_content
+        assert isinstance(note_content, str)
 
         # Test handling for specifying a path to an existing note
         with pytest.raises(ValueError) as e:
-            _create_note(notes_directory=self.notes_dir,
-                         note_path='/todos.note', content='test')
+            _create_file(notes_directory=self.notes_dir,
+                         file_path='/todos.note')
         assert 'already exists' in str(e.value)
 
     def test_delete_note(self):
         test_path = '/questions.note'
         assert _get_note(notes_directory=self.notes_dir,
                          path=test_path)
-        _delete_note(notes_directory=self.notes_dir,
-                     note_path=test_path)
+        _delete_file(notes_directory=self.notes_dir,
+                     file_path=test_path)
         with pytest.raises(ValueError) as e:
             _get_note(notes_directory=self.notes_dir,
                       path=test_path)

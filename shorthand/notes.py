@@ -6,7 +6,7 @@ from typing import Optional, TypedDict, cast, Union
 
 from shorthand.utils.paths import get_full_path, get_relative_path, \
                                   parse_relative_link_path, is_external_path, \
-                                  is_note_path
+                                  _is_note_path
 from shorthand.utils.patterns import INTERNAL_LINK_PATTERN, ALL_LINK_PATTERN
 from shorthand.utils.filesystem import _delete_file
 from shorthand.types import DirectoryPath, ExecutablePath, ExternalURL, NotePath, RawNoteContent, RelativeNotePath
@@ -79,29 +79,6 @@ def _append_to_note(notes_directory: DirectoryPath, note_path: NotePath,
 
     with open(full_path, 'a') as note_file:
         note_file.write(content)
-
-
-def _create_note(notes_directory: DirectoryPath, note_path: NotePath,
-                 content: Optional[RawNoteContent] = None) -> None:
-    '''Create a new note
-    '''
-    if not note_path:
-        raise ValueError('No note path provided for new note to create')
-
-    full_path = get_full_path(notes_directory, note_path)
-
-    if os.path.exists(full_path):
-        raise ValueError(f'Note to create at path {note_path} already exists')
-
-    with open(full_path, 'w') as f:
-        if content:
-            f.write(content)
-
-
-def _delete_note(notes_directory: DirectoryPath, note_path: NotePath) -> None:
-    '''Deletes a note from the filesystem
-    '''
-    _delete_file(notes_directory, note_path)
 
 
 def _validate_internal_links(notes_directory: DirectoryPath,
@@ -293,7 +270,7 @@ def _get_links(notes_directory: DirectoryPath, source: Optional[NotePath]=None,
                 continue
 
             if not is_external_link:
-                is_valid_link = is_note_path(notes_directory, link_target_file)
+                is_valid_link = _is_note_path(notes_directory, link_target_file)
                 if not include_invalid and not is_valid_link:
                     log.info(f'Skipping invalid link to {link_target}')
                     continue

@@ -5,7 +5,7 @@ from typing import List
 from shorthand.types import ACKResponse, DirectoryPath, FilePath, NotePath, \
                             ResourcePath
 
-from shorthand.utils.paths import get_full_path, is_note_path
+from shorthand.utils.paths import get_full_path, _is_note_path
 
 
 log = logging.getLogger(__name__)
@@ -65,7 +65,7 @@ def get_open_files(notes_directory: DirectoryPath) -> List[NotePath]:
     # Check that all files actually exist
     found_invalid_paths = False
     for note in open_files:
-        if not is_note_path(notes_directory, note):
+        if not _is_note_path(notes_directory, note):
             found_invalid_paths = True
             log.info(f'Found invalid open file path: {note}, '
                      f'removing...')
@@ -92,7 +92,7 @@ def clear_open_files(notes_directory: DirectoryPath) -> ACKResponse:
 
 def open_file(notes_directory: DirectoryPath,
               note_path: NotePath) -> ACKResponse:
-    if not is_note_path(notes_directory, note_path):
+    if not _is_note_path(notes_directory, note_path):
         raise ValueError(f'Cannot open non-existent file at path: {note_path}')
 
     open_files_path = f'{notes_directory}/.shorthand/state/open_files.json'

@@ -5,7 +5,7 @@ import logging
 from subprocess import Popen, PIPE
 from typing import Union, TypedDict
 
-from shorthand.utils.paths import get_relative_path, is_note_path
+from shorthand.utils.paths import get_relative_path, _is_note_path
 from shorthand.types import DirectoryPath, NotePath, ExecutablePath
 
 log = logging.getLogger(__name__)
@@ -34,7 +34,7 @@ def _record_file_view(notes_directory: DirectoryPath, note_path: NotePath,
         most recent view at the END of the file
     '''
 
-    if not is_note_path(notes_directory=notes_directory, path=note_path):
+    if not _is_note_path(notes_directory=notes_directory, path=note_path):
         raise ValueError(f'Cannot record view for note {note_path}. ' +
                          f'Note does not exist')
 

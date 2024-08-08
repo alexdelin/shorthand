@@ -81,18 +81,6 @@ def get_full_note() -> RawNoteContent:
     return server.get_note(path)
 
 
-@shorthand_api_blueprint.route('/api/v1/note', methods=['PUT'])
-def create_new_note():
-    server = ShorthandServer(current_app.config['config_path'])
-
-    path = get_request_argument(request.args, name='path', required=True)
-    request.get_data()
-    content: RawNoteContent = request.data.decode('utf-8')
-
-    server.create_note(path, content)
-    return 'Note Created'
-
-
 @shorthand_api_blueprint.route('/api/v1/note', methods=['POST'])
 def write_updated_note():
     server = ShorthandServer(current_app.config['config_path'])
