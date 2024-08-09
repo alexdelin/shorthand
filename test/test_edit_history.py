@@ -2,6 +2,7 @@ from datetime import datetime, UTC
 import logging
 
 import os
+import time
 import unittest
 
 import pytest
@@ -87,6 +88,7 @@ class TestEditHistory(unittest.TestCase):
 
     def test_storing_move_diffs(self):
         self.server.create_file('/new.note')
+        time.sleep(0.001)
         self.server.move_file_or_directory(source='/new.note', destination='/new2.note')
 
         note_diffs = self.server.list_diffs_for_note(note_path='/new.note')
@@ -103,6 +105,7 @@ class TestEditHistory(unittest.TestCase):
     def test_storing_move_diffs_for_file_type_change(self):
         # Start as a resource and move to a note and check that there is a diff
         self.server.create_file('/new.txt')
+        time.sleep(0.001)
         self.server.move_file_or_directory(source='/new.txt', destination='/new.note')
 
         note_diffs = self.server.list_diffs_for_note(note_path='/new.note')
@@ -118,7 +121,9 @@ class TestEditHistory(unittest.TestCase):
 
     def test_moving_to_path_with_existing_version_fails(self):
         self.server.create_file('/new.note')
+        time.sleep(0.001)
         self.server.update_note('/todos.note', 'foobar')
+        time.sleep(0.001)
         self.server.delete_file('/todos.note')
 
         with pytest.raises(ValueError) as e:
@@ -127,7 +132,9 @@ class TestEditHistory(unittest.TestCase):
 
     def test_storing_delete_diffs(self):
         self.server.create_file('/new.note')
+        time.sleep(0.001)
         self.server.update_note('/new.note', 'foo bar baz')
+        time.sleep(0.001)
         self.server.delete_file('/new.note')
 
         note_diffs = self.server.list_diffs_for_note(note_path='/new.note')
@@ -165,9 +172,9 @@ class TestEditHistory(unittest.TestCase):
     def test_merging_edit_diffs(self):
         # Make 3 edits to a note in rapid succession
         self.server.update_note(note_path='/todos.note', content='foo bar')
-
+        time.sleep(0.001)
         self.server.update_note(note_path='/todos.note', content='foo baz bam')
-
+        time.sleep(0.001)
         self.server.update_note(note_path='/todos.note', content='foo baz bam bar')
 
         note_versions = self.server.list_note_versions(note_path='/todos.note')
@@ -199,7 +206,7 @@ class TestEditHistory(unittest.TestCase):
 
         # Create an edit diff
         self.server.update_note(note_path='/todos.note', content='foo bar')
-
+        time.sleep(0.001)
         # Revert so the edit diff is empty
         self.server.update_note(note_path='/todos.note', content=original)
 
@@ -218,10 +225,10 @@ class TestEditHistory(unittest.TestCase):
 
         # Create an edit diff
         self.server.update_note(note_path='/todos.note', content='foo bar')
-
+        time.sleep(0.001)
         # Revert so the edit diff is empty
         self.server.update_note(note_path='/todos.note', content=original)
-
+        time.sleep(0.001)
         # Merge a new change into the empty diff
         self.server.update_note(note_path='/todos.note', content='baz')
 
