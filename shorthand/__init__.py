@@ -1,6 +1,7 @@
 import logging
 from typing import Optional, Self
 
+from shorthand.frontend import clear_open_files, close_file, get_open_files, open_file
 from shorthand.notes import _get_note, _update_note, \
                             _validate_internal_links, _append_to_note, \
                             _get_backlinks, _get_links
@@ -366,6 +367,24 @@ class ShorthandServer(object):
 
     def get_note_archive(self):
         return _get_note_archive(notes_directory=self.notes_directory)
+
+    # ----------------------
+    # --- Frontend Tools ---
+    # ----------------------
+
+    def get_open_files(self):
+        return get_open_files(notes_directory=self.notes_directory)
+
+    def clear_open_files(self):
+        return clear_open_files(notes_directory=self.notes_directory)
+
+    def open_file(self, note_path: NotePath):
+        return open_file(notes_directory=self.notes_directory,
+                         note_path=note_path)
+
+    def close_file(self, note_path: NotePath):
+        return close_file(notes_directory=self.notes_directory,
+                          note_path=note_path)
 
     # --------------------
     # --- Edit History ---

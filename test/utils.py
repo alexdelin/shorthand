@@ -15,7 +15,7 @@ TEMP_DIR = os.path.dirname(os.path.realpath(__file__)) + '/temp'
 NOTES_DIR = TEMP_DIR + '/notes'
 LOG_PATH = TEMP_DIR + '/test.log'
 CONFIG_OVERRIDE_PATH = 'config_override.json'
-OVERRIDABLE_OPTIONS = ['log_level', 'grep_path', 'find_path']
+OVERRIDABLE_OPTIONS = ['log_level', 'grep_path', 'find_path', 'patch_path']
 
 TEST_CONFIG: ShorthandConfig = {
     "notes_directory": NOTES_DIR,
@@ -24,6 +24,7 @@ TEST_CONFIG: ShorthandConfig = {
     "log_level": "info",
     "grep_path": "grep",
     "find_path": "find",
+    "patch_path": "patch",
     "default_directory": None,
     "frontend": {
         "view_history_limit": 1,

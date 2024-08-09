@@ -138,22 +138,23 @@ def get_unified_diff(old: RawNoteContent, new: RawNoteContent,
                      ) -> NoteDiff:
     timestamp = datetime.now(UTC).isoformat(timespec='milliseconds')
     header_lines = [
-        f'Author: {author}\n',
-        f'Time: {timestamp}\n',
-        f'\n',
-        f'diff --git a{path} b{path}\n'
+        f'Author: {author}',
+        f'Time: {timestamp}',
+        f'',
+        f'diff --git a{path} b{path}'
     ]
 
     if old == new:
         return get_empty_edit_diff(path, author)
 
     diff_lines = list(difflib.unified_diff(
-        old.splitlines(keepends=True),
-        new.splitlines(keepends=True),
+        old.splitlines(),
+        new.splitlines(),
         fromfile=f'{path} (old)',
-        tofile=f'{path} (new)'))
+        tofile=f'{path} (new)',
+        lineterm=''))
 
-    return ''.join(header_lines + diff_lines)
+    return '\n'.join(header_lines + diff_lines) + '\n'
 
 
 def calculate_diff_for_edit(notes_directory: DirectoryPath,
@@ -303,20 +304,19 @@ def apply_diffs(starting_content: RawNoteContent,
             diff_filenames.append(diff_filename)
 
         patch_command = f'{patch_path} {original_filename}'
-        for diff in diff_filenames:
-            patch_command += f' -i {diff}'
         if reverse:
             patch_command += ' -R'
+        for diff in diff_filenames:
+            patch_command += f' -i {diff}'
         patch_command += f' -o {patched_filename}'
 
-        log.warning(f'Running command {patch_command} to generate a combined diff')
+        log.warning(f'Running command {patch_command} to apply diffs')
         proc = Popen(patch_command, stdout=PIPE, stderr=PIPE, shell=True)
         output, err = proc.communicate()
-        output_lines = output.decode().split('\n')
         status_code = proc.returncode
 
         if status_code > 1:
-            raise ValueError(f'Error while calculating diff {output.decode()}')
+            raise ValueError(f'Error while calculating diff {output.decode()} {err.decode()}')
 
         with open(patched_filename, 'r') as f:
             return f.read()
@@ -341,9 +341,13 @@ def _store_history_for_note_edit(notes_directory: DirectoryPath,
                        and latest_diff['timestamp'] > merge_cutoff_time:
             # We are merging these changes into the latest diff
             current_version = _get_note(notes_directory, note_path)
+            log.debug(f'Got current version {current_version}')
             latest_diff_content = _get_note_diff(notes_directory, note_path, latest_diff['timestamp'], latest_diff['diff_type'])
+            log.debug(f'Got latest diff {latest_diff_content}')
             pre_edit_state = apply_diffs(current_version, [latest_diff_content], patch_path, reverse=True)
+            log.debug(f'Got pre edit state {pre_edit_state}')
             combined_diff = get_unified_diff(pre_edit_state, new_content, note_path)
+            log.debug(f'Got combined diff {combined_diff}')
             save_diff(notes_directory, note_path, combined_diff, 'edit')
             delete_diff(notes_directory, note_path, latest_diff['timestamp'], latest_diff['diff_type'])
             return None
