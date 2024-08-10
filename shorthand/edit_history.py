@@ -296,11 +296,15 @@ def apply_diffs(starting_content: RawNoteContent,
 
         with open(original_filename, 'w') as f:
             f.write(starting_content)
+            if not starting_content.endswith('\n'):
+                f.write('\n')
 
         for idx, diff_content in enumerate(filtered_diffs):
             diff_filename = f'{tmpdir}/diff_{idx}.txt'
             with open(diff_filename, 'w') as f:
                 f.write(diff_content)
+                if not starting_content.endswith('\n'):
+                    f.write('\n')
             diff_filenames.append(diff_filename)
 
         patch_command = f'{patch_path} {original_filename}'
