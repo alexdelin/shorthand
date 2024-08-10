@@ -58,8 +58,7 @@ type NoteVersionTimestamp = str
 
 
 def ensure_note_version(notes_directory: DirectoryPath,
-                        note_path: NotePath,
-                        use_exact_time: bool = False) -> None:
+                        note_path: NotePath) -> None:
     '''Ensure that a daily starting version exists for the specified note and
        the current UTC day
 
@@ -72,10 +71,7 @@ def ensure_note_version(notes_directory: DirectoryPath,
     if not _is_note_path(notes_directory, note_path):
         raise ValueError(f'No note found at path {note_path}')
 
-    if use_exact_time:
-        timestamp = datetime.now(UTC).isoformat(timespec='milliseconds')
-    else:
-        timestamp = datetime.now(UTC).date().isoformat() + 'T00:00:00.000+00:00'
+    timestamp = datetime.now(UTC).date().isoformat() + 'T00:00:00.000+00:00'
     note_version_path = f'{notes_directory}/' + \
                         f'{HISTORY_PATH}' + \
                         f'{note_path}/{timestamp}.version'
@@ -88,6 +84,29 @@ def ensure_note_version(notes_directory: DirectoryPath,
         os.makedirs(note_history_dir)
 
     full_note_path = get_full_path(notes_directory, note_path)
+    shutil.copy2(full_note_path, note_version_path)
+
+
+def add_note_version_for_move(notes_directory: DirectoryPath,
+                              source: NotePath,
+                              destination: NotePath) -> None:
+    '''Add a note version with the precise current UTC timestamp
+       this should only be called if a version file for the destination
+       note already exists for the beginning of the current day
+    '''
+    timestamp = datetime.now(UTC).isoformat(timespec='milliseconds')
+    note_version_path = f'{notes_directory}/' + \
+                        f'{HISTORY_PATH}' + \
+                        f'{destination}/{timestamp}.version'
+
+    if os.path.exists(note_version_path):
+        raise ValueError(f'Note version already exists at path {note_version_path}')
+
+    note_history_dir = os.path.dirname(note_version_path)
+    if not os.path.exists(note_history_dir):
+        os.makedirs(note_history_dir)
+
+    full_note_path = get_full_path(notes_directory, source)
     shutil.copy2(full_note_path, note_version_path)
 
 
@@ -393,7 +412,7 @@ def _store_history_for_note_move(notes_directory: DirectoryPath,
         # If a start of day version already exists at the path that we are
         # moving the note to, add another version file with the exact current
         # timestamp
-        ensure_note_version(notes_directory, new_note_path, use_exact_time=True)
+        add_note_version_for_move(notes_directory, old_note_path, new_note_path)
     if _is_note_path(notes_directory, old_note_path):
         ensure_note_version(notes_directory, old_note_path)
     diff = calculate_diff_for_move(old_note_path, new_note_path)

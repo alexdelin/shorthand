@@ -119,7 +119,7 @@ class TestEditHistory(unittest.TestCase):
         assert note_diff
         assert 'similarity index 100%' in note_diff
 
-    def test_moving_to_path_with_existing_version_fails(self):
+    def test_moving_to_path_with_existing_version(self):
         self.server.create_file('/new.note')
         time.sleep(0.001)
         self.server.update_note('/todos.note', 'foobar')
@@ -129,6 +129,8 @@ class TestEditHistory(unittest.TestCase):
         self.server.move_file_or_directory('/new.note', '/todos.note')
         versions = self.server.list_note_versions('/todos.note')
         assert len(versions) == 2
+        # Check that not every version is a start of day version
+        assert not all(['T00:00:00.000' in version for version in versions])
 
     def test_storing_delete_diffs(self):
         self.server.create_file('/new.note')
