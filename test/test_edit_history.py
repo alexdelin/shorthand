@@ -45,7 +45,7 @@ class TestEditHistory(unittest.TestCase):
             note_content = self.server.get_note(test_note)
             ensure_note_version(notes_directory=self.notes_dir,
                                 note_path=test_note)
-            current_utc_day = datetime.now(UTC).date().isoformat()
+            current_utc_day = datetime.now(UTC).date().isoformat() + 'T00:00:00.000+00:00'
 
             # Check the version file was written
             assert os.path.exists(f'{self.notes_dir}/{HISTORY_PATH}/{test_note}/{current_utc_day}.version')
@@ -126,9 +126,9 @@ class TestEditHistory(unittest.TestCase):
         time.sleep(0.001)
         self.server.delete_file('/todos.note')
 
-        with pytest.raises(ValueError) as e:
-            self.server.move_file_or_directory('/new.note', '/todos.note')
-        assert e
+        self.server.move_file_or_directory('/new.note', '/todos.note')
+        versions = self.server.list_note_versions('/todos.note')
+        assert len(versions) == 2
 
     def test_storing_delete_diffs(self):
         self.server.create_file('/new.note')

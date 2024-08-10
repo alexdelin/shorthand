@@ -31,7 +31,9 @@ from shorthand.utils.buffers import BufferContent, BufferID, _new_buffer, _list_
 from shorthand.utils.filesystem import _create_file, _create_directory, \
                                        _move_file_or_directory, _delete_file, \
                                        _delete_directory, _upload_resource
-from shorthand.edit_history import NoteDiffTimestamp, NoteDiffType, NoteVersionDate, _store_history_for_note_create, \
+from shorthand.edit_history import NoteDiffTimestamp, NoteDiffType, \
+                                   NoteVersionTimestamp, \
+                                   _store_history_for_note_create, \
                                    _store_history_for_note_edit, \
                                    _store_history_for_note_move, \
                                    _store_history_for_note_delete, \
@@ -395,10 +397,10 @@ class ShorthandServer(object):
                                    find_path=self.find_path)
 
     def get_note_version(self, note_path: NotePath,
-                         version_date: NoteVersionDate):
+                         version_timestamp: NoteVersionTimestamp):
         return _get_note_version(notes_directory=self.notes_directory,
                                  note_path=note_path,
-                                 version_date=version_date)
+                                 version_timestamp=version_timestamp)
 
     def list_diffs_for_note(self, note_path: NotePath):
         return _list_diffs_for_note(notes_directory=self.notes_directory,

@@ -50,25 +50,35 @@ type NoteVersion = str
 '''The raw note content of a historical version of a note,
    as of the start of a given UTC day'''
 
-type NoteVersionDate = str
-'''An ISO-8601 date stamp for the UTC date of a note version'''
+type NoteVersionTimestamp = str
+'''An ISO-8601 time stamp for the UTC time that a version was created
+   with millisecond-precision
+
+   By default, this is the timestamp of the start of day UTC time'''
 
 
 def ensure_note_version(notes_directory: DirectoryPath,
-                        note_path: NotePath) -> None:
+                        note_path: NotePath,
+                        use_exact_time: bool = False) -> None:
     '''Ensure that a daily starting version exists for the specified note and
        the current UTC day
 
        A note must currently exist at the specified note path
+
+       `use_exact_time` is used in the case of moves, if there is already
+       a version present for the note for the beginning of the day
     '''
 
     if not _is_note_path(notes_directory, note_path):
         raise ValueError(f'No note found at path {note_path}')
 
-    current_utc_date = datetime.now(UTC).date().isoformat()
+    if use_exact_time:
+        timestamp = datetime.now(UTC).isoformat(timespec='milliseconds')
+    else:
+        timestamp = datetime.now(UTC).date().isoformat() + 'T00:00:00.000+00:00'
     note_version_path = f'{notes_directory}/' + \
                         f'{HISTORY_PATH}' + \
-                        f'{note_path}/{current_utc_date}.version'
+                        f'{note_path}/{timestamp}.version'
 
     if os.path.exists(note_version_path):
         return
@@ -84,7 +94,7 @@ def ensure_note_version(notes_directory: DirectoryPath,
 def _list_note_versions(notes_directory: DirectoryPath,
                         note_path: NotePath,
                         find_path: ExecutablePath = 'find'
-                        ) -> List[NoteVersionDate]:
+                        ) -> List[NoteVersionTimestamp]:
     '''List historical versions which are stored for a specified note
 
        The specified note does not currently need to exist, it could
@@ -106,12 +116,12 @@ def _list_note_versions(notes_directory: DirectoryPath,
                      for line in output_lines
                      if line.strip()]
 
-    return [f.split('/')[-1].split('.')[0] for f in version_files]
+    return [f.split('/')[-1][:-8] for f in version_files]
 
 
 def _get_note_version(notes_directory: DirectoryPath,
                       note_path: NotePath,
-                      version_date: NoteVersionDate) -> NoteVersion:
+                      version_timestamp: NoteVersionTimestamp) -> NoteVersion:
     '''Get a specified historical version of a give note
 
        The specified note does not currently need to exist, it could
@@ -123,11 +133,11 @@ def _get_note_version(notes_directory: DirectoryPath,
 
     note_version_path = f'{notes_directory}/' + \
                         f'{HISTORY_PATH}' + \
-                        f'{note_path}/{version_date}.version'
+                        f'{note_path}/{version_timestamp}.version'
 
     if not os.path.exists(note_version_path):
         raise ValueError(f'A Version for note {note_path} on date ' + \
-                         f'{version_date} does not exist')
+                         f'{version_timestamp} does not exist')
 
     with open(note_version_path, 'r') as f:
         return f.read()
@@ -376,12 +386,14 @@ def _store_history_for_note_move(notes_directory: DirectoryPath,
         raise ValueError(f'Cannot track move history. Neither {old_note_path} ' + \
                          f'or {new_note_path} are valid note paths')
 
-    # For safety, we need to fail if a version already exists for the
-    # target note in the current day
-    if datetime.now(UTC).date().isoformat() in _list_note_versions(
+    today_version_timestamp = datetime.now(UTC).date().isoformat() + 'T00:00:00.000+00:00'
+    if today_version_timestamp in _list_note_versions(
             notes_directory=notes_directory, note_path=new_note_path,
             find_path=find_path):
-        raise ValueError(f'A version file for today already exists for note {new_note_path}')
+        # If a start of day version already exists at the path that we are
+        # moving the note to, add another version file with the exact current
+        # timestamp
+        ensure_note_version(notes_directory, new_note_path, use_exact_time=True)
     if _is_note_path(notes_directory, old_note_path):
         ensure_note_version(notes_directory, old_note_path)
     diff = calculate_diff_for_move(old_note_path, new_note_path)
