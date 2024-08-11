@@ -406,12 +406,14 @@ def _store_history_for_note_move(notes_directory: DirectoryPath,
                          f'or {new_note_path} are valid note paths')
 
     today_version_timestamp = datetime.now(UTC).date().isoformat() + 'T00:00:00.000+00:00'
-    if today_version_timestamp in _list_note_versions(
-            notes_directory=notes_directory, note_path=new_note_path,
-            find_path=find_path):
+    if _is_note_path(notes_directory, new_note_path, must_exist=False) and \
+            today_version_timestamp in _list_note_versions(
+                notes_directory=notes_directory, note_path=new_note_path,
+                find_path=find_path):
         # If a start of day version already exists at the path that we are
         # moving the note to, add another version file with the exact current
-        # timestamp
+        # timestamp. This new version will be used as the base version for any
+        # edits made after this point in time
         add_note_version_for_move(notes_directory, old_note_path, new_note_path)
     if _is_note_path(notes_directory, old_note_path):
         ensure_note_version(notes_directory, old_note_path)
