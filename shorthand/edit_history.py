@@ -22,7 +22,7 @@ from subprocess import PIPE, Popen
 from typing import List, Literal, Optional, TypedDict
 
 from shorthand.notes import _get_note, _is_note_path
-from shorthand.types import DirectoryPath, ExecutablePath, NotePath, RawNoteContent
+from shorthand.types import DirectoryPath, ExecutablePath, NotePath, RawNoteContent, Subdir
 from shorthand.utils.paths import get_full_path, get_relative_path
 
 
@@ -414,14 +414,55 @@ def _store_history_for_note_move(notes_directory: DirectoryPath,
         # moving the note to, add another version file with the exact current
         # timestamp. This new version will be used as the base version for any
         # edits made after this point in time
+        #
+        # This is dangerous because the version file will reflect the move
+        # before the file in the notes directory has actually been moved
         add_note_version_for_move(notes_directory, old_note_path, new_note_path)
-    if _is_note_path(notes_directory, old_note_path):
-        ensure_note_version(notes_directory, old_note_path)
+        return
+
     diff = calculate_diff_for_move(old_note_path, new_note_path)
     if _is_note_path(notes_directory, old_note_path):
+        ensure_note_version(notes_directory, old_note_path)
         save_diff(notes_directory, old_note_path, diff, 'move')
     if _is_note_path(notes_directory, new_note_path, must_exist=False):
         save_diff(notes_directory, new_note_path, diff, 'move')
+
+
+def _store_history_for_directory_move(notes_directory: DirectoryPath,
+                                      old_directory_path: Subdir,
+                                      new_directory_path: Subdir,
+                                      find_path: ExecutablePath = 'find'
+                                      ) -> None:
+    '''
+    '''
+    old_full_dir_path = get_full_path(notes_directory, old_directory_path)
+    new_full_dir_path = get_full_path(notes_directory, new_directory_path)
+
+    if os.path.exists(new_full_dir_path):
+        raise ValueError(f'Target directory {new_directory_path} already exists')
+
+    # Ensure that version history exists for every note being moved
+    find_command = f'{find_path} {old_full_dir_path} ' + \
+                   '-type f -name "*.note"'
+
+    log.debug(f'Running command {find_command} to list notes')
+    proc = Popen(find_command, stdout=PIPE, stderr=PIPE, shell=True)
+    output, err = proc.communicate()
+    output_lines = output.decode().splitlines()
+
+    note_paths = [get_relative_path(notes_directory, line.strip())
+                  for line in output_lines
+                  if line.strip()]
+
+    for note_path in note_paths:
+        new_note_path = note_path.replace(
+            f'{old_directory_path}',
+            f'{new_directory_path}')
+        _store_history_for_note_move(
+            notes_directory=notes_directory,
+            old_note_path=note_path,
+            new_note_path=new_note_path,
+            find_path=find_path)
 
 
 def _store_history_for_note_create(notes_directory: DirectoryPath,
@@ -439,6 +480,33 @@ def _store_history_for_note_delete(notes_directory: DirectoryPath,
     ensure_note_version(notes_directory, note_path)
     diff = calculate_diff_for_delete(notes_directory, note_path)
     save_diff(notes_directory, note_path, diff, 'delete')
+
+
+def _store_history_for_directory_delete(notes_directory: DirectoryPath,
+                                        directory_path: Subdir,
+                                        find_path: ExecutablePath = 'find'
+                                        ) -> None:
+    full_dir_path = get_full_path(notes_directory, directory_path)
+    if not os.path.exists(full_dir_path):
+        raise ValueError(f'Directory {directory_path} to delete does not exist')
+
+    # Ensure that version history exists for every note being moved
+    find_command = f'{find_path} {full_dir_path} ' + \
+                   '-type f -name "*.note"'
+
+    log.debug(f'Running command {find_command} to list notes')
+    proc = Popen(find_command, stdout=PIPE, stderr=PIPE, shell=True)
+    output, err = proc.communicate()
+    output_lines = output.decode().splitlines()
+
+    note_paths = [get_relative_path(notes_directory, line.strip())
+                  for line in output_lines
+                  if line.strip()]
+
+    for note_path in note_paths:
+        _store_history_for_note_delete(
+            notes_directory=notes_directory,
+            note_path=note_path)
 
 
 def _list_diffs_for_note(notes_directory: DirectoryPath,

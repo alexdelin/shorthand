@@ -1,4 +1,5 @@
 import logging
+import os
 from typing import Optional, Self
 
 from shorthand.frontend import clear_open_files, close_file, get_open_files, open_file
@@ -22,7 +23,7 @@ from shorthand.types import DirectoryPath, InternalAbsoluteFilePath, InternalAbs
 from shorthand.utils.archive import _get_note_archive
 from shorthand.utils.config import _get_notes_config, _write_config, \
                                    _modify_config
-from shorthand.utils.paths import _get_subdirs, _is_note_path
+from shorthand.utils.paths import _get_subdirs, _is_note_path, get_full_path
 from shorthand.utils.logging import get_handler, log_level_from_string
 from shorthand.utils.buffers import BufferContent, BufferID, _new_buffer, _list_buffers, \
                                     _get_buffer_content, \
@@ -38,7 +39,9 @@ from shorthand.edit_history import NoteDiffTimestamp, NoteDiffType, \
                                    _store_history_for_note_move, \
                                    _store_history_for_note_delete, \
                                    _list_note_versions, _get_note_version, \
-                                   _list_diffs_for_note, _get_note_diff
+                                   _list_diffs_for_note, _get_note_diff, \
+                                   _store_history_for_directory_move, \
+                                   _store_history_for_directory_delete
 
 # Set up the default module-level logger which the rest of the library
 #   will inherit. This will be updated with the settings specified in the
@@ -331,7 +334,7 @@ class ShorthandServer(object):
     # --- Filesystem Utils ---
     # ------------------------
     def create_file(self, file_path: InternalAbsoluteFilePath):
-        if self.is_note_path(file_path, False):
+        if self.is_note_path(file_path, must_exist=False):
             self.store_history_for_note_create(file_path)
         return _create_file(notes_directory=self.notes_directory,
                             file_path=file_path)
@@ -350,6 +353,8 @@ class ShorthandServer(object):
         if self.is_note_path(source) or self.is_note_path(destination, must_exist=False):
             self.store_history_for_note_move(
                 old_note_path=source, new_note_path=destination)
+        elif os.path.isdir(get_full_path(self.notes_directory, source)):
+            self.store_history_for_directory_move(source, destination)
         return _move_file_or_directory(
             notes_directory=self.notes_directory,
             source=source, destination=destination)
@@ -362,7 +367,8 @@ class ShorthandServer(object):
 
     def delete_directory(self, directory_path: Subdir,
                          recursive: bool = False):
-        #TODO: Track deletion history for all notes in this directory
+        if recursive:
+            self.store_history_for_directory_delete(directory_path)
         return _delete_directory(
             notes_directory=self.notes_directory,
             directory_path=directory_path, recursive=recursive)
@@ -434,7 +440,21 @@ class ShorthandServer(object):
             old_note_path=old_note_path,
             new_note_path=new_note_path)
 
+    def store_history_for_directory_move(self, old_directory_path: Subdir,
+                                         new_directory_path: Subdir):
+        return _store_history_for_directory_move(
+            notes_directory=self.notes_directory,
+            old_directory_path=old_directory_path,
+            new_directory_path=new_directory_path,
+            find_path=self.find_path)
+
     def store_history_for_note_delete(self, note_path: NotePath):
         return _store_history_for_note_delete(
             notes_directory=self.notes_directory,
             note_path=note_path)
+
+    def store_history_for_directory_delete(self, directory_path: Subdir):
+        return _store_history_for_directory_delete(
+            notes_directory=self.notes_directory,
+            directory_path=directory_path,
+            find_path=self.find_path)

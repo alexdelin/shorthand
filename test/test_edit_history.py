@@ -132,6 +132,27 @@ class TestEditHistory(unittest.TestCase):
         # Check that not every version is a start of day version
         assert not all(['T00:00:00.000' in version for version in versions])
 
+    def test_storing_diffs_for_directory_move(self):
+        self.server.create_file('/section/new.note')
+        self.server.create_file('/section/resource.txt')
+        self.server.move_file_or_directory('/section', '/newsubdir')
+
+        assert os.path.exists(self.notes_dir + '/.shorthand/history/section/new.note/diffs')
+        assert os.path.exists(self.notes_dir + '/.shorthand/history/section/mixed.note/diffs')
+        assert os.path.exists(self.notes_dir + '/.shorthand/history/newsubdir/new.note/diffs')
+        assert os.path.exists(self.notes_dir + '/.shorthand/history/newsubdir/mixed.note/diffs')
+        assert not os.path.exists(self.notes_dir + '/.shorthand/history/section/resource.txt/diffs')
+        assert not os.path.exists(self.notes_dir + '/.shorthand/history/newsubdir/resource.txt/diffs')
+
+        assert self.server.list_note_versions('/section/mixed.note')
+        assert self.server.list_note_versions('/section/new.note')
+
+        assert self.server.list_diffs_for_note('/section/mixed.note')
+        assert len(self.server.list_diffs_for_note('/section/new.note')) == 2
+
+        assert self.server.list_diffs_for_note('/newsubdir/mixed.note')
+        assert self.server.list_diffs_for_note('/newsubdir/new.note')
+
     def test_storing_delete_diffs(self):
         self.server.create_file('/new.note')
         time.sleep(0.001)
@@ -139,7 +160,7 @@ class TestEditHistory(unittest.TestCase):
         time.sleep(0.001)
         self.server.delete_file('/new.note')
 
-        note_diffs = self.server.list_diffs_for_note(note_path='/new.note')
+        note_diffs = self.server.list_diffs_for_note('/new.note')
         assert len(note_diffs) == 3
         assert note_diffs[0]['diff_type'] == 'delete'
 
@@ -150,15 +171,22 @@ class TestEditHistory(unittest.TestCase):
         assert note_diff
         assert 'deleted file mode' in note_diff
 
+    def test_storing_diffs_for_directory_delete(self):
+        self.server.create_file('/section/new.note')
+
+        self.server.delete_directory('/section', recursive=True)
+        assert self.server.list_diffs_for_note('/section/mixed.note')
+        assert len(self.server.list_diffs_for_note('/section/new.note')) == 2
+
     def test_storing_edit_diffs(self):
         self.server.store_history_for_note_edit(
             note_path='/todos.note',
             new_content='foo bar')
 
-        note_versions = self.server.list_note_versions(note_path='/todos.note')
+        note_versions = self.server.list_note_versions('/todos.note')
         assert len(note_versions) == 1
 
-        note_diffs = self.server.list_diffs_for_note(note_path='/todos.note')
+        note_diffs = self.server.list_diffs_for_note('/todos.note')
         assert len(note_diffs) == 1
         assert note_diffs[0]['diff_type'] == 'edit'
 
