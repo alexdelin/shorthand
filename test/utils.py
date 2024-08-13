@@ -29,7 +29,8 @@ TEST_CONFIG: ShorthandConfig = {
     "frontend": {
         "view_history_limit": 1,
         "map_tileserver_url": 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-    }
+    },
+    "track_edit_history": True
 }
 TEST_CONFIG_PATH = TEMP_DIR + '/config.json'
 

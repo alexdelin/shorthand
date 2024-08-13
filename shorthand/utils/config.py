@@ -27,6 +27,7 @@ class ShorthandConfigInput(TypedDict, total=False):
     find_path: ExecutablePath
     patch_path: ExecutablePath
     frontend: ShorthandFrontendConfig
+    track_edit_history: bool
 
 class ShorthandConfig(TypedDict):
     '''The config used by the application.
@@ -43,6 +44,7 @@ class ShorthandConfig(TypedDict):
     find_path: ExecutablePath
     patch_path: ExecutablePath
     frontend: ShorthandFrontendConfig
+    track_edit_history: bool
 
 class ShorthandConfigUpdates(TypedDict, total=False):
     default_directory: Optional[RelativeDirectoryPath]
@@ -53,6 +55,7 @@ class ShorthandConfigUpdates(TypedDict, total=False):
     find_path: ExecutablePath
     patch_path: ExecutablePath
     frontend: ShorthandFrontendConfig
+    track_edit_history: bool
 
 
 CONFIG_FILE_LOCATION = '/etc/shorthand/shorthand_config.json'
@@ -77,7 +80,8 @@ DEFAULT_CONFIG: ShorthandConfig = {
     "grep_path": DEFAULT_GREP_PATH,
     "find_path": DEFAULT_FIND_PATH,
     "patch_path": DEFAULT_PATCH_PATH,
-    "frontend": DEFAULT_FRONTEND_CONFIG
+    "frontend": DEFAULT_FRONTEND_CONFIG,
+    "track_edit_history": True
 }
 
 REQUIRED_FIELDS = ['notes_directory']
@@ -184,6 +188,12 @@ def clean_and_validate_config(config: ShorthandConfigInput | ShorthandConfig) ->
     for field in REQUIRED_FIELDS:
         if field not in config.keys():
             raise ValueError(f'Missing required field "{field}"')
+
+    # Validation for tracking edit history
+    if 'track_edit_history' not in config:
+        config['track_edit_history'] = DEFAULT_CONFIG['track_edit_history']
+    if not isinstance(config['track_edit_history'], bool):
+        raise ValueError('track_edit_history must be a boolean value')
 
     # Ensure that the notes directory and cache directory
     # paths have no trailing `/`

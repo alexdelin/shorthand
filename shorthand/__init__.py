@@ -1,7 +1,8 @@
 import logging
 import os
-from typing import Optional, Self
+from typing import Optional
 
+from shorthand.edit_timeline import get_edit_timeline
 from shorthand.frontend import clear_open_files, close_file, get_open_files, open_file
 from shorthand.notes import _get_note, _update_note, \
                             _validate_internal_links, _append_to_note, \
@@ -102,14 +103,16 @@ class ShorthandServer(object):
         self.grep_path = self.config['grep_path']
         self.find_path = self.config['find_path']
         self.patch_path = self.config['patch_path']
+        self.track_edit_history = self.config['track_edit_history']
         self.setup_logging()
 
     def update_config(self, updates):
         '''Update one or more fields in the configuration
-           Note: This does not save the updated config to disk
+           Note: This will save the updated config to disk
         '''
         self.config = _modify_config(self.config, updates)
-        self.setup_logging()
+        self.save_config()
+        self.reload_config()
 
     def save_config(self):
         '''Save the current config to the config file
@@ -137,11 +140,14 @@ class ShorthandServer(object):
                          path=note_path)
 
     def update_note(self, note_path, content):
-        if not note_path.endswith('.note'):
+        if not self.is_note_path(note_path):
             raise ValueError('Only note files can be updated')
-        _store_history_for_note_edit(notes_directory=self.notes_directory,
-                                     note_path=note_path, new_content=content,
-                                     find_path=self.find_path)
+
+        if self.track_edit_history:
+            _store_history_for_note_edit(notes_directory=self.notes_directory,
+                                         note_path=note_path, new_content=content,
+                                         find_path=self.find_path)
+
         return _update_note(notes_directory=self.notes_directory,
                             file_path=note_path, content=content)
 
@@ -334,8 +340,12 @@ class ShorthandServer(object):
     # --- Filesystem Utils ---
     # ------------------------
     def create_file(self, file_path: InternalAbsoluteFilePath):
-        if self.is_note_path(file_path, must_exist=False):
-            self.store_history_for_note_create(file_path)
+        if self.track_edit_history and \
+                self.is_note_path(file_path, must_exist=False):
+            _store_history_for_note_create(
+                notes_directory=self.notes_directory,
+                note_path=file_path)
+
         return _create_file(notes_directory=self.notes_directory,
                             file_path=file_path)
 
@@ -350,25 +360,43 @@ class ShorthandServer(object):
 
     def move_file_or_directory(self, source: InternalAbsolutePath,
                                destination: InternalAbsolutePath):
-        if self.is_note_path(source) or self.is_note_path(destination, must_exist=False):
-            self.store_history_for_note_move(
-                old_note_path=source, new_note_path=destination)
-        elif os.path.isdir(get_full_path(self.notes_directory, source)):
-            self.store_history_for_directory_move(source, destination)
+        if self.track_edit_history and \
+                (self.is_note_path(source) \
+                or self.is_note_path(destination, must_exist=False)):
+            _store_history_for_note_move(
+                notes_directory=self.notes_directory,
+                old_note_path=source, new_note_path=destination,
+                find_path=self.find_path)
+
+        elif self.track_edit_history and \
+                os.path.isdir(get_full_path(self.notes_directory, source)):
+            _store_history_for_directory_move(
+                notes_directory=self.notes_directory,
+                old_directory_path=source,
+                new_directory_path=destination,
+                find_path=self.find_path)
+
         return _move_file_or_directory(
             notes_directory=self.notes_directory,
             source=source, destination=destination)
 
     def delete_file(self, file_path: InternalAbsoluteFilePath):
-        if self.is_note_path(file_path):
-            self.store_history_for_note_delete(file_path)
+        if self.track_edit_history and self.is_note_path(file_path):
+            _store_history_for_note_delete(
+                notes_directory=self.notes_directory,
+                note_path=file_path)
+
         return _delete_file(notes_directory=self.notes_directory,
                             file_path=file_path)
 
     def delete_directory(self, directory_path: Subdir,
                          recursive: bool = False):
-        if recursive:
-            self.store_history_for_directory_delete(directory_path)
+        if self.track_edit_history and recursive:
+            _store_history_for_directory_delete(
+                notes_directory=self.notes_directory,
+                directory_path=directory_path,
+                find_path=self.find_path)
+
         return _delete_directory(
             notes_directory=self.notes_directory,
             directory_path=directory_path, recursive=recursive)
@@ -419,42 +447,8 @@ class ShorthandServer(object):
                               note_path=note_path, timestamp=timestamp,
                               diff_type=diff_type)
 
-    def store_history_for_note_create(self, note_path: NotePath):
-        return _store_history_for_note_create(
-            notes_directory=self.notes_directory,
-            note_path=note_path)
-
-    def store_history_for_note_edit(self, note_path: NotePath,
-                                    new_content: RawNoteContent):
-        return _store_history_for_note_edit(
+    def get_edit_timeline(self, note_path: NotePath):
+        return get_edit_timeline(
             notes_directory=self.notes_directory,
             note_path=note_path,
-            new_content=new_content,
-            find_path=self.find_path,
-            patch_path=self.patch_path)
-
-    def store_history_for_note_move(self, old_note_path: NotePath,
-                                    new_note_path: NotePath):
-        return _store_history_for_note_move(
-            notes_directory=self.notes_directory,
-            old_note_path=old_note_path,
-            new_note_path=new_note_path)
-
-    def store_history_for_directory_move(self, old_directory_path: Subdir,
-                                         new_directory_path: Subdir):
-        return _store_history_for_directory_move(
-            notes_directory=self.notes_directory,
-            old_directory_path=old_directory_path,
-            new_directory_path=new_directory_path,
-            find_path=self.find_path)
-
-    def store_history_for_note_delete(self, note_path: NotePath):
-        return _store_history_for_note_delete(
-            notes_directory=self.notes_directory,
-            note_path=note_path)
-
-    def store_history_for_directory_delete(self, directory_path: Subdir):
-        return _store_history_for_directory_delete(
-            notes_directory=self.notes_directory,
-            directory_path=directory_path,
             find_path=self.find_path)

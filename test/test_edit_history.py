@@ -8,7 +8,7 @@ import unittest
 import pytest
 
 from shorthand import ShorthandServer
-from shorthand.edit_history import HISTORY_PATH, ensure_note_version
+from shorthand.edit_history import HISTORY_PATH, _store_history_for_note_edit, ensure_note_version
 from utils import TEST_CONFIG_PATH, setup_environment, teardown_environment, validate_setup
 
 
@@ -25,6 +25,7 @@ class TestEditHistory(unittest.TestCase):
         cls.notes_dir = cls.config['notes_directory']
         cls.grep_path = cls.config['grep_path']
         cls.find_path = cls.config['find_path']
+        cls.patch_path = cls.config['patch_path']
         cls.server = ShorthandServer(TEST_CONFIG_PATH)
 
     @classmethod
@@ -39,6 +40,7 @@ class TestEditHistory(unittest.TestCase):
         '''
         setup_environment()
         validate_setup()
+        self.server = ShorthandServer(TEST_CONFIG_PATH)
 
     def test_storing_daily_note_version(self):
         for test_note in ['/section/mixed.note', '/bugs.note']:
@@ -179,9 +181,12 @@ class TestEditHistory(unittest.TestCase):
         assert len(self.server.list_diffs_for_note('/section/new.note')) == 2
 
     def test_storing_edit_diffs(self):
-        self.server.store_history_for_note_edit(
+        _store_history_for_note_edit(
+            notes_directory=self.notes_dir,
             note_path='/todos.note',
-            new_content='foo bar')
+            new_content='foo bar',
+            find_path=self.find_path,
+            patch_path=self.patch_path)
 
         note_versions = self.server.list_note_versions('/todos.note')
         assert len(note_versions) == 1
@@ -271,3 +276,23 @@ class TestEditHistory(unittest.TestCase):
             diff_type=note_diffs[0]['diff_type'])
         assert note_diff
         assert '---' in note_diff
+
+    def test_no_history_when_disabled(self):
+        self.server.update_config({'track_edit_history': False})
+
+        self.server.create_file('/new.note')
+        self.server.update_note('/todos.note', 'New Content')
+        self.server.delete_file('/bugs.note')
+        self.server.move_file_or_directory('/locations.note', '/places.note')
+
+        assert not self.server.list_note_versions('/new.note')
+        assert not self.server.list_note_versions('/todos.note')
+        assert not self.server.list_note_versions('/bugs.note')
+        assert not self.server.list_note_versions('/locations.note')
+        assert not self.server.list_note_versions('/places.note')
+
+        assert not self.server.list_diffs_for_note('/new.note')
+        assert not self.server.list_diffs_for_note('/todos.note')
+        assert not self.server.list_diffs_for_note('/bugs.note')
+        assert not self.server.list_diffs_for_note('/locations.note')
+        assert not self.server.list_diffs_for_note('/places.note')

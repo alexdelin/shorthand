@@ -159,6 +159,18 @@ class TestConfig(unittest.TestCase):
             })
         assert 'could not be located' in str(e.value)
 
+    def test_edit_history_config(self):
+        cleaned_config = clean_and_validate_config({
+            "notes_directory": self.notes_dir
+        })
+        assert cleaned_config['track_edit_history'] == DEFAULT_CONFIG['track_edit_history']
+
+        cleaned_config = clean_and_validate_config({
+            "notes_directory": self.notes_dir,
+            'track_edit_history': False
+        })
+        assert cleaned_config['track_edit_history'] == False
+
     def test_frontend_config(self):
 
         # Test Passing Valid config
