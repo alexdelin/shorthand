@@ -1,5 +1,4 @@
 import logging
-import unittest
 from datetime import datetime
 
 from shorthand.elements.todos import _get_todos
@@ -7,7 +6,7 @@ from shorthand.elements.questions import _get_questions
 from shorthand.stamping import _stamp_notes, _stamp_raw_note
 from shorthand.notes import _get_note
 
-from utils import setup_environment, teardown_environment, validate_setup
+from utils import ShorthandTestCase
 from model import ShorthandModel
 
 
@@ -15,37 +14,8 @@ log = logging.getLogger(__name__)
 MODEL = ShorthandModel()
 
 
-class TestStamping(unittest.TestCase):
+class TestStamping(ShorthandTestCase, stamp=True, reset_per_method=False):
     """Test stamping functionality"""
-
-    @classmethod
-    def setup_class(cls):
-        '''ensure that we have a clean environment
-        before running any tests
-        '''
-        cls.config = setup_environment()
-        cls.notes_dir = cls.config['notes_directory']
-        cls.grep_path = cls.config['grep_path']
-        cls.find_path = cls.config['find_path']
-
-        # Stamp notes before running tests
-        response = _stamp_notes(cls.notes_dir,
-                                stamp_todos=True, stamp_today=True,
-                                stamp_questions=True, stamp_answers=True,
-                                grep_path=cls.grep_path)
-        assert response.keys()
-
-    @classmethod
-    def teardown_class(cls):
-        '''Ensure that we don't leave stamped
-        notes around after the tests are run
-        '''
-        teardown_environment()
-
-    def setup_method(self, method):
-        '''Validate that the environment has been set up correctly
-        '''
-        validate_setup()
 
     def test_todos_stamped(self):
         incomplete_todos = _get_todos(

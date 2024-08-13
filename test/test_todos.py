@@ -7,8 +7,7 @@ from shorthand.elements.todos import _get_todos, _mark_todo
 from shorthand.stamping import _stamp_notes
 from shorthand.web.app import create_app
 
-from utils import setup_environment, teardown_environment, validate_setup, \
-                  TEST_CONFIG_PATH
+from utils import ShorthandTestCase, setup_environment, TEST_CONFIG_PATH
 from model import ShorthandModel
 
 
@@ -16,41 +15,17 @@ log = logging.getLogger(__name__)
 MODEL = ShorthandModel()
 
 
-class TodoTestSuite(unittest.TestCase):
+class TestUnstampedTodos(ShorthandTestCase):
+    """Test basic search functionality of the library"""
 
     def get_todo_results(self, todo_status='incomplete', directory_filter=None,
                          query_string=None, sort_by=None, suppress_future=False,
                          stamp=False):
-        return _get_todos(notes_directory=self.notes_dir,
-                          todo_status=todo_status,
-                          directory_filter=directory_filter,
-                          query_string=query_string, sort_by=sort_by,
-                          suppress_future=suppress_future,
-                          grep_path=self.grep_path)
-
-    @classmethod
-    def setup_class(cls):
-        # ensure that we have a clean environment before running any tests
-        cls.config = setup_environment()
-        cls.notes_dir = cls.config['notes_directory']
-        cls.grep_path = cls.config['grep_path']
-        cls.find_path = cls.config['find_path']
-
-    @classmethod
-    def teardown_class(cls):
-        '''Ensure that we don't leave stamped
-        notes around after the tests are run
-        '''
-        teardown_environment()
-
-    def setup_method(self, method):
-        '''Validate that the environment has been set up correctly
-        '''
-        validate_setup()
-
-
-class TestUnstampedTodos(TodoTestSuite):
-    """Test basic search functionality of the library"""
+        return self.server.get_todos(
+            todo_status=todo_status,
+            directory_filter=directory_filter,
+            query_string=query_string, sort_by=sort_by,
+            suppress_future=suppress_future)
 
     def test_unstamped_incomplete_todos_basic(self):
 
@@ -113,9 +88,18 @@ class TestUnstampedTodos(TodoTestSuite):
                               MODEL.search_todos(**args))
 
 
-class TestMarkTodos(TodoTestSuite):
+class TestMarkTodos(ShorthandTestCase, reset_per_method=False):
     """Test Marking the status of a todo
     """
+
+    def get_todo_results(self, todo_status='incomplete', directory_filter=None,
+                         query_string=None, sort_by=None, suppress_future=False,
+                         stamp=False):
+        return self.server.get_todos(
+            todo_status=todo_status,
+            directory_filter=directory_filter,
+            query_string=query_string, sort_by=sort_by,
+            suppress_future=suppress_future)
 
     def test_mark_todo(self):
         # Mark a specific todo as completed
@@ -141,24 +125,19 @@ class TestMarkTodos(TodoTestSuite):
                     for todo in results])
 
 
-class TestStampedTodos(TodoTestSuite):
+class TestStampedTodos(ShorthandTestCase, reset_per_method=False, stamp=True):
     """Repeat all tests for unstamped todos to ensure that
        nothing unexpected has changed.
     """
 
-    @classmethod
-    def setup_class(cls):
-        '''ensure that we have a clean environment
-        before running any tests
-        '''
-        cls.config = setup_environment()
-        cls.notes_dir = cls.config['notes_directory']
-        cls.grep_path = cls.config['grep_path']
-        cls.find_path = cls.config['find_path']
-        _ = _stamp_notes(cls.notes_dir,
-                         stamp_todos=True, stamp_today=True,
-                         stamp_questions=False, stamp_answers=False,
-                         grep_path=cls.grep_path)
+    def get_todo_results(self, todo_status='incomplete', directory_filter=None,
+                         query_string=None, sort_by=None, suppress_future=False,
+                         stamp=False):
+        return self.server.get_todos(
+            todo_status=todo_status,
+            directory_filter=directory_filter,
+            query_string=query_string, sort_by=sort_by,
+            suppress_future=suppress_future)
 
     def test_stamped_incomplete_todos_basic(self):
         # Test Getting all incomplete todos
@@ -224,18 +203,8 @@ class TestStampedTodos(TodoTestSuite):
                               MODEL.search_todos(**args))
 
 
-class TestTodosUnstampedFlask(TodoTestSuite):
+class TestTodosUnstampedFlask(ShorthandTestCase, reset_per_method=False, include_flask_client=True):
     """Test getting unstamped todos via the HTTP API"""
-
-    @classmethod
-    def setup_class(cls):
-        # ensure that we have a clean environment before running any tests
-        cls.config = setup_environment()
-        cls.notes_dir = cls.config['notes_directory']
-        cls.grep_path = cls.config['grep_path']
-        cls.find_path = cls.config['find_path']
-        app = create_app(TEST_CONFIG_PATH)
-        cls.api_client = app.test_client()
 
     def get_api_results(self, todo_status='incomplete', directory_filter=None,
                         query_string=None, case_sensitive=False, sort_by=None,
@@ -352,22 +321,8 @@ class TestTodosUnstampedFlask(TodoTestSuite):
                                   MODEL.search_todos(**args))
 
 
-class TestTodosStampedFlask(unittest.TestCase):
+class TestTodosStampedFlask(ShorthandTestCase, reset_per_method=False, include_flask_client=True, stamp=True):
     """Test getting stamped todos via the HTTP API"""
-
-    @classmethod
-    def setup_class(cls):
-        # ensure that we have a clean environment before running any tests
-        cls.config = setup_environment()
-        cls.notes_dir = cls.config['notes_directory']
-        cls.grep_path = cls.config['grep_path']
-        cls.find_path = cls.config['find_path']
-        _ = _stamp_notes(cls.notes_dir,
-                         stamp_todos=True, stamp_today=True,
-                         stamp_questions=False, stamp_answers=False,
-                         grep_path=cls.grep_path)
-        app = create_app(TEST_CONFIG_PATH)
-        cls.api_client = app.test_client()
 
     def get_api_results(self, todo_status='incomplete', directory_filter=None,
                         query_string=None, case_sensitive=False, sort_by=None,
@@ -479,21 +434,9 @@ class TestTodosStampedFlask(unittest.TestCase):
                                   MODEL.search_todos(**args))
 
 
-class TestMarkTodosFlask(unittest.TestCase):
+class TestMarkTodosFlask(ShorthandTestCase, reset_per_method=False, include_flask_client=True):
     """Test Marking the status of a todo via the HTTP API
     """
-
-    @classmethod
-    def setup_class(cls):
-        '''ensure that we have a clean environment
-        before running any tests
-        '''
-        cls.config = setup_environment()
-        cls.notes_dir = cls.config['notes_directory']
-        cls.grep_path = cls.config['grep_path']
-        cls.find_path = cls.config['find_path']
-        app = create_app(TEST_CONFIG_PATH)
-        cls.api_client = app.test_client()
 
     def test_mark_todo(self):
         # Mark a specific todo as completed

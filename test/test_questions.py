@@ -1,10 +1,9 @@
 import logging
-import unittest
 
 from shorthand.elements.questions import _get_questions
 from shorthand.stamping import _stamp_notes
 
-from utils import setup_environment, teardown_environment, validate_setup
+from utils import ShorthandTestCase, setup_environment
 from model import ShorthandModel
 
 
@@ -12,7 +11,7 @@ log = logging.getLogger(__name__)
 MODEL = ShorthandModel()
 
 
-class TestQuestions(unittest.TestCase):
+class TestQuestions(ShorthandTestCase, reset_per_method=False):
     """Test basic search functionality of the library"""
 
     def get_question_results(self, question_status='all', directory_filter=None, stamp=False):
@@ -20,19 +19,6 @@ class TestQuestions(unittest.TestCase):
                               question_status=question_status,
                               directory_filter=directory_filter,
                               grep_path=self.grep_path)
-
-    @classmethod
-    def setup_class(cls):
-        # ensure that we have a clean environment before running any tests
-        cls.config = setup_environment()
-        cls.notes_dir = cls.config['notes_directory']
-        cls.grep_path = cls.config['grep_path']
-        cls.find_path = cls.config['find_path']
-
-    def setup_method(self, method):
-        '''Validate that the environment has been set up correctly
-        '''
-        validate_setup()
 
     def test_get_unanswered_questions(self):
 
@@ -84,7 +70,7 @@ class TestQuestions(unittest.TestCase):
                               MODEL.search_questions(**args))
 
 
-class TestStampedQuestions(unittest.TestCase):
+class TestStampedQuestions(ShorthandTestCase, reset_per_method=False, stamp=True):
     """Test that questions are stamped as expected"""
 
     maxDiff = None
@@ -94,32 +80,6 @@ class TestStampedQuestions(unittest.TestCase):
                               question_status=question_status,
                               directory_filter=directory_filter,
                               grep_path=self.grep_path)
-
-    @classmethod
-    def setup_class(cls):
-        '''ensure that we have a clean environment
-        before running any tests
-        '''
-        cls.config = setup_environment()
-        cls.notes_dir = cls.config['notes_directory']
-        cls.grep_path = cls.config['grep_path']
-        cls.find_path = cls.config['find_path']
-        _ = _stamp_notes(cls.notes_dir,
-                         stamp_todos=False, stamp_today=False,
-                         stamp_questions=True, stamp_answers=True,
-                         grep_path=cls.grep_path)
-
-    @classmethod
-    def teardown_class(cls):
-        '''Ensure that we don't leave stamped
-        notes around after the tests are run
-        '''
-        teardown_environment()
-
-    def setup_method(self, method):
-        '''Validate that the environment has been set up correctly
-        '''
-        validate_setup()
 
     def test_get_unanswered_questions(self):
 

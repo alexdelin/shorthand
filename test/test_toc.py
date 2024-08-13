@@ -1,9 +1,8 @@
 import logging
-import unittest
 
 from shorthand.toc import _get_toc
 
-from utils import setup_environment, validate_setup
+from utils import ShorthandTestCase
 from results_unstamped import TOC
 
 
@@ -27,21 +26,8 @@ def compare_dicts(d1, d2):
                 assert d1[key] == d2[key]
 
 
-class TestToc(unittest.TestCase):
+class TestToc(ShorthandTestCase, reset_per_method=False):
     """Test table of contents functionality of the library"""
-
-    @classmethod
-    def setup_class(cls):
-        # ensure that we have a clean environment before running any tests
-        cls.config = setup_environment()
-        cls.notes_dir = cls.config['notes_directory']
-        cls.grep_path = cls.config['grep_path']
-        cls.find_path = cls.config['find_path']
-
-    def setup_method(self, method):
-        '''Validate that the environment has been set up correctly
-        '''
-        validate_setup()
 
     def test_get_toc(self):
         toc = _get_toc(self.notes_dir)

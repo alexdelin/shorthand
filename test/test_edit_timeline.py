@@ -1,43 +1,18 @@
-import logging
-
 import os
-import unittest
+import logging
 
 import pytest
 
-from shorthand import ShorthandServer
 from shorthand.edit_timeline import get_edit_timeline
 from shorthand.types import InternalAbsolutePath
-from utils import TEST_CONFIG_PATH, setup_environment, teardown_environment, validate_setup
+from utils import ShorthandTestCase
 
 
 log = logging.getLogger(__name__)
 
 
-class TestEditHistory(unittest.TestCase):
+class TestEditHistory(ShorthandTestCase):
     """Test Edit History Tools"""
-
-    @classmethod
-    def setup_class(cls):
-        # ensure that we have a clean environment before running any tests
-        cls.config = setup_environment()
-        cls.notes_dir = cls.config['notes_directory']
-        cls.grep_path = cls.config['grep_path']
-        cls.find_path = cls.config['find_path']
-        cls.server = ShorthandServer(TEST_CONFIG_PATH)
-
-    @classmethod
-    def teardown_class(cls):
-        '''Ensure that we don't leave stamped
-        notes around after the tests are run
-        '''
-        teardown_environment()
-
-    def setup_method(self, method):
-        '''Validate that the environment has been set up correctly
-        '''
-        setup_environment()
-        validate_setup()
 
     def create_history_file(self, path: InternalAbsolutePath):
         target_file = self.notes_dir + path
@@ -66,7 +41,3 @@ class TestEditHistory(unittest.TestCase):
             assert len(entry.diffs) == 1
             if entry.version:
                 assert entry.diffs[0]['timestamp'] > entry.version
-
-
-
-

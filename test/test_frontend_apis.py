@@ -2,45 +2,24 @@ import os
 import logging
 
 import pytest
-import unittest
 
 from shorthand.frontend import get_open_files, open_file, close_file, \
                                clear_open_files
 
-from utils import setup_environment, teardown_environment, validate_setup, \
-                  TEST_CONFIG_PATH, setup_logging
+from utils import ShorthandTestCase
 
 
 log = logging.getLogger(__name__)
 
 
-class TestOpenFilesAPI(unittest.TestCase):
+class TestOpenFilesAPI(ShorthandTestCase):
     """Test tracking Open Files"""
 
     def corrupt_open_files(self):
+        if not os.path.exists(f"{self.notes_dir}/.shorthand/state"):
+            os.makedirs(f"{self.notes_dir}/.shorthand/state")
         with open(f"{self.notes_dir}/.shorthand/state/open_files.json", 'w') as f:
             f.write('[')
-
-    @classmethod
-    def setup_class(cls):
-        # ensure that we have a clean environment before running any tests
-        cls.config = setup_environment()
-        cls.notes_dir = cls.config['notes_directory']
-        cls.grep_path = cls.config['grep_path']
-        cls.find_path = cls.config['find_path']
-
-    @classmethod
-    def teardown_class(cls):
-        '''Ensure that we don't leave stamped
-        notes around after the tests are run
-        '''
-        teardown_environment()
-
-    def setup_method(self, method):
-        '''Validate that the environment has been set up correctly
-        '''
-        validate_setup()
-        clear_open_files(self.notes_dir)
 
     def test_get_empty_open_files(self):
         open_files = get_open_files(self.notes_dir)

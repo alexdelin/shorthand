@@ -3,39 +3,21 @@ import json
 import copy
 import logging
 import pytest
-import unittest
 
-from shorthand import ShorthandServer
 from shorthand.utils.config import clean_and_validate_config
 
-from utils import setup_environment, TEMP_DIR, validate_setup
+from utils import ShorthandTestCase
 
 
 log = logging.getLogger(__name__)
 
 
-class TestServerClass(unittest.TestCase):
+class TestServerClass(ShorthandTestCase):
     """Test the implementation of the ShorthandServer Class"""
 
     def write_config(self, config):
         with open(self.server_config_path, 'w') as config_file_object:
             json.dump(config, config_file_object)
-
-    @classmethod
-    def setup_class(cls):
-        # ensure that we have a clean environment before running any tests
-        cls.config = setup_environment()
-        cls.notes_dir = cls.config['notes_directory']
-        cls.grep_path = cls.config['grep_path']
-        cls.find_path = cls.config['find_path']
-        cls.server_config_path = TEMP_DIR + '/server_config.json'
-
-    def setup_method(self, method):
-        '''Validate that the environment has been set up correctly
-        '''
-        validate_setup()
-        self.write_config(self.config)
-        self.server = ShorthandServer(self.server_config_path)
 
     def test_setup(self):
         # Write our config to a file that we will use with the server class

@@ -10,7 +10,7 @@ from shorthand.notes import _get_note, _update_note, \
 from shorthand.utils.filesystem import _create_file, _delete_file
 from shorthand.web.app import create_app
 
-from utils import setup_environment, teardown_environment, validate_setup, \
+from utils import ShorthandTestCase, setup_environment, teardown_environment, validate_setup, \
                   TEST_CONFIG_PATH
 from model import ShorthandModel
 from results_unstamped import ALL_LINKS
@@ -20,25 +20,8 @@ log = logging.getLogger(__name__)
 MODEL = ShorthandModel()
 
 
-class TestNotesOperations(unittest.TestCase):
+class TestNotesOperations(ShorthandTestCase):
     """Test basic operations on note files via the library"""
-
-    @classmethod
-    def teardown_class(cls):
-        '''Ensure that we don't leave stamped
-        notes around after the tests are run
-        '''
-        teardown_environment()
-
-    def setup_method(self, method):
-        '''Validate that the environment has been set up correctly
-        Re-do the setup every time because we are modifying notes in most tests
-        '''
-        self.config = setup_environment()
-        self.notes_dir = self.config['notes_directory']
-        self.grep_path = self.config['grep_path']
-        self.find_path = self.config['find_path']
-        validate_setup()
 
     def test_get_note(self):
         test_path = '/section/mixed.note'
@@ -112,28 +95,8 @@ class TestNotesOperations(unittest.TestCase):
         pass
 
 
-class TestLinkOperations(unittest.TestCase):
+class TestLinkOperations(ShorthandTestCase, reset_per_method=False):
     """Test basic operations on links via the library"""
-
-    @classmethod
-    def setup_class(cls):
-        # ensure that we have a clean environment before running any tests
-        cls.config = setup_environment()
-        cls.notes_dir = cls.config['notes_directory']
-        cls.grep_path = cls.config['grep_path']
-        cls.find_path = cls.config['find_path']
-
-    @classmethod
-    def teardown_class(cls):
-        '''Ensure that we don't leave stamped
-        notes around after the tests are run
-        '''
-        teardown_environment()
-
-    def setup_method(self, method):
-        '''Validate that the environment has been set up correctly
-        '''
-        validate_setup()
 
     def test_validate_internal_links(self):
         invalid_links = _validate_internal_links(
@@ -250,30 +213,8 @@ class TestLinkOperations(unittest.TestCase):
         assert len(backlinks) == 0
 
 
-class TestNotesOperationsFlask(unittest.TestCase):
+class TestNotesOperationsFlask(ShorthandTestCase, reset_per_method=False, include_flask_client=True):
     """Test getting stamped todos via the HTTP API"""
-
-    @classmethod
-    def setup_class(cls):
-        # ensure that we have a clean environment before running any tests
-        cls.config = setup_environment()
-        cls.notes_dir = cls.config['notes_directory']
-        cls.grep_path = cls.config['grep_path']
-        cls.find_path = cls.config['find_path']
-        app = create_app(TEST_CONFIG_PATH)
-        cls.api_client = app.test_client()
-
-    @classmethod
-    def teardown_class(cls):
-        '''Ensure that we don't leave stamped
-        notes around after the tests are run
-        '''
-        teardown_environment()
-
-    def setup_method(self, method):
-        '''Validate that the environment has been set up correctly
-        '''
-        validate_setup()
 
     def test_get_note(self):
         test_path = '/section/mixed.note'

@@ -1,13 +1,15 @@
 import os
 import json
-import time
 import shutil
 import logging
+import unittest
 
 import pytest
 
+from shorthand import ShorthandServer
 from shorthand.utils.logging import log_level_from_string, get_handler
 from shorthand.utils.config import DEFAULT_LOG_FORMAT, ShorthandConfig
+from shorthand.web.app import create_app
 
 
 SAMPLE_DATA_DIR = 'sample_data'
@@ -33,6 +35,72 @@ TEST_CONFIG: ShorthandConfig = {
     "track_edit_history": True
 }
 TEST_CONFIG_PATH = TEMP_DIR + '/config.json'
+
+
+class ShorthandTestCase(unittest.TestCase):
+    """Base Test Case"""
+
+    reset_per_method = True
+    include_flask_client = False
+    stamp = False
+
+    def __init_subclass__(cls,
+                          reset_per_method: bool = True,
+                          include_flask_client: bool = False,
+                          stamp: bool = False,
+                          **kwargs):
+        super().__init_subclass__(**kwargs)
+        cls.reset_per_method = reset_per_method
+        cls.include_flask_client = include_flask_client
+        cls.stamp = stamp
+
+    @pytest.fixture(autouse=True)
+    def inject_fixtures(self, caplog, capfd):
+        self._caplog = caplog
+        self._capfd = capfd
+
+    @classmethod
+    def setup_class(cls):
+        # ensure that we have a clean environment before running any tests
+        cls.server_config_path = TEST_CONFIG_PATH
+        cls.config = setup_environment()
+        cls.server = ShorthandServer(TEST_CONFIG_PATH)
+        if cls.stamp:
+            cls.server.stamp_notes(
+                stamp_todos=True, stamp_today=True,
+                stamp_questions=True, stamp_answers=True)
+
+    @classmethod
+    def teardown_class(cls):
+        '''Ensure that we don't leave any
+        state around after the tests are run
+        '''
+        teardown_environment()
+
+    def setup_method(self, method):
+        '''Validate that the environment has been set up correctly
+        '''
+        if self.reset_per_method:
+            self.config = setup_environment()
+
+            if self.stamp:
+                self.server.stamp_notes(
+                    stamp_todos=True, stamp_today=True,
+                    stamp_questions=True, stamp_answers=True)
+
+        if self.include_flask_client:
+            self.api_client = self.get_api_client()
+
+        validate_setup()
+        self.server = ShorthandServer(TEST_CONFIG_PATH)
+        self.notes_dir = self.config['notes_directory']
+        self.grep_path = self.config['grep_path']
+        self.find_path = self.config['find_path']
+        self.patch_path = self.config['patch_path']
+
+    def get_api_client(self):
+        app = create_app(TEST_CONFIG_PATH)
+        return app.test_client()
 
 
 def get_test_config() -> ShorthandConfig:

@@ -5,9 +5,8 @@ import unittest
 
 import pytest
 
-from shorthand.elements.record_sets import _get_record_set, _get_record_sets
 from shorthand.utils.rec import load_from_string
-from utils import setup_environment, validate_setup
+from utils import ShorthandTestCase
 
 
 log = logging.getLogger(__name__)
@@ -196,30 +195,15 @@ class TestFiltering(object):
         pass
 
 
-class TestAPI(unittest.TestCase):
+class TestAPI(ShorthandTestCase, reset_per_method=False):
     """Test the Shorthand API for working with record sets
     embedded within notes
     """
 
-    @classmethod
-    def setup_class(cls):
-        # ensure that we have a clean environment before running any tests
-        cls.config = setup_environment()
-        cls.notes_dir = cls.config['notes_directory']
-        cls.grep_path = cls.config['grep_path']
-        cls.find_path = cls.config['find_path']
-
-    def setup_method(self, method):
-        '''Validate that the environment has been set up correctly
-        '''
-        validate_setup()
-
     def test_list_record_sets(self):
         '''Test listing all record sets within notes
         '''
-        sets_found = _get_record_sets(self.notes_dir,
-                                      directory_filter=None,
-                                      grep_path=self.grep_path)
+        sets_found = self.server.get_record_sets(directory_filter=None)
         all_sets = [{'display_path': 'rec.note',
                      'file_path': '/rec.note',
                      'line_number': '4'}]
@@ -229,12 +213,9 @@ class TestAPI(unittest.TestCase):
     def test_get_record_set(self):
         '''Test getting the contents of an individual record set
         '''
-        loaded_record_set = _get_record_set(self.notes_dir,
-                                            file_path='/rec.note',
-                                            line_number=4,
-                                            parse=True,
-                                            parse_format='json',
-                                            include_config=False)
+        loaded_record_set = self.server.get_record_set(
+            file_path='/rec.note', line_number=4, parse=True,
+            parse_format='json', include_config=False)
         loaded_record_set = json.loads(loaded_record_set)
 
         assert len(loaded_record_set) == 3

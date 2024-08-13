@@ -1,33 +1,19 @@
 import logging
 import pytest
-import unittest
 
 from shorthand.utils.config import clean_and_validate_config, \
     _modify_config, DEFAULT_LOG_FILE, \
     DEFAULT_LOG_LEVEL, DEFAULT_GREP_PATH, DEFAULT_FIND_PATH, \
     DEFAULT_FRONTEND_CONFIG, DEFAULT_CONFIG
 
-from utils import setup_environment, validate_setup
+from utils import ShorthandTestCase
 
 
 log = logging.getLogger(__name__)
 
 
-class TestConfig(unittest.TestCase):
+class TestConfig(ShorthandTestCase, reset_per_method=False):
     """Test configuration management utilities"""
-
-    @classmethod
-    def setup_class(cls):
-        # ensure that we have a clean environment before running any tests
-        cls.config = setup_environment()
-        cls.notes_dir = cls.config['notes_directory']
-        cls.grep_path = cls.config['grep_path']
-        cls.find_path = cls.config['find_path']
-
-    def setup_method(self, method):
-        '''Validate that the environment has been set up correctly
-        '''
-        validate_setup()
 
     def test_basic_config_validation(self):
         cleaned_config = clean_and_validate_config(self.config)

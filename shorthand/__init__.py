@@ -20,7 +20,7 @@ from shorthand.elements.locations import _get_locations
 from shorthand.elements.record_sets import _get_record_sets, _get_record_set
 from shorthand.frontend.typeahead import _update_ngram_database, \
                                          _get_typeahead_suggestions
-from shorthand.types import DirectoryPath, InternalAbsoluteFilePath, InternalAbsolutePath, NotePath, RawNoteContent, Subdir
+from shorthand.types import InternalAbsoluteFilePath, InternalAbsolutePath, NotePath, Subdir
 from shorthand.utils.archive import _get_note_archive
 from shorthand.utils.config import _get_notes_config, _write_config, \
                                    _modify_config

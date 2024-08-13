@@ -1,14 +1,12 @@
 import os
 import logging
-import unittest
 
 from shorthand.search import _search_full_text, _search_filenames, \
                              _record_file_view
-from shorthand.frontend.typeahead import _update_ngram_database, \
-                                         _get_typeahead_suggestions
+from shorthand.frontend.typeahead import _get_typeahead_suggestions, _update_ngram_database
 
-from utils import setup_environment, validate_setup
-from results_unstamped import EMPTY_RESULTS, SEARCH_RESULTS_FOOD, \
+from utils import ShorthandTestCase, setup_environment
+from results_unstamped import SEARCH_RESULTS_FOOD, \
                               SEARCH_RESULTS_FOOD_SENSITIVE, \
                               SEARCH_RESULTS_BALANCED_DIET, ALL_FILES
 
@@ -16,7 +14,7 @@ from results_unstamped import EMPTY_RESULTS, SEARCH_RESULTS_FOOD, \
 log = logging.getLogger(__name__)
 
 
-class TestSearch(unittest.TestCase):
+class TestSearch(ShorthandTestCase, reset_per_method=False):
     """Test basic search functionality of the library"""
 
     def get_search_results(self, query_string, case_sensitive):
@@ -25,19 +23,6 @@ class TestSearch(unittest.TestCase):
                     query_string=query_string,
                     case_sensitive=case_sensitive,
                     grep_path=self.grep_path)
-
-    @classmethod
-    def setup_class(cls):
-        # ensure that we have a clean environment before running any tests
-        cls.config = setup_environment()
-        cls.notes_dir = cls.config['notes_directory']
-        cls.grep_path = cls.config['grep_path']
-        cls.find_path = cls.config['find_path']
-
-    def setup_method(self, method):
-        '''Validate that the environment has been set up correctly
-        '''
-        validate_setup()
 
     def test_search(self):
         '''Test full-text search
@@ -105,7 +90,7 @@ class TestSearch(unittest.TestCase):
         # TODO- Test directory filter
 
 
-class TestFileFinder(unittest.TestCase):
+class TestFileFinder(ShorthandTestCase, reset_per_method=False):
 
     def get_file_search_results(self, prefer_recent, query_string, case_sensitive):
         return _search_filenames(
@@ -113,19 +98,6 @@ class TestFileFinder(unittest.TestCase):
                     prefer_recent_files=prefer_recent,
                     query_string=query_string, case_sensitive=case_sensitive,
                     grep_path=self.grep_path)
-
-    @classmethod
-    def setup_class(cls):
-        # ensure that we have a clean environment before running any tests
-        cls.config = setup_environment()
-        cls.notes_dir = cls.config['notes_directory']
-        cls.grep_path = cls.config['grep_path']
-        cls.find_path = cls.config['find_path']
-
-    def setup_method(self, method):
-        '''Validate that the environment has been set up correctly
-        '''
-        validate_setup()
 
     def search_helper(self, query_string, case_sensitive=False):
         '''A sort-of model to test the implementation against
@@ -214,10 +186,7 @@ class TestFileFinder(unittest.TestCase):
             assert file_search_results[0] == last_file
 
 
-class TestTypeahead(unittest.TestCase):
-
-    def get_typeahead_results(self, string):
-        return _get_typeahead_suggestions(self.notes_dir, string)
+class TestTypeahead(ShorthandTestCase, reset_per_method=False):
 
     @classmethod
     def setup_class(cls):
@@ -226,12 +195,10 @@ class TestTypeahead(unittest.TestCase):
         cls.notes_dir = cls.config['notes_directory']
         cls.grep_path = cls.config['grep_path']
         cls.find_path = cls.config['find_path']
-        _ = _update_ngram_database(cls.notes_dir)
+        _update_ngram_database(cls.notes_dir)
 
-    def setup_method(self, method):
-        '''Validate that the environment has been set up correctly
-        '''
-        validate_setup()
+    def get_typeahead_results(self, string):
+        return _get_typeahead_suggestions(self.notes_dir, string)
 
     def test_typeahead_unigram(self):
 

@@ -1,46 +1,19 @@
-from datetime import datetime, UTC
-import logging
-
 import os
 import time
-import unittest
+import logging
+from datetime import datetime, UTC
 
 import pytest
 
-from shorthand import ShorthandServer
 from shorthand.edit_history import HISTORY_PATH, _store_history_for_note_edit, ensure_note_version
-from utils import TEST_CONFIG_PATH, setup_environment, teardown_environment, validate_setup
+from utils import ShorthandTestCase
 
 
 log = logging.getLogger(__name__)
 
 
-class TestEditHistory(unittest.TestCase):
+class TestEditHistory(ShorthandTestCase):
     """Test Edit History Tools"""
-
-    @classmethod
-    def setup_class(cls):
-        # ensure that we have a clean environment before running any tests
-        cls.config = setup_environment()
-        cls.notes_dir = cls.config['notes_directory']
-        cls.grep_path = cls.config['grep_path']
-        cls.find_path = cls.config['find_path']
-        cls.patch_path = cls.config['patch_path']
-        cls.server = ShorthandServer(TEST_CONFIG_PATH)
-
-    @classmethod
-    def teardown_class(cls):
-        '''Ensure that we don't leave stamped
-        notes around after the tests are run
-        '''
-        teardown_environment()
-
-    def setup_method(self, method):
-        '''Validate that the environment has been set up correctly
-        '''
-        setup_environment()
-        validate_setup()
-        self.server = ShorthandServer(TEST_CONFIG_PATH)
 
     def test_storing_daily_note_version(self):
         for test_note in ['/section/mixed.note', '/bugs.note']:
