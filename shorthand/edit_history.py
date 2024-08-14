@@ -263,7 +263,6 @@ def save_diff(notes_directory: DirectoryPath, note_path: NotePath,
 
     current_utc_time = datetime.now(UTC)
     current_utc_time_string = current_utc_time.isoformat(timespec='milliseconds')
-    current_utc_time_string = current_utc_time_string.split('+')[0]
     diff_path = f'{notes_directory}/' + \
                 f'{HISTORY_PATH}' + \
                 f'{note_path}/diffs/' + \
@@ -299,6 +298,65 @@ def delete_diff(notes_directory: DirectoryPath, note_path: NotePath,
         raise ValueError(f'Diff not found for note {note_path} action {diff_type} and time {timestamp}')
 
     os.remove(diff_path)
+
+
+def _list_diffs_for_note(notes_directory: DirectoryPath,
+                         note_path: NotePath,
+                         find_path: ExecutablePath = 'find'
+                         ) -> List[NoteDiffInfo]:
+    if not _is_note_path(notes_directory, note_path, must_exist=False):
+        raise ValueError(f'The path {note_path} is not a valid note path')
+
+    find_command = f'{find_path} {notes_directory}/' + \
+                   f'{HISTORY_PATH}{note_path} ' + \
+                   f'-type f -name "*.diff"'
+
+    log.debug(f'Running command {find_command} to list note diffs')
+    proc = Popen(find_command, stdout=PIPE, stderr=PIPE, shell=True)
+    output, err = proc.communicate()
+    output_lines = output.decode().split('\n')
+
+    diff_files = [get_relative_path(notes_directory, line.strip())
+                  for line in output_lines
+                  if line.strip()]
+
+    response = []
+    for diff_file in diff_files:
+        filename = diff_file.split('/')[-1]
+        diff_type = filename.split('.')[-2]
+        timestamp = filename[:29]
+        response.append({
+            'diff_type': diff_type,
+            'timestamp': timestamp
+        })
+
+    response.sort(key=lambda x: x['timestamp'], reverse=True)
+
+    return response
+
+
+def _get_note_diff(notes_directory: DirectoryPath,
+                   note_path: NotePath,
+                   timestamp: NoteDiffTimestamp,
+                   diff_type: NoteDiffType) -> NoteDiff:
+    if not _is_note_path(notes_directory, note_path, must_exist=False):
+        raise ValueError(f'The path {note_path} is not a valid note path')
+
+    parsed_diff_time = datetime.fromisoformat(timestamp)
+
+    diff_path = f'{notes_directory}/' + \
+            f'{HISTORY_PATH}' + \
+            f'{note_path}/diffs/' + \
+            f'{parsed_diff_time.year}/' + \
+            f'{parsed_diff_time.month}/' + \
+            f'{parsed_diff_time.day}/' + \
+            f'{timestamp}.{diff_type}.diff'
+
+    if not os.path.exists(diff_path):
+        raise ValueError(f'Diff not found for note {note_path} and timestamp {timestamp}')
+
+    with open(diff_path, 'r') as f:
+        return f.read()
 
 
 def apply_diffs(starting_content: RawNoteContent,
@@ -507,62 +565,3 @@ def _store_history_for_directory_delete(notes_directory: DirectoryPath,
         _store_history_for_note_delete(
             notes_directory=notes_directory,
             note_path=note_path)
-
-
-def _list_diffs_for_note(notes_directory: DirectoryPath,
-                         note_path: NotePath,
-                         find_path: ExecutablePath = 'find'
-                         ) -> List[NoteDiffInfo]:
-    if not _is_note_path(notes_directory, note_path, must_exist=False):
-        raise ValueError(f'The path {note_path} is not a valid note path')
-
-    find_command = f'{find_path} {notes_directory}/' + \
-                   f'{HISTORY_PATH}{note_path} ' + \
-                   f'-type f -name "*.diff"'
-
-    log.debug(f'Running command {find_command} to list note diffs')
-    proc = Popen(find_command, stdout=PIPE, stderr=PIPE, shell=True)
-    output, err = proc.communicate()
-    output_lines = output.decode().split('\n')
-
-    diff_files = [get_relative_path(notes_directory, line.strip())
-                  for line in output_lines
-                  if line.strip()]
-
-    response = []
-    for diff_file in diff_files:
-        filename = diff_file.split('/')[-1]
-        diff_type = filename.split('.')[-2]
-        timestamp = filename[:23]
-        response.append({
-            'diff_type': diff_type,
-            'timestamp': timestamp
-        })
-
-    response.sort(key=lambda x: x['timestamp'], reverse=True)
-
-    return response
-
-
-def _get_note_diff(notes_directory: DirectoryPath,
-                   note_path: NotePath,
-                   timestamp: NoteDiffTimestamp,
-                   diff_type: NoteDiffType) -> NoteDiff:
-    if not _is_note_path(notes_directory, note_path, must_exist=False):
-        raise ValueError(f'The path {note_path} is not a valid note path')
-
-    parsed_diff_time = datetime.fromisoformat(timestamp)
-
-    diff_path = f'{notes_directory}/' + \
-            f'{HISTORY_PATH}' + \
-            f'{note_path}/diffs/' + \
-            f'{parsed_diff_time.year}/' + \
-            f'{parsed_diff_time.month}/' + \
-            f'{parsed_diff_time.day}/' + \
-            f'{timestamp}.{diff_type}.diff'
-
-    if not os.path.exists(diff_path):
-        raise ValueError(f'Diff not found for note {note_path} and timestamp {timestamp}')
-
-    with open(diff_path, 'r') as f:
-        return f.read()
