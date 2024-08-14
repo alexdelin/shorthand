@@ -452,3 +452,11 @@ def get_archive() -> bytes:
     response.headers['Content-Disposition'] = 'attachment'
     return response
 
+
+@shorthand_api_blueprint.route('/api/v1/edit_timeline', methods=['GET'])
+def get_edit_timeline():
+    server = ShorthandServer(current_app.config['config_path'])
+    note_path = get_request_argument(request.args, name='note_path',
+                                     required=True)
+    edit_timeline = server.get_edit_timeline(note_path=note_path)
+    return json.dumps(edit_timeline)
