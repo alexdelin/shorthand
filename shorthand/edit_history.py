@@ -37,7 +37,7 @@ type NoteDiff = str
 
 type NoteDiffTimestamp = str
 '''An ISO-8601 timestamp for the UTC time that a note was modified
-   with millisecond-precision'''
+   with millisecond-precision. Includes the `+00:00` UTC timezone offset'''
 
 type NoteDiffType = Literal['create', 'edit', 'move', 'delete']
 '''Options for types of changes which can be recorded as diffs'''
@@ -52,13 +52,14 @@ type NoteVersion = str
 
 type NoteVersionTimestamp = str
 '''An ISO-8601 time stamp for the UTC time that a version was created
-   with millisecond-precision
+   with millisecond-precision. Includes the `+00:00` UTC timezone offset
 
    By default, this is the timestamp of the start of day UTC time'''
 
 
 def ensure_note_version(notes_directory: DirectoryPath,
-                        note_path: NotePath) -> None:
+                        note_path: NotePath,
+                        timestamp: datetime) -> None:
     '''Ensure that a daily starting version exists for the specified note and
        the current UTC day
 
@@ -71,10 +72,10 @@ def ensure_note_version(notes_directory: DirectoryPath,
     if not _is_note_path(notes_directory, note_path):
         raise ValueError(f'No note found at path {note_path}')
 
-    timestamp = datetime.now(UTC).date().isoformat() + 'T00:00:00.000+00:00'
+    timestamp_string = timestamp.date().isoformat() + 'T00:00:00.000+00:00'
     note_version_path = f'{notes_directory}/' + \
                         f'{HISTORY_PATH}' + \
-                        f'{note_path}/{timestamp}.version'
+                        f'{note_path}/{timestamp_string}.version'
 
     if os.path.exists(note_version_path):
         return
@@ -89,15 +90,20 @@ def ensure_note_version(notes_directory: DirectoryPath,
 
 def add_note_version_for_move(notes_directory: DirectoryPath,
                               source: NotePath,
-                              destination: NotePath) -> None:
+                              destination: NotePath,
+                              timestamp: datetime) -> None:
     '''Add a note version with the precise current UTC timestamp
        this should only be called if a version file for the destination
        note already exists for the beginning of the current day
     '''
-    timestamp = datetime.now(UTC).isoformat(timespec='milliseconds')
+
+    # Increment the version timestamp by 1 millisecond so that it shows
+    # up after the move diffs in the edit timeline
+    timestamp = timestamp + timedelta(milliseconds=1)
+    timestamp_string = timestamp.isoformat(timespec='milliseconds')
     note_version_path = f'{notes_directory}/' + \
                         f'{HISTORY_PATH}' + \
-                        f'{destination}/{timestamp}.version'
+                        f'{destination}/{timestamp_string}.version'
 
     if os.path.exists(note_version_path):
         raise ValueError(f'Note version already exists at path {note_version_path}')
@@ -259,17 +265,16 @@ no changes made'''
 
 
 def save_diff(notes_directory: DirectoryPath, note_path: NotePath,
-              diff: NoteDiff, diff_type: NoteDiffType) -> None:
+              diff: NoteDiff, timestamp: datetime, diff_type: NoteDiffType) -> None:
 
-    current_utc_time = datetime.now(UTC)
-    current_utc_time_string = current_utc_time.isoformat(timespec='milliseconds')
+    utc_time_string = timestamp.isoformat(timespec='milliseconds')
     diff_path = f'{notes_directory}/' + \
                 f'{HISTORY_PATH}' + \
                 f'{note_path}/diffs/' + \
-                f'{current_utc_time.year}/' + \
-                f'{current_utc_time.month}/' + \
-                f'{current_utc_time.day}/' + \
-                f'{current_utc_time_string}.{diff_type}.diff'
+                f'{timestamp.year}/' + \
+                f'{timestamp.month}/' + \
+                f'{timestamp.day}/' + \
+                f'{utc_time_string}.{diff_type}.diff'
 
     if os.path.exists(diff_path):
         raise ValueError(f'A diff already exists at path {diff_path}')
@@ -418,7 +423,9 @@ def _store_history_for_note_edit(notes_directory: DirectoryPath,
                                  new_content: RawNoteContent,
                                  find_path: ExecutablePath = 'find',
                                  patch_path: ExecutablePath = 'patch') -> None:
-    ensure_note_version(notes_directory, note_path)
+    timestamp = datetime.now(UTC)
+
+    ensure_note_version(notes_directory, note_path, timestamp)
 
     # If the latest diff is an edit diff
     #   which was made within the last 5 minutes
@@ -426,8 +433,8 @@ def _store_history_for_note_edit(notes_directory: DirectoryPath,
     all_diffs = _list_diffs_for_note(notes_directory, note_path, find_path)
     if all_diffs:
         latest_diff = all_diffs[0]
-        merge_cutoff_time = datetime.now(UTC) - timedelta(minutes=5)
-        merge_cutoff_time = merge_cutoff_time.isoformat(timespec='milliseconds').split('+')[0]
+        merge_cutoff_time = timestamp - timedelta(minutes=5)
+        merge_cutoff_time = merge_cutoff_time.isoformat(timespec='milliseconds')
         if latest_diff and latest_diff['diff_type'] == 'edit' \
                        and latest_diff['timestamp'] > merge_cutoff_time:
             # We are merging these changes into the latest diff
@@ -435,14 +442,14 @@ def _store_history_for_note_edit(notes_directory: DirectoryPath,
             latest_diff_content = _get_note_diff(notes_directory, note_path, latest_diff['timestamp'], latest_diff['diff_type'])
             pre_edit_state = apply_diffs(current_version, [latest_diff_content], patch_path, reverse=True)
             combined_diff = get_unified_diff(pre_edit_state, new_content, note_path)
-            save_diff(notes_directory, note_path, combined_diff, 'edit')
+            save_diff(notes_directory, note_path, combined_diff, timestamp, 'edit')
             delete_diff(notes_directory, note_path, latest_diff['timestamp'], latest_diff['diff_type'])
             return None
 
     # If we are not doing a merge
     diff = calculate_diff_for_edit(notes_directory, note_path, new_content)
     if diff:
-        save_diff(notes_directory, note_path, diff, 'edit')
+        save_diff(notes_directory, note_path, diff, timestamp, 'edit')
 
 
 def _store_history_for_note_move(notes_directory: DirectoryPath,
@@ -463,7 +470,8 @@ def _store_history_for_note_move(notes_directory: DirectoryPath,
         raise ValueError(f'Cannot track move history. Neither {old_note_path} ' + \
                          f'or {new_note_path} are valid note paths')
 
-    today_version_timestamp = datetime.now(UTC).date().isoformat() + 'T00:00:00.000+00:00'
+    timestamp = datetime.now(UTC)
+    today_version_timestamp = timestamp.date().isoformat() + 'T00:00:00.000+00:00'
     if _is_note_path(notes_directory, new_note_path, must_exist=False) and \
             today_version_timestamp in _list_note_versions(
                 notes_directory=notes_directory, note_path=new_note_path,
@@ -475,15 +483,16 @@ def _store_history_for_note_move(notes_directory: DirectoryPath,
         #
         # This is dangerous because the version file will reflect the move
         # before the file in the notes directory has actually been moved
-        add_note_version_for_move(notes_directory, old_note_path, new_note_path)
-        return
+        add_note_version_for_move(notes_directory, old_note_path,
+                                  new_note_path, timestamp)
+        # return
 
     diff = calculate_diff_for_move(old_note_path, new_note_path)
     if _is_note_path(notes_directory, old_note_path):
-        ensure_note_version(notes_directory, old_note_path)
-        save_diff(notes_directory, old_note_path, diff, 'move')
+        ensure_note_version(notes_directory, old_note_path, timestamp)
+        save_diff(notes_directory, old_note_path, diff, timestamp, 'move')
     if _is_note_path(notes_directory, new_note_path, must_exist=False):
-        save_diff(notes_directory, new_note_path, diff, 'move')
+        save_diff(notes_directory, new_note_path, diff, timestamp, 'move')
 
 
 def _store_history_for_directory_move(notes_directory: DirectoryPath,
@@ -526,18 +535,21 @@ def _store_history_for_directory_move(notes_directory: DirectoryPath,
 def _store_history_for_note_create(notes_directory: DirectoryPath,
                                    note_path: NotePath) -> None:
 
+    timestamp = datetime.now(UTC)
+
     if not _is_note_path(notes_directory, note_path, must_exist=False):
         raise ValueError(f'The path {note_path} is not a valid note path')
 
     diff = calculate_diff_for_create(note_path)
-    save_diff(notes_directory, note_path, diff, 'create')
+    save_diff(notes_directory, note_path, diff, timestamp, 'create')
 
 
 def _store_history_for_note_delete(notes_directory: DirectoryPath,
                                    note_path: NotePath) -> None:
-    ensure_note_version(notes_directory, note_path)
+    timestamp = datetime.now(UTC)
+    ensure_note_version(notes_directory, note_path, timestamp)
     diff = calculate_diff_for_delete(notes_directory, note_path)
-    save_diff(notes_directory, note_path, diff, 'delete')
+    save_diff(notes_directory, note_path, diff, timestamp, 'delete')
 
 
 def _store_history_for_directory_delete(notes_directory: DirectoryPath,

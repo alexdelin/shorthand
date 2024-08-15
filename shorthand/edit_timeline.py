@@ -32,9 +32,9 @@ def get_edit_timeline(notes_directory: DirectoryPath,
 
     for version in versions:
         diffs_for_version = []
-        oldest_diff_idx = 0
+        oldest_diff_idx = -1
         for idx, diff in enumerate(diffs):
-            if diff['timestamp'] > version:
+            if diff['timestamp'] >= version:
                 diffs_for_version.append(diff)
                 oldest_diff_idx = idx
             else:
@@ -46,6 +46,9 @@ def get_edit_timeline(notes_directory: DirectoryPath,
 
     if diffs:
         timeline.append(
+            # The timeline entry with no version is a placeholder
+            # for all of the diffs which were created before the first
+            # version existed. This will typically only be a create diff
             EditTimelineEntry(
                 version=None, diffs=diffs))
 

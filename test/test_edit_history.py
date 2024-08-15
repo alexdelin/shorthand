@@ -18,9 +18,11 @@ class TestEditHistory(ShorthandTestCase):
     def test_storing_daily_note_version(self):
         for test_note in ['/section/mixed.note', '/bugs.note']:
             note_content = self.server.get_note(test_note)
+            timestamp = datetime.now(UTC)
             ensure_note_version(notes_directory=self.notes_dir,
-                                note_path=test_note)
-            current_utc_day = datetime.now(UTC).date().isoformat() + 'T00:00:00.000+00:00'
+                                note_path=test_note,
+                                timestamp=timestamp)
+            current_utc_day = timestamp.date().isoformat() + 'T00:00:00.000+00:00'
 
             # Check the version file was written
             assert os.path.exists(f'{self.notes_dir}/{HISTORY_PATH}/{test_note}/{current_utc_day}.version')
@@ -100,12 +102,19 @@ class TestEditHistory(ShorthandTestCase):
         self.server.update_note('/todos.note', 'foobar')
         time.sleep(0.001)
         self.server.delete_file('/todos.note')
-
+        time.sleep(0.001)
         self.server.move_file_or_directory('/new.note', '/todos.note')
+
         versions = self.server.list_note_versions('/todos.note')
         assert len(versions) == 2
         # Check that not every version is a start of day version
         assert not all(['T00:00:00.000' in version for version in versions])
+
+        old_path_diffs = self.server.list_diffs_for_note('/new.note')
+        assert any([d['diff_type'] == 'move' for d in old_path_diffs])
+
+        new_path_diffs = self.server.list_diffs_for_note('/todos.note')
+        assert any([d['diff_type'] == 'move' for d in new_path_diffs])
 
     def test_storing_diffs_for_directory_move(self):
         self.server.create_file('/section/new.note')
