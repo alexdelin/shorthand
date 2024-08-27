@@ -31,7 +31,7 @@ const FileRowWrapper = styled.div`
   margin-left: 1rem;
   padding-top: 0.2rem;
   padding-bottom: 0.2rem;
-  ${(props: FileRowWrapperProps) => (props.menuOpen ? 'background-color: rgb(45, 50, 82);' : '')}
+  ${(props: FileRowWrapperProps) => (props.menuOpen ? 'background-color: midnightblue;' : '')}
 
   &:hover {
     background-color: rgb(45, 50, 82);
@@ -640,7 +640,7 @@ function UploadDialog(props: UploadDialogProps) {
 
 
 const FileTreeWrapper = styled.div`
-  background-color: rgb(33, 37, 61);
+  background-color: midnightblue;
   color: white;
   width: 100%;`
 
