@@ -64,20 +64,22 @@ def get_open_files(notes_directory: DirectoryPath) -> List[NotePath]:
 
     # Check that all files actually exist
     found_invalid_paths = False
+    valid_open_files = []
     for note in open_files:
-        if not _is_note_path(notes_directory, note):
+        if _is_note_path(notes_directory, note):
+            valid_open_files.append(note)
+        else:
             found_invalid_paths = True
             log.info(f'Found invalid open file path: {note}, '
                      f'removing...')
-            close_file(notes_directory, note)
 
-    # Re-read open files if we found invalid paths
-    #   that we had to remove
+    # If we found any invalid open file paths, update the
+    # open files on disk with the invalid paths removed
     if found_invalid_paths:
-        with open(open_files_path, 'r') as f:
-            open_files = json.load(f)
+        with open(open_files_path, 'w') as f:
+            json.dump(valid_open_files, f)
 
-    return open_files
+    return valid_open_files
 
 
 def clear_open_files(notes_directory: DirectoryPath) -> ACKResponse:
