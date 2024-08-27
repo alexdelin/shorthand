@@ -1,3 +1,4 @@
+from datetime import datetime
 import os
 import logging
 
@@ -38,41 +39,43 @@ class TestEditHistory(ShorthandTestCase):
             find_path=self.find_path)
         assert len(timeline) == 4
         for entry in timeline:
-            assert len(entry.diffs) == 1
-            if entry.version:
-                assert entry.diffs[0]['timestamp'] > entry.version
+            assert len(entry['diffs']) == 1
+            if entry['version']:
+                assert entry['diffs'][0]['timestamp'] > entry['version']
+            # Ensure all timestamps are valid isoformat timestamps
+            assert all([datetime.fromisoformat(t['timestamp']) for t in entry['diffs']])
 
     def test_timeline_for_create_diffs(self):
         self.server.create_file('/new.note')
         timeline = self.server.get_edit_timeline('/new.note')
         assert timeline
         assert len(timeline) == 1
-        assert not timeline[0].version
-        assert len(timeline[0].diffs) == 1
+        assert not timeline[0]['version']
+        assert len(timeline[0]['diffs']) == 1
 
     def test_timeline_for_edit_diffs(self):
         self.server.update_note('/todos.note', 'New Content')
         timeline = self.server.get_edit_timeline('/todos.note')
         assert timeline
         assert len(timeline) == 1
-        assert timeline[0].version
-        assert len(timeline[0].diffs)
+        assert timeline[0]['version']
+        assert len(timeline[0]['diffs'])
         # Check that the day components of the version and diff timestamps match
-        assert timeline[0].diffs[0]['timestamp'][:10] == timeline[0].version[:10]
+        assert timeline[0]['diffs'][0]['timestamp'][:10] == timeline[0]['version'][:10]
 
     def test_timeline_for_move_diffs(self):
         self.server.move_file_or_directory('/todos.note', '/new.note')
 
         timeline_1 = self.server.get_edit_timeline('/todos.note')
         assert len(timeline_1) == 1
-        assert timeline_1[0].version
+        assert timeline_1[0]['version']
 
         timeline_2 = self.server.get_edit_timeline('/new.note')
         assert len(timeline_2) == 1
-        assert not timeline_2[0].version
+        assert not timeline_2[0]['version']
 
         # Check both move diffs have the same timestamp
-        assert timeline_1[0].diffs[0]['timestamp'] == timeline_2[0].diffs[0]['timestamp']
+        assert timeline_1[0]['diffs'][0]['timestamp'] == timeline_2[0]['diffs'][0]['timestamp']
 
     def test_timeline_for_move_with_second_version(self):
         self.server.update_note('/todos.note', 'New Content')
@@ -81,12 +84,12 @@ class TestEditHistory(ShorthandTestCase):
 
         timeline = self.server.get_edit_timeline('/todos.note')
         assert len(timeline) == 2
-        assert timeline[0].version
-        assert '00:00:00.000' not in timeline[0].version
-        assert len(timeline[0].diffs) == 0
+        assert timeline[0]['version']
+        assert '00:00:00.000' not in timeline[0]['version']
+        assert len(timeline[0]['diffs']) == 0
 
-        assert len(timeline[1].diffs) == 3
-        assert set([d['diff_type'] for d in timeline[1].diffs]) == set(['edit', 'delete', 'move'])
+        assert len(timeline[1]['diffs']) == 3
+        assert set([d['diff_type'] for d in timeline[1]['diffs']]) == set(['edit', 'delete', 'move'])
 
 
     def test_timeline_for_delete_diffs(self):
@@ -94,7 +97,7 @@ class TestEditHistory(ShorthandTestCase):
         timeline = self.server.get_edit_timeline('/todos.note')
         assert timeline
         assert len(timeline) == 1
-        assert timeline[0].version
-        assert len(timeline[0].diffs)
+        assert timeline[0]['version']
+        assert len(timeline[0]['diffs'])
         # Check that the day components of the version and diff timestamps match
-        assert timeline[0].diffs[0]['timestamp'][:10] == timeline[0].version[:10]
+        assert timeline[0]['diffs'][0]['timestamp'][:10] == timeline[0]['version'][:10]

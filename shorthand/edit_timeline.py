@@ -1,12 +1,10 @@
-from dataclasses import dataclass
-from typing import List, Optional
+from typing import List, Optional, TypedDict
 
 from shorthand.edit_history import NoteDiffInfo, NoteVersionTimestamp, _list_diffs_for_note, _list_note_versions
 from shorthand.types import DirectoryPath, ExecutablePath, NotePath
 
 
-@dataclass
-class EditTimelineEntry:
+class EditTimelineEntry(TypedDict):
     version: Optional[NoteVersionTimestamp]
     diffs: List[NoteDiffInfo]
 
@@ -40,17 +38,19 @@ def get_edit_timeline(notes_directory: DirectoryPath,
             else:
                 break
         diffs = diffs[oldest_diff_idx + 1:]
-        timeline.append(
-            EditTimelineEntry(
-                version=version, diffs=diffs_for_version))
+        timeline.append({
+            'version': version,
+            'diffs': diffs_for_version
+        })
 
     if diffs:
-        timeline.append(
+        timeline.append({
             # The timeline entry with no version is a placeholder
             # for all of the diffs which were created before the first
             # version existed. This will typically only be a create diff
-            EditTimelineEntry(
-                version=None, diffs=diffs))
+            'version': None,
+            'diffs': diffs
+        })
 
     return timeline
 

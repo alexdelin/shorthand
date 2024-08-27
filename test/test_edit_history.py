@@ -22,7 +22,7 @@ class TestEditHistory(ShorthandTestCase):
             ensure_note_version(notes_directory=self.notes_dir,
                                 note_path=test_note,
                                 timestamp=timestamp)
-            current_utc_day = timestamp.date().isoformat() + 'T00:00:00.000+00:00'
+            current_utc_day = timestamp.isoformat(timespec='milliseconds')
 
             # Check the version file was written
             assert os.path.exists(f'{self.notes_dir}/{HISTORY_PATH}/{test_note}/{current_utc_day}.version')

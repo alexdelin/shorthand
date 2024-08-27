@@ -146,7 +146,8 @@ class ShorthandServer(object):
         if self.track_edit_history:
             _store_history_for_note_edit(notes_directory=self.notes_directory,
                                          note_path=note_path, new_content=content,
-                                         find_path=self.find_path)
+                                         find_path=self.find_path,
+                                         patch_path=self.patch_path)
 
         return _update_note(notes_directory=self.notes_directory,
                             file_path=note_path, content=content)

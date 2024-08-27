@@ -17,9 +17,9 @@ import shutil
 import difflib
 import logging
 import tempfile
-from datetime import datetime, UTC, timedelta
+from datetime import date, datetime, UTC, timedelta
 from subprocess import PIPE, Popen
-from typing import List, Literal, Optional, TypedDict
+from typing import List, Literal, Optional, Required, TypedDict
 
 from shorthand.notes import _get_note, _is_note_path
 from shorthand.types import DirectoryPath, ExecutablePath, NotePath, RawNoteContent, Subdir
@@ -27,6 +27,8 @@ from shorthand.utils.paths import get_full_path, get_relative_path
 
 
 HISTORY_PATH = '.shorthand/history'
+
+MERGE_CUTOFF_LIMIT_MIN = 15
 
 
 log = logging.getLogger(__name__)
@@ -42,9 +44,12 @@ type NoteDiffTimestamp = str
 type NoteDiffType = Literal['create', 'edit', 'move', 'delete']
 '''Options for types of changes which can be recorded as diffs'''
 
-class NoteDiffInfo(TypedDict):
-    diff_type: NoteDiffType
-    timestamp: NoteDiffTimestamp
+class NoteDiffInfo(TypedDict, total=False):
+    diff_type: Required[NoteDiffType]
+    timestamp: Required[NoteDiffTimestamp]
+    from_path: NotePath
+    to_path: NotePath
+    move_direction: Literal['in', 'out']
 
 type NoteVersion = str
 '''The raw note content of a historical version of a note,
@@ -59,7 +64,8 @@ type NoteVersionTimestamp = str
 
 def ensure_note_version(notes_directory: DirectoryPath,
                         note_path: NotePath,
-                        timestamp: datetime) -> None:
+                        timestamp: datetime,
+                        find_path: ExecutablePath = 'find') -> None:
     '''Ensure that a daily starting version exists for the specified note and
        the current UTC day
 
@@ -72,13 +78,16 @@ def ensure_note_version(notes_directory: DirectoryPath,
     if not _is_note_path(notes_directory, note_path):
         raise ValueError(f'No note found at path {note_path}')
 
-    timestamp_string = timestamp.date().isoformat() + 'T00:00:00.000+00:00'
+    utc_date = timestamp.date()
+
+    if note_version_exists_for_date(notes_directory, note_path,
+                                    utc_date, find_path):
+        return
+
+    timestamp_string = timestamp.isoformat(timespec='milliseconds')
     note_version_path = f'{notes_directory}/' + \
                         f'{HISTORY_PATH}' + \
                         f'{note_path}/{timestamp_string}.version'
-
-    if os.path.exists(note_version_path):
-        return
 
     note_history_dir = os.path.dirname(note_version_path)
     if not os.path.exists(note_history_dir):
@@ -86,6 +95,30 @@ def ensure_note_version(notes_directory: DirectoryPath,
 
     full_note_path = get_full_path(notes_directory, note_path)
     shutil.copy2(full_note_path, note_version_path)
+
+
+def note_version_exists_for_date(notes_directory: DirectoryPath,
+                                 note_path: NotePath,
+                                 utc_date: date,
+                                 find_path: ExecutablePath = 'find') -> bool:
+
+    date_string = utc_date.isoformat()
+    find_command = f'{find_path} {notes_directory}/{HISTORY_PATH}{note_path} ' + \
+                   f'-type f -name "{date_string}*.version"'
+
+    log.debug(f'Running command {find_command} to list note versions')
+    proc = Popen(find_command, stdout=PIPE, stderr=PIPE, shell=True)
+    output, err = proc.communicate()
+    output_lines = output.decode().split('\n')
+
+    version_files = [get_relative_path(notes_directory, line.strip())
+                     for line in output_lines
+                     if line.strip()]
+
+    if len(version_files):
+        return True
+
+    return False
 
 
 def add_note_version_for_move(notes_directory: DirectoryPath,
@@ -188,8 +221,18 @@ def get_unified_diff(old: RawNoteContent, new: RawNoteContent,
         fromfile=f'{path} (old)',
         tofile=f'{path} (new)',
         lineterm='\n'))
+    cleaned_diff_lines = []
+    for line in diff_lines:
+        if line.endswith('\n'):
+            cleaned_diff_lines.append(line)
+        else:
+            cleaned_diff_lines.append(line + '\n')
 
-    return ''.join(header_lines + diff_lines)
+    log.debug(f'Got calculated diff {cleaned_diff_lines}')
+    unified_diff = ''.join(header_lines + cleaned_diff_lines)
+    log.debug(f'Got unified diff {unified_diff}')
+
+    return unified_diff
 
 
 def calculate_diff_for_edit(notes_directory: DirectoryPath,
@@ -210,7 +253,7 @@ def calculate_diff_for_move(old_note_path: NotePath,
 f'''Author: {author}
 Time: {timestamp}
 
-diff --git a/{old_note_path} b/{new_note_path}
+diff --git a{old_note_path} b{new_note_path}
 similarity index 100%
 rename from {old_note_path}
 rename to {new_note_path}'''
@@ -224,7 +267,7 @@ def calculate_diff_for_create(note_path: NotePath,
 f'''Author: {author}
 Time: {timestamp}
 
-diff --git a/{note_path} b/{note_path}
+diff --git a{note_path} b{note_path}
 new file mode 100644'''
 
 
@@ -244,7 +287,7 @@ def calculate_diff_for_delete(notes_directory: DirectoryPath,
 f'''Author: {author}
 Time: {timestamp}
 
-diff --git a/{note_path} b/{note_path}
+diff --git a{note_path} b{note_path}
 deleted file mode 100644
 {diff}'''
 
@@ -260,7 +303,7 @@ def get_empty_edit_diff(note_path: NotePath,
 f'''Author: {author}
 Time: {timestamp}
 
-diff --git a/{note_path} b/{note_path}
+diff --git a{note_path} b{note_path}
 no changes made'''
 
 
@@ -305,6 +348,22 @@ def delete_diff(notes_directory: DirectoryPath, note_path: NotePath,
     os.remove(diff_path)
 
 
+def extract_paths_from_move_diff(diff: NoteDiff):
+    diff_lines = diff.splitlines()
+    from_path = None
+    to_path = None
+    for line in diff_lines:
+        if line.startswith('rename from'):
+            from_path = line.split(' from ', 1)[1]
+        if line.startswith('rename to'):
+            to_path = line.split(' to ', 1)[1]
+
+    return {
+        'from': from_path,
+        'to': to_path
+    }
+
+
 def _list_diffs_for_note(notes_directory: DirectoryPath,
                          note_path: NotePath,
                          find_path: ExecutablePath = 'find'
@@ -329,11 +388,26 @@ def _list_diffs_for_note(notes_directory: DirectoryPath,
     for diff_file in diff_files:
         filename = diff_file.split('/')[-1]
         diff_type = filename.split('.')[-2]
-        timestamp = filename[:29]
-        response.append({
-            'diff_type': diff_type,
-            'timestamp': timestamp
-        })
+        timestamp = filename.rsplit('.', 2)[0]
+        if diff_type == 'move':
+            full_diff = _get_note_diff(notes_directory, note_path, timestamp, diff_type)
+            move_diff_paths = extract_paths_from_move_diff(full_diff)
+            if move_diff_paths['from'] == note_path:
+                move_direction = 'out'
+            else:
+                move_direction = 'in'
+            response.append({
+                'diff_type': diff_type,
+                'timestamp': timestamp,
+                'from_path': move_diff_paths['from'],
+                'to_path': move_diff_paths['to'],
+                'move_direction': move_direction
+            })
+        else:
+            response.append({
+                'diff_type': diff_type,
+                'timestamp': timestamp
+            })
 
     response.sort(key=lambda x: x['timestamp'], reverse=True)
 
@@ -433,7 +507,7 @@ def _store_history_for_note_edit(notes_directory: DirectoryPath,
     all_diffs = _list_diffs_for_note(notes_directory, note_path, find_path)
     if all_diffs:
         latest_diff = all_diffs[0]
-        merge_cutoff_time = timestamp - timedelta(minutes=5)
+        merge_cutoff_time = timestamp - timedelta(minutes=MERGE_CUTOFF_LIMIT_MIN)
         merge_cutoff_time = merge_cutoff_time.isoformat(timespec='milliseconds')
         if latest_diff and latest_diff['diff_type'] == 'edit' \
                        and latest_diff['timestamp'] > merge_cutoff_time:
@@ -471,12 +545,11 @@ def _store_history_for_note_move(notes_directory: DirectoryPath,
                          f'or {new_note_path} are valid note paths')
 
     timestamp = datetime.now(UTC)
-    today_version_timestamp = timestamp.date().isoformat() + 'T00:00:00.000+00:00'
     if _is_note_path(notes_directory, new_note_path, must_exist=False) and \
-            today_version_timestamp in _list_note_versions(
+            note_version_exists_for_date(
                 notes_directory=notes_directory, note_path=new_note_path,
-                find_path=find_path):
-        # If a start of day version already exists at the path that we are
+                utc_date=timestamp.date(), find_path=find_path):
+        # If a version already exists for today at the path that we are
         # moving the note to, add another version file with the exact current
         # timestamp. This new version will be used as the base version for any
         # edits made after this point in time
