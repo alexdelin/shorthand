@@ -29,6 +29,7 @@ export type Config = {
   log_level: string,
   grep_path: string,
   find_path: string,
+  patch_path: string,
   frontend: FrontendConfig,
   log_format: string
 }
