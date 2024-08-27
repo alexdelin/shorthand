@@ -18,6 +18,7 @@ import { LocationsPage } from './pages/LocationsPage';
 import { CalendarPage } from './pages/CalendarPage';
 import { SearchPage } from './pages/SearchPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { HistoryPage } from './pages/HistoryPage';
 import { MobileNotesPage } from './mobilePages/MobileNotesPage';
 import { MobileComposePage } from './mobilePages/MobileComposePage';
 import { MobileViewPage } from './mobilePages/MobileViewPage';
@@ -168,6 +169,7 @@ function DesktopApp() {
               <Route path="/calendar" element={<CalendarPage />} />
               <Route path="/search" element={<SearchPage />} />
               <Route path="/view" element={<ViewPage />} />
+              <Route path="/history" element={<HistoryPage />} />
               <Route path="/settings" element={<SettingsPage />} />
             </Routes>
           </Suspense>

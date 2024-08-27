@@ -1,4 +1,4 @@
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useQuery, useQueryClient } from 'react-query';
 import React, { useLayoutEffect, useState, Suspense, useRef, useEffect } from 'react';
 import 'highlight.js/styles/atom-one-light.css';
@@ -135,20 +135,32 @@ export default function ViewPage() {
           variant="text"
           onClick={handleTOCClick}
         >
+          <i style={{marginRight: '0.3rem'}} className='bi bi-list-ol'></i>
           TOC
         </Button>
         <Button
           variant="text"
           onClick={handleLinksClick}
         >
+          <i style={{marginRight: '0.3rem'}} className='bi bi-link-45deg'></i>
           Links
         </Button>
-        <Button
-          href={`/compose?path=${notePath}`}
-          variant="text"
-        >
-          Edit
-        </Button>
+        <Link to={`/compose?path=${notePath}`}>
+          <Button
+            variant="text"
+          >
+            <i style={{marginRight: '0.3rem'}} className='bi bi-pencil'></i>
+            Edit
+          </Button>
+        </Link>
+        <Link to={`/history?path=${notePath}`}>
+          <Button
+            variant="text"
+          >
+            <i style={{marginRight: '0.3rem'}} className='bi bi-clock-history'></i>
+            History
+          </Button>
+        </Link>
         <ReactToPrint
           documentTitle={notePath || 'Unknown Note'}
           trigger={() =>
@@ -156,6 +168,7 @@ export default function ViewPage() {
               variant="text"
               style={{marginRight: '1rem'}}
             >
+              <i style={{marginRight: '0.3rem'}} className='bi bi-printer'></i>
               Print
             </Button>}
           content={() => renderedMarkdownRef.current}

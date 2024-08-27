@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, forwardRef } from 'react';
 import { useQuery, useQueryClient } from 'react-query';
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useBeforeunload } from 'react-beforeunload';
 import { ShorthandMarkdown } from './ViewPage.styles';
 import { GetRenderedMarkdownResponse } from '../types/api';
@@ -347,6 +347,7 @@ export function ComposePage() {
             variant="text"
             onClick={saveNote}
           >
+            <i style={{marginRight: '0.3rem'}} className='bi bi-floppy'></i>
             Save
           </Button>
           <Snackbar
@@ -382,12 +383,33 @@ export function ComposePage() {
             onChange={handleScrollPreviewChange}
             disabled={!showPreview}
           />
-          <Button
-            variant="text"
-            href={`/view?path=${notePath}`}
-          >
-            View
-          </Button>
+
+          { changesSaved ?
+            <>
+              <Link to={`/view?path=${notePath}`} >
+                <Button variant="text">
+                  <i style={{marginRight: '0.3rem'}} className='bi bi-file-earmark-richtext'></i>
+                  View
+                </Button>
+              </Link>
+              <Link to={`/history?path=${notePath}`}>
+                <Button variant="text">
+                  <i style={{marginRight: '0.3rem'}} className='bi bi-clock-history'></i>
+                  History
+                </Button>
+              </Link>
+            </> : <>
+              <Button variant="text" onClick={() => alert('Save changes before navigating')}>
+                <i style={{marginRight: '0.3rem'}} className='bi bi-file-earmark-richtext'></i>
+                View
+              </Button>
+              <Button variant="text" onClick={() => alert('Save changes before navigating')}>
+                <i style={{marginRight: '0.3rem'}} className='bi bi-clock-history'></i>
+                History
+              </Button>
+            </>
+          }
+
         </StyledFormGroup>
       </ComposeHeader>
       <ComposeNoteWrapper>
