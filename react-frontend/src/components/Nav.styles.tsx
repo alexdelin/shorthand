@@ -22,7 +22,7 @@ export const NavSidebar = styled.div`
   left: 0;
   float: left;
   overflow: hidden;
-  transition: all ${ANIMATION_LENGTH_MS}ms;
+  transition: width ${ANIMATION_LENGTH_MS}ms;
   background-color: rgb(33, 37, 41);
   color: whitesmoke;
   display: flex;
