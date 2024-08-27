@@ -460,3 +460,30 @@ def get_edit_timeline():
                                      required=True)
     edit_timeline = server.get_edit_timeline(note_path=note_path)
     return json.dumps(edit_timeline)
+
+
+@shorthand_api_blueprint.route('/api/v1/note_version', methods=['GET'])
+def get_note_version():
+    server = ShorthandServer(current_app.config['config_path'])
+    note_path = get_request_argument(request.args, name='note_path',
+                                     required=True)
+    version_timestamp = get_request_argument(request.args, name='timestamp',
+                                             required=True)
+    note_version = server.get_note_version(note_path=note_path,
+                                            version_timestamp=version_timestamp)
+    return note_version
+
+
+@shorthand_api_blueprint.route('/api/v1/note_diff', methods=['GET'])
+def get_edit_diff():
+    server = ShorthandServer(current_app.config['config_path'])
+    note_path = get_request_argument(request.args, name='note_path',
+                                     required=True)
+    timestamp = get_request_argument(request.args, name='timestamp',
+                                     required=True)
+    diff_type = get_request_argument(request.args, name='diff_type',
+                                     required=True)
+    note_diff = server.get_note_diff(note_path=note_path,
+                                     timestamp=timestamp,
+                                     diff_type=diff_type)
+    return note_diff

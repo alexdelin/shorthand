@@ -31,7 +31,7 @@ def create_app(config_path):
     app.logger = logger
     app.register_blueprint(shorthand_api_blueprint)
     app.register_blueprint(shorthand_ui_blueprint)
-    app.logger.warning(f'created app with handlers: {app.logger.handlers}')
+    app.logger.warning(f'created app from config at: {config_path}')
     return app
 
 
