@@ -1,4 +1,5 @@
 import os
+import nltk
 import logging
 
 from shorthand.search import _search_full_text, _search_filenames, \
@@ -195,6 +196,7 @@ class TestTypeahead(ShorthandTestCase, reset_per_method=False):
         cls.notes_dir = cls.config['notes_directory']
         cls.grep_path = cls.config['grep_path']
         cls.find_path = cls.config['find_path']
+        nltk.download('punkt_tab')
         _update_ngram_database(cls.notes_dir)
 
     def get_typeahead_results(self, string):
