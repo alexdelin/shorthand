@@ -28,13 +28,13 @@ type FileRowWrapperProps = {
 const FileRowWrapper = styled.div`
   display: flex;
   justify-content: space-between;
-  margin-left: 1rem;
+  padding-left: 1rem;
   padding-top: 0.2rem;
   padding-bottom: 0.2rem;
   ${(props: FileRowWrapperProps) => (props.menuOpen ? 'background-color: midnightblue;' : '')}
 
   &:hover {
-    background-color: rgb(45, 50, 82);
+    background-color: #474791;
   }
 
   &:hover > i {
@@ -142,10 +142,11 @@ const DirectoryRowWrapper = styled.div`
   justify-content: space-between;
   padding-top: 0.25rem;
   padding-bottom: 0.25rem;
+  padding-left: 1rem;
   ${(props: DirectoryRowWrapperProps) => (props.menuOpen ? 'background-color: rgb(45, 50, 82);' : '')}
 
   &:hover {
-    background-color: rgb(45, 50, 82);
+    background-color: #474791;
   }
 
   &:hover > i {
@@ -248,7 +249,6 @@ function DirectoryRow(props: DirectoryRowProps) {
 
 
 const DirectoryWrapper = styled.div`
-  margin-left: 1rem;
   font-size: 1.25rem;`
 
 const DirectoryContentsWrapper = styled.div`
@@ -256,6 +256,7 @@ const DirectoryContentsWrapper = styled.div`
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
+  margin-left: 1rem;
   // max-height: 1000rem;
   // transition: max-height ${ANIMATION_LENGTH_MS}ms;
 
