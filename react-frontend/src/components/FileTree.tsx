@@ -17,13 +17,11 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import InputAdornment from '@mui/material/InputAdornment';
 import Autocomplete from '@mui/material/Autocomplete';
 
-import { ANIMATION_LENGTH_MS } from './Nav.styles';
 import { GetSubdirsResponse } from '../types';
 
 
-type FileRowWrapperProps = {
-  menuOpen: boolean
-};
+export const FILE_TREE_BG_COLOR = '#101060';
+
 
 const FileRowWrapper = styled.div`
   display: flex;
@@ -31,7 +29,6 @@ const FileRowWrapper = styled.div`
   padding-left: 1rem;
   padding-top: 0.2rem;
   padding-bottom: 0.2rem;
-  ${(props: FileRowWrapperProps) => (props.menuOpen ? 'background-color: midnightblue;' : '')}
 
   &:hover {
     background-color: #474791;
@@ -117,7 +114,7 @@ function FileRow(props: FileRowProps) {
   };
 
   return (
-    <FileRowWrapper menuOpen={fileMenuOpen}>
+    <FileRowWrapper>
       { breakableFileName.endsWith('.note') ?
         <FileWrapper
           key={`${props.directory.path}/${props.file}`}
@@ -271,8 +268,6 @@ const DirectoryContentsWrapper = styled.div`
   flex-direction: column;
   flex-wrap: nowrap;
   margin-left: 1rem;
-  // max-height: 1000rem;
-  // transition: max-height ${ANIMATION_LENGTH_MS}ms;
 
   & .collapsed {
     height: 0rem;
@@ -655,7 +650,7 @@ function UploadDialog(props: UploadDialogProps) {
 
 
 const FileTreeWrapper = styled.div`
-  background-color: midnightblue;
+  background-color: ${FILE_TREE_BG_COLOR};
   color: white;
   width: 100%;`
 

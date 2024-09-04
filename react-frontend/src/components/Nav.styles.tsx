@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import styled from 'styled-components';
+import { FILE_TREE_BG_COLOR } from './FileTree';
 
 // Constants
 export const ANIMATION_LENGTH_MS = 500;
@@ -40,7 +41,7 @@ export const TreeSidebar = styled.div`
   overflow-y: scroll;
   overflow-x: hidden;
   transition: all ${ANIMATION_LENGTH_MS}ms;
-  background-color: midnightblue;
+  background-color: ${FILE_TREE_BG_COLOR};
   color: white;
   display: flex;
   flex-direction: column;
@@ -98,7 +99,7 @@ export const NavOption = styled(Link)`
 type TreeLiProps = {isExpanded?: boolean};
 
 export const TreeLi = styled.li`
-  ${(props: TreeLiProps) => (props.isExpanded ? 'background-color: midnightblue;' : '')}
+  ${(props: TreeLiProps) => (props.isExpanded ? `background-color: ${FILE_TREE_BG_COLOR};` : '')}
   transition: all ${ANIMATION_LENGTH_MS}ms;`
 
 export const ElementsLi = styled.li`
