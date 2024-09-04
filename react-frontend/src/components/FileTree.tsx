@@ -23,7 +23,7 @@ import { GetSubdirsResponse } from '../types';
 
 type FileRowWrapperProps = {
   menuOpen: boolean
-}
+};
 
 const FileRowWrapper = styled.div`
   display: flex;
@@ -47,6 +47,12 @@ const FileWrapper = styled(Link)`
   color: white;
   display: flex;`
 
+const ResourceWrapper = styled.span`
+  font-size: 1.25rem;
+  text-decoration: none;
+  color: #aaa;
+  display: flex;`
+
 const FileName = styled.div``
 
 const FileTreeIcon = styled.i`
@@ -54,7 +60,7 @@ const FileTreeIcon = styled.i`
 
 type FolderActionsIconProps = {
   menuOpen: boolean
-}
+};
 
 const FolderActionsIcon = styled.i`
   margin-right: 0.6rem;
@@ -75,7 +81,7 @@ type FileRowProps = {
   collapseFunction: () => void,
   openMoveDialog: (sourceType: string, sourcePath: string) => void,
   openDeleteDialog: (deleteType: string, deletePath: string) => void,
-}
+};
 
 function FileRow(props: FileRowProps) {
 
@@ -90,12 +96,14 @@ function FileRow(props: FileRowProps) {
     }
   }).join('');
 
+  const composeLink = `/compose?path=${props.directory.path}/${props.file}`;
+
   const handleFileActionsClick = (event: React.MouseEvent<HTMLElement>) => {
     setFileMenuAnchorEl(event.currentTarget);
   };
 
   const handleFileMenuClose = () => {
-    setFileMenuAnchorEl(null)
+    setFileMenuAnchorEl(null);
   }
 
   const handleMoveButtonClick = () => {
@@ -110,14 +118,20 @@ function FileRow(props: FileRowProps) {
 
   return (
     <FileRowWrapper menuOpen={fileMenuOpen}>
-      <FileWrapper
-        key={`${props.directory.path}/${props.file}`}
-        to={`/compose?path=${props.directory.path}/${props.file}`}
-        onClick={props.collapseFunction}
-      >
-        <FileTreeIcon className="bi bi-file-earmark-text"></FileTreeIcon>
-        <FileName>{breakableFileName}</FileName>
-      </FileWrapper>
+      { breakableFileName.endsWith('.note') ?
+        <FileWrapper
+          key={`${props.directory.path}/${props.file}`}
+          to={composeLink}
+          onClick={props.collapseFunction}
+        >
+          <FileTreeIcon className="bi bi-file-earmark-text"></FileTreeIcon>
+          <FileName>{breakableFileName}</FileName>
+        </FileWrapper> :
+        <ResourceWrapper key={`${props.directory.path}/${props.file}`}>
+          <FileTreeIcon className="bi bi-file-earmark-code"></FileTreeIcon>
+          <FileName>{breakableFileName}</FileName>
+        </ResourceWrapper>
+      }
       <FolderActionsIcon menuOpen={fileMenuOpen} onClick={handleFileActionsClick} className="bi bi-three-dots"></FolderActionsIcon>
       <Menu
         id="file-actions-menu"
@@ -135,7 +149,7 @@ function FileRow(props: FileRowProps) {
 
 type DirectoryRowWrapperProps = {
   menuOpen: boolean
-}
+};
 
 const DirectoryRowWrapper = styled.div`
   display: flex;
@@ -164,7 +178,7 @@ type DirectoryRowProps = {
   openMoveDialog: (sourceType: string, sourcePath: string) => void,
   openDeleteDialog: (deleteType: string, deletePath: string) => void,
   openUploadDialog: (parentDir: string) => void,
-}
+};
 
 function DirectoryRow(props: DirectoryRowProps) {
 
