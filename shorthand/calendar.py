@@ -2,7 +2,7 @@ from enum import StrEnum
 import re
 import logging
 from subprocess import Popen, PIPE
-from typing import Dict, List, Optional, Required, TypedDict
+from typing import Dict, List, Literal, Optional, Required, TypedDict
 from datetime import datetime
 
 from shorthand.elements.todos import _get_todos
@@ -17,11 +17,7 @@ dated_heading_regex = re.compile(DATED_HEADING_PATTERN)
 log = logging.getLogger(__name__)
 
 
-class CalendarMode(StrEnum):
-    Creation = 'creation'
-    Closing = 'closing'
-    Recent = 'recent'
-    WIP = 'wip'
+type CalendarMode = Literal['creation', 'closing', 'recent', 'wip']
 
 class CalendarEvent(TypedDict, total=False):
     file_path: Required[str]
@@ -40,7 +36,7 @@ Calendar = Dict[YearIndex, Dict[MonthIndex, Dict[DayIndex, List[CalendarEvent]]]
 
 
 def _get_calendar(notes_directory: DirectoryPath,
-                  mode: CalendarMode = CalendarMode.Recent,
+                  mode: CalendarMode = 'recent',
                   directory_filter: Optional[RelativeDirectoryPath] = None,
                   grep_path: ExecutablePath = 'grep') -> Calendar:
 
@@ -118,9 +114,9 @@ def _get_calendar(notes_directory: DirectoryPath,
                 "type": "incomplete_todo"
             }
 
-            if mode == CalendarMode.Closing:
+            if mode == 'closing':
                 break
-            elif mode == CalendarMode.WIP:
+            elif mode == 'wip':
                 parsed_todo['start'] = todo['start_date']
                 parsed_todo['end'] = todays_date
             events.append(parsed_todo)
@@ -139,13 +135,13 @@ def _get_calendar(notes_directory: DirectoryPath,
             "element_id": "",
             "type": "completed_todo"
         }
-        if mode == CalendarMode.Creation and todo['start_date']:
+        if mode == 'creation' and todo['start_date']:
             parsed_todo['date'] = todo['start_date']
-        elif mode == CalendarMode.Closing and todo['end_date']:
+        elif mode == 'closing' and todo['end_date']:
             parsed_todo['date'] = todo['end_date']
-        elif mode == CalendarMode.Recent and todo['end_date']:
+        elif mode == 'recent' and todo['end_date']:
             parsed_todo['date'] = todo['end_date']
-        elif mode == CalendarMode.WIP and todo['start_date'] and todo['end_date']:
+        elif mode == 'wip' and todo['start_date'] and todo['end_date']:
             parsed_todo['date'] = todo['start_date']
             parsed_todo['start'] = todo['start_date']
             parsed_todo['end'] = todo['end_date']
@@ -167,13 +163,13 @@ def _get_calendar(notes_directory: DirectoryPath,
             "element_id": "",
             "type": "skipped_todo"
         }
-        if mode == CalendarMode.Creation and todo['start_date']:
+        if mode == 'creation' and todo['start_date']:
             parsed_todo['date'] = todo['start_date']
-        elif mode == CalendarMode.Closing and todo['end_date']:
+        elif mode == 'closing' and todo['end_date']:
             parsed_todo['date'] = todo['end_date']
-        elif mode == CalendarMode.Recent and todo['end_date']:
+        elif mode == 'recent' and todo['end_date']:
             parsed_todo['date'] = todo['end_date']
-        elif mode == CalendarMode.WIP and todo['start_date'] and todo['end_date']:
+        elif mode == 'wip' and todo['start_date'] and todo['end_date']:
             parsed_todo['date'] = todo['start_date']
             parsed_todo['start'] = todo['start_date']
             parsed_todo['end'] = todo['end_date']
@@ -204,23 +200,23 @@ def _get_calendar(notes_directory: DirectoryPath,
             "type": "answer"
         }
 
-        if mode == CalendarMode.Creation and question.get('question_date'):
+        if mode == 'creation' and question.get('question_date'):
             if question.get('answer_date'):
                 parsed_answer['date'] = question['question_date']
                 events.append(parsed_answer)
             else:
                 events.append(parsed_question)
 
-        elif mode == CalendarMode.Closing and question.get('answer_date'):
+        elif mode == 'closing' and question.get('answer_date'):
             events.append(parsed_answer)
 
-        elif mode == CalendarMode.Recent:
+        elif mode == 'recent':
             if question.get('answer_date'):
                 events.append(parsed_answer)
             else:
                 events.append(parsed_question)
 
-        elif mode == CalendarMode.WIP:
+        elif mode == 'wip':
             if question.get('question_date'):
                 if question.get('answer_date'):
                     parsed_answer["start"] = question['question_date']

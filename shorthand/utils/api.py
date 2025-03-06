@@ -56,7 +56,7 @@ def get_request_argument(args: MultiDict[str, str], name: str,
         return args.get(name, default, float) # type: ignore
 
 
-def wrap_response_data(response_data: T) -> WrappedResponse[T]:
+def wrap_response_data(response_data: List[T]) -> WrappedResponse[T]:
     '''Wraps response data returned by the API into a consistent format
     Lists of data are wrapped to the form:
     {

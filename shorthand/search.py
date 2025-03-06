@@ -44,6 +44,7 @@ def _record_file_view(notes_directory: DirectoryPath, note_path: NotePath,
             history_data = history_file_object.read()
     else:
         history_data = ''
+    print('read old history')
 
     history_data = [line.strip()
                     for line in history_data.split('\n')
@@ -74,6 +75,7 @@ def _record_file_view(notes_directory: DirectoryPath, note_path: NotePath,
     history_string = '\n'.join(history_data) + '\n'
     with open(history_file, 'w') as history_file_object:
         history_file_object.write(history_string)
+    print('wrote updated history')
 
 
 def _search_filenames(notes_directory: DirectoryPath, prefer_recent_files=True,
