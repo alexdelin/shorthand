@@ -56,7 +56,7 @@ export function ComposePage() {
 
   const { data: renderedMarkdown } =
     useQuery<GetRenderedMarkdownResponse, Error>(['note', { path: notePath }], () =>
-      fetch('/frontend-api/redered-markdown?path=' + notePath)
+      fetch('/frontend-api/rendered-markdown?path=' + notePath)
         .then(async res => res.json()),
       {cacheTime: 10 * 60 * 1000, refetchOnWindowFocus: false}
     )
@@ -162,7 +162,7 @@ export function ComposePage() {
           body: stampedNoteContent
         }
       ).then(async res => {
-        if (await res.text() === 'Note Updated') {
+        if (await res.text() === 'ack') {
           queryClient.invalidateQueries(['note', { path: notePath }]);
           queryClient.invalidateQueries(['raw-note', { path: notePath }]);
           setChangesSaved(true);
@@ -372,11 +372,13 @@ export function ComposePage() {
               No Changes To Save
             </Alert>
           </Snackbar>
+
           <SwitchLabel>Show Preview</SwitchLabel>
           <Switch
             checked={showPreview}
             onChange={handleShowPreviewChange}
           />
+
           <SwitchLabel>Auto-scroll</SwitchLabel>
           <Switch
             checked={showPreview && scrollPreview}

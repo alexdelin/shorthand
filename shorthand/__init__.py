@@ -7,14 +7,15 @@ from shorthand.frontend import clear_open_files, close_file, get_open_files, ope
 from shorthand.notes import _get_note, _update_note, \
                             _validate_internal_links, _append_to_note, \
                             _get_backlinks, _get_links
+from shorthand.resources import _get_resource
 from shorthand.calendar import CalendarMode, _get_calendar
 from shorthand.tags import _get_tags
 from shorthand.toc import _get_toc
 from shorthand.stamping import _stamp_notes, _stamp_raw_note
 from shorthand.search import _search_full_text, _search_filenames, \
                              _record_file_view
-from shorthand.elements.todos import _get_todos, _mark_todo
-from shorthand.elements.questions import _get_questions
+from shorthand.elements.todos import TodoStatus, _get_todos, _mark_todo
+from shorthand.elements.questions import QuestionStatus, _get_questions
 from shorthand.elements.definitions import _get_definitions
 from shorthand.elements.locations import _get_locations
 from shorthand.elements.record_sets import _get_record_sets, _get_record_set
@@ -216,7 +217,7 @@ class ShorthandServer(object):
             history_limit=self.config['frontend']['view_history_limit'])
 
     # Calendar
-    def get_calendar(self, mode: CalendarMode = CalendarMode.Recent,
+    def get_calendar(self, mode: CalendarMode = 'recent',
                      directory_filter=None):
         return _get_calendar(notes_directory=self.notes_directory,
                              mode=mode,
@@ -249,12 +250,17 @@ class ShorthandServer(object):
         return _get_subdirs(notes_directory=self.notes_directory,
                             max_depth=max_depth, exclude_hidden=exclude_hidden)
 
+    # Resources
+    def get_resource(self, resource_path):
+        return _get_resource(notes_directory=self.notes_directory,
+                             resource_path=resource_path)
+
     # ----------------
     # --- Elements ---
     # ----------------
 
     # Todos
-    def get_todos(self, todo_status='incomplete', directory_filter=None,
+    def get_todos(self, todo_status: TodoStatus = 'incomplete', directory_filter=None,
                   query_string=None, case_sensitive=False, sort_by=None,
                   suppress_future=True, tag=None):
         return _get_todos(notes_directory=self.notes_directory,
@@ -271,7 +277,7 @@ class ShorthandServer(object):
                           status=status)
 
     # Questions
-    def get_questions(self, question_status='all', directory_filter=None):
+    def get_questions(self, question_status: QuestionStatus = 'all', directory_filter=None):
         return _get_questions(notes_directory=self.notes_directory,
                               question_status=question_status,
                               directory_filter=directory_filter,
@@ -416,6 +422,7 @@ class ShorthandServer(object):
         return clear_open_files(notes_directory=self.notes_directory)
 
     def open_file(self, note_path: NotePath):
+        self.record_file_view(note_path)
         return open_file(notes_directory=self.notes_directory,
                          note_path=note_path)
 

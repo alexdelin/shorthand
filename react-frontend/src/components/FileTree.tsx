@@ -44,7 +44,7 @@ const FileWrapper = styled(Link)`
   color: white;
   display: flex;`
 
-const ResourceWrapper = styled.span`
+const ResourceWrapper = styled(Link)`
   font-size: 1.25rem;
   text-decoration: none;
   color: #aaa;
@@ -124,7 +124,11 @@ function FileRow(props: FileRowProps) {
           <FileTreeIcon className="bi bi-file-earmark-text"></FileTreeIcon>
           <FileName>{breakableFileName}</FileName>
         </FileWrapper> :
-        <ResourceWrapper key={`${props.directory.path}/${props.file}`}>
+        <ResourceWrapper
+          key={`${props.directory.path}/${props.file}`}
+          to={`/api/v1/resource?path=${props.directory.path}/${props.file}`}
+          target='_blank'
+        >
           <FileTreeIcon className="bi bi-file-earmark-code"></FileTreeIcon>
           <FileName>{breakableFileName}</FileName>
         </ResourceWrapper>

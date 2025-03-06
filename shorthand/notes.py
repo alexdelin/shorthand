@@ -37,11 +37,10 @@ def _get_note(notes_directory: DirectoryPath, path: NotePath
           within the notes directory
     '''
 
+    if not _is_note_path(notes_directory, path, must_exist=True):
+        raise ValueError(f'Valid note not found at path {path}')
+
     full_path = get_full_path(notes_directory, path)
-
-    if not os.path.exists(full_path):
-        raise ValueError(f'Note to get at path {path} does not exist')
-
     with open(full_path, 'r') as note_file_object:
         note_content = note_file_object.read()
 

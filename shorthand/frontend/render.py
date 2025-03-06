@@ -1,6 +1,7 @@
 import re
 import json
 import logging
+from typing import TypedDict
 
 from shorthand.elements.todos import parse_todo
 from shorthand.tags import extract_tags
@@ -39,12 +40,12 @@ def rewrite_image_path(matchobj, note_path):
         pass
     elif image_target.startswith('/'):
         # Full path to internal target
-        image_target = '/frontend-api/get-image?path=' + image_target
+        image_target = '/api/v1/resource?path=' + image_target
     else:
         # Relative path to internal image
         # We can't deal with this without knowing
         #     the path to the note we are rendering!
-        image_target = '/frontend-api/get-image?path=' + \
+        image_target = '/api/v1/resource?path=' + \
                        parse_relative_link_path(note_path, image_target)
     return f'![{image_title}]({image_target})'
 
@@ -52,15 +53,29 @@ def rewrite_image_path(matchobj, note_path):
 def replace_link_path(matchobj, note_path):
     '''Consumes a regex match object for a internal link
     '''
-    element = '{g1}{g2}/view?path={g3}{g5}'.format(
-        g1=matchobj.group(1),
-        g2=matchobj.group(2),
-        g3=parse_relative_link_path(note_path, matchobj.group(3)),
-        g5=matchobj.group(5))
+    if matchobj.group(3).endswith('.note'):
+        # Links to notes go to the view page
+        element = '{g1}{g2}/view?path={g3}{g5}'.format(
+            g1=matchobj.group(1),
+            g2=matchobj.group(2),
+            g3=parse_relative_link_path(note_path, matchobj.group(3)),
+            g5=matchobj.group(5))
+    else:
+        # Links to resources go to the download API
+        element = '{g1}{g2}/api/v1/resource?path={g3}{g5}'.format(
+            g1=matchobj.group(1),
+            g2=matchobj.group(2),
+            g3=parse_relative_link_path(note_path, matchobj.group(3)),
+            g5=matchobj.group(5))
     return element
 
 
-def get_rendered_markdown(markdown_content, note_path):
+class RenderedMarkdown(TypedDict):
+    file_content: str
+    toc_content: str
+
+
+def get_rendered_markdown(markdown_content, note_path) -> RenderedMarkdown:
     '''Pre-render all non-standard notes file
        elements into HTML
 
@@ -234,7 +249,11 @@ def get_rendered_markdown(markdown_content, note_path):
 
     html_content = '\n'.join(html_content_lines)
     toc_content = '\n'.join(toc_content_lines)
-    return html_content, toc_content
+
+    return {
+        'file_content': html_content,
+        'toc_content': toc_content
+    }
 
 
 def get_todo_element(raw_todo):
