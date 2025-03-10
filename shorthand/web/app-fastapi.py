@@ -67,15 +67,6 @@ app.mount("/static/css", StaticFiles(directory=f"{STATIC_FOLDER}/static/css"), n
 app.mount("/static/media", StaticFiles(directory=f"{STATIC_FOLDER}/static/media"), name="static-media")
 
 
-@app.get('/')
-@app.get('/{path}')
-def serve_react(path):
-    if path != "" and os.path.exists(f'{STATIC_FOLDER}/{path}'):
-        return FileResponse(f'{STATIC_FOLDER}/{path}')
-    else:
-        return FileResponse(f'{STATIC_FOLDER}/index.html')
-
-
 @app.get('/api/v1/config',
     tags=['Config'],
     # summary='',
@@ -472,3 +463,15 @@ def call_clear_open_files() -> ACKResponse:
     server = ShorthandServer(settings.config_path)
     return server.clear_open_files()
 
+
+@app.get('/{full_path: path}')
+def serve_react(full_path: str):
+    if full_path != "" and os.path.exists(f'{STATIC_FOLDER}/{full_path}'):
+        return FileResponse(f'{STATIC_FOLDER}/{full_path}')
+    else:
+        return FileResponse(f'{STATIC_FOLDER}/index.html')
+
+
+@app.get('/')
+def serve_default_html():
+    return FileResponse(f'{STATIC_FOLDER}/index.html')
