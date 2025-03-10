@@ -60,8 +60,6 @@ app.add_middleware(
     allow_origins=["*"]
 )
 
-
-# app.mount("/", StaticFiles(directory=f"{STATIC_FOLDER}", html=True), name="static-html")
 app.mount("/static/js", StaticFiles(directory=f"{STATIC_FOLDER}/static/js"), name="static-js")
 app.mount("/static/css", StaticFiles(directory=f"{STATIC_FOLDER}/static/css"), name="static-css")
 app.mount("/static/media", StaticFiles(directory=f"{STATIC_FOLDER}/static/media"), name="static-media")
@@ -401,7 +399,7 @@ def filesystem_upload(directory: Subdir, file: UploadFile) -> ACKResponse:
 
 
 @app.get('/api/v1/archive', tags=['Notes'])
-def get_archive(response: Response) -> bytes:
+def get_archive() -> bytes:
     server = ShorthandServer(settings.config_path)
     return Response(
         content=server.get_note_archive(),
@@ -464,10 +462,10 @@ def call_clear_open_files() -> ACKResponse:
     return server.clear_open_files()
 
 
-@app.get('/{full_path: path}')
-def serve_react(full_path: str):
-    if full_path != "" and os.path.exists(f'{STATIC_FOLDER}/{full_path}'):
-        return FileResponse(f'{STATIC_FOLDER}/{full_path}')
+@app.get('/{path:path}')
+def serve_react(path: str):
+    if path != "" and os.path.exists(f'{STATIC_FOLDER}/{path}'):
+        return FileResponse(f'{STATIC_FOLDER}/{path}')
     else:
         return FileResponse(f'{STATIC_FOLDER}/index.html')
 
