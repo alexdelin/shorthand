@@ -103,6 +103,11 @@ function FileRow(props: FileRowProps) {
     setFileMenuAnchorEl(null);
   }
 
+  const handleCopyPathButtonClick = () => {
+    navigator.clipboard.writeText(`${props.directory.path}/${props.file}`);
+    setFileMenuAnchorEl(null);
+  }
+
   const handleMoveButtonClick = () => {
     setFileMenuAnchorEl(null);
     props.openMoveDialog('note', `${props.directory.path}/${props.file}`);
@@ -140,6 +145,7 @@ function FileRow(props: FileRowProps) {
         open={fileMenuOpen}
         onClose={handleFileMenuClose}
       >
+        <MenuItem onClick={handleCopyPathButtonClick}>Copy Path</MenuItem>
         <MenuItem onClick={handleMoveButtonClick}>Rename / Move</MenuItem>
         <MenuItem onClick={handleDeleteButtonClick}>Delete</MenuItem>
       </Menu>
