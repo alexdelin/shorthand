@@ -1,7 +1,10 @@
-Flask>=1.1.1
 nltk>=3.4.5
-uWSGI>=2.0.18
 python-dateutil>=2.8.1
 pytest
 coverage
 setuptools
+pydantic
+pydantic_settings
+starlette
+fastapi[standard]
+flask

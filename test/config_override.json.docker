@@ -1,0 +1,6 @@
+{
+    "log_level": "debug",
+    "grep_path": "/bin/grep",
+    "find_path": "/usr/bin/find",
+    "patch_path": "/usr/bin/patch"
+}

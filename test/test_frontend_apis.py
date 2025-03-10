@@ -36,7 +36,7 @@ class TestOpenFilesAPI(ShorthandTestCase):
         # Test opening invalid paths
         with pytest.raises(ValueError) as e:
             self.server.open_file('/does-not-exist.note')
-        assert 'non-existent file' in str(e.value)
+        assert 'does not exist' in str(e.value)
 
         open_files = self.server.get_open_files()
         assert '/does-not-exist.note' not in open_files

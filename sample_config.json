@@ -1,8 +1,8 @@
 {
     "notes_directory": "/notes/",
     "default_directory": null,
-    "grep_path": "/usr/local/bin/grep",
-    "find_path": "/usr/local/bin/find",
+    "grep_path": "/bin/grep",
+    "find_path": "/usr/bin/find",
     "log_file_path": "/var/log/shorthand/shorthand.log",
     "log_level": "INFO",
     "frontend": {

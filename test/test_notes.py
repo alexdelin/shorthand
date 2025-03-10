@@ -1,5 +1,4 @@
 import logging
-import unittest
 import pytest
 import random
 
@@ -8,10 +7,8 @@ from shorthand.notes import _get_note, _update_note, \
                             _append_to_note, _get_links, \
                             _get_backlinks
 from shorthand.utils.filesystem import _create_file, _delete_file
-from shorthand.web.app import create_app
 
-from utils import ShorthandTestCase, setup_environment, teardown_environment, validate_setup, \
-                  TEST_CONFIG_PATH
+from utils import ShorthandTestCase
 from model import ShorthandModel
 from results_unstamped import ALL_LINKS
 
@@ -37,7 +34,7 @@ class TestNotesOperations(ShorthandTestCase):
         with pytest.raises(ValueError) as e:
             _get_note(notes_directory=self.notes_dir,
                       path='/doesnt-exist.note')
-        assert 'does not exist' in str(e.value)
+        assert 'note not found' in str(e.value)
 
     def test_create_note(self):
         new_note_path = '/new.note'
@@ -62,7 +59,7 @@ class TestNotesOperations(ShorthandTestCase):
         with pytest.raises(ValueError) as e:
             _get_note(notes_directory=self.notes_dir,
                       path=test_path)
-        assert 'does not exist' in str(e.value)
+        assert 'note not found' in str(e.value)
 
     def test_update_note(self):
         test_path = '/section/mixed.note'

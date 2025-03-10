@@ -206,7 +206,7 @@ class TestAPI(ShorthandTestCase, reset_per_method=False):
         sets_found = self.server.get_record_sets(directory_filter=None)
         all_sets = [{'display_path': 'rec.note',
                      'file_path': '/rec.note',
-                     'line_number': '4'}]
+                     'line_number': 4}]
 
         assert sets_found == all_sets
 

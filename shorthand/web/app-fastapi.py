@@ -1,5 +1,6 @@
 import logging
 import os
+from pathlib import Path
 from typing import Annotated, Dict, List, Literal, Optional, Union
 
 from fastapi import FastAPI, Body, Response, UploadFile
@@ -34,7 +35,8 @@ from shorthand.utils.paths import _is_resource_path, get_full_path
 
 log = logging.getLogger(__name__)
 
-STATIC_FOLDER = '../../react-frontend/build'
+parent_dir = Path(__file__).parent
+STATIC_FOLDER = Path(f'{parent_dir}/../../react-frontend/build').resolve()
 
 
 class Settings(BaseSettings):
