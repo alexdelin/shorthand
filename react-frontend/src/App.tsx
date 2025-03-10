@@ -1,6 +1,6 @@
 import { lazy, Suspense } from 'react';
 import { ErrorBoundary, FallbackProps } from 'react-error-boundary';
-import { Routes, Route, Link, useLocation } from "react-router-dom";
+import { Routes, Route, Link, useLocation, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import BottomNavigation from '@mui/material/BottomNavigation';
@@ -108,10 +108,10 @@ function MobileApp() {
       <ThemeProvider theme={mobileDarkTheme}>
         <MobileContent>
           <Routes>
-            <Route path="/" element={<MobileNotesPage />} />
             <Route path="/notes" element={<MobileNotesPage />} />
             <Route path="/compose" element={<MobileComposePage />} />
             <Route path="/view" element={<MobileViewPage />} />
+            <Route path="*" element={<Navigate to="/notes" replace />} />
           </Routes>
         </MobileContent>
         <StyledBottomNavigation value={page}>
@@ -171,6 +171,7 @@ function DesktopApp() {
               <Route path="/view" element={<ViewPage />} />
               <Route path="/history" element={<HistoryPage />} />
               <Route path="/settings" element={<SettingsPage />} />
+              <Route path="*" element={<Navigate to="/home" replace />} />
             </Routes>
           </Suspense>
         </ErrorBoundary>

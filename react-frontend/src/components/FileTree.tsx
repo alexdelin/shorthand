@@ -181,6 +181,8 @@ const DirectoryName = styled.div``
 
 type DirectoryRowProps = {
   directory: TOC,
+  directoryExpanded: boolean,
+  setDirectoryExpanded: (value: boolean) => void,
   openCreateDialog: (parentDir: string) => void,
   openMoveDialog: (sourceType: string, sourcePath: string) => void,
   openDeleteDialog: (deleteType: string, deletePath: string) => void,
@@ -202,12 +204,13 @@ function DirectoryRow(props: DirectoryRowProps) {
 
   function handleDirectoryClick(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
     // This is a hack, but there is no easier way to do it via common react patterns
-    const directoryWrapperEl = e.currentTarget.parentElement?.parentElement;
-    const directoryContentsNode = directoryWrapperEl?.childNodes[1] as HTMLDivElement | undefined;
-    if (directoryContentsNode) {
-      const classes = directoryContentsNode.classList;
-      classes.toggle('collapsed');
-    }
+    // const directoryWrapperEl = e.currentTarget.parentElement?.parentElement;
+    // const directoryContentsNode = directoryWrapperEl?.childNodes[1] as HTMLDivElement | undefined;
+    // if (directoryContentsNode) {
+    //   const classes = directoryContentsNode.classList;
+    //   classes.toggle('collapsed');
+    // }
+    props.setDirectoryExpanded(!props.directoryExpanded);
   }
 
   const handleDirActionsClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -245,7 +248,10 @@ function DirectoryRow(props: DirectoryRowProps) {
   return (
     <DirectoryRowWrapper menuOpen={dirMenuOpen}>
       <DirectoryNameWrapper onClick={handleDirectoryClick}>
-        <FileTreeIcon className="bi bi-folder2"></FileTreeIcon>
+        {props.directoryExpanded
+          ? <FileTreeIcon className="bi bi-folder2-open"></FileTreeIcon>
+          : <FileTreeIcon className="bi bi-folder2"></FileTreeIcon>
+        }
         <DirectoryName>{breakableDirName}</DirectoryName>
       </DirectoryNameWrapper>
       <FolderActionsIcon menuOpen={dirMenuOpen} onClick={handleDirActionsClick} className="bi bi-three-dots"></FolderActionsIcon>
@@ -295,16 +301,20 @@ type RenderedDirectoryProps = {
 
 function RenderedDirectory(props: RenderedDirectoryProps) {
 
+  const [directoryExpanded, setDirectoryExpanded] = useState(props.expanded);
+
   return (
   <DirectoryWrapper key={props.directory.path}>
     <DirectoryRow
       directory={props.directory}
+      directoryExpanded={directoryExpanded}
+      setDirectoryExpanded={setDirectoryExpanded}
       openCreateDialog={props.openCreateDialog}
       openMoveDialog={props.openMoveDialog}
       openDeleteDialog={props.openDeleteDialog}
       openUploadDialog={props.openUploadDialog}
     />
-    <DirectoryContentsWrapper className={props.expanded ? '' : 'collapsed'}>
+    <DirectoryContentsWrapper className={directoryExpanded ? '' : 'collapsed'}>
       {props.directory.files.map(file =>
         <FileRow
           key={`${props.directory.path}/${file}`}
