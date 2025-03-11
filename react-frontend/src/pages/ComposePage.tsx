@@ -55,16 +55,18 @@ export function ComposePage() {
   const queryClient = useQueryClient();
 
   const { data: renderedMarkdown } =
-    useQuery<GetRenderedMarkdownResponse, Error>(['note', { path: notePath }], () =>
-      fetch('/frontend-api/rendered-markdown?path=' + notePath)
-        .then(async res => res.json()),
+    useQuery<GetRenderedMarkdownResponse, Error>(['note', { path: notePath }], () => {
+      if (!notePath) return {file_content:'', toc_content: ''};
+      return fetch('/frontend-api/rendered-markdown?path=' + notePath)
+        .then(async res => res.json())},
       {cacheTime: 10 * 60 * 1000, refetchOnWindowFocus: false}
     )
 
   const { data: rawNote } =
-    useQuery<string, Error>(['raw-note', { path: notePath }], () =>
-      fetch('/api/v1/note?path=' + notePath)
-        .then(async res => res.text()),
+    useQuery<string, Error>(['raw-note', { path: notePath }], () => {
+      if (!notePath) return '';
+      return fetch('/api/v1/note?path=' + notePath)
+        .then(async res => res.text())},
       {cacheTime: 10 * 60 * 1000, refetchOnWindowFocus: false}
     )
 
@@ -75,10 +77,8 @@ export function ComposePage() {
       {cacheTime: 10 * 60 * 1000, refetchOnWindowFocus: false}
     )
 
-  // Handle the file in the URL path param not being the
-  // most recently opened file
-  if (openFiles && notePath &&
-      openFiles[openFiles.length - 1] !== notePath) {
+  // Handle the file in the URL path param not being an open file
+  if (openFiles && notePath && !openFiles.includes(notePath)) {
     // Open the file in the URL path via the API
     fetch(
       '/frontend-api/open-file?path=' + notePath,
@@ -152,6 +152,7 @@ export function ComposePage() {
       const stampedNoteContent = await res.text();
       if (stampedNoteContent !== currentNoteContent) {
         contentGetsStamped = true;
+        console.log('Updating editor content');
         setEditorText(stampedNoteContent);
       }
 
