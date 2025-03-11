@@ -90,10 +90,8 @@ export default function ViewPage() {
     )
   )
 
-  // Handle the file in the URL path param not being the
-  // most recently opened file
-  if (openFiles && notePath &&
-      openFiles[openFiles.length - 1] !== notePath) {
+  // Handle the file in the URL path param not being open
+  if (openFiles && notePath && !openFiles.includes(notePath)) {
     // Open the file in the URL path via the API
     fetch(
       '/frontend-api/open-file?path=' + notePath,
@@ -116,6 +114,14 @@ export default function ViewPage() {
     }
   // eslint-disable-next-line
   }, [openFiles])
+
+  // Record a view for the file being viewed
+  useEffect(() => {
+    fetch(
+      '/api/v1/record_view?note_path=' + notePath,
+      { method: 'POST' }
+    )
+  }, [notePath])
 
   function handleTOCClick() {
     setTocShown(!tocShown);

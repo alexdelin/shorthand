@@ -110,6 +110,11 @@ export function ComposePage() {
       setSelectedTab(notePath);
       setEditorText(rawNote);
       setChangesSaved(true);
+      // Record a view for the file being edited
+      fetch(
+        '/api/v1/record_view?note_path=' + notePath,
+        { method: 'POST' }
+      )
     }
   // eslint-disable-next-line
   }, [notePath, rawNote]);
@@ -319,16 +324,18 @@ export function ComposePage() {
           onChange={handleTabChange}
           variant="scrollable"
           scrollButtons="auto"
+          sx={{textTransform: 'none'}}
         >
           {openFiles && openFiles.map((file) => {
             if (file !== null) {
               const splitPath = file.split('/');
-              const fullFileName = splitPath[splitPath.length -1];
+              const fullFileName = splitPath[splitPath.length -1].replace(/\.[^/.]+$/, ""); // Removes file extension
               const trimmedFileName = fullFileName.length > FILE_NAME_LENGTH_LIMIT ? fullFileName.slice(0, 15) + '...' : fullFileName;
               return (
                 <Tab
                   key={file}
                   value={file}
+                  sx={{textTransform: 'none'}}
                   label={
                     <span title={fullFileName}>{trimmedFileName}
                       <span
