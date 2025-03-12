@@ -7,4 +7,3 @@ pydantic
 pydantic_settings
 starlette
 fastapi[standard]
-flask

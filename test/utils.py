@@ -9,7 +9,6 @@ import pytest
 from shorthand import ShorthandServer
 from shorthand.utils.logging import log_level_from_string, get_handler
 from shorthand.utils.config import DEFAULT_LOG_FORMAT, ShorthandConfig
-from shorthand.web.app import create_app
 
 
 SAMPLE_DATA_DIR = 'sample_data'
@@ -41,17 +40,14 @@ class ShorthandTestCase(unittest.TestCase):
     """Base Test Case"""
 
     reset_per_method = True
-    include_flask_client = False
     stamp = False
 
     def __init_subclass__(cls,
                           reset_per_method: bool = True,
-                          include_flask_client: bool = False,
                           stamp: bool = False,
                           **kwargs):
         super().__init_subclass__(**kwargs)
         cls.reset_per_method = reset_per_method
-        cls.include_flask_client = include_flask_client
         cls.stamp = stamp
 
     @pytest.fixture(autouse=True)
@@ -88,19 +84,12 @@ class ShorthandTestCase(unittest.TestCase):
                     stamp_todos=True, stamp_today=True,
                     stamp_questions=True, stamp_answers=True)
 
-        if self.include_flask_client:
-            self.api_client = self.get_api_client()
-
         validate_setup()
         self.server = ShorthandServer(TEST_CONFIG_PATH)
         self.notes_dir = self.config['notes_directory']
         self.grep_path = self.config['grep_path']
         self.find_path = self.config['find_path']
         self.patch_path = self.config['patch_path']
-
-    def get_api_client(self):
-        app = create_app(TEST_CONFIG_PATH)
-        return app.test_client()
 
 
 def get_test_config() -> ShorthandConfig:

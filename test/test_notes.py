@@ -208,27 +208,3 @@ class TestLinkOperations(ShorthandTestCase, reset_per_method=False):
         backlinks = _get_backlinks(notes_directory=self.notes_dir,
                                    note_path='https://nytimes.com')
         assert len(backlinks) == 0
-
-
-class TestNotesOperationsFlask(ShorthandTestCase, reset_per_method=False, include_flask_client=True):
-    """Test getting stamped todos via the HTTP API"""
-
-    def test_get_note(self):
-        test_path = '/section/mixed.note'
-        params = {'path': test_path}
-        note_content = self.api_client.get('/api/v1/note', query_string=params)
-        note_content = note_content.data.decode('utf-8')
-
-        with open(self.notes_dir + test_path, 'r') as f:
-            read_content = f.read()
-
-        assert note_content == read_content
-
-    def test_update_note(self):
-        test_path = '/section/mixed.note'
-        test_content = 'This note has been replaced!'
-        params = {'path': test_path}
-        self.api_client.post('/api/v1/note', query_string=params, data=test_content)
-        note_content = self.api_client.get('/api/v1/note', query_string=params)
-        note_content = note_content.data.decode('utf-8')
-        assert note_content == test_content
