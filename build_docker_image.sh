@@ -10,5 +10,6 @@ cd ..
 
 docker build \
     --tag alexdelin/shorthand:${VERSION} \
-    --file Dockerfile-fastapi \
+    --platform linux/arm/v7 \
+    --push \
     .
