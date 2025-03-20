@@ -38,7 +38,7 @@ const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-export function ComposePage() {
+export default function ComposePage() {
   console.log('rendering...')
 
   const [ searchParams, setSearchParams ] = useSearchParams();

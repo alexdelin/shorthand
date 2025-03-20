@@ -9,13 +9,13 @@ import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import { Nav } from './components/Nav';
 import { FileSearchModal } from './components/FileSearchModal';
 import { HomePage } from './pages/HomePage';
-import { ComposePage } from './pages/ComposePage';
+// import { ComposePage } from './pages/ComposePage';
 import { QuestionsPage } from './pages/QuestionsPage';
 import { LinksPage } from './pages/LinksPage';
 import { DefinitionsPage } from './pages/DefinitionsPage';
 import { DatasetsPage } from './pages/DatasetsPage';
 import { LocationsPage } from './pages/LocationsPage';
-import { CalendarPage } from './pages/CalendarPage';
+// import { CalendarPage } from './pages/CalendarPage';
 import { SearchPage } from './pages/SearchPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { HistoryPage } from './pages/HistoryPage';
@@ -33,6 +33,14 @@ const ViewPage = lazy(() => import(
 const TodosPage = lazy(() => import(
   /* webpackChunkName: "TodosPage" */
   './pages/TodosPage'
+));
+const ComposePage = lazy(() => import(
+  /* webpackChunkName: "ComposePage" */
+  './pages/ComposePage'
+));
+const CalendarPage = lazy(() => import(
+  /* webpackChunkName: "CalendarPage" */
+  './pages/CalendarPage'
 ));
 
 const Content = styled.div`

@@ -20,7 +20,7 @@ export const OptionsWrapper = styled.div`
   gap: 1rem;
   `
 
-export function CalendarPage() {
+export default function CalendarPage() {
 
   const [directory, setDirectory] = useState('ALL');
   const [mode, setMode] = useState('recent');
