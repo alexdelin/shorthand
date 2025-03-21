@@ -2,7 +2,7 @@ import os
 import copy
 import json
 import logging
-from typing import Optional, TypedDict, NewType
+from typing import Optional, Required, TypedDict
 
 from shorthand.types import ExecutablePath, FilePath, DirectoryPath, RelativeDirectoryPath
 
@@ -11,36 +11,61 @@ class ShorthandFrontendConfig(TypedDict):
     view_history_limit: int
     map_tileserver_url: str
 
-class ShorthandConfig(TypedDict):
-    notes_directory: DirectoryPath
-    cache_directory: DirectoryPath
+class ShorthandConfigInput(TypedDict, total=False):
+    '''The minimal config which must be provided by a user
+       or specified in a config file in order to produce a valid
+       ShorthandConfig which can be used by the application
+
+       Same schema as ShorthandConfig but with fewer required fields
+    '''
+    notes_directory: Required[DirectoryPath]
     default_directory: Optional[RelativeDirectoryPath]
     log_file_path: FilePath
     log_level: str
     log_format: str
     grep_path: ExecutablePath
     find_path: ExecutablePath
+    patch_path: ExecutablePath
     frontend: ShorthandFrontendConfig
+    track_edit_history: bool
+
+class ShorthandConfig(TypedDict):
+    '''The config used by the application.
+       Includes the same information as the ShorthandConfigInput
+       provided, but with default values used for fields which were
+       omitted in the provided input
+    '''
+    notes_directory: DirectoryPath
+    default_directory: Optional[RelativeDirectoryPath]
+    log_file_path: FilePath
+    log_level: str
+    log_format: str
+    grep_path: ExecutablePath
+    find_path: ExecutablePath
+    patch_path: ExecutablePath
+    frontend: ShorthandFrontendConfig
+    track_edit_history: bool
 
 class ShorthandConfigUpdates(TypedDict, total=False):
-    cache_directory: DirectoryPath
     default_directory: Optional[RelativeDirectoryPath]
     log_file_path: FilePath
     log_level: str
     log_format: str
     grep_path: ExecutablePath
     find_path: ExecutablePath
+    patch_path: ExecutablePath
     frontend: ShorthandFrontendConfig
+    track_edit_history: bool
 
 
 CONFIG_FILE_LOCATION = '/etc/shorthand/shorthand_config.json'
 DEFAULT_NOTES_DIR = '/var/lib/shorthand/notes'
-DEFAULT_CACHE_DIR = '/var/lib/shorthand/cache'
 DEFAULT_LOG_FILE = '/var/log/shorthand/shorthand.log'
 DEFAULT_LOG_FORMAT = '%(asctime)s %(name)s %(levelname)-8s %(message)s'
 DEFAULT_LOG_LEVEL = 'INFO'
 DEFAULT_GREP_PATH = 'grep'
 DEFAULT_FIND_PATH = 'find'
+DEFAULT_PATCH_PATH = 'patch'
 DEFAULT_FRONTEND_CONFIG: ShorthandFrontendConfig = {
     'view_history_limit': 100,
     'map_tileserver_url': 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
@@ -48,14 +73,15 @@ DEFAULT_FRONTEND_CONFIG: ShorthandFrontendConfig = {
 
 DEFAULT_CONFIG: ShorthandConfig = {
     "notes_directory": DEFAULT_NOTES_DIR,
-    "cache_directory": DEFAULT_CACHE_DIR,
     "default_directory": None,
     "log_file_path": DEFAULT_LOG_FILE,
     "log_level": DEFAULT_LOG_LEVEL,
     "log_format": DEFAULT_LOG_FORMAT,
     "grep_path": DEFAULT_GREP_PATH,
     "find_path": DEFAULT_FIND_PATH,
-    "frontend": DEFAULT_FRONTEND_CONFIG
+    "patch_path": DEFAULT_PATCH_PATH,
+    "frontend": DEFAULT_FRONTEND_CONFIG,
+    "track_edit_history": True
 }
 
 REQUIRED_FIELDS = ['notes_directory']
@@ -144,7 +170,7 @@ def _modify_config(config: ShorthandConfig, updates: ShorthandConfigUpdates
     return new_config
 
 
-def clean_and_validate_config(config: ShorthandConfig) -> ShorthandConfig:
+def clean_and_validate_config(config: ShorthandConfigInput | ShorthandConfig) -> ShorthandConfig:
     '''Clean and validate values from the config file as needed
     Return the config if there are no issues, and raise an error
     if an issue is found
@@ -163,21 +189,19 @@ def clean_and_validate_config(config: ShorthandConfig) -> ShorthandConfig:
         if field not in config.keys():
             raise ValueError(f'Missing required field "{field}"')
 
+    # Validation for tracking edit history
+    if 'track_edit_history' not in config:
+        config['track_edit_history'] = DEFAULT_CONFIG['track_edit_history']
+    if not isinstance(config['track_edit_history'], bool):
+        raise ValueError('track_edit_history must be a boolean value')
+
     # Ensure that the notes directory and cache directory
     # paths have no trailing `/`
     notes_dir = config['notes_directory']
     config['notes_directory'] = notes_dir.rstrip('/')
 
-    cache_dir = config.get('cache_directory', '')
-    if cache_dir:
-        config['cache_directory'] = cache_dir.rstrip('/')
-    else:
-        log.info(f'No cache directory specified, falling back to '
-                 f'default of {DEFAULT_CACHE_DIR}')
-        config['cache_directory'] = DEFAULT_CACHE_DIR
-
     # Check config values that point to directories that must exist
-    directory_fields = ['notes_directory', 'cache_directory']
+    directory_fields = ['notes_directory']
     for field in directory_fields:
         if not os.path.exists(config[field]):
             raise ValueError(f'Directory {config[field]} specified for '
@@ -284,6 +308,36 @@ def clean_and_validate_config(config: ShorthandConfig) -> ShorthandConfig:
                                      f'not executable')
         if not find_found:
             raise ValueError(f'Find executable specified as {find_path} '
+                             f'could not be located')
+
+    patch_path = config.get('patch_path')
+    if not patch_path:
+        log.info(f'Patch path not specified, falling back to ' + \
+                 f'default of {DEFAULT_PATCH_PATH}')
+        patch_path = DEFAULT_PATCH_PATH
+    # Check for the patch path as the full path to an executable
+    if os.path.isfile(patch_path):
+        if not os.access(patch_path, os.X_OK):
+            raise ValueError(f'Patch at {patch_path} is not executable')
+        else:
+            log.debug(f'Found patch executable at {patch_path}')
+    else:
+        # Check for the patch path as an executable name within our system path
+        patch_found = False
+        for path in os.environ["PATH"].split(os.pathsep):
+            patch_executable = os.path.join(path, patch_path)
+            if os.path.isfile(patch_executable):
+                if os.access(patch_executable, os.X_OK):
+                    patch_path = patch_executable
+                    config['patch_path'] = patch_path
+                    patch_found = True
+                    log.debug(f'Found patch executable at {patch_path}')
+                    break
+                else:
+                    raise ValueError(f'Patch at {patch_executable} is ' + \
+                                     f'not executable')
+        if not patch_found:
+            raise ValueError(f'Patch executable specified as {patch_path} ' + \
                              f'could not be located')
 
     # Validate frontend config

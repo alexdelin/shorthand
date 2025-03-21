@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM python:3.11-bullseye
+FROM python:3.12-bullseye
 
 WORKDIR /app
 
@@ -14,10 +14,9 @@ RUN mkdir -p /var/lib/shorthand/cache/
 
 RUN mkdir /etc/shorthand
 COPY sample_config.json /etc/shorthand/shorthand_config.json
+RUN cp test/config_override.json.docker test/config_override.json
 
 RUN mkdir /notes
 COPY sample-notes /notes
 
-ENV FLASK_APP="shorthand/web/default_app:default_app"
-
-CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0", "--port=8181"]
+CMD [ "fastapi", "run", "shorthand/web/app-fastapi.py", "--port=8181"]

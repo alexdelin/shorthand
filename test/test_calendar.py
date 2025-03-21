@@ -1,32 +1,20 @@
 import logging
-import unittest
 
-from shorthand.history import _get_calendar
+from shorthand.calendar import _get_calendar
 
-from utils import setup_environment, validate_setup, setup_logging
+from utils import ShorthandTestCase
 from results_unstamped import CALENDAR
 
 
-CONFIG = setup_environment()
 log = logging.getLogger(__name__)
 
 
-class TestCalendar(unittest.TestCase):
+class TestCalendar(ShorthandTestCase, reset_per_method=False):
     """Test Calendar functionality of the library"""
-
-    @classmethod
-    def setup_class(cls):
-        # ensure that we have a clean environment before running any tests
-        _ = setup_environment()
-
-    def setup_method(self, method):
-        '''Validate that the environment has been set up correctly
-        '''
-        validate_setup()
 
     def test_get_calendar(self):
         calendar = _get_calendar(
-            CONFIG['notes_directory'],
+            self.notes_dir,
             directory_filter=None,
-            grep_path=CONFIG['grep_path'])
+            grep_path=self.grep_path)
         assert calendar == CALENDAR

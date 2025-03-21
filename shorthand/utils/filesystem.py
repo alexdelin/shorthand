@@ -3,7 +3,7 @@ import shutil
 import logging
 
 from shorthand.types import DirectoryPath, Subdir, InternalAbsoluteFilePath, InternalAbsolutePath
-from shorthand.utils.paths import get_full_path
+from shorthand.utils.paths import _is_note_path, get_full_path
 
 
 log = logging.getLogger(__name__)
@@ -31,6 +31,9 @@ def _upload_resource(notes_directory: DirectoryPath,
     '''Create a new resource file at a specific internal path
        with the specified content
     '''
+    if _is_note_path(notes_directory, path, must_exist=False):
+        raise ValueError('Cannot upload a resource with a note file extension')
+
     full_path = get_full_path(notes_directory, path)
     log.warning(f'Uploading resource to {full_path}')
     if not allow_overwrite:

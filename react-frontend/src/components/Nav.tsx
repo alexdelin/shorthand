@@ -1,12 +1,15 @@
 import { useState, Fragment } from 'react';
-// import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import {
   ANIMATION_LENGTH_MS, NavSidebar, NavHeader,
   NavHeaderRest, NavDivider, NavOptionList,
   NavOption, NavOptionIcon, NavOptionName,
   NavCover, NavSubOptionList, NavSubOption,
   NavSubOptionName, NavToggleIcon, ElementsIcon,
-  TreeIcon, TreeSidebar, TreeSidebarInner
+  TreeIcon, TreeSidebar, TreeSidebarInner,
+  ElementsLi,
+  NavOptionItem,
+  TreeLi
 } from './Nav.styles';
 import { FileTree } from './FileTree';
 
@@ -17,7 +20,7 @@ export function Nav() {
   const [elementsExpanded, setElementsExpanded] = useState(false);
   const [treeExpanded, setTreeExpanded] = useState(false);
 
-  // const location = useLocation();
+  const location = useLocation();
 
   function changeNav() {
 
@@ -74,31 +77,49 @@ export function Nav() {
           <div>S</div><NavHeaderRest isExpanded={isExpanded}>horthand</NavHeaderRest>
         </NavHeader>
         <NavDivider></NavDivider>
-        <NavOptionList isExpanded={isExpanded}>
-          <li>
+        <NavOptionList>
+          <NavOptionItem isSelected={location.pathname.includes('/home')}>
             <NavOption to="/home" onClick={collapseNav}>
               <NavOptionIcon className="bi bi-house-door"></NavOptionIcon>
               <NavOptionName isExpanded={isExpanded}>Home</NavOptionName>
             </NavOption>
-          </li>
-          <li>
+          </NavOptionItem>
+          <NavOptionItem isSelected={location.pathname.includes('/compose')}>
             <NavOption to="/compose" onClick={collapseNav}>
               <NavOptionIcon className="bi bi-pen"></NavOptionIcon>
               <NavOptionName isExpanded={isExpanded}>Compose</NavOptionName>
             </NavOption>
-          </li>
-          <li>
+          </NavOptionItem>
+          <NavOptionItem isSelected={['/view', '/history'].includes(location.pathname)}>
+            <NavOption to="/view" onClick={collapseNav}>
+              <NavOptionIcon className="bi bi-file-earmark-richtext"></NavOptionIcon>
+              <NavOptionName isExpanded={isExpanded}>View</NavOptionName>
+            </NavOption>
+          </NavOptionItem>
+          <TreeLi isExpanded={treeExpanded}>
             <TreeIcon onClick={handleTreeClick}>
               <NavOptionIcon className="bi bi-bar-chart-steps"></NavOptionIcon>
               <NavOptionName isExpanded={isExpanded}>Notes</NavOptionName>
             </TreeIcon>
-          </li>
-          <li>
-            <ElementsIcon onClick={handleElementsClick}>
+          </TreeLi>
+          <ElementsLi>
+            <ElementsIcon
+              isSelected={
+                ['/todos', '/questions', '/links',
+                 '/definitions', '/datasets',
+                 '/locations'].includes(location.pathname)}
+              onClick={handleElementsClick}
+            >
               <NavOptionIcon className="bi bi-code-square"></NavOptionIcon>
               <NavOptionName isExpanded={isExpanded}>Elements</NavOptionName>
             </ElementsIcon>
-            <NavSubOptionList elementsExpanded={elementsExpanded}>
+            <NavSubOptionList
+              elementsExpanded={elementsExpanded}
+              elementsSelected={['/todos', '/questions', '/links',
+                 '/definitions', '/datasets',
+                 '/locations'].includes(location.pathname)}
+              calendarSelected={location.pathname.includes('/calendar')}
+            >
               <li>
                 <NavSubOption to="/todos" onClick={collapseNav}>
                   <NavOptionIcon className="bi bi-check-square"></NavOptionIcon>
@@ -136,31 +157,25 @@ export function Nav() {
                 </NavSubOption>
               </li>
             </NavSubOptionList>
-          </li>
-          <li>
+          </ElementsLi>
+          <NavOptionItem isSelected={location.pathname.includes('/calendar')}>
             <NavOption to="/calendar" onClick={collapseNav}>
               <NavOptionIcon className="bi bi-calendar-week"></NavOptionIcon>
               <NavOptionName isExpanded={isExpanded}>Calendar</NavOptionName>
             </NavOption>
-          </li>
-          <li>
+          </NavOptionItem>
+          <NavOptionItem isSelected={location.pathname.includes('/search')}>
             <NavOption to="/search" onClick={collapseNav}>
               <NavOptionIcon className="bi bi-search"></NavOptionIcon>
               <NavOptionName isExpanded={isExpanded}>Search</NavOptionName>
             </NavOption>
-          </li>
-          <li>
-            <NavOption to="/view" onClick={collapseNav}>
-              <NavOptionIcon className="bi bi-file-earmark-richtext"></NavOptionIcon>
-              <NavOptionName isExpanded={isExpanded}>View</NavOptionName>
-            </NavOption>
-          </li>
-          <li>
+          </NavOptionItem>
+          <NavOptionItem isSelected={location.pathname.includes('/settings')}>
             <NavOption to="/settings" onClick={collapseNav}>
               <NavOptionIcon className="bi bi-wrench"></NavOptionIcon>
               <NavOptionName isExpanded={isExpanded}>Settings</NavOptionName>
             </NavOption>
-          </li>
+          </NavOptionItem>
         </NavOptionList>
         <NavToggleIcon className={"bi bi-arrow-bar-" + (isExpanded ? 'left' : 'right')} onClick={changeNav}></NavToggleIcon>
       </NavSidebar>

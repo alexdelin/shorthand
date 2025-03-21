@@ -3,7 +3,7 @@ import logging
 from datetime import datetime
 from subprocess import Popen, PIPE
 import shlex
-from typing import Any, Dict, Literal, TypedDict, List, Union, Optional
+from typing import Dict, Literal, TypedDict, List, Optional
 
 from shorthand.tags import extract_tags
 from shorthand.types import DirectoryPath, DisplayPath, ExecutablePath, InternalAbsoluteFilePath, InternalAbsolutePath, NotePath, RawNoteLine, \
@@ -27,7 +27,7 @@ SUPPORTED_SORT_FIELDS = ['start_date']
 log = logging.getLogger(__name__)
 
 
-TodoStatus = Union[Literal['incomplete'], Literal['complete'], Literal['skipped']]
+TodoStatus = Literal['incomplete', 'complete', 'skipped']
 
 class Todo(TypedDict):
     file_path: NotePath

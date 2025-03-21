@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import styled from 'styled-components';
+import { FILE_TREE_BG_COLOR } from './FileTree';
 
 // Constants
 export const ANIMATION_LENGTH_MS = 500;
@@ -24,7 +25,7 @@ export const NavSidebar = styled.div`
   overflow: hidden;
   transition: width ${ANIMATION_LENGTH_MS}ms;
   background-color: rgb(33, 37, 41);
-  color: white;
+  color: whitesmoke;
   display: flex;
   flex-direction: column;
   align-items: center;`
@@ -39,8 +40,8 @@ export const TreeSidebar = styled.div`
   float: left;
   overflow-y: scroll;
   overflow-x: hidden;
-  transition: width ${ANIMATION_LENGTH_MS}ms, left ${ANIMATION_LENGTH_MS}ms;
-  background-color: rgb(33, 37, 61);
+  transition: all ${ANIMATION_LENGTH_MS}ms;
+  background-color: ${FILE_TREE_BG_COLOR};
   color: white;
   display: flex;
   flex-direction: column;
@@ -68,44 +69,68 @@ type NavHeaderRestProps = {isExpanded?: boolean};
 export const NavHeaderRest = styled.div`
   width: ${(props: NavHeaderRestProps) => (props.isExpanded ? '9.5rem' : '0rem')};
   overflow: hidden;
-  transition: width ${ANIMATION_LENGTH_MS}ms;`
+  transition: all ${ANIMATION_LENGTH_MS}ms;`
 
 export const NavDivider = styled.hr`
   width: 75%;
   border-color: #555;
-  margin: 0rem;`
-
-type NavOptionListProps = {isExpanded?: boolean};
+  margin: 0rem;
+  margin-bottom: 0.5rem;`
 
 export const NavOptionList = styled.ul`
   flex-grow: 1;
-  width: ${(props: NavOptionListProps) => (props.isExpanded ? '10rem' : '3rem')};
-  transition: width ${ANIMATION_LENGTH_MS}ms;
+  width: 100%;
+  transition: all ${ANIMATION_LENGTH_MS}ms;
   list-style-type: none;
   padding-inline-start: 0rem;
   margin: 0rem;
   font-family: helvetica;`
 
 export const NavOption = styled(Link)`
-  padding-top: 1rem;
+  padding-top: 0.7rem;
+  padding-bottom: 0.5rem;
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
   text-decoration: none;
-  color: white;
+  color: whitesmoke;
   justify-content: center;`
 
+type TreeLiProps = {isExpanded?: boolean};
+
+export const TreeLi = styled.li`
+  ${(props: TreeLiProps) => (props.isExpanded ? `background-color: ${FILE_TREE_BG_COLOR};` : '')}
+  transition: all ${ANIMATION_LENGTH_MS}ms;`
+
+export const ElementsLi = styled.li`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;`
+
+type ElementsIconProps = {isSelected?: boolean};
+
 export const ElementsIcon = styled.span`
-  padding-top: 1rem;
+  ${(props: ElementsIconProps) => (props.isSelected ? 'background-color: royalblue;' : '')}
+  padding-top: 0.7rem;
+  padding-bottom: 0.5rem;
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
   text-decoration: none;
-  color: white;
+  color: whitesmoke;
   justify-content: center;
-  cursor: pointer;`
+  cursor: pointer;
+  width: 100%;
+  transition: all ${ANIMATION_LENGTH_MS}ms;`
 
 export const TreeIcon = ElementsIcon;
+
+type NavOptionItemProps = {isSelected?: boolean};
+
+export const NavOptionItem = styled.li`
+  ${(props: NavOptionItemProps) => (props.isSelected ? 'background-color: royalblue;' : '')}
+  transition: all ${ANIMATION_LENGTH_MS}ms;`
 
 export const NavOptionIcon = styled.i`
   font-size: 1.5rem;
@@ -116,7 +141,7 @@ type NavOptionNameProps = {isExpanded?: boolean};
 
 export const NavOptionName = styled.div`
   font-size: 1.25rem;
-  transition: width ${ANIMATION_LENGTH_MS}ms;
+  transition: all ${ANIMATION_LENGTH_MS}ms;
   overflow: hidden;
   width: ${(props: NavOptionNameProps) => (props.isExpanded ? '6.25rem' : '0rem')};`
 
@@ -137,28 +162,37 @@ export const NavCover = styled.div`
   position: absolute;
   display: ${(props: NavCoverProps) => (props.coverVisible ? 'block' : 'none')};
   opacity: ${(props: NavCoverProps) => (props.isExpanded ? '70%' : '0%')};
-  transition: opacity ${ANIMATION_LENGTH_MS}ms;
+  transition: all ${ANIMATION_LENGTH_MS}ms;
   background-color: #777;
-  z-index: 1;`
+  z-index: 3;`
 
-type NavSubOptionListProps = {elementsExpanded?: boolean};
+type NavSubOptionListProps = {
+  elementsExpanded?: boolean
+  elementsSelected: boolean
+  calendarSelected: boolean
+};
 
 export const NavSubOptionList = styled.ul`
-  padding-left: 1rem;
-  padding-top: 0.25rem;
   height: ${(props: NavSubOptionListProps) => (props.elementsExpanded ? '13.75rem' : '0rem')};
-  width: ${(props: NavSubOptionListProps) => (props.elementsExpanded ? '9rem' : '0rem')};
-  transition: height ${ANIMATION_LENGTH_MS}ms, width ${ANIMATION_LENGTH_MS}ms;
+  width: 100%;
+  transition: all ${ANIMATION_LENGTH_MS}ms;
   overflow: hidden;
-  list-style-type: none;`
+  list-style-type: none;
+  padding-top: ${(props: NavSubOptionListProps) => (props.elementsExpanded && props.elementsSelected ? '0.5rem' : '0rem')};
+  padding-bottom: ${(props: NavSubOptionListProps) => (props.elementsExpanded && props.calendarSelected ? '0.2rem' : '0rem')};
+  padding-left: 0rem;`
 
 export const NavSubOption = styled(Link)`
   display: flex;
   flex-wrap: nowrap;
-  padding-top: 0.5rem;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
   align-items: center;
   text-decoration: none;
-  color: white;`
+  color: whitesmoke;
+  justify-content: left;
+  width: 75%;
+  padding-left: 25%;`
 
 export const NavSubOptionName = styled.span`
   font-size: 1rem;`

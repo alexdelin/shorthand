@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, forwardRef } from 'react';
 import { useQuery, useQueryClient } from 'react-query';
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useBeforeunload } from 'react-beforeunload';
 import { ShorthandMarkdown } from './ViewPage.styles';
 import { GetRenderedMarkdownResponse } from '../types/api';
@@ -38,7 +38,7 @@ const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-export function ComposePage() {
+export default function ComposePage() {
   console.log('rendering...')
 
   const [ searchParams, setSearchParams ] = useSearchParams();
@@ -55,16 +55,18 @@ export function ComposePage() {
   const queryClient = useQueryClient();
 
   const { data: renderedMarkdown } =
-    useQuery<GetRenderedMarkdownResponse, Error>(['note', { path: notePath }], () =>
-      fetch('/frontend-api/redered-markdown?path=' + notePath)
-        .then(async res => res.json()),
+    useQuery<GetRenderedMarkdownResponse, Error>(['note', { path: notePath }], () => {
+      if (!notePath) return {file_content:'', toc_content: ''};
+      return fetch('/frontend-api/rendered-markdown?path=' + notePath)
+        .then(async res => res.json())},
       {cacheTime: 10 * 60 * 1000, refetchOnWindowFocus: false}
     )
 
   const { data: rawNote } =
-    useQuery<string, Error>(['raw-note', { path: notePath }], () =>
-      fetch('/api/v1/note?path=' + notePath)
-        .then(async res => res.text()),
+    useQuery<string, Error>(['raw-note', { path: notePath }], () => {
+      if (!notePath) return '';
+      return fetch('/api/v1/note?path=' + notePath)
+        .then(async res => res.text())},
       {cacheTime: 10 * 60 * 1000, refetchOnWindowFocus: false}
     )
 
@@ -75,10 +77,8 @@ export function ComposePage() {
       {cacheTime: 10 * 60 * 1000, refetchOnWindowFocus: false}
     )
 
-  // Handle the file in the URL path param not being the
-  // most recently opened file
-  if (openFiles && notePath &&
-      openFiles[openFiles.length - 1] !== notePath) {
+  // Handle the file in the URL path param not being an open file
+  if (openFiles && notePath && !openFiles.includes(notePath)) {
     // Open the file in the URL path via the API
     fetch(
       '/frontend-api/open-file?path=' + notePath,
@@ -110,6 +110,11 @@ export function ComposePage() {
       setSelectedTab(notePath);
       setEditorText(rawNote);
       setChangesSaved(true);
+      // Record a view for the file being edited
+      fetch(
+        '/api/v1/record_view?note_path=' + notePath,
+        { method: 'POST' }
+      )
     }
   // eslint-disable-next-line
   }, [notePath, rawNote]);
@@ -152,6 +157,7 @@ export function ComposePage() {
       const stampedNoteContent = await res.text();
       if (stampedNoteContent !== currentNoteContent) {
         contentGetsStamped = true;
+        console.log('Updating editor content');
         setEditorText(stampedNoteContent);
       }
 
@@ -162,7 +168,7 @@ export function ComposePage() {
           body: stampedNoteContent
         }
       ).then(async res => {
-        if (await res.text() === 'Note Updated') {
+        if (await res.text() === 'ack') {
           queryClient.invalidateQueries(['note', { path: notePath }]);
           queryClient.invalidateQueries(['raw-note', { path: notePath }]);
           setChangesSaved(true);
@@ -318,16 +324,18 @@ export function ComposePage() {
           onChange={handleTabChange}
           variant="scrollable"
           scrollButtons="auto"
+          sx={{textTransform: 'none'}}
         >
           {openFiles && openFiles.map((file) => {
             if (file !== null) {
               const splitPath = file.split('/');
-              const fullFileName = splitPath[splitPath.length -1];
+              const fullFileName = splitPath[splitPath.length -1].replace(/\.[^/.]+$/, ""); // Removes file extension
               const trimmedFileName = fullFileName.length > FILE_NAME_LENGTH_LIMIT ? fullFileName.slice(0, 15) + '...' : fullFileName;
               return (
                 <Tab
                   key={file}
                   value={file}
+                  sx={{textTransform: 'none'}}
                   label={
                     <span title={fullFileName}>{trimmedFileName}
                       <span
@@ -347,6 +355,7 @@ export function ComposePage() {
             variant="text"
             onClick={saveNote}
           >
+            <i style={{marginRight: '0.3rem'}} className='bi bi-floppy'></i>
             Save
           </Button>
           <Snackbar
@@ -371,23 +380,46 @@ export function ComposePage() {
               No Changes To Save
             </Alert>
           </Snackbar>
+
           <SwitchLabel>Show Preview</SwitchLabel>
           <Switch
             checked={showPreview}
             onChange={handleShowPreviewChange}
           />
+
           <SwitchLabel>Auto-scroll</SwitchLabel>
           <Switch
             checked={showPreview && scrollPreview}
             onChange={handleScrollPreviewChange}
             disabled={!showPreview}
           />
-          <Button
-            variant="text"
-            href={`/view?path=${notePath}`}
-          >
-            View
-          </Button>
+
+          { changesSaved ?
+            <>
+              <Link to={`/view?path=${notePath}`} >
+                <Button variant="text">
+                  <i style={{marginRight: '0.3rem'}} className='bi bi-file-earmark-richtext'></i>
+                  View
+                </Button>
+              </Link>
+              <Link to={`/history?path=${notePath}`}>
+                <Button variant="text">
+                  <i style={{marginRight: '0.3rem'}} className='bi bi-clock-history'></i>
+                  History
+                </Button>
+              </Link>
+            </> : <>
+              <Button variant="text" onClick={() => alert('Save changes before navigating')}>
+                <i style={{marginRight: '0.3rem'}} className='bi bi-file-earmark-richtext'></i>
+                View
+              </Button>
+              <Button variant="text" onClick={() => alert('Save changes before navigating')}>
+                <i style={{marginRight: '0.3rem'}} className='bi bi-clock-history'></i>
+                History
+              </Button>
+            </>
+          }
+
         </StyledFormGroup>
       </ComposeHeader>
       <ComposeNoteWrapper>

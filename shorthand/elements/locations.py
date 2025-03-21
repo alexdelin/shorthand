@@ -1,7 +1,9 @@
 import re
 from subprocess import Popen, PIPE
 import logging
+from typing import List, Optional, TypedDict
 
+from shorthand.types import DirectoryPath, DisplayPath, ExecutablePath, NotePath, Subdir
 from shorthand.utils.paths import get_relative_path, get_display_path
 from shorthand.utils.patterns import GPS_PATTERN
 
@@ -12,7 +14,19 @@ gps_regex = re.compile(GPS_PATTERN)
 log = logging.getLogger(__name__)
 
 
-def _get_locations(notes_directory, directory_filter=None, grep_path='grep'):
+class Location(TypedDict):
+    latitude: str
+    longitude: str
+    name: str
+    file_path: NotePath
+    display_path: DisplayPath
+    line_number: int
+
+
+def _get_locations(notes_directory: DirectoryPath,
+                   directory_filter: Optional[Subdir] = None,
+                   grep_path: ExecutablePath = 'grep'
+                   ) -> List[Location]:
 
     location_items = []
 

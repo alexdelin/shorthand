@@ -2,11 +2,12 @@
 
 import csv
 from io import StringIO
+from typing import Any
 
 from shorthand.types import CSVData
 
 
-def _convert_to_csv(data: list[dict]) -> CSVData:
+def _convert_to_csv(data: list[Any]) -> CSVData:
     '''Convert a list of dictionaries into CSV format
        All dictionaries should have the same keys
     '''

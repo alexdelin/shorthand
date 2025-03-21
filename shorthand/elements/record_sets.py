@@ -1,6 +1,8 @@
 from subprocess import Popen, PIPE
 import logging
+from typing import Literal, Optional, TypedDict
 
+from shorthand.types import DirectoryPath, ExecutablePath, NotePath, Subdir
 from shorthand.utils.patterns import RECORD_SET_PATTERN, escape_for_cli
 from shorthand.utils.rec import load_from_string
 from shorthand.utils.paths import get_relative_path, get_display_path, \
@@ -10,8 +12,19 @@ from shorthand.utils.paths import get_relative_path, get_display_path, \
 log = logging.getLogger(__name__)
 
 
-def _get_record_set(notes_directory, file_path, line_number, parse=True,
-                    parse_format='json', include_config=False):
+type RecordSetParseFormat = Literal['json', 'csv']
+
+class RecordSetIndex(TypedDict):
+    file_path: NotePath
+    line_number: int
+    display_path: str
+
+
+def _get_record_set(notes_directory: DirectoryPath, file_path: NotePath,
+                    line_number: int, parse: bool = True,
+                    parse_format: RecordSetParseFormat = 'json',
+                    include_config: bool = False
+                    ):
     '''Get the full contents of a record set
     If `parse` is set to False then the record set
         contents are returned as a string
@@ -67,7 +80,10 @@ def _get_record_set(notes_directory, file_path, line_number, parse=True,
         return record_set_raw
 
 
-def _get_record_sets(notes_directory, directory_filter=None, grep_path='grep'):
+def _get_record_sets(notes_directory: DirectoryPath,
+                     directory_filter: Optional[Subdir] = None,
+                     grep_path: ExecutablePath = 'grep'
+                     ) -> list[RecordSetIndex]:
     '''List all record sets within a specified directory
     '''
 
@@ -101,7 +117,7 @@ def _get_record_sets(notes_directory, directory_filter=None, grep_path='grep'):
 
         split_line = line.split(':', 2)
         file_path = split_line[0]
-        line_number = split_line[1]
+        line_number = int(split_line[1])
 
         file_path = get_relative_path(notes_directory, file_path)
         display_path = get_display_path(file_path, directory_filter)

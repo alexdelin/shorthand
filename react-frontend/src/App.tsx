@@ -1,6 +1,6 @@
 import { lazy, Suspense } from 'react';
 import { ErrorBoundary, FallbackProps } from 'react-error-boundary';
-import { Routes, Route, Link, useLocation } from "react-router-dom";
+import { Routes, Route, Link, useLocation, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import BottomNavigation from '@mui/material/BottomNavigation';
@@ -9,15 +9,16 @@ import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import { Nav } from './components/Nav';
 import { FileSearchModal } from './components/FileSearchModal';
 import { HomePage } from './pages/HomePage';
-import { ComposePage } from './pages/ComposePage';
+// import { ComposePage } from './pages/ComposePage';
 import { QuestionsPage } from './pages/QuestionsPage';
 import { LinksPage } from './pages/LinksPage';
 import { DefinitionsPage } from './pages/DefinitionsPage';
 import { DatasetsPage } from './pages/DatasetsPage';
 import { LocationsPage } from './pages/LocationsPage';
-import { CalendarPage } from './pages/CalendarPage';
+// import { CalendarPage } from './pages/CalendarPage';
 import { SearchPage } from './pages/SearchPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { HistoryPage } from './pages/HistoryPage';
 import { MobileNotesPage } from './mobilePages/MobileNotesPage';
 import { MobileComposePage } from './mobilePages/MobileComposePage';
 import { MobileViewPage } from './mobilePages/MobileViewPage';
@@ -32,6 +33,14 @@ const ViewPage = lazy(() => import(
 const TodosPage = lazy(() => import(
   /* webpackChunkName: "TodosPage" */
   './pages/TodosPage'
+));
+const ComposePage = lazy(() => import(
+  /* webpackChunkName: "ComposePage" */
+  './pages/ComposePage'
+));
+const CalendarPage = lazy(() => import(
+  /* webpackChunkName: "CalendarPage" */
+  './pages/CalendarPage'
 ));
 
 const Content = styled.div`
@@ -107,10 +116,10 @@ function MobileApp() {
       <ThemeProvider theme={mobileDarkTheme}>
         <MobileContent>
           <Routes>
-            <Route path="/" element={<MobileNotesPage />} />
             <Route path="/notes" element={<MobileNotesPage />} />
             <Route path="/compose" element={<MobileComposePage />} />
             <Route path="/view" element={<MobileViewPage />} />
+            <Route path="*" element={<Navigate to="/notes" replace />} />
           </Routes>
         </MobileContent>
         <StyledBottomNavigation value={page}>
@@ -168,7 +177,9 @@ function DesktopApp() {
               <Route path="/calendar" element={<CalendarPage />} />
               <Route path="/search" element={<SearchPage />} />
               <Route path="/view" element={<ViewPage />} />
+              <Route path="/history" element={<HistoryPage />} />
               <Route path="/settings" element={<SettingsPage />} />
+              <Route path="*" element={<Navigate to="/home" replace />} />
             </Routes>
           </Suspense>
         </ErrorBoundary>

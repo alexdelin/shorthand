@@ -17,24 +17,21 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import InputAdornment from '@mui/material/InputAdornment';
 import Autocomplete from '@mui/material/Autocomplete';
 
-import { ANIMATION_LENGTH_MS } from './Nav.styles';
 import { GetSubdirsResponse } from '../types';
 
 
-type FileRowWrapperProps = {
-  menuOpen: boolean
-}
+export const FILE_TREE_BG_COLOR = '#101060';
+
 
 const FileRowWrapper = styled.div`
   display: flex;
   justify-content: space-between;
-  margin-left: 1rem;
+  padding-left: 1rem;
   padding-top: 0.2rem;
   padding-bottom: 0.2rem;
-  ${(props: FileRowWrapperProps) => (props.menuOpen ? 'background-color: rgb(45, 50, 82);' : '')}
 
   &:hover {
-    background-color: rgb(45, 50, 82);
+    background-color: #474791;
   }
 
   &:hover > i {
@@ -47,6 +44,12 @@ const FileWrapper = styled(Link)`
   color: white;
   display: flex;`
 
+const ResourceWrapper = styled(Link)`
+  font-size: 1.25rem;
+  text-decoration: none;
+  color: #aaa;
+  display: flex;`
+
 const FileName = styled.div``
 
 const FileTreeIcon = styled.i`
@@ -54,7 +57,7 @@ const FileTreeIcon = styled.i`
 
 type FolderActionsIconProps = {
   menuOpen: boolean
-}
+};
 
 const FolderActionsIcon = styled.i`
   margin-right: 0.6rem;
@@ -75,7 +78,7 @@ type FileRowProps = {
   collapseFunction: () => void,
   openMoveDialog: (sourceType: string, sourcePath: string) => void,
   openDeleteDialog: (deleteType: string, deletePath: string) => void,
-}
+};
 
 function FileRow(props: FileRowProps) {
 
@@ -90,12 +93,19 @@ function FileRow(props: FileRowProps) {
     }
   }).join('');
 
+  const composeLink = `/compose?path=${props.directory.path}/${props.file}`;
+
   const handleFileActionsClick = (event: React.MouseEvent<HTMLElement>) => {
     setFileMenuAnchorEl(event.currentTarget);
   };
 
   const handleFileMenuClose = () => {
-    setFileMenuAnchorEl(null)
+    setFileMenuAnchorEl(null);
+  }
+
+  const handleCopyPathButtonClick = () => {
+    navigator.clipboard.writeText(`${props.directory.path}/${props.file}`);
+    setFileMenuAnchorEl(null);
   }
 
   const handleMoveButtonClick = () => {
@@ -109,15 +119,25 @@ function FileRow(props: FileRowProps) {
   };
 
   return (
-    <FileRowWrapper menuOpen={fileMenuOpen}>
-      <FileWrapper
-        key={`${props.directory.path}/${props.file}`}
-        to={`/compose?path=${props.directory.path}/${props.file}`}
-        onClick={props.collapseFunction}
-      >
-        <FileTreeIcon className="bi bi-file-earmark-text"></FileTreeIcon>
-        <FileName>{breakableFileName}</FileName>
-      </FileWrapper>
+    <FileRowWrapper>
+      { breakableFileName.endsWith('.note') ?
+        <FileWrapper
+          key={`${props.directory.path}/${props.file}`}
+          to={composeLink}
+          onClick={props.collapseFunction}
+        >
+          <FileTreeIcon className="bi bi-file-earmark-text"></FileTreeIcon>
+          <FileName>{breakableFileName}</FileName>
+        </FileWrapper> :
+        <ResourceWrapper
+          key={`${props.directory.path}/${props.file}`}
+          to={`/api/v1/resource?path=${props.directory.path}/${props.file}`}
+          target='_blank'
+        >
+          <FileTreeIcon className="bi bi-file-earmark-code"></FileTreeIcon>
+          <FileName>{breakableFileName}</FileName>
+        </ResourceWrapper>
+      }
       <FolderActionsIcon menuOpen={fileMenuOpen} onClick={handleFileActionsClick} className="bi bi-three-dots"></FolderActionsIcon>
       <Menu
         id="file-actions-menu"
@@ -125,6 +145,7 @@ function FileRow(props: FileRowProps) {
         open={fileMenuOpen}
         onClose={handleFileMenuClose}
       >
+        <MenuItem onClick={handleCopyPathButtonClick}>Copy Path</MenuItem>
         <MenuItem onClick={handleMoveButtonClick}>Rename / Move</MenuItem>
         <MenuItem onClick={handleDeleteButtonClick}>Delete</MenuItem>
       </Menu>
@@ -135,17 +156,18 @@ function FileRow(props: FileRowProps) {
 
 type DirectoryRowWrapperProps = {
   menuOpen: boolean
-}
+};
 
 const DirectoryRowWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   padding-top: 0.25rem;
   padding-bottom: 0.25rem;
+  padding-left: 1rem;
   ${(props: DirectoryRowWrapperProps) => (props.menuOpen ? 'background-color: rgb(45, 50, 82);' : '')}
 
   &:hover {
-    background-color: rgb(45, 50, 82);
+    background-color: #474791;
   }
 
   &:hover > i {
@@ -159,11 +181,13 @@ const DirectoryName = styled.div``
 
 type DirectoryRowProps = {
   directory: TOC,
+  directoryExpanded: boolean,
+  setDirectoryExpanded: (value: boolean) => void,
   openCreateDialog: (parentDir: string) => void,
   openMoveDialog: (sourceType: string, sourcePath: string) => void,
   openDeleteDialog: (deleteType: string, deletePath: string) => void,
   openUploadDialog: (parentDir: string) => void,
-}
+};
 
 function DirectoryRow(props: DirectoryRowProps) {
 
@@ -180,12 +204,13 @@ function DirectoryRow(props: DirectoryRowProps) {
 
   function handleDirectoryClick(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
     // This is a hack, but there is no easier way to do it via common react patterns
-    const directoryWrapperEl = e.currentTarget.parentElement?.parentElement;
-    const directoryContentsNode = directoryWrapperEl?.childNodes[1] as HTMLDivElement | undefined;
-    if (directoryContentsNode) {
-      const classes = directoryContentsNode.classList;
-      classes.toggle('collapsed');
-    }
+    // const directoryWrapperEl = e.currentTarget.parentElement?.parentElement;
+    // const directoryContentsNode = directoryWrapperEl?.childNodes[1] as HTMLDivElement | undefined;
+    // if (directoryContentsNode) {
+    //   const classes = directoryContentsNode.classList;
+    //   classes.toggle('collapsed');
+    // }
+    props.setDirectoryExpanded(!props.directoryExpanded);
   }
 
   const handleDirActionsClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -223,7 +248,10 @@ function DirectoryRow(props: DirectoryRowProps) {
   return (
     <DirectoryRowWrapper menuOpen={dirMenuOpen}>
       <DirectoryNameWrapper onClick={handleDirectoryClick}>
-        <FileTreeIcon className="bi bi-folder2"></FileTreeIcon>
+        {props.directoryExpanded
+          ? <FileTreeIcon className="bi bi-folder2-open"></FileTreeIcon>
+          : <FileTreeIcon className="bi bi-folder2"></FileTreeIcon>
+        }
         <DirectoryName>{breakableDirName}</DirectoryName>
       </DirectoryNameWrapper>
       <FolderActionsIcon menuOpen={dirMenuOpen} onClick={handleDirActionsClick} className="bi bi-three-dots"></FolderActionsIcon>
@@ -248,7 +276,6 @@ function DirectoryRow(props: DirectoryRowProps) {
 
 
 const DirectoryWrapper = styled.div`
-  margin-left: 1rem;
   font-size: 1.25rem;`
 
 const DirectoryContentsWrapper = styled.div`
@@ -256,8 +283,7 @@ const DirectoryContentsWrapper = styled.div`
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
-  // max-height: 1000rem;
-  // transition: max-height ${ANIMATION_LENGTH_MS}ms;
+  margin-left: 1rem;
 
   & .collapsed {
     height: 0rem;
@@ -275,16 +301,20 @@ type RenderedDirectoryProps = {
 
 function RenderedDirectory(props: RenderedDirectoryProps) {
 
+  const [directoryExpanded, setDirectoryExpanded] = useState(props.expanded);
+
   return (
   <DirectoryWrapper key={props.directory.path}>
     <DirectoryRow
       directory={props.directory}
+      directoryExpanded={directoryExpanded}
+      setDirectoryExpanded={setDirectoryExpanded}
       openCreateDialog={props.openCreateDialog}
       openMoveDialog={props.openMoveDialog}
       openDeleteDialog={props.openDeleteDialog}
       openUploadDialog={props.openUploadDialog}
     />
-    <DirectoryContentsWrapper className={props.expanded ? '' : 'collapsed'}>
+    <DirectoryContentsWrapper className={directoryExpanded ? '' : 'collapsed'}>
       {props.directory.files.map(file =>
         <FileRow
           key={`${props.directory.path}/${file}`}
@@ -640,7 +670,7 @@ function UploadDialog(props: UploadDialogProps) {
 
 
 const FileTreeWrapper = styled.div`
-  background-color: rgb(33, 37, 61);
+  background-color: ${FILE_TREE_BG_COLOR};
   color: white;
   width: 100%;`
 

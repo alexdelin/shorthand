@@ -3,77 +3,126 @@ from typing import Literal, Union
 # System level concepts
 # ---------------------
 
-# An absolute path to a file on the local filesystem
-FilePath = str
+type FilePath = str
+'''An absolute path to a file on the local filesystem
 
-# An absolute path to an executable file on the local filesystem
-ExecutablePath = str
+   Example: `/etc/shorthand/shorthand_config.json`
+'''
 
-# An absolute path to a directory on the local filesystem (with no trailing slash)
-DirectoryPath = str
+type ExecutablePath = str
+'''An absolute path to an executable file on the local filesystem
 
+   Example: `/usr/bin/grep`
+'''
+
+type DirectoryPath = str
+'''An absolute path to a directory on the local filesystem (with no trailing slash)
+
+   Example: `/var/lib/notes`
+'''
 
 # Notes directory level concepts
 # ------------------------------
 
-# An absolute path to a note from the root of the notes directory
-NotePath = str
+type NotePath = str
+'''An absolute path to a note from the root of the notes directory
 
-# An absolute path to a non-note file from the root of the notes directory
-ResourcePath = str
+   Example: `/subdir/todos.note`
+'''
 
-# An absolute path to any file from the root of the notes directory
-InternalAbsoluteFilePath = Union[NotePath, ResourcePath]
+type ResourcePath = str
+'''An absolute path to a non-note file from the root of the notes directory
 
-# An absolute path to a subdirectory within the notes directory
-Subdir = str
+   Example: `/subdir/image.jpeg`
+'''
 
-# An absolute path to any file or directory from the root of the notes directory
-InternalAbsolutePath = Union[InternalAbsoluteFilePath, Subdir]
+type InternalAbsoluteFilePath = Union[NotePath, ResourcePath]
+'''An absolute path to any file from the root of the notes directory
 
-# A nicely formatted version of a note path
-DisplayPath = str
+   Example: `/subdir/todos.note`
+   Example: `/subdir/image.jpeg`
+'''
 
-# A relative path to a note from another note.
-# Typically must be transformed into a NotePath before it can be used
-RelativeNotePath = str
+type Subdir = str
+'''An absolute path to a subdirectory within the notes directory
 
-# A relative path to a resource from a note.
-# Typically must be transformed into a ResourcePath before it can be used
-RelativeResourcePath = str
+   Example: `/subdir/nested`
+'''
 
-# A relative path from a note to another file
-InternalRelativeFilePath = Union[RelativeNotePath, RelativeResourcePath]
+type InternalAbsolutePath = Union[InternalAbsoluteFilePath, Subdir]
+'''An absolute path to any file or directory from the root of the notes directory
 
-# A relative path within the notes directory to a subdir
-RelativeDirectoryPath = str
+   Example: `/subdir/todos.note`
+   Example: `/subdir/image.jpeg`
+   Example: `/subdir/nested`
+'''
 
-# A relative path from a note to either a file or directory
-InternalRelativePath = Union[InternalRelativeFilePath, RelativeDirectoryPath]
+type DisplayPath = str
+'''A nicely formatted version of a note path
+
+   Example: `subdir -> todos.note`
+'''
+
+type RelativeNotePath = str
+'''A relative path to a note from another note.
+   Typically must be transformed into a NotePath before it can be used
+
+   Example: `../subdir/todos.note`
+'''
+
+type RelativeResourcePath = str
+'''A relative path to a resource from a note.
+   Typically must be transformed into a ResourcePath before it can be used
+
+   Example: `../subdir/image.jpeg`
+'''
+
+type InternalRelativeFilePath = Union[RelativeNotePath, RelativeResourcePath]
+'''A relative path from a note to another file
+
+   Example: `../subdir/todos.note`
+   Example: `../subdir/image.jpeg`
+'''
+
+type RelativeDirectoryPath = str
+'''A relative path within the notes directory to a subdir
+
+   Example: `../subdir`
+'''
+
+type InternalRelativePath = Union[InternalRelativeFilePath, RelativeDirectoryPath]
+'''A relative path from a note to either a file or directory
+
+   Example: `../subdir/todos.note`
+   Example: `../subdir/image.jpeg`
+   Example: `../subdir`
+'''
 
 
 # Note level concepts
 # -------------------
 
-# The full raw string content of a note
-RawNoteContent = str
+type RawNoteContent = str
+'''The full raw string content of a note'''
 
-# The full raw conntent of a single line in a note
-RawNoteLine = str
+type RawNoteLine = str
+'''The full raw conntent of a single line in a note'''
 
-# A URL which points to an external resource
-ExternalURL = str
+type ExternalURL = str
+'''A URL which points to an external resource'''
 
+type RawResourceContent = bytes
+'''Raw binary content of a resource'''
 
 # API level concepts
 # ------------------
-ACKResponse = Literal["ack"]
+type ACKResponse = Literal["ack"]
 
-CSVData = str
+type CSVData = str
 
-JSONShorthandConfig = str
-JSONShorthandConfigUpdates = str
-JSONSearchResults = str
-JSONTOC = str
-JSONSubdirs = str
-JSONLinks = str
+type JSONShorthandConfig = str
+type JSONShorthandConfigUpdates = str
+type JSONSearchResults = str
+type JSONTOC = str
+type JSONSubdirs = str
+type JSONLinks = str

@@ -42,7 +42,8 @@ export const ComposePreviewWrapper = styled.div`
 export const StyledFormGroup = styled(FormGroup)`
   align-items: center;
   height: 3rem;
-  min-width: 29rem;`
+  min-width: 37rem;
+  justify-content: end;`
 
 export const SwitchLabel = styled.span`
   margin-left: 1rem;`

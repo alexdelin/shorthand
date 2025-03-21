@@ -1,129 +1,104 @@
 import os
+import nltk
 import logging
-import unittest
 
 from shorthand.search import _search_full_text, _search_filenames, \
                              _record_file_view
-from shorthand.frontend.typeahead import _update_ngram_database, \
-                                         _get_typeahead_suggestions
+from shorthand.frontend.typeahead import _get_typeahead_suggestions, _update_ngram_database
 
-from utils import setup_environment, validate_setup, setup_logging
-from results_unstamped import EMPTY_RESULTS, SEARCH_RESULTS_FOOD, \
+from utils import ShorthandTestCase, setup_environment
+from results_unstamped import SEARCH_RESULTS_FOOD, \
                               SEARCH_RESULTS_FOOD_SENSITIVE, \
                               SEARCH_RESULTS_BALANCED_DIET, ALL_FILES
 
 
-CONFIG = setup_environment()
 log = logging.getLogger(__name__)
 
 
-# Define helpers to make the rest of the code cleaner
-def get_search_results(query_string, case_sensitive):
-    return _search_full_text(
-                notes_directory=CONFIG['notes_directory'],
-                query_string=query_string,
-                case_sensitive=case_sensitive,
-                grep_path=CONFIG['grep_path'])
-
-
-def get_file_search_results(prefer_recent, query_string, case_sensitive):
-    return _search_filenames(
-                notes_directory=CONFIG['notes_directory'],
-                prefer_recent_files=prefer_recent,
-                cache_directory=CONFIG['cache_directory'],
-                query_string=query_string, case_sensitive=case_sensitive,
-                grep_path=CONFIG['grep_path'])
-
-
-def get_typeahead_results(string):
-    return _get_typeahead_suggestions(CONFIG['cache_directory'], string)
-
-
-class TestSearch(unittest.TestCase):
+class TestSearch(ShorthandTestCase, reset_per_method=False):
     """Test basic search functionality of the library"""
 
-    @classmethod
-    def setup_class(cls):
-        # ensure that we have a clean environment before running any tests
-        _ = setup_environment()
-
-    def setup_method(self, method):
-        '''Validate that the environment has been set up correctly
-        '''
-        validate_setup()
+    def get_search_results(self, query_string, case_sensitive):
+        return _search_full_text(
+                    notes_directory=self.notes_dir,
+                    query_string=query_string,
+                    case_sensitive=case_sensitive,
+                    grep_path=self.grep_path)
 
     def test_search(self):
         '''Test full-text search
         '''
 
         # Test single keyword search
-        search_results = get_search_results('Food', False)
+        search_results = self.get_search_results('Food', False)
         assert len(search_results) == len(SEARCH_RESULTS_FOOD)
         assert search_results == SEARCH_RESULTS_FOOD
 
         # Test case-sensitive single keyword search
-        search_results = get_search_results('Food', True)
+        search_results = self.get_search_results('Food', True)
         assert len(search_results) == len(SEARCH_RESULTS_FOOD_SENSITIVE)
         assert search_results == SEARCH_RESULTS_FOOD_SENSITIVE
 
         # Test quoted expression search
-        search_results = get_search_results('"balanced diet"', False)
+        search_results = self.get_search_results('"balanced diet"', False)
         assert len(search_results) == len(SEARCH_RESULTS_BALANCED_DIET)
         assert search_results == SEARCH_RESULTS_BALANCED_DIET
 
         # Test case-sensitive quoted expression search
-        search_results = get_search_results('"balanced diet"', True)
+        search_results = self.get_search_results('"balanced diet"', True)
         assert search_results == SEARCH_RESULTS_BALANCED_DIET
-        search_results = get_search_results('"essential part"', True)
+        search_results = self.get_search_results('"essential part"', True)
         assert search_results == SEARCH_RESULTS_BALANCED_DIET
-        search_results = get_search_results('"Balanced diet"', True)
+        search_results = self.get_search_results('"Balanced diet"', True)
         assert search_results == []
-        search_results = get_search_results('"essential Part"', True)
+        search_results = self.get_search_results('"essential Part"', True)
         assert search_results == []
 
         # Test combination
-        search_results = get_search_results('"balanced diet" food', False)
+        search_results = self.get_search_results('"balanced diet" food', False)
         assert search_results == SEARCH_RESULTS_BALANCED_DIET
-        search_results = get_search_results('"essential part" food', False)
+        search_results = self.get_search_results('"essential part" food', False)
         assert search_results == SEARCH_RESULTS_BALANCED_DIET
-        search_results = get_search_results(
+        search_results = self.get_search_results(
             '"essential part" "balanced diet"', False)
         assert search_results == SEARCH_RESULTS_BALANCED_DIET
-        search_results = get_search_results(
+        search_results = self.get_search_results(
             '"essential part" "balanced diet" food', False)
         assert search_results == SEARCH_RESULTS_BALANCED_DIET
 
         # Test case-sensitive combination
-        search_results = get_search_results('"balanced diet" Food', True)
+        search_results = self.get_search_results('"balanced diet" Food', True)
         assert search_results == SEARCH_RESULTS_BALANCED_DIET
-        search_results = get_search_results('"balanced Diet" food', True)
+        search_results = self.get_search_results('"balanced Diet" food', True)
         assert search_results == []
-        search_results = get_search_results('"essential part" Food', True)
+        search_results = self.get_search_results('"essential part" Food', True)
         assert search_results == SEARCH_RESULTS_BALANCED_DIET
-        search_results = get_search_results('"essential part" food', True)
+        search_results = self.get_search_results('"essential part" food', True)
         assert search_results == []
-        search_results = get_search_results(
+        search_results = self.get_search_results(
             '"essential part" "balanced diet"', True)
         assert search_results == SEARCH_RESULTS_BALANCED_DIET
-        search_results = get_search_results(
+        search_results = self.get_search_results(
             '"essential pArt" "balanced diet"', True)
         assert search_results == []
-        search_results = get_search_results(
+        search_results = self.get_search_results(
             '"essential part" "balanced diet" Food', True)
         assert search_results == SEARCH_RESULTS_BALANCED_DIET
-        search_results = get_search_results(
+        search_results = self.get_search_results(
             '"essential part" "balanced diet" food', True)
         assert search_results == []
 
         # TODO- Test directory filter
 
 
-class TestFileFinder(unittest.TestCase):
+class TestFileFinder(ShorthandTestCase, reset_per_method=False):
 
-    def setup_method(self, method):
-        '''Validate that the environment has been set up correctly
-        '''
-        validate_setup()
+    def get_file_search_results(self, prefer_recent, query_string, case_sensitive):
+        return _search_filenames(
+                    notes_directory=self.notes_dir,
+                    prefer_recent_files=prefer_recent,
+                    query_string=query_string, case_sensitive=case_sensitive,
+                    grep_path=self.grep_path)
 
     def search_helper(self, query_string, case_sensitive=False):
         '''A sort-of model to test the implementation against
@@ -154,9 +129,9 @@ class TestFileFinder(unittest.TestCase):
         for query_string in test_queries:
             expected_results = self.search_helper(query_string,
                                                   case_sensitive=False)
-            real_results = get_file_search_results(prefer_recent=False,
-                                                   query_string=query_string,
-                                                   case_sensitive=False)
+            real_results = self.get_file_search_results(prefer_recent=False,
+                                                        query_string=query_string,
+                                                        case_sensitive=False)
             assert set(expected_results) == set(real_results)
 
     def test_file_search_case_sensitive(self):
@@ -175,9 +150,9 @@ class TestFileFinder(unittest.TestCase):
         for query_string in test_queries:
             expected_results = self.search_helper(query_string,
                                                   case_sensitive=True)
-            real_results = get_file_search_results(prefer_recent=False,
-                                                   query_string=query_string,
-                                                   case_sensitive=True)
+            real_results = self.get_file_search_results(prefer_recent=False,
+                                                        query_string=query_string,
+                                                        case_sensitive=True)
             assert set(expected_results) == set(real_results)
 
     def test_recent_file_preference(self):
@@ -185,18 +160,17 @@ class TestFileFinder(unittest.TestCase):
         '''
 
         # Test that the history file starts off not existing
-        history_file = CONFIG['cache_directory'] + '/recent_files.txt'
+        history_file = self.notes_dir + '/.shorthand/state/recent_files.txt'
         assert not os.path.exists(history_file)
 
         # Verify that most recent views get bumped to the top
         for _ in range(5):
             # View the last file returned
-            all_files_found = get_file_search_results(prefer_recent=True,
-                                                      query_string='note',
-                                                      case_sensitive=False)
+            all_files_found = self.get_file_search_results(prefer_recent=True,
+                                                           query_string='note',
+                                                           case_sensitive=False)
             last_file = all_files_found[-1]
-            _record_file_view(CONFIG['cache_directory'],
-                              CONFIG['notes_directory'],
+            _record_file_view(self.notes_dir,
                               last_file, history_limit=100)
 
             # Verify that the view was recorded in the history file
@@ -207,48 +181,49 @@ class TestFileFinder(unittest.TestCase):
             assert last_file in history_data
 
             # Verify that the viewed file now shows up first
-            file_search_results = get_file_search_results(prefer_recent=True,
-                                                          query_string='note',
-                                                          case_sensitive=False)
+            file_search_results = self.get_file_search_results(prefer_recent=True,
+                                                               query_string='note',
+                                                               case_sensitive=False)
             assert file_search_results[0] == last_file
 
 
-class TestTypeahead(unittest.TestCase):
+class TestTypeahead(ShorthandTestCase, reset_per_method=False):
 
     @classmethod
     def setup_class(cls):
         # ensure that we have a clean environment before running any tests
-        _ = setup_environment()
-        _ = _update_ngram_database(CONFIG['notes_directory'],
-                                   CONFIG['cache_directory'])
+        cls.config = setup_environment()
+        cls.notes_dir = cls.config['notes_directory']
+        cls.grep_path = cls.config['grep_path']
+        cls.find_path = cls.config['find_path']
+        nltk.download('punkt_tab')
+        _update_ngram_database(cls.notes_dir)
 
-    def setup_method(self, method):
-        '''Validate that the environment has been set up correctly
-        '''
-        validate_setup()
+    def get_typeahead_results(self, string):
+        return _get_typeahead_suggestions(self.notes_dir, string)
 
     def test_typeahead_unigram(self):
 
-        results = get_typeahead_results('foo')
+        results = self.get_typeahead_results('foo')
         assert results == ['food']
 
-        results = get_typeahead_results('inc')
+        results = self.get_typeahead_results('inc')
         assert set(results) == set(['includes', 'included', 'incomplete'])
 
     def test_typeahead_bigram(self):
 
-        results = get_typeahead_results('"apple p')
+        results = self.get_typeahead_results('"apple p')
         assert results == ['"apple pie"']
 
-        results = get_typeahead_results('"for t')
+        results = self.get_typeahead_results('"for t')
         assert set(results) == set(['"for this"', '"for the"'])
 
     def test_typeahead_trigram(self):
 
-        results = get_typeahead_results('"what is t')
+        results = self.get_typeahead_results('"what is t')
         assert results == ['"what is the"']
 
     def test_typeahead_invalid(self):
 
-        results = get_typeahead_results('"the best apple p')
+        results = self.get_typeahead_results('"the best apple p')
         assert results == []

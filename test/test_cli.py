@@ -1,39 +1,19 @@
-import os
 import logging
 import pytest
-import unittest
 
-from shorthand.cli import run, cli_stamp_notes
+from shorthand.cli import cli_stamp_notes
 
-from utils import setup_environment, teardown_environment, setup_logging, \
-                  validate_setup
+from utils import ShorthandTestCase
 
 
-CONFIG = setup_environment()
 log = logging.getLogger(__name__)
 
 
-class TestCLI(unittest.TestCase):
+class TestCLI(ShorthandTestCase, reset_per_method=False):
     """Test command line utilities"""
 
-    @pytest.fixture(autouse=True)
-    def inject_fixtures(self, caplog, capfd):
-        self._caplog = caplog
-        self._capfd = capfd
-
-    @classmethod
-    def setup_class(cls):
-        # ensure that we have a clean environment before running any tests
-        _ = setup_environment()
-
-    def setup_method(self, method):
-        '''Validate that the environment has been set up correctly
-        '''
-        validate_setup()
-
     def test_stamp_call(self):
-        _ = setup_environment()
-        _ = cli_stamp_notes(CONFIG)
+        cli_stamp_notes(self.config)
         # Validate stdout
         captured = self._capfd.readouterr()
         old_line_count, new_line_count, file_count = 0, 0, 0
@@ -50,15 +30,3 @@ class TestCLI(unittest.TestCase):
         # Validate that we only get DEBUG and INFO log messages
         for record in self._caplog.records:
             assert record.levelname in ['DEBUG', 'INFO']
-
-        teardown_environment()
-
-
-# def test_cli_empty(capfd):
-#     '''Test that the usage dialog is shown when run from the CLI
-#     '''
-#     with pytest.raises(SystemExit) as e:
-#         run()
-#     assert str(e)
-#     captured = capfd.readouterr()
-#     assert captured.err.startswith("usage")

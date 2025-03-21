@@ -4,7 +4,7 @@ import logging
 from typing import Optional, Union, List
 
 from shorthand.types import DirectoryPath, DisplayPath, ExternalURL, \
-                            FilePath, NotePath, RelativeNotePath, Subdir, \
+                            FilePath, NotePath, RelativeNotePath, ResourcePath, Subdir, \
                             InternalAbsolutePath
 
 
@@ -160,7 +160,7 @@ def is_external_path(path: Union[NotePath, RelativeNotePath, ExternalURL]
         return False
 
 
-def is_note_path(notes_directory: DirectoryPath, path: NotePath) -> bool:
+def _is_note_path(notes_directory: DirectoryPath, path: NotePath, must_exist: bool = True) -> bool:
     '''consumes a note path and ensures whether a note exists at that path.
        Ignores any #element tag after the filename
 
@@ -169,6 +169,32 @@ def is_note_path(notes_directory: DirectoryPath, path: NotePath) -> bool:
     '''
     if '#' in path:
         path = path.split('#')[0]
+
+    if not path.endswith('.note'):
+        return False
+
+    if not must_exist:
+        return True
+
+    full_path = get_full_path(notes_directory, path)
+    return os.path.exists(full_path)
+
+
+def _is_resource_path(notes_directory: DirectoryPath, path: ResourcePath, must_exist: bool = True) -> bool:
+    '''Consumes a resource path and ensures whether a resource exists at that path.
+       Ignores any #element tag after the filename
+
+       notes_directory: full path to the root of the notes directory
+       path: relateive path of the resource within the notes directory
+    '''
+    if '#' in path:
+        path = path.split('#')[0]
+
+    if path.endswith('.note'):
+        return False
+
+    if not must_exist:
+        return True
 
     full_path = get_full_path(notes_directory, path)
     return os.path.exists(full_path)

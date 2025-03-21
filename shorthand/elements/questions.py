@@ -1,10 +1,10 @@
 import re
 import logging
 from subprocess import Popen, PIPE
-from typing import Literal, Optional, Tuple, Union
+from typing import Literal, Optional, Tuple, TypedDict
 
 from shorthand.tags import extract_tags
-from shorthand.types import DirectoryPath, ExecutablePath, RelativeDirectoryPath
+from shorthand.types import DirectoryPath, DisplayPath, ExecutablePath, NotePath, RelativeDirectoryPath
 from shorthand.utils.patterns import ALL_QUESTIONS, ANSWER_PATTERN, \
                                      START_STAMP_ONLY_PATTERN
 from shorthand.utils.paths import get_relative_path, get_display_path
@@ -13,10 +13,21 @@ from shorthand.utils.paths import get_relative_path, get_display_path
 ANSWER_REGEX = re.compile(ANSWER_PATTERN)
 TIMESTAMP_REGEX = re.compile(START_STAMP_ONLY_PATTERN)
 
-QuestionStatus = Union[Literal['all'], Literal['answered'], Literal['unanswered']]
-
 
 log = logging.getLogger(__name__)
+
+
+QuestionStatus = Literal['all', 'answered', 'unanswered']
+
+class Question(TypedDict):
+    file_path: NotePath
+    display_path: DisplayPath
+    line_number: int
+    question: str
+    question_date: str
+    answer: Optional[str]
+    answer_date: Optional[str]
+    tags: list[str]
 
 
 def is_question_line(line_content: str) -> bool:

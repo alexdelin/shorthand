@@ -1,33 +1,20 @@
 import logging
-import unittest
 
-from shorthand.tags import _get_tags, extract_tags
+from shorthand.tags import extract_tags
 
-from utils import setup_environment, validate_setup, setup_logging
+from utils import ShorthandTestCase
 
 
-CONFIG = setup_environment()
 log = logging.getLogger(__name__)
 
 
-class TestTags(unittest.TestCase):
+class TestTags(ShorthandTestCase, reset_per_method=False):
     """Test basic search functionality of the library"""
-
-    @classmethod
-    def setup_class(cls):
-        # ensure that we have a clean environment before running any tests
-        _ = setup_environment()
-
-    def setup_method(self, method):
-        '''Validate that the environment has been set up correctly
-        '''
-        validate_setup()
 
     def test_get_tags(self):
         all_tags = ['baking', 'bar', 'baz', 'foo', 'food', 'future', 'nested',
                     'philosophy', 'pointless', 'software', 'topic']
-        tags_found = set(_get_tags(CONFIG['notes_directory'],
-                                   grep_path=CONFIG['grep_path']))
+        tags_found = set(self.server.get_tags())
         assert tags_found == set(all_tags)
 
     def test_extract_tags(self):

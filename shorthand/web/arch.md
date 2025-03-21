@@ -77,7 +77,7 @@
 
 
 ## Frontend API
-- `/frontend-api/redered-markdown`
+- `/frontend-api/rendered-markdown`
 - `/frontend-api/get-image`
 - `/frontend-api/get-open-files`
 - `/frontend-api/open-file`

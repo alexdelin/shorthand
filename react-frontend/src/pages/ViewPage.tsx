@@ -1,4 +1,4 @@
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useQuery, useQueryClient } from 'react-query';
 import React, { useLayoutEffect, useState, Suspense, useRef, useEffect } from 'react';
 import 'highlight.js/styles/atom-one-light.css';
@@ -85,15 +85,13 @@ export default function ViewPage() {
   const {
     data: noteContent
   } = useQuery<GetRenderedMarkdownResponse, Error>(['note', { path: notePath }], () =>
-    fetch('/frontend-api/redered-markdown?path=' + notePath).then(res =>
+    fetch('/frontend-api/rendered-markdown?path=' + notePath).then(res =>
       res.json()
     )
   )
 
-  // Handle the file in the URL path param not being the
-  // most recently opened file
-  if (openFiles && notePath &&
-      openFiles[openFiles.length - 1] !== notePath) {
+  // Handle the file in the URL path param not being open
+  if (openFiles && notePath && !openFiles.includes(notePath)) {
     // Open the file in the URL path via the API
     fetch(
       '/frontend-api/open-file?path=' + notePath,
@@ -117,6 +115,14 @@ export default function ViewPage() {
   // eslint-disable-next-line
   }, [openFiles])
 
+  // Record a view for the file being viewed
+  useEffect(() => {
+    fetch(
+      '/api/v1/record_view?note_path=' + notePath,
+      { method: 'POST' }
+    )
+  }, [notePath])
+
   function handleTOCClick() {
     setTocShown(!tocShown);
   }
@@ -135,20 +141,32 @@ export default function ViewPage() {
           variant="text"
           onClick={handleTOCClick}
         >
+          <i style={{marginRight: '0.3rem'}} className='bi bi-list-ol'></i>
           TOC
         </Button>
         <Button
           variant="text"
           onClick={handleLinksClick}
         >
+          <i style={{marginRight: '0.3rem'}} className='bi bi-link-45deg'></i>
           Links
         </Button>
-        <Button
-          href={`/compose?path=${notePath}`}
-          variant="text"
-        >
-          Edit
-        </Button>
+        <Link to={`/compose?path=${notePath}`}>
+          <Button
+            variant="text"
+          >
+            <i style={{marginRight: '0.3rem'}} className='bi bi-pencil'></i>
+            Edit
+          </Button>
+        </Link>
+        <Link to={`/history?path=${notePath}`}>
+          <Button
+            variant="text"
+          >
+            <i style={{marginRight: '0.3rem'}} className='bi bi-clock-history'></i>
+            History
+          </Button>
+        </Link>
         <ReactToPrint
           documentTitle={notePath || 'Unknown Note'}
           trigger={() =>
@@ -156,6 +174,7 @@ export default function ViewPage() {
               variant="text"
               style={{marginRight: '1rem'}}
             >
+              <i style={{marginRight: '0.3rem'}} className='bi bi-printer'></i>
               Print
             </Button>}
           content={() => renderedMarkdownRef.current}

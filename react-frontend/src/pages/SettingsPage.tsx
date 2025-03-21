@@ -7,15 +7,13 @@ import MenuItem from '@mui/material/MenuItem';
 import { GetConfigResponse, GetSubdirsResponse, ShorthandApiError } from '../types';
 
 export const SettingsPageWrapper = styled.div`
-  padding: 2rem;
-  `;
+  padding: 2rem;`
 
 const SettingRow = styled.div`
   display: flex;
   align-items: center;
   margin-bottom: 0.6rem;
-  gap: 1rem;
-  `;
+  gap: 1rem;`
 
 export function SettingsPage() {
 
@@ -30,7 +28,6 @@ export function SettingsPage() {
     fetch('/api/v1/config').then(res =>
       res.json()
     )
-    // ,TODO_QUERY_CONFIG
   )
 
   let {
@@ -39,7 +36,6 @@ export function SettingsPage() {
     fetch('/api/v1/subdirs').then(res =>
       res.json()
     )
-    // ,TODO_QUERY_CONFIG
   )
 
   if (subdirsData === undefined) {
@@ -114,14 +110,6 @@ export function SettingsPage() {
         />
       </SettingRow>
       <SettingRow>
-        Cache Directory:
-        <TextField
-          disabled
-          size='small'
-          defaultValue={configData.cache_directory}
-        />
-      </SettingRow>
-      <SettingRow>
         Grep Path:
         <TextField
           disabled
@@ -135,6 +123,14 @@ export function SettingsPage() {
           disabled
           size='small'
           defaultValue={configData.find_path}
+        />
+      </SettingRow>
+      <SettingRow>
+        Patch Path:
+        <TextField
+          disabled
+          size='small'
+          defaultValue={configData.patch_path}
         />
       </SettingRow>
       <SettingRow>
