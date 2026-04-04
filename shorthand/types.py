@@ -1,4 +1,5 @@
-from typing import Literal, Union
+from typing import Literal, TypedDict, Union
+
 
 # System level concepts
 # ---------------------
@@ -102,8 +103,18 @@ type InternalRelativePath = Union[InternalRelativeFilePath, RelativeDirectoryPat
 # Note level concepts
 # -------------------
 
+type NoteLastModTime = str
+'''A string which represents the last modified time of a note
+   stored on the filesystem'''
+
 type RawNoteContent = str
 '''The full raw string content of a note'''
+
+class NoteContentAsOfTime(TypedDict):
+    '''A
+    '''
+    last_mod_time: NoteLastModTime
+    content: RawNoteContent
 
 type RawNoteLine = str
 '''The full raw conntent of a single line in a note'''

@@ -3,13 +3,13 @@ import os
 from subprocess import Popen, PIPE
 import logging
 from typing import Optional, TypedDict, cast, Union
+from datetime import datetime
 
 from shorthand.utils.paths import get_full_path, get_relative_path, \
                                   parse_relative_link_path, is_external_path, \
                                   _is_note_path
 from shorthand.utils.patterns import INTERNAL_LINK_PATTERN, ALL_LINK_PATTERN
-from shorthand.utils.filesystem import _delete_file
-from shorthand.types import DirectoryPath, ExecutablePath, ExternalURL, NotePath, RawNoteContent, RelativeNotePath
+from shorthand.types import DirectoryPath, ExecutablePath, ExternalURL, NoteContentAsOfTime, NoteLastModTime, NotePath, RawNoteContent, RelativeNotePath
 
 
 link_regex = re.compile(ALL_LINK_PATTERN)
@@ -28,8 +28,19 @@ class Link(TypedDict):
     valid: bool
 
 
+def get_last_mod_time(notes_directory: DirectoryPath, path: NotePath
+                      ) -> NoteLastModTime:
+    '''Get the Version ID for a note stored on the filesystem
+    '''
+    full_path = get_full_path(notes_directory, path)
+    m_timestamp = os.path.getmtime(full_path)
+    m_datetime = datetime.fromtimestamp(m_timestamp)
+    m_time_string = m_datetime.strftime('%Y-%m-%dT%H:%M:%S.%f')
+    return m_time_string
+
+
 def _get_note(notes_directory: DirectoryPath, path: NotePath
-              ) -> RawNoteContent:
+              ) -> NoteContentAsOfTime:
     '''Get the full raw content of a note as a string
     given:
         - The full path to the notes directory
@@ -44,7 +55,12 @@ def _get_note(notes_directory: DirectoryPath, path: NotePath
     with open(full_path, 'r') as note_file_object:
         note_content = note_file_object.read()
 
-    return note_content
+    last_mod_time = get_last_mod_time(notes_directory, path)
+
+    return {
+        "last_mod_time": last_mod_time,
+        "content": note_content
+    }
 
 
 def _update_note(notes_directory: DirectoryPath, file_path: NotePath,

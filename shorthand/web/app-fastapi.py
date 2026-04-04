@@ -11,7 +11,7 @@ from pydantic_settings import BaseSettings
 
 from shorthand import ShorthandServer
 from shorthand.calendar import Calendar, CalendarMode
-from shorthand.edit_history import NoteDiff, NoteDiffType, NoteVersion, NoteVersionTimestamp
+from shorthand.edit_history import NoteDiff, NoteDiffType, NoteVersionTimestamp
 from shorthand.edit_timeline import EditTimeline
 from shorthand.elements.definitions import Definition
 from shorthand.elements.locations import Location
@@ -23,7 +23,7 @@ from shorthand.search import AggregatedFullTextSearchResult, \
                              FullTextSearchResult
 from shorthand.stamping import StampingChanges
 from shorthand.toc import TOC
-from shorthand.types import ACKResponse, CSVData, InternalAbsolutePath, \
+from shorthand.types import ACKResponse, CSVData, InternalAbsolutePath, NoteContentAsOfTime, \
                             NotePath, RawNoteContent, RawNoteLine, RawResourceContent, ResourcePath, \
                             Subdir
 from shorthand.utils.api import WrappedResponse, wrap_response_data
@@ -103,8 +103,8 @@ def get_search_results(
         aggregate_by_file=aggregate_by_file)
 
 
-@app.get('/api/v1/note', tags=['Notes'], response_class=PlainTextResponse)
-def get_full_note(path: NotePath) -> RawNoteContent:
+@app.get('/api/v1/note', tags=['Notes'])
+def get_full_note(path: NotePath) -> NoteContentAsOfTime:
     server = ShorthandServer(settings.config_path)
     return server.get_note(path)
 
