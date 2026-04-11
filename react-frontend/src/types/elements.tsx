@@ -1,6 +1,7 @@
 // Type definitions for Shorthand Core Elements
 
-export type Note = string;
+export type NoteLastModTime = string;
+export type NoteContent = string;
 
 export type Todo = {
   display_path: string,

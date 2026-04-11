@@ -40,7 +40,7 @@ def get_last_mod_time(notes_directory: DirectoryPath, path: NotePath
 
 
 def _get_note(notes_directory: DirectoryPath, path: NotePath
-              ) -> NoteContentAsOfTime:
+              ) -> RawNoteContent:
     '''Get the full raw content of a note as a string
     given:
         - The full path to the notes directory
@@ -55,6 +55,13 @@ def _get_note(notes_directory: DirectoryPath, path: NotePath
     with open(full_path, 'r') as note_file_object:
         note_content = note_file_object.read()
 
+    return note_content
+
+
+def _get_note_with_last_mod_time(notes_directory: DirectoryPath,
+                                 path: NotePath) -> NoteContentAsOfTime:
+
+    note_content = _get_note(notes_directory, path)
     last_mod_time = get_last_mod_time(notes_directory, path)
 
     return {

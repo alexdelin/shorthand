@@ -11,7 +11,7 @@ from pydantic_settings import BaseSettings
 
 from shorthand import ShorthandServer
 from shorthand.calendar import Calendar, CalendarMode
-from shorthand.edit_history import NoteDiff, NoteDiffType, NoteVersionTimestamp
+from shorthand.edit_history import NoteDiff, NoteDiffType, NoteVersion, NoteVersionTimestamp
 from shorthand.edit_timeline import EditTimeline
 from shorthand.elements.definitions import Definition
 from shorthand.elements.locations import Location
@@ -104,9 +104,13 @@ def get_search_results(
 
 
 @app.get('/api/v1/note', tags=['Notes'])
-def get_full_note(path: NotePath) -> NoteContentAsOfTime:
+def get_full_note(path: NotePath, include_last_mod_time: bool = True) -> NoteContentAsOfTime | RawNoteContent:
     server = ShorthandServer(settings.config_path)
-    return server.get_note(path)
+    note = server.get_note_with_last_mod_time(path)
+    if include_last_mod_time:
+        return note
+    else:
+        return PlainTextResponse(note['content'])
 
 
 @app.post('/api/v1/note', tags=['Notes'], response_class=PlainTextResponse)
@@ -434,8 +438,8 @@ def get_edit_diff(note_path: NotePath, timestamp: NoteVersionTimestamp,
 @app.get('/frontend-api/rendered-markdown', tags=['Frontend'])
 def send_processed_markdown(path: NotePath) -> RenderedMarkdown:
     server = ShorthandServer(settings.config_path)
-    file_content = server.get_note(path)
-    return get_rendered_markdown(file_content, path)
+    note = server.get_note(path)
+    return get_rendered_markdown(note, path)
 
 
 @app.get('/frontend-api/get-open-files', tags=['Frontend'])

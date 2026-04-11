@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from 'react-query';
 import { Link, useSearchParams } from "react-router-dom";
 import { useBeforeunload } from 'react-beforeunload';
 import { ShorthandMarkdown } from './ViewPage.styles';
-import { GetRenderedMarkdownResponse } from '../types/api';
+import { GetRenderedMarkdownResponse, GetNoteResponse } from '../types/api';
 import { SuspenseFallback } from '../components/SuspenseFallback';
 import { ReactCodeMirrorRef } from '@uiw/react-codemirror';
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
@@ -62,11 +62,11 @@ export default function ComposePage() {
       {cacheTime: 10 * 60 * 1000, refetchOnWindowFocus: false}
     )
 
-  const { data: rawNote } =
-    useQuery<string, Error>(['raw-note', { path: notePath }], () => {
-      if (!notePath) return '';
+  const { data: noteResponse } =
+    useQuery<GetNoteResponse, Error>(['raw-note', { path: notePath }], () => {
+      if (!notePath) return {content: '', last_mod_time: '1900-01-01T00:00:00'};
       return fetch('/api/v1/note?path=' + notePath)
-        .then(async res => res.text())},
+        .then(async res => res.json())},
       {cacheTime: 10 * 60 * 1000, refetchOnWindowFocus: false}
     )
 
@@ -106,9 +106,9 @@ export default function ComposePage() {
   // Update the editor content exactly once when the page
   //   loads for the first time, or you change to a different note
   useEffect(() => {
-    if (rawNote !== undefined && rawNote !== editorText) {
+    if (noteResponse?.content !== undefined && noteResponse.content !== editorText) {
       setSelectedTab(notePath);
-      setEditorText(rawNote);
+      setEditorText(noteResponse.content);
       setChangesSaved(true);
       // Record a view for the file being edited
       fetch(
@@ -116,8 +116,7 @@ export default function ComposePage() {
         { method: 'POST' }
       )
     }
-  // eslint-disable-next-line
-  }, [notePath, rawNote]);
+  }, [notePath, noteResponse]);
 
   // Check if you leave the page with pending changes
   useBeforeunload((event) => {
@@ -191,7 +190,7 @@ export default function ComposePage() {
   }
 
   function handleEditorChange(value: string) {
-    if (changesSaved && value !== rawNote) {
+    if (changesSaved && value !== noteResponse?.content) {
       setChangesSaved(false);
     }
   }

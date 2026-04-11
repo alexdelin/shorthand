@@ -4,7 +4,7 @@ from typing import Optional
 
 from shorthand.edit_timeline import get_edit_timeline
 from shorthand.frontend import clear_open_files, close_file, get_open_files, open_file
-from shorthand.notes import _get_note, _update_note, \
+from shorthand.notes import _get_note, _get_note_with_last_mod_time, _update_note, \
                             _validate_internal_links, _append_to_note, \
                             _get_backlinks, _get_links
 from shorthand.resources import _get_resource
@@ -139,6 +139,10 @@ class ShorthandServer(object):
     def get_note(self, note_path):
         return _get_note(notes_directory=self.notes_directory,
                          path=note_path)
+
+    def get_note_with_last_mod_time(self, note_path):
+        return _get_note_with_last_mod_time(
+            notes_directory=self.notes_directory, path=note_path)
 
     def update_note(self, note_path, content):
         if not self.is_note_path(note_path):

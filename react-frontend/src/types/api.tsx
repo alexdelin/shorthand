@@ -34,7 +34,10 @@ export type GetSubdirsResponse = ELEMENTS.Subdir[];
 
 export type GetConfigResponse = ELEMENTS.Config;
 
-export type GetNoteResponse = ELEMENTS.Note;
+export type GetNoteResponse = {
+  last_mod_time: ELEMENTS.NoteLastModTime,
+  content: ELEMENTS.NoteContent
+};
 
 export type GetCalendarResponse = ELEMENTS.Calendar;
 

@@ -2,7 +2,8 @@ import logging
 import pytest
 import random
 
-from shorthand.notes import _get_note, _update_note, \
+from shorthand.notes import _get_note, _get_note_with_last_mod_time, \
+                            _update_note, \
                             _validate_internal_links, \
                             _append_to_note, _get_links, \
                             _get_backlinks
@@ -29,6 +30,22 @@ class TestNotesOperations(ShorthandTestCase):
             read_content = f.read()
 
         assert note_content == read_content
+
+        # Test error handling for invalid notes paths
+        with pytest.raises(ValueError) as e:
+            _get_note(notes_directory=self.notes_dir,
+                      path='/doesnt-exist.note')
+        assert 'note not found' in str(e.value)
+
+    def test_get_note_with_last_mod_time(self):
+        test_path = '/section/mixed.note'
+        note_content = _get_note_with_last_mod_time(
+            notes_directory=self.notes_dir, path=test_path)
+
+        with open(self.notes_dir + test_path, 'r') as f:
+            read_content = f.read()
+
+        assert note_content['content'] == read_content
 
         # Test error handling for invalid notes paths
         with pytest.raises(ValueError) as e:

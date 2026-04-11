@@ -367,7 +367,7 @@ export function HistoryEventViewer(props: HistoryEventViewerProps) {
   let url: string | null = null;
   if (props.eventInfo) {
     if (props.eventInfo.type === 'current') {
-      url = `/api/v1/note?path=${props.eventInfo.notePath}`;
+      url = `/api/v1/note?path=${props.eventInfo.notePath}&include_last_mod_time=False`;
     }
     else if (props.eventInfo.type === 'diff' && props.eventInfo.timestamp) {
       url = `/api/v1/note_diff?note_path=${props.eventInfo.notePath}` +
