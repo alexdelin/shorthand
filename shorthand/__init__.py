@@ -2,7 +2,7 @@ import logging
 import os
 from typing import Optional
 
-from shorthand.edit_timeline import get_edit_timeline
+from shorthand.history.edit_timeline import get_edit_timeline
 from shorthand.frontend import clear_open_files, close_file, get_open_files, open_file
 from shorthand.notes import _get_note, _get_note_with_last_mod_time, _update_note, \
                             _validate_internal_links, _append_to_note, \
@@ -34,16 +34,17 @@ from shorthand.utils.buffers import BufferContent, BufferID, _new_buffer, _list_
 from shorthand.utils.filesystem import _create_file, _create_directory, \
                                        _move_file_or_directory, _delete_file, \
                                        _delete_directory, _upload_resource
-from shorthand.edit_history import NoteDiffTimestamp, NoteDiffType, \
-                                   NoteVersionTimestamp, \
-                                   _store_history_for_note_create, \
-                                   _store_history_for_note_edit, \
-                                   _store_history_for_note_move, \
-                                   _store_history_for_note_delete, \
-                                   _list_note_versions, _get_note_version, \
-                                   _list_diffs_for_note, _get_note_diff, \
-                                   _store_history_for_directory_move, \
-                                   _store_history_for_directory_delete
+from shorthand.history.types import NoteDiffTimestamp, NoteDiffType, \
+                                    NoteVersionTimestamp
+from shorthand.history import _store_history_for_note_create, \
+                              _store_history_for_note_edit, \
+                              _store_history_for_note_move, \
+                              _store_history_for_note_delete, \
+                              _store_history_for_directory_move, \
+                              _store_history_for_directory_delete
+from shorthand.history.diffs import _list_diffs_for_note, _get_note_diff
+from shorthand.history.versions import _list_note_versions, _get_note_version
+
 
 # Set up the default module-level logger which the rest of the library
 #   will inherit. This will be updated with the settings specified in the

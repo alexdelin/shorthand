@@ -6,7 +6,7 @@ from shorthand.notes import _get_note, _get_note_with_last_mod_time, \
                             _update_note, \
                             _validate_internal_links, \
                             _append_to_note, _get_links, \
-                            _get_backlinks
+                            _get_backlinks, get_last_mod_time
 from shorthand.utils.filesystem import _create_file, _delete_file
 
 from utils import ShorthandTestCase
@@ -45,6 +45,9 @@ class TestNotesOperations(ShorthandTestCase):
         with open(self.notes_dir + test_path, 'r') as f:
             read_content = f.read()
 
+        last_mod_time = get_last_mod_time(self.notes_dir, test_path)
+
+        assert note_content['last_mod_time'] == last_mod_time
         assert note_content['content'] == read_content
 
         # Test error handling for invalid notes paths

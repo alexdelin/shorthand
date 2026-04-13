@@ -1,6 +1,8 @@
 from typing import List, Optional, TypedDict
 
-from shorthand.edit_history import NoteDiffInfo, NoteVersionTimestamp, _list_diffs_for_note, _list_note_versions
+from shorthand.history.types import NoteDiffInfo, NoteVersionTimestamp
+from shorthand.history.diffs import _list_diffs_for_note
+from shorthand.history.versions import _list_note_versions
 from shorthand.types import DirectoryPath, ExecutablePath, NotePath
 
 
@@ -53,6 +55,3 @@ def get_edit_timeline(notes_directory: DirectoryPath,
         })
 
     return timeline
-
-
-

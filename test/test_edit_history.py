@@ -5,7 +5,10 @@ from datetime import datetime, UTC
 
 import pytest
 
-from shorthand.edit_history import HISTORY_PATH, _store_history_for_note_edit, ensure_note_version
+from shorthand.history.types import HISTORY_PATH
+from shorthand.history import _store_history_for_note_edit
+from shorthand.history.versions import ensure_note_version
+
 from utils import ShorthandTestCase
 
 

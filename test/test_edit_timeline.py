@@ -4,7 +4,7 @@ import logging
 
 import pytest
 
-from shorthand.edit_timeline import get_edit_timeline
+from shorthand.history.edit_timeline import get_edit_timeline
 from shorthand.types import InternalAbsolutePath
 from utils import ShorthandTestCase
 

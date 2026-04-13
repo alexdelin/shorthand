@@ -70,9 +70,38 @@ def _get_note_with_last_mod_time(notes_directory: DirectoryPath,
     }
 
 
+class UpdateNoteResult(TypedDict):
+    update_made: bool
+    incremental_diff: str
+    new_last_mod_time: Optional[NoteLastModTime]
+
+
 def _update_note(notes_directory: DirectoryPath, file_path: NotePath,
-                 content: RawNoteContent) -> None:
-    '''Update an existing note with the full contents provided
+                 content: RawNoteContent,
+                 starting_version_last_mod_time: Optional[NoteLastModTime] = None,
+                 force_update: bool = False) -> UpdateNoteResult:
+    ''' Update an existing note with the full contents provided.
+        If a last_mod_time is provided for the starting version used in the
+        editing session, it must match the last mod time of the current
+        version in the notes directory. To ignore this requirement the
+        update can be forced
+
+        Takes the following arguments:
+            `notes_directory`: String - Absolute path to the notes directory
+            `file_path`: String - Relative path to the note being updated
+            `content`: String - New content to update the file with
+            `starting_version_last_mod_time`: String | None - Last modified
+                time of the version of the file that the edit session was
+                last refreshed with
+            `force_update`: Boolean - Whether to force the update
+
+        Returns a dictionary with the following keys:
+            `update_made`: Boolean - Whether an update was made or not
+            `incremental_diff`: String - The incremental diff of the change
+                which was made by the update, or would have been made by the
+                update if it was not performed
+            `new_last_mod_time`: String | None - If the update was performed,
+                the new last modified time of the updated note on disk
     '''
 
     # Ensure that we have the full path even if
@@ -82,8 +111,35 @@ def _update_note(notes_directory: DirectoryPath, file_path: NotePath,
     if not os.path.exists(full_path):
         raise ValueError(f'Note to get at path {file_path} does not exist')
 
-    with open(full_path, 'w') as note_file:
-        note_file.write(content)
+    current_content = _get_note(notes_directory, file_path)
+    # incremental_diff = get_unified_diff(current_content, content, file_path)
+    incremental_diff = ''
+
+    stored_last_mod_time = get_last_mod_time(notes_directory, file_path)
+
+    if force_update or (not starting_version_last_mod_time) or (stored_last_mod_time == starting_version_last_mod_time):
+
+        if force_update:
+            log.warning(f'Forcing update to note {file_path}')
+
+        # TODO: Do this as a rename to make it safe
+        with open(full_path, 'w') as note_file:
+            note_file.write(content)
+
+        new_last_mod_time = get_last_mod_time(notes_directory, file_path)
+
+        return {
+            'update_made': True,
+            'incremental_diff': incremental_diff,
+            'new_last_mod_time': new_last_mod_time
+        }
+
+    else:
+        return {
+            'update_made': False,
+            'incremental_diff': incremental_diff,
+            'new_last_mod_time': None
+        }
 
 
 def _append_to_note(notes_directory: DirectoryPath, note_path: NotePath,
