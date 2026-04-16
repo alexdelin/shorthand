@@ -428,6 +428,7 @@ export default function ComposePage() {
             height="100%"
             style={{fontSize: '18px', width: '100%'}}
             theme={shorthandDark}
+            spellCheck={true}
             extensions={[
               markdown({
                 base: markdownLanguage,
@@ -443,6 +444,7 @@ export default function ComposePage() {
                 ]
               }),
               EditorView.lineWrapping,
+              EditorView.contentAttributes.of({ spellcheck: "true" }),
               indentUnit.of('    '),
               keymap.of([
                 {
