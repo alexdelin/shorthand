@@ -5,6 +5,7 @@ from typing import List
 from shorthand.types import ACKResponse, DirectoryPath, FilePath, NotePath, \
                             ResourcePath
 
+from shorthand.utils import do_atomic_file_update
 from shorthand.utils.paths import get_full_path, _is_note_path
 
 
@@ -76,8 +77,7 @@ def get_open_files(notes_directory: DirectoryPath) -> List[NotePath]:
     # If we found any invalid open file paths, update the
     # open files on disk with the invalid paths removed
     if found_invalid_paths:
-        with open(open_files_path, 'w') as f:
-            json.dump(valid_open_files, f)
+        do_atomic_file_update(open_files_path, json.dumps(valid_open_files), notes_directory)
 
     return valid_open_files
 
@@ -86,8 +86,7 @@ def clear_open_files(notes_directory: DirectoryPath) -> ACKResponse:
     open_files_path = f'{notes_directory}/.shorthand/state/open_files.json'
     _ensure_file_exists(open_files_path, [])
 
-    with open(open_files_path, 'w') as f:
-        json.dump([], f)
+    do_atomic_file_update(open_files_path, '[]', notes_directory)
 
     return 'ack'
 
@@ -112,8 +111,7 @@ def open_file(notes_directory: DirectoryPath,
     open_files.append(note_path)
     log.info(f'Opened file at path: {note_path}')
 
-    with open(open_files_path, 'w') as f:
-        json.dump(open_files, f)
+    do_atomic_file_update(open_files_path, json.dumps(open_files), notes_directory)
 
     return 'ack'
 
@@ -132,7 +130,6 @@ def close_file(notes_directory: DirectoryPath,
     open_files.remove(note_path)
     log.info(f'Closed file at path: {note_path}')
 
-    with open(open_files_path, 'w') as f:
-        json.dump(open_files, f)
+    do_atomic_file_update(open_files_path, json.dumps(open_files), notes_directory)
 
     return 'ack'

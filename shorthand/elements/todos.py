@@ -8,6 +8,7 @@ from typing import Dict, Literal, TypedDict, List, Optional
 from shorthand.tags import extract_tags
 from shorthand.types import DirectoryPath, DisplayPath, ExecutablePath, InternalAbsoluteFilePath, InternalAbsolutePath, NotePath, RawNoteLine, \
                             RelativeDirectoryPath
+from shorthand.utils import do_atomic_file_update
 from shorthand.utils.paths import get_relative_path, get_display_path, \
                                   get_full_path
 from shorthand.utils.patterns import INCOMPLETE_PREFIX_GREP, \
@@ -311,7 +312,6 @@ def _mark_todo(notes_directory: DirectoryPath, note_path: InternalAbsoluteFilePa
         line_content)
 
     split_content[line_number - 1] = line_content
-    with open(full_path, 'w') as file_object:
-        file_object.write('\n'.join(split_content))
+    do_atomic_file_update(full_path, '\n'.join(split_content), notes_directory)
 
     return line_content

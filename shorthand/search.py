@@ -5,6 +5,7 @@ import logging
 from subprocess import Popen, PIPE
 from typing import Union, TypedDict
 
+from shorthand.utils import do_atomic_file_update
 from shorthand.utils.paths import get_relative_path, _is_note_path
 from shorthand.types import DirectoryPath, NotePath, ExecutablePath
 
@@ -73,9 +74,8 @@ def _record_file_view(notes_directory: DirectoryPath, note_path: NotePath,
         parents=True, exist_ok=True)
 
     history_string = '\n'.join(history_data) + '\n'
-    with open(history_file, 'w') as history_file_object:
-        history_file_object.write(history_string)
-    print('wrote updated history')
+    do_atomic_file_update(history_file, history_string, notes_directory)
+    log.debug('wrote updated history')
 
 
 def _search_filenames(notes_directory: DirectoryPath, prefer_recent_files=True,

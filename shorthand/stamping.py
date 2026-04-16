@@ -6,6 +6,7 @@ from typing import TypedDict
 from shorthand.types import DirectoryPath, ExecutablePath, NotePath, \
                             RawNoteContent, RawNoteLine
 
+from shorthand.utils import do_atomic_file_update
 from shorthand.utils.patterns import CATCH_ALL_PATTERN, \
     VALID_INCOMPLETE_PATTERN, VALID_COMPLETE_PATTERN, \
     UNFINISHED_UNSTAMPED_PATTERN, FINISHED_START_STAMPED_PATTERN, \
@@ -271,9 +272,8 @@ def _stamp_notes(notes_directory: DirectoryPath, stamp_todos=True,
                         # no todos found -or- correctly formatted already
                         stamped_content.append(line)
 
-            with open(filename, 'w') as write_file_object:
-                log.debug(f'Saving changes in file {filename}')
-                write_file_object.write(''.join(stamped_content))
+            do_atomic_file_update(filename, ''.join(stamped_content), notes_directory)
+            log.debug(f'Saving changes in file {filename}')
 
     # Replace placeholders for `\today` helper
     if stamp_today:
@@ -325,9 +325,8 @@ def _stamp_notes(notes_directory: DirectoryPath, stamp_todos=True,
                         # no today placeholders
                         stamped_content.append(line)
 
-            with open(filename, 'w') as write_file_object:
-                log.debug(f'Saving changes in file {filename}')
-                write_file_object.write(''.join(stamped_content))
+            do_atomic_file_update(filename, ''.join(stamped_content), notes_directory)
+            log.debug(f'Saving changes in file {filename}')
 
     # Stamp Questions
     if stamp_questions:
@@ -383,9 +382,8 @@ def _stamp_notes(notes_directory: DirectoryPath, stamp_todos=True,
                         # no today placeholders
                         stamped_content.append(line)
 
-            with open(filename, 'w') as write_file_object:
-                log.debug(f'Saving changes in file {filename}')
-                write_file_object.write(''.join(stamped_content))
+            do_atomic_file_update(filename, ''.join(stamped_content), notes_directory)
+            log.debug(f'Saving changes in file {filename}')
 
     # Stamp Answers
     if stamp_answers:
@@ -442,8 +440,7 @@ def _stamp_notes(notes_directory: DirectoryPath, stamp_todos=True,
                         # no today placeholders
                         stamped_content.append(line)
 
-            with open(filename, 'w') as write_file_object:
-                log.debug(f'Saving changes in file {filename}')
-                write_file_object.write(''.join(stamped_content))
+            do_atomic_file_update(filename, ''.join(stamped_content), notes_directory)
+            log.debug(f'Saving changes in file {filename}')
 
     return changes

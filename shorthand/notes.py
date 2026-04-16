@@ -1,3 +1,4 @@
+import difflib
 import re
 import os
 from subprocess import Popen, PIPE
@@ -5,6 +6,7 @@ import logging
 from typing import Optional, TypedDict, cast, Union
 from datetime import datetime
 
+from shorthand.utils import do_atomic_file_update
 from shorthand.utils.paths import get_full_path, get_relative_path, \
                                   parse_relative_link_path, is_external_path, \
                                   _is_note_path
@@ -112,8 +114,23 @@ def _update_note(notes_directory: DirectoryPath, file_path: NotePath,
         raise ValueError(f'Note to get at path {file_path} does not exist')
 
     current_content = _get_note(notes_directory, file_path)
-    # incremental_diff = get_unified_diff(current_content, content, file_path)
-    incremental_diff = ''
+    if current_content == content:
+        incremental_diff = ''
+    else:
+        diff_lines = list(difflib.unified_diff(
+            current_content.splitlines(keepends=True),
+            content.splitlines(keepends=True),
+            fromfile=f'{file_path} (old)',
+            tofile=f'{file_path} (new)',
+            lineterm='\n'))
+        cleaned_diff_lines = []
+        for line in diff_lines:
+            if line.endswith('\n'):
+                cleaned_diff_lines.append(line)
+            else:
+                cleaned_diff_lines.append(line + '\n')
+
+        incremental_diff = ''.join(cleaned_diff_lines)
 
     stored_last_mod_time = get_last_mod_time(notes_directory, file_path)
 
@@ -122,9 +139,7 @@ def _update_note(notes_directory: DirectoryPath, file_path: NotePath,
         if force_update:
             log.warning(f'Forcing update to note {file_path}')
 
-        # TODO: Do this as a rename to make it safe
-        with open(full_path, 'w') as note_file:
-            note_file.write(content)
+        do_atomic_file_update(full_path, content, notes_directory)
 
         new_last_mod_time = get_last_mod_time(notes_directory, file_path)
 

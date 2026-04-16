@@ -5,6 +5,7 @@ import logging
 from typing import Optional, Required, TypedDict
 
 from shorthand.types import ExecutablePath, FilePath, DirectoryPath, RelativeDirectoryPath
+from shorthand.utils import do_atomic_file_update
 
 
 class ShorthandFrontendConfig(TypedDict):
@@ -124,8 +125,7 @@ def _write_config(config_location: FilePath, config: ShorthandConfig) -> None:
                     f'does not exist, creating it')
         os.makedirs(parent_dir)
 
-    with open(config_location, 'w') as config_file_object:
-        json.dump(clean_config, config_file_object)
+    do_atomic_file_update(config_location, json.dumps(clean_config), clean_config['notes_directory'])
 
 
 def _modify_config(config: ShorthandConfig, updates: ShorthandConfigUpdates

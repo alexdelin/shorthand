@@ -1,3 +1,9 @@
+'''
+This is a set of utilities for providing a filesystem-style interface over
+the API. These utilities are intended to be used for managing notes files
+and other content within the notes directory
+'''
+
 import os
 import shutil
 import logging

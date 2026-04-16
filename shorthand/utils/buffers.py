@@ -7,6 +7,7 @@ from typing import List
 
 from shorthand.notes import _append_to_note
 from shorthand.types import DirectoryPath, NotePath
+from shorthand.utils import do_atomic_file_update
 
 
 log = logging.getLogger(__name__)
@@ -93,8 +94,7 @@ def _update_buffer_content(notes_directory: DirectoryPath, buffer_id: BufferID, 
 
     buffer_path = get_buffer_path(notes_directory, buffer_id)
 
-    with open(buffer_path, 'w') as f:
-        f.write(content)
+    do_atomic_file_update(buffer_path, content, notes_directory)
 
 
 def _delete_buffer(notes_directory: DirectoryPath, buffer_id: BufferID) -> None:
