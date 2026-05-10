@@ -11,14 +11,15 @@ from pydantic_settings import BaseSettings
 
 from shorthand import ShorthandServer
 from shorthand.calendar import Calendar, CalendarMode
-from shorthand.edit_history import NoteDiff, NoteDiffType, NoteVersion, NoteVersionTimestamp
-from shorthand.edit_timeline import EditTimeline
+from shorthand.history.diffs import NoteDiff, NoteDiffType
+from shorthand.history.versions import NoteVersion, NoteVersionTimestamp
+from shorthand.history.edit_timeline import EditTimeline
 from shorthand.elements.definitions import Definition
 from shorthand.elements.locations import Location
 from shorthand.elements.questions import QuestionStatus
 from shorthand.elements.todos import Todo, TodoStatus, analyze_todos
 from shorthand.frontend.render import RenderedMarkdown, get_rendered_markdown
-from shorthand.notes import Link
+from shorthand.notes import Link, UpdateNoteResult
 from shorthand.search import AggregatedFullTextSearchResult, \
                              FullTextSearchResult
 from shorthand.stamping import StampingChanges
@@ -113,13 +114,12 @@ def get_full_note(path: NotePath, include_last_mod_time: bool = True) -> NoteCon
         return PlainTextResponse(note['content'])
 
 
-@app.post('/api/v1/note', tags=['Notes'], response_class=PlainTextResponse)
+@app.post('/api/v1/note', tags=['Notes'])
 def write_updated_note(path: NotePath,
                        content: Annotated[RawNoteContent, Body()]
-                       ) -> ACKResponse:
+                       ) -> UpdateNoteResult:
     server = ShorthandServer(settings.config_path)
-    server.update_note(path, content)
-    return 'ack'
+    return server.update_note(path, content)
 
 
 @app.get('/api/v1/resource', tags=['Resources'], response_class=FileResponse)
