@@ -111,7 +111,8 @@ export default function CalendarPage() {
     }
     console.log(eventData);
     return eventData
-
+    
+  // eslint-disable-next-line
   }, [calendarData])
 
   const handleDirectoryChange = (event: React.ChangeEvent<HTMLInputElement>) => {

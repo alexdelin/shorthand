@@ -54,13 +54,13 @@ type AggregatedFullTextSearchResult = {
   matches: AggregatedFullTextSearchMatch[]
 }
 
-type FullTextSearchResult = {
-  file_path: string,
-  line_number: string,
-  match_content: string
-}
+// type FullTextSearchResult = {
+//   file_path: string,
+//   line_number: string,
+//   match_content: string
+// }
 
-type FullTextSearchResponse = FullTextSearchResult[] | AggregatedFullTextSearchResult[]
+// type FullTextSearchResponse = FullTextSearchResult[] | AggregatedFullTextSearchResult[]
 
 type FullTextSearchResultsProps = {
   query: string

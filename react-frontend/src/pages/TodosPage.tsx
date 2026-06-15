@@ -12,7 +12,6 @@ import { GetConfigResponse, GetTagsResponse,
 import { TodoPageWrapper, StyledForm,
          RefreshIcon } from './TodosPage.styles';
 import { TodosStatsSection } from '../components/TodosStats';
-import { SuspenseFallback } from '../components/SuspenseFallback';
 
 
 // const TODO_STALE_TIME_SECONDS = 300;

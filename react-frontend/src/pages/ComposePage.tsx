@@ -116,6 +116,7 @@ export default function ComposePage() {
         { method: 'POST' }
       )
     }
+  // eslint-disable-next-line
   }, [notePath, noteResponse]);
 
   // Check if you leave the page with pending changes

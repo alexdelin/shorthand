@@ -1,5 +1,4 @@
 import { useState, Suspense } from 'react';
-import { SuspenseFallback } from '../components/SuspenseFallback';
 import { FileSearchResults } from '../components/FileSearchResults';
 import { FullTextSearchResults } from '../components/FullTextSearchResults';
 import { SearchPageWrapper, SearchBar, SearchBarWrapper } from './SearchPage.styles'

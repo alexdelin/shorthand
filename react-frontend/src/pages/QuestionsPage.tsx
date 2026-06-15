@@ -8,7 +8,6 @@ import MenuItem from '@mui/material/MenuItem';
 import { QuestionsGrid } from '../components/QuestionsGrid';
 import { GetSubdirsResponse,
          GetConfigResponse } from '../types';
-import { SuspenseFallback } from '../components/SuspenseFallback';
 
 
 export const QuestionsPageWrapper = styled.div`

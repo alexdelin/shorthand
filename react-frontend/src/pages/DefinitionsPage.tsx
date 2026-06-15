@@ -8,7 +8,6 @@ import MenuItem from '@mui/material/MenuItem';
 import { DefinitionsGrid } from '../components/DefinitionsGrid';
 import { GetSubdirsResponse,
          GetConfigResponse } from '../types';
-import { SuspenseFallback } from '../components/SuspenseFallback';
 
 
 // const STALE_TIME_SECONDS = 300;
@@ -106,9 +105,9 @@ export function DefinitionsPage() {
     );
   }
 
-  function handleRefreshClick() {
-    queryClient.invalidateQueries(['definitions', { directory, search }]);
-  }
+  // function handleRefreshClick() {
+  //   queryClient.invalidateQueries(['definitions', { directory, search }]);
+  // }
 
   return (
     <DefinitionsPageWrapper>

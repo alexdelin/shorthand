@@ -16,7 +16,7 @@ import { Light as SyntaxHighlighter } from 'react-syntax-highlighter';
 import diff from 'react-syntax-highlighter/dist/esm/languages/hljs/diff';
 import plaintext from 'react-syntax-highlighter/dist/esm/languages/hljs/plaintext';
 import atomOneLight from 'react-syntax-highlighter/dist/esm/styles/hljs/atom-one-light';
-import { Button, Chip } from '@mui/material';
+import { Button } from '@mui/material';
 
 SyntaxHighlighter.registerLanguage('diff', diff);
 SyntaxHighlighter.registerLanguage('plaintext', plaintext);
@@ -121,7 +121,7 @@ type EventInfo = {
 
 export function HistoryPage() {
 
-  const [ searchParams, setSearchParams ] = useSearchParams();
+  const [ searchParams ] = useSearchParams();
   const notePath = searchParams.get('path');
   const [eventInfo, setEventInfo] = useState<EventInfo | null>(null);
 
