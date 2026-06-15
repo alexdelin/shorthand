@@ -167,7 +167,8 @@ export default function ComposePage() {
           body: stampedNoteContent
         }
       ).then(async res => {
-        if (await res.text() === 'ack') {
+        const saveResponse = await res.json();
+        if (saveResponse.update_made === true) {
           queryClient.invalidateQueries(['note', { path: notePath }]);
           queryClient.invalidateQueries(['raw-note', { path: notePath }]);
           setChangesSaved(true);
