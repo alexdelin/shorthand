@@ -2,11 +2,12 @@
 
 export type NoteLastModTime = string;
 export type NoteContent = string;
+export type NotePath = string;
 
 export type Todo = {
   display_path: string,
   end_date: string,
-  file_path: string,
+  file_path: NotePath,
   line_number: string,
   start_date: string,
   status: string,

@@ -39,6 +39,9 @@ export type GetNoteResponse = {
   content: ELEMENTS.NoteContent
 };
 
+export type GetRecentNotesResponse = ELEMENTS.NotePath[];
+export type GetOpenFilesResponse = ELEMENTS.NotePath[];
+
 export type GetCalendarResponse = ELEMENTS.Calendar;
 
 // Types for data received from the Frontend API
