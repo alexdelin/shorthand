@@ -78,6 +78,22 @@ def _record_file_view(notes_directory: DirectoryPath, note_path: NotePath,
     log.debug('wrote updated history')
 
 
+def _get_recent_notes(notes_directory: DirectoryPath) -> list[NotePath]:
+    '''Lists most recently accessed files in the notes directory
+    '''
+    recent_files_path = f'{notes_directory}/.shorthand/state/recent_files.txt'
+    if os.path.exists(recent_files_path):
+        with open(recent_files_path, 'r') as recent_files_object:
+            recent_files_data = recent_files_object.read()
+        recent_files = [file.strip()
+                    for file in recent_files_data.split('\n')
+                    if file.strip()]
+        return recent_files
+    else:
+        log.warning(f'Recent Files not found at {recent_files_path}')
+        return []
+
+
 def _search_filenames(notes_directory: DirectoryPath, prefer_recent_files=True,
                       query_string: Union[str, None] = None,
                       case_sensitive=False,

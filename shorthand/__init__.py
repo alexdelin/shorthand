@@ -13,7 +13,7 @@ from shorthand.tags import _get_tags
 from shorthand.toc import _get_toc
 from shorthand.stamping import _stamp_notes, _stamp_raw_note
 from shorthand.search import _search_full_text, _search_filenames, \
-                             _record_file_view
+                             _record_file_view, _get_recent_notes
 from shorthand.elements.todos import TodoStatus, _get_todos, _mark_todo
 from shorthand.elements.questions import QuestionStatus, _get_questions
 from shorthand.elements.definitions import _get_definitions
@@ -205,6 +205,9 @@ class ShorthandServer(object):
             query_string=query_string, case_sensitive=case_sensitive,
             aggregate_by_file=aggregate_by_file,
             grep_path=self.grep_path)
+
+    def get_recent_notes(self):
+        return _get_recent_notes(notes_directory=self.notes_directory)
 
     def search_filenames(self, prefer_recent=True, query_string=None,
                          case_sensitive=False):

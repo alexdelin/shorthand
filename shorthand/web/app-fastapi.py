@@ -200,6 +200,12 @@ def record_file_view_api(note_path: NotePath) -> ACKResponse:
     return 'ack'
 
 
+@app.get('/api/v1/recent_notes', tags=['Notes'])
+def get_recent_notes_api():
+    server = ShorthandServer(settings.config_path)
+    return server.get_recent_notes()
+
+
 # Needs Typing
 @app.get('/api/v1/tags', tags=['Elements'])
 def fetch_tags(directory_filter: Optional[Subdir] = None
