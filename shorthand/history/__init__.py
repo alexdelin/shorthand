@@ -17,7 +17,6 @@ import logging
 from datetime import datetime, UTC, timedelta
 from subprocess import PIPE, Popen
 
-from shorthand.history.types import HISTORY_PATH
 from shorthand.history.diffs import _list_diffs_for_note, _get_note_diff, calculate_diff_for_create, calculate_diff_for_delete, calculate_diff_for_edit, calculate_diff_for_move, delete_diff, get_unified_diff, save_diff
 from shorthand.history.patching import apply_diffs
 from shorthand.history.versions import add_note_version_for_move, ensure_note_version, note_version_exists_for_date

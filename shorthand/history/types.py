@@ -1,5 +1,5 @@
 
-from typing import Literal, Required, TypedDict
+from typing import Literal, Required, TypedDict, List
 
 from shorthand.types import NotePath
 
@@ -20,6 +20,7 @@ type NoteDiffType = Literal['create', 'edit', 'move', 'delete']
 class NoteDiffInfo(TypedDict, total=False):
     diff_type: Required[NoteDiffType]
     timestamp: Required[NoteDiffTimestamp]
+    note_path: NotePath
     from_path: NotePath
     to_path: NotePath
     move_direction: Literal['in', 'out']
@@ -33,3 +34,4 @@ type NoteVersionTimestamp = str
    with millisecond-precision. Includes the `+00:00` UTC timezone offset
 
    By default, this is the timestamp of the start of day UTC time'''
+

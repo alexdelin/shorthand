@@ -1,3 +1,8 @@
+'''
+Edit Timeline - A view of the history of a single note over time. 
+For a summary of all changes across the entire notes directory, see Master Edit Timeline
+'''
+
 from typing import List, Optional, TypedDict
 
 from shorthand.history.types import NoteDiffInfo, NoteVersionTimestamp
@@ -17,7 +22,7 @@ def get_edit_timeline(notes_directory: DirectoryPath,
                       note_path: NotePath,
                       find_path: ExecutablePath = 'find'
                       ) -> EditTimeline:
-    '''Get a timeline of the edit history of a note.
+    '''Get a timeline of the edit history of a single note.
 
        Every entry in the timeline is a note version, and the diffs which
        were applied on top of that note version

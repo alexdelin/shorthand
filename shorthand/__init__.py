@@ -9,6 +9,7 @@ from shorthand.notes import _get_note, _get_note_with_last_mod_time, _update_not
                             _get_backlinks, _get_links
 from shorthand.resources import _get_resource
 from shorthand.calendar import CalendarMode, _get_calendar
+from shorthand.history.master_edit_timeline import get_master_edit_timeline
 from shorthand.tags import _get_tags
 from shorthand.toc import _get_toc
 from shorthand.stamping import _stamp_notes, _stamp_raw_note
@@ -467,4 +468,9 @@ class ShorthandServer(object):
         return get_edit_timeline(
             notes_directory=self.notes_directory,
             note_path=note_path,
+            find_path=self.find_path)
+
+    def get_master_edit_timeline(self):
+        return get_master_edit_timeline(
+            notes_directory=self.notes_directory,
             find_path=self.find_path)

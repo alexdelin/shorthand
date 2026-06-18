@@ -22,6 +22,7 @@ from shorthand.frontend.render import RenderedMarkdown, get_rendered_markdown
 from shorthand.notes import Link, UpdateNoteResult
 from shorthand.search import AggregatedFullTextSearchResult, \
                              FullTextSearchResult
+from shorthand.history.master_edit_timeline import MasterEditTimeline
 from shorthand.stamping import StampingChanges
 from shorthand.toc import TOC
 from shorthand.types import ACKResponse, CSVData, InternalAbsolutePath, NoteContentAsOfTime, \
@@ -422,6 +423,12 @@ def get_archive() -> bytes:
 def get_edit_timeline(note_path: NotePath) -> EditTimeline:
     server = ShorthandServer(settings.config_path)
     return server.get_edit_timeline(note_path=note_path)
+
+
+@app.get('/api/v1/master_edit_timeline', tags=['History'])
+def get_master_edit_timeline() -> MasterEditTimeline:
+    server = ShorthandServer(settings.config_path)
+    return server.get_master_edit_timeline()
 
 
 @app.get('/api/v1/note_version', tags=['History'], response_class=PlainTextResponse)

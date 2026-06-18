@@ -6,8 +6,7 @@ from subprocess import PIPE, Popen
 from typing import List, Optional
 
 from shorthand.notes import _is_note_path, _get_note
-from shorthand.history import HISTORY_PATH
-from shorthand.history.types import NoteDiff, NoteDiffInfo, NoteDiffTimestamp, NoteDiffType
+from shorthand.history.types import NoteDiff, NoteDiffInfo, NoteDiffTimestamp, NoteDiffType, HISTORY_PATH
 from shorthand.types import DirectoryPath, ExecutablePath, NotePath, RawNoteContent
 from shorthand.utils.paths import get_relative_path
 

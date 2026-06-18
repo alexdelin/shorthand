@@ -137,3 +137,5 @@ type JSONSearchResults = str
 type JSONTOC = str
 type JSONSubdirs = str
 type JSONLinks = str
+
+type ISOFormatDate = str
