@@ -34,7 +34,7 @@ export type Config = {
   patch_path: string,
   frontend: FrontendConfig,
   log_format: string
-}
+};
 
 export type CalendarEvent = {
   file_path: string,
@@ -45,11 +45,12 @@ export type CalendarEvent = {
   end?: string,
   element_id: string,
   type: "section" | "incomplete_todo" | "completed_todo" | "skipped_todo" | "question" | "answer"
-}
+};
 
-type YearIndex = string
-type MonthIndex = string
-type DayIndex = string
+export type YearIndex = string;
+export type MonthIndex = string;
+export type DayIndex = string;
+export type ISOFormatDate = string;
 
 export type Calendar = {
   [key: YearIndex]: {
@@ -57,4 +58,13 @@ export type Calendar = {
       [key: DayIndex]: CalendarEvent[]
     }
   }
+};
+
+export type DiffInfo = {
+  diff_type: 'create' | 'edit' | 'move' | 'delete',
+  timestamp: string,
+  note_path?: NotePath,
+  from_path?: NotePath,
+  to_path?: NotePath,
+  move_direction?: 'in' | 'out'
 }

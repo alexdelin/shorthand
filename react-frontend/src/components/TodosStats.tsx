@@ -93,6 +93,7 @@ export function TodosStatsSection(props: TodosStatsProps) {
       }
     })
   }, [todoData, props.status])
+  console.log(calendarData);
 
   if (todoData === undefined) {
     return <div>Loading...</div>

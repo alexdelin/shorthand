@@ -1,11 +1,15 @@
 import { useQuery } from "react-query"
-import { GetCalendarResponse, GetOpenFilesResponse, GetRecentNotesResponse } from "../types"
+import { GetCalendarResponse, GetMasterEditTimelineResponse, GetOpenFilesResponse, GetRecentNotesResponse } from "../types"
 import { useMemo } from "react"
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material"
 import styled from "styled-components"
 import FullCalendar from "@fullcalendar/react"
 import listPlugin from '@fullcalendar/list'
 import Tooltip from "tooltip.js"
+import { ResponsiveCalendar } from "@nivo/calendar"
+
+
+const PREVIOUS_YEARS_TO_SHOW = 2
 
 
 const HomePageWrapper = styled.div`
@@ -19,6 +23,11 @@ const StyledHeaderCell = styled.span`
 
 const StyledTableCell = styled.span`
   font-size: 16px;
+`
+
+const MasterTimelineWrapper = styled.div`
+  width: 100%;
+  height: 40rem;
 `
 
 
@@ -40,11 +49,20 @@ export function HomePage() {
       { placeholderData: [] }
     );
 
-  const { data: calendarData } = useQuery<GetCalendarResponse, Error>(['calendar'], () =>
+  const { data: calendarData } = useQuery<GetCalendarResponse, Error>(['homepage-calendar'], () =>
     fetch(`/api/v1/calendar?mode=recent`).then(res =>
       res.json()
     )
   );
+
+
+  const { data: masterEditTimeline } = useQuery<GetMasterEditTimelineResponse, Error>(['master-edit-timeline'], () =>
+    fetch(`/api/v1/master_edit_timeline`).then(res =>
+      res.json()
+    ),
+    { placeholderData: {} }
+  );
+
 
   const noteData = useMemo(() => {
     return recentNotes?.map((note) => {
@@ -54,6 +72,7 @@ export function HomePage() {
       }
     }).reverse();
   }, [recentNotes, openNotes]);
+
 
   const latestUpdates = useMemo(() => {
 
@@ -113,10 +132,28 @@ export function HomePage() {
             }
         }
     }
-    console.log(eventData);
     return eventData;
 
   }, [calendarData]);
+
+
+  const masterTimeline = useMemo(() => {
+    
+    if (!masterEditTimeline) { return []; }
+
+    let timeline = [];
+    for (const [date, summary] of Object.entries(masterEditTimeline)) {
+      timeline.push({
+        day: date,
+        value: summary.count
+      })
+    }
+
+    return timeline
+
+  }, [masterEditTimeline]);
+  console.log(masterTimeline)
+
 
   return (
     <HomePageWrapper>
@@ -189,8 +226,20 @@ export function HomePage() {
       />
 
       <h2>Contributions</h2>
-      Github-style graph with diffs per day
-
+      <MasterTimelineWrapper>
+        <ResponsiveCalendar
+            data={masterTimeline}
+            from={`${new Date().getFullYear() - PREVIOUS_YEARS_TO_SHOW}-01-02`}
+            to={new Date()}
+            emptyColor="#eeeeee"
+            colors={[ '#c4e4df', '#bae2dc', '#b0dfd8', '#83d7c9', '#77d5c5', '#6dd3c2', '#5ed0bd', '#4ecdb8']}
+            margin={{ top: 40, right: 40, bottom: 40, left: 40 }}
+            yearSpacing={40}
+            monthBorderColor="#ffffff"
+            dayBorderWidth={2}
+            dayBorderColor="#ffffff"
+        />
+      </MasterTimelineWrapper>
     </HomePageWrapper>
   )
 }

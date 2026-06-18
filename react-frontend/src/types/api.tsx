@@ -44,6 +44,14 @@ export type GetOpenFilesResponse = ELEMENTS.NotePath[];
 
 export type GetCalendarResponse = ELEMENTS.Calendar;
 
+export type GetMasterEditTimelineResponse = {
+  [index: ELEMENTS.ISOFormatDate]: {
+    count: number,
+    diffs: ELEMENTS.DiffInfo[]
+  }
+};
+
+
 // Types for data received from the Frontend API
 export type GetRenderedMarkdownResponse = {
   file_content: string,
@@ -55,3 +63,4 @@ type RecordSetColumn = string
 export type RecordSetColumns = RecordSetColumn[]
 type RecordJSON = { [key: string]: string[] }
 export type RecordSetJSON = RecordJSON[]
+
