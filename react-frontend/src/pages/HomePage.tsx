@@ -120,7 +120,7 @@ export function HomePage() {
 
   return (
     <HomePageWrapper>
-      <h1>Recent Notes</h1>
+      <h2>Recent Notes</h2>
 
       { noteData?.length && 
       <Typography sx={{ fontSize: '2rem' }}>
@@ -158,7 +158,7 @@ export function HomePage() {
       </Typography>
       }
 
-      <h1>Latest Updates</h1>
+      <h2>Latest Updates</h2>
 
       <FullCalendar
         eventOrderStrict={true}
@@ -188,7 +188,7 @@ export function HomePage() {
         eventOrder={'-start,index'}
       />
 
-      <h1>Contributions</h1>
+      <h2>Contributions</h2>
       Github-style graph with diffs per day
 
     </HomePageWrapper>
