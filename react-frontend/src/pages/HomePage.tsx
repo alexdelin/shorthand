@@ -7,6 +7,7 @@ import FullCalendar from "@fullcalendar/react"
 import listPlugin from '@fullcalendar/list'
 import Tooltip from "tooltip.js"
 import { ResponsiveCalendar } from "@nivo/calendar"
+import { NoteLink } from "../components/TodosGrid.styles"
 
 
 const PREVIOUS_YEARS_TO_SHOW = 2
@@ -14,7 +15,12 @@ const PREVIOUS_YEARS_TO_SHOW = 2
 
 const HomePageWrapper = styled.div`
   padding: 2rem;
+  display: flex;
 `;
+
+const SidePanel = styled.div`
+  width: 50%;
+`
 
 const StyledHeaderCell = styled.span`
   font-size: 16px;
@@ -25,9 +31,13 @@ const StyledTableCell = styled.span`
   font-size: 16px;
 `
 
+const LatestUpdatesWrapper = styled.div`
+  width: 100%;
+`
+
 const MasterTimelineWrapper = styled.div`
   width: 100%;
-  height: 40rem;
+  height: 30rem;
 `
 
 
@@ -41,38 +51,21 @@ export function HomePage() {
       { placeholderData: [] }
     );
 
-  const { data: openNotes } =
-    useQuery<GetOpenFilesResponse, Error>(['open-files'], () =>
-      fetch('/frontend-api/get-open-files').then(res =>
+  const { data: calendarData } = 
+    useQuery<GetCalendarResponse, Error>(['homepage-calendar'], () =>
+      fetch(`/api/v1/calendar?mode=recent`).then(res =>
         res.json()
       ),
-      { placeholderData: [] }
+      { placeholderData: {} }
     );
 
-  const { data: calendarData } = useQuery<GetCalendarResponse, Error>(['homepage-calendar'], () =>
-    fetch(`/api/v1/calendar?mode=recent`).then(res =>
-      res.json()
-    )
-  );
-
-
-  const { data: masterEditTimeline } = useQuery<GetMasterEditTimelineResponse, Error>(['master-edit-timeline'], () =>
-    fetch(`/api/v1/master_edit_timeline`).then(res =>
-      res.json()
-    ),
-    { placeholderData: {} }
-  );
-
-
-  const noteData = useMemo(() => {
-    return recentNotes?.map((note) => {
-      return {
-        path: note,
-        open: openNotes?.includes(note)
-      }
-    }).reverse();
-  }, [recentNotes, openNotes]);
-
+  const { data: masterEditTimeline } = 
+    useQuery<GetMasterEditTimelineResponse, Error>(['master-edit-timeline'], () =>
+      fetch(`/api/v1/master_edit_timeline`).then(res =>
+        res.json()
+      ),
+      { placeholderData: {} }
+    );
 
   const latestUpdates = useMemo(() => {
 
@@ -152,94 +145,90 @@ export function HomePage() {
     return timeline
 
   }, [masterEditTimeline]);
-  console.log(masterTimeline)
 
 
   return (
     <HomePageWrapper>
-      <h2>Recent Notes</h2>
+      <SidePanel>
 
-      { noteData?.length && 
-      <Typography sx={{ fontSize: '2rem' }}>
-        <TableContainer sx={{ width: 1000 }} component={Paper}>
-          <Table sx={{ minWidth: 650 }} size="small">
-            <TableHead sx={{ backgroundColor: 'rgba(209, 209, 209, 0.3)', fontWeight: 'bold'}}>
-              <TableRow>
-                <TableCell><StyledHeaderCell>Note</StyledHeaderCell></TableCell>
-                <TableCell align="center"><StyledHeaderCell>Open</StyledHeaderCell></TableCell>
-                <TableCell align="center"><StyledHeaderCell>Last Modified</StyledHeaderCell></TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {noteData.map((note) => (
-                <TableRow
-                  key={note.path}
-                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                >
-                  <TableCell component="th" scope="row">
-                    <StyledTableCell>
-                      <i className="bi bi-file-earmark-text" style={{marginRight: '0.25rem'}} />{note.path}
-                    </StyledTableCell>
-                  </TableCell>
-                  <TableCell align="center">
-                    <StyledTableCell>{note.open && <i className="bi bi-check-circle" />}</StyledTableCell>
-                  </TableCell>
-                  <TableCell align="center">
-                    <StyledTableCell>{`never`}</StyledTableCell>
-                  </TableCell>
+        <h2>Recent Notes</h2>
+        { recentNotes?.length && 
+        <Typography sx={{ fontSize: '2rem' }}>
+          <TableContainer component={Paper}>
+            <Table sx={{ minWidth: 650 }} size="small">
+              <TableHead sx={{ backgroundColor: 'rgba(209, 209, 209, 0.3)', fontWeight: 'bold'}}>
+                <TableRow>
+                  <TableCell><StyledHeaderCell>Note</StyledHeaderCell></TableCell>
+                  <TableCell align="center"><StyledHeaderCell>Open</StyledHeaderCell></TableCell>
+                  <TableCell align="center"><StyledHeaderCell>Last Modified</StyledHeaderCell></TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Typography>
-      }
+              </TableHead>
+              <TableBody>
+                {recentNotes.map((note) => (
+                  <TableRow
+                    key={note.path}
+                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                  >
+                    <TableCell component="th" scope="row">
+                      <StyledTableCell>
+                        <NoteLink
+                          target='_blank'
+                          rel='noreferrer'
+                          href={`/compose?path=${note.path}`}
+                        >
+                          <i className="bi bi-file-earmark-text" style={{marginRight: '0.25rem'}} />{note.path}
+                        </NoteLink>
+                      </StyledTableCell>
+                    </TableCell>
+                    <TableCell align="center">
+                      <StyledTableCell>{note.open && <i className="bi bi-check-circle" style={{color: 'green'}} />}</StyledTableCell>
+                    </TableCell>
+                    <TableCell align="center">
+                      <StyledTableCell>{note.last_modified}</StyledTableCell>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Typography>
+        }
 
-      <h2>Latest Updates</h2>
+        <h2>Latest Updates</h2>
+        <LatestUpdatesWrapper>
+          <FullCalendar
+            eventOrderStrict={true}
+            plugins={[ listPlugin ]}
+            displayEventTime={false}
+            contentHeight={'auto'}
+            initialView="listWeek"
+            headerToolbar={false}
+            events={latestUpdates}
+            eventOrder={'-start,index'}
+          />
+        </LatestUpdatesWrapper>
 
-      <FullCalendar
-        eventOrderStrict={true}
-        plugins={[ listPlugin ]}
-        displayEventTime={false}
-        contentHeight={'auto'}
-        initialView="listWeek"
-        headerToolbar={{
-          left: '',
-          center: '',
-          right: '',
-        }}
-        eventDidMount={(info) => {
-          return new Tooltip(info.el, {
-            title: info.event.extendedProps.description,
-            html: true,
-            delay: {
-              show: 1000,
-              hide: 100
-            },
-            placement: 'top',
-            trigger: 'hover',
-            container: 'body'
-          });
-        }}
-        events={latestUpdates}
-        eventOrder={'-start,index'}
-      />
+      </SidePanel>
+      <SidePanel style={{paddingLeft: '2rem'}}>
 
-      <h2>Contributions</h2>
-      <MasterTimelineWrapper>
-        <ResponsiveCalendar
-            data={masterTimeline}
-            from={`${new Date().getFullYear() - PREVIOUS_YEARS_TO_SHOW}-01-02`}
-            to={new Date()}
-            emptyColor="#eeeeee"
-            colors={[ '#c4e4df', '#bae2dc', '#b0dfd8', '#83d7c9', '#77d5c5', '#6dd3c2', '#5ed0bd', '#4ecdb8']}
-            margin={{ top: 40, right: 40, bottom: 40, left: 40 }}
-            yearSpacing={40}
-            monthBorderColor="#ffffff"
-            dayBorderWidth={2}
-            dayBorderColor="#ffffff"
-        />
-      </MasterTimelineWrapper>
+        <h2>Contributions</h2>
+        <MasterTimelineWrapper>
+          <ResponsiveCalendar
+              data={masterTimeline}
+              from={`${new Date().getFullYear() - PREVIOUS_YEARS_TO_SHOW}-01-02`}
+              to={new Date()}
+              emptyColor="#eeeeee"
+              colors={[ '#c4e4df', '#bae2dc', '#b0dfd8', '#83d7c9', '#77d5c5', '#6dd3c2', '#5ed0bd', '#4ecdb8']}
+              margin={{ top: 40, right: 40, bottom: 40, left: 40 }}
+              yearSpacing={40}
+              monthBorderColor="#ffffff"
+              dayBorderWidth={2}
+              dayBorderColor="#ffffff"
+          />
+        </MasterTimelineWrapper>
+
+      </SidePanel>
+
     </HomePageWrapper>
   )
 }

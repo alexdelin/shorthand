@@ -4,6 +4,12 @@ export type NoteLastModTime = string;
 export type NoteContent = string;
 export type NotePath = string;
 
+export type RecentNoteWithMeta = {
+  path: NotePath,
+  open: boolean,
+  last_modified: string
+};
+
 export type Todo = {
   display_path: string,
   end_date: string,

@@ -39,7 +39,7 @@ export type GetNoteResponse = {
   content: ELEMENTS.NoteContent
 };
 
-export type GetRecentNotesResponse = ELEMENTS.NotePath[];
+export type GetRecentNotesResponse = ELEMENTS.RecentNoteWithMeta[];
 export type GetOpenFilesResponse = ELEMENTS.NotePath[];
 
 export type GetCalendarResponse = ELEMENTS.Calendar;
