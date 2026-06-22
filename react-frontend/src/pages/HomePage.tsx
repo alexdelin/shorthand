@@ -1,13 +1,13 @@
 import { useQuery } from "react-query"
 import { GetCalendarResponse, GetMasterEditTimelineResponse, GetOpenFilesResponse, GetRecentNotesResponse } from "../types"
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material"
 import styled from "styled-components"
 import FullCalendar from "@fullcalendar/react"
 import listPlugin from '@fullcalendar/list'
-import Tooltip from "tooltip.js"
 import { ResponsiveCalendar } from "@nivo/calendar"
 import { NoteLink } from "../components/TodosGrid.styles"
+import { getDateString, getDateTimeString } from "../utils/dates"
 
 
 const PREVIOUS_YEARS_TO_SHOW = 2
@@ -66,6 +66,8 @@ export function HomePage() {
       ),
       { placeholderData: {} }
     );
+
+  const [selectedDate, setSelectedDate] = useState<string | undefined>(undefined);
 
   const latestUpdates = useMemo(() => {
 
@@ -147,6 +149,17 @@ export function HomePage() {
   }, [masterEditTimeline]);
 
 
+  const visibleChanges = useMemo(() => {
+    if (selectedDate === undefined || masterEditTimeline === undefined) {
+      return [];
+    }
+
+    const diffs = masterEditTimeline[selectedDate].diffs;
+    return diffs;
+
+  }, [masterEditTimeline, selectedDate])
+
+
   return (
     <HomePageWrapper>
       <SidePanel>
@@ -184,7 +197,7 @@ export function HomePage() {
                       <StyledTableCell>{note.open && <i className="bi bi-check-circle" style={{color: 'green'}} />}</StyledTableCell>
                     </TableCell>
                     <TableCell align="center">
-                      <StyledTableCell>{note.last_modified}</StyledTableCell>
+                      <StyledTableCell>{getDateTimeString(note.last_modified)}</StyledTableCell>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -211,21 +224,35 @@ export function HomePage() {
       </SidePanel>
       <SidePanel style={{paddingLeft: '2rem'}}>
 
-        <h2>Contributions</h2>
+        <h2>All Changes</h2>
         <MasterTimelineWrapper>
           <ResponsiveCalendar
-              data={masterTimeline}
-              from={`${new Date().getFullYear() - PREVIOUS_YEARS_TO_SHOW}-01-02`}
-              to={new Date()}
-              emptyColor="#eeeeee"
-              colors={[ '#c4e4df', '#bae2dc', '#b0dfd8', '#83d7c9', '#77d5c5', '#6dd3c2', '#5ed0bd', '#4ecdb8']}
-              margin={{ top: 40, right: 40, bottom: 40, left: 40 }}
-              yearSpacing={40}
-              monthBorderColor="#ffffff"
-              dayBorderWidth={2}
-              dayBorderColor="#ffffff"
+            data={masterTimeline}
+            from={`${new Date().getFullYear() - PREVIOUS_YEARS_TO_SHOW}-01-02`}
+            to={new Date()}
+            emptyColor="#eeeeee"
+            colors={[ '#c4e4df', '#bae2dc', '#b0dfd8', '#83d7c9', '#77d5c5', '#6dd3c2', '#5ed0bd', '#4ecdb8']}
+            margin={{ top: 40, right: 40, bottom: 40, left: 40 }}
+            yearSpacing={40}
+            // monthSpacing={10}
+            monthBorderColor="#ffffff"
+            dayBorderWidth={2}
+            dayBorderColor="#ffffff"
+            onClick={(day) => {
+              setSelectedDate(day.day)
+            }}
           />
         </MasterTimelineWrapper>
+
+        {Boolean(visibleChanges.length) && <>
+          <span>Changes on {selectedDate}</span>
+          <ul>
+            {visibleChanges.map((change) => {
+              return <li>{change.diff_type + ' ' + change.note_path + ' - ' + getDateTimeString(change.timestamp)}</li>
+            })}
+          </ul>
+          </>
+        }
 
       </SidePanel>
 
