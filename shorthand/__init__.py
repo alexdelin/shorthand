@@ -207,8 +207,8 @@ class ShorthandServer(object):
             aggregate_by_file=aggregate_by_file,
             grep_path=self.grep_path)
 
-    def get_recent_notes(self):
-        return _get_recent_notes(notes_directory=self.notes_directory)
+    def get_recent_notes(self, include_meta: bool = False):
+        return _get_recent_notes(notes_directory=self.notes_directory, include_meta=include_meta)
 
     def search_filenames(self, prefer_recent=True, query_string=None,
                          case_sensitive=False):

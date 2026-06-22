@@ -202,9 +202,9 @@ def record_file_view_api(note_path: NotePath) -> ACKResponse:
 
 
 @app.get('/api/v1/recent_notes', tags=['Notes'])
-def get_recent_notes_api():
+def get_recent_notes_api(include_meta: bool = True):
     server = ShorthandServer(settings.config_path)
-    return server.get_recent_notes()
+    return server.get_recent_notes(include_meta=include_meta)
 
 
 # Needs Typing

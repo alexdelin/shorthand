@@ -3,11 +3,13 @@ import pathlib
 import shlex
 import logging
 from subprocess import Popen, PIPE
-from typing import Union, TypedDict
+from typing import List, Literal, Union, TypedDict, overload
 
+from shorthand.frontend import get_open_files
+from shorthand.notes import get_last_mod_time
 from shorthand.utils import do_atomic_file_update
 from shorthand.utils.paths import get_relative_path, _is_note_path
-from shorthand.types import DirectoryPath, NotePath, ExecutablePath
+from shorthand.types import DirectoryPath, NoteLastModTime, NotePath, ExecutablePath
 
 log = logging.getLogger(__name__)
 
@@ -37,7 +39,7 @@ def _record_file_view(notes_directory: DirectoryPath, note_path: NotePath,
 
     if not _is_note_path(notes_directory=notes_directory, path=note_path):
         raise ValueError(f'Cannot record view for note {note_path}. ' +
-                         f'Note does not exist')
+                         'Note does not exist')
 
     history_file = f'{notes_directory}/.shorthand/state/recent_files.txt'
     if os.path.exists(history_file):
@@ -78,17 +80,49 @@ def _record_file_view(notes_directory: DirectoryPath, note_path: NotePath,
     log.debug('wrote updated history')
 
 
-def _get_recent_notes(notes_directory: DirectoryPath) -> list[NotePath]:
+class RecentNoteWithMeta(TypedDict):
+    path: NotePath
+    open: bool
+    last_modified: NoteLastModTime
+
+@overload
+def _get_recent_notes(notes_directory: DirectoryPath, include_meta: Literal[False]) -> List[NotePath]:
+    ...
+
+@overload
+def _get_recent_notes(notes_directory: DirectoryPath, include_meta: Literal[True]) -> List[RecentNoteWithMeta]:
+    ...
+
+def _get_recent_notes(notes_directory: DirectoryPath, include_meta: bool = False) -> Union[List[NotePath], List[RecentNoteWithMeta]]:
     '''Lists most recently accessed files in the notes directory
     '''
     recent_files_path = f'{notes_directory}/.shorthand/state/recent_files.txt'
     if os.path.exists(recent_files_path):
+        
         with open(recent_files_path, 'r') as recent_files_object:
             recent_files_data = recent_files_object.read()
-        recent_files = [file.strip()
-                    for file in recent_files_data.split('\n')
-                    if file.strip()]
-        return recent_files
+        
+        recent_files = []
+        
+        if not include_meta:
+            for note in recent_files_data.split('\n'):
+                if not note.strip():
+                    continue
+                recent_files.append(note.strip())
+            return recent_files
+
+        else:
+            open_notes = get_open_files(notes_directory)
+            for note in recent_files_data.split('\n'):
+                if not note.strip():
+                    continue
+                enriched_note: RecentNoteWithMeta = {
+                    'path': note.strip(),
+                    'open': note.strip() in open_notes,
+                    'last_modified': get_last_mod_time(notes_directory=notes_directory, path=note.strip())
+                }
+                recent_files.append(enriched_note)
+            return recent_files
     else:
         log.warning(f'Recent Files not found at {recent_files_path}')
         return []
