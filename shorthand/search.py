@@ -106,19 +106,25 @@ def _get_recent_notes(notes_directory: DirectoryPath, include_meta: bool = False
         
         if not include_meta:
             for note in recent_files_data.split('\n'):
-                if not note.strip():
+                note = note.strip()
+                if not note:
                     continue
-                recent_files.append(note.strip())
+                if not _is_note_path(notes_directory, note):
+                    continue
+                recent_files.append(note)
             return recent_files
 
         else:
             open_notes = get_open_files(notes_directory)
             for note in recent_files_data.split('\n'):
-                if not note.strip():
+                note = note.strip()
+                if not note:
+                    continue
+                if not _is_note_path(notes_directory, note):
                     continue
                 enriched_note: RecentNoteWithMeta = {
-                    'path': note.strip(),
-                    'open': note.strip() in open_notes,
+                    'path': note,
+                    'open': note in open_notes,
                     'last_modified': get_last_mod_time(notes_directory=notes_directory, path=note.strip())
                 }
                 recent_files.append(enriched_note)

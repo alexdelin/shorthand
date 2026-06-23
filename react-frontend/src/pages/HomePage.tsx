@@ -177,7 +177,7 @@ export function HomePage() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {recentNotes.map((note) => (
+                {recentNotes.reverse().slice(0,10).map((note) => (
                   <TableRow
                     key={note.path}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
