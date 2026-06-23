@@ -4,7 +4,7 @@ import os
 from subprocess import Popen, PIPE
 import logging
 from typing import Optional, TypedDict, cast, Union
-from datetime import datetime
+from datetime import UTC, datetime
 
 from shorthand.utils import do_atomic_file_update
 from shorthand.utils.paths import get_full_path, get_relative_path, \
@@ -36,7 +36,7 @@ def get_last_mod_time(notes_directory: DirectoryPath, path: NotePath
     '''
     full_path = get_full_path(notes_directory, path)
     m_timestamp = os.path.getmtime(full_path)
-    m_datetime = datetime.fromtimestamp(m_timestamp)
+    m_datetime = datetime.fromtimestamp(m_timestamp, tz=UTC)
     m_time_string = m_datetime.strftime('%Y-%m-%dT%H:%M:%S.%f')
     return m_time_string
 

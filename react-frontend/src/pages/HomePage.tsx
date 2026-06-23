@@ -43,7 +43,7 @@ const MasterTimelineWrapper = styled.div`
 
 export function HomePage() {
 
-  const { data: recentNotes } =
+  const { data: recentNotesData } =
     useQuery<GetRecentNotesResponse, Error>(['recent-notes'], () =>
       fetch('/api/v1/recent_notes').then(res =>
         res.json()
@@ -160,6 +160,12 @@ export function HomePage() {
   }, [masterEditTimeline, selectedDate])
 
 
+  const recentNotes = useMemo(() => {
+    if (!recentNotesData) {return [];}
+    return recentNotesData.reverse().slice(0, 10);
+  }, [recentNotesData])
+
+
   return (
     <HomePageWrapper>
       <SidePanel>
@@ -177,7 +183,7 @@ export function HomePage() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {recentNotes.reverse().slice(0,10).map((note) => (
+                {recentNotes.map((note) => (
                   <TableRow
                     key={note.path}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -244,11 +250,11 @@ export function HomePage() {
           />
         </MasterTimelineWrapper>
 
-        {Boolean(visibleChanges.length) && <>
-          <span>Changes on {selectedDate}</span>
+        {selectedDate && Boolean(visibleChanges.length) && <>
+          <span>Changes on {getDateString(selectedDate)}</span>
           <ul>
             {visibleChanges.map((change) => {
-              return <li>{change.diff_type + ' ' + change.note_path + ' - ' + getDateTimeString(change.timestamp)}</li>
+              return <li key={change.timestamp + change.diff_type}>{change.diff_type + ' ' + change.note_path + ' - ' + getDateTimeString(change.timestamp)}</li>
             })}
           </ul>
           </>

@@ -47,7 +47,6 @@ def _record_file_view(notes_directory: DirectoryPath, note_path: NotePath,
             history_data = history_file_object.read()
     else:
         history_data = ''
-    print('read old history')
 
     history_data = [line.strip()
                     for line in history_data.split('\n')
@@ -71,11 +70,22 @@ def _record_file_view(notes_directory: DirectoryPath, note_path: NotePath,
             if len(history_data) > history_limit:
                 history_data = history_data[-history_limit:]
 
+    # Ensure only valid notes are in the history, and each note is only in the history once
+    valid_entries = []
+    for note in history_data:
+        if not _is_note_path(notes_directory, note, must_exist=True):
+            continue
+        if note in valid_entries:
+            continue
+        valid_entries.append(note)
+        
+    history_data = valid_entries
+
     # Make any needed parent dirs for the history file
     pathlib.Path(os.path.dirname(history_file)).mkdir(
         parents=True, exist_ok=True)
 
-    history_string = '\n'.join(history_data) + '\n'
+    history_string = '\n'.join(history_data)
     do_atomic_file_update(history_file, history_string, notes_directory)
     log.debug('wrote updated history')
 
