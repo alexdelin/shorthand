@@ -41,6 +41,7 @@ def get_master_edit_timeline(notes_directory: DirectoryPath,
                   for line in output_lines
                   if line.strip()]
 
+    move_diff_keys = []
     all_diffs: List[NoteDiffInfo] = []
     for diff_file in diff_files:
         note_path = diff_file.split('/diffs/')[0].split(HISTORY_PATH)[1]
@@ -50,6 +51,9 @@ def get_master_edit_timeline(notes_directory: DirectoryPath,
         if diff_type == 'move':
             full_diff = _get_note_diff(notes_directory, note_path, timestamp, diff_type)
             move_diff_paths = extract_paths_from_move_diff(full_diff)
+            # Move diffs will show up twice, so only include one copy of each
+            if note_path != move_diff_paths['from']:
+                continue
             all_diffs.append({
                 'diff_type': diff_type,
                 'timestamp': timestamp,
