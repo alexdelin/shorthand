@@ -237,16 +237,17 @@ export function HomePage() {
             from={`${new Date().getFullYear() - PREVIOUS_YEARS_TO_SHOW}-01-02`}
             to={new Date()}
             emptyColor="#eeeeee"
-            colors={[ '#c4e4df', '#bae2dc', '#b0dfd8', '#83d7c9', '#77d5c5', '#6dd3c2', '#5ed0bd', '#4ecdb8']}
+            colors={[ '#ddeeeb', '#b0dfd8', '#77d5c5', '#5ed0bd', '#3bc9b1']}
             margin={{ top: 40, right: 40, bottom: 40, left: 40 }}
             yearSpacing={40}
-            // monthSpacing={10}
+            monthSpacing={10}
             monthBorderColor="#ffffff"
             dayBorderWidth={2}
             dayBorderColor="#ffffff"
             onClick={(day) => {
               setSelectedDate(day.day)
             }}
+            maxValue={10}
           />
         </MasterTimelineWrapper>
 
