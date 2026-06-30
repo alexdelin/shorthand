@@ -25,7 +25,7 @@ from shorthand.search import AggregatedFullTextSearchResult, \
 from shorthand.history.master_edit_timeline import MasterEditTimeline
 from shorthand.stamping import StampingChanges
 from shorthand.toc import TOC
-from shorthand.types import ACKResponse, CSVData, InternalAbsolutePath, NoteContentAsOfTime, \
+from shorthand.types import ACKResponse, CSVData, InternalAbsolutePath, NoteContentAsOfTime, NoteLastModTime, \
                             NotePath, RawNoteContent, RawNoteLine, RawResourceContent, ResourcePath, \
                             Subdir
 from shorthand.utils.api import WrappedResponse, wrap_response_data
@@ -117,10 +117,13 @@ def get_full_note(path: NotePath, include_last_mod_time: bool = True) -> NoteCon
 
 @app.post('/api/v1/note', tags=['Notes'])
 def write_updated_note(path: NotePath,
-                       content: Annotated[RawNoteContent, Body()]
+                       content: Annotated[RawNoteContent, Body()],
+                       starting_version_last_mod_time: Optional[NoteLastModTime] = None,
+                       force_update: bool = False
                        ) -> UpdateNoteResult:
     server = ShorthandServer(settings.config_path)
-    return server.update_note(path, content)
+    return server.update_note(path, content, starting_version_last_mod_time, 
+                              force_update)
 
 
 @app.get('/api/v1/resource', tags=['Resources'], response_class=FileResponse)

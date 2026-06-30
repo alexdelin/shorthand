@@ -236,8 +236,11 @@ export function HomePage() {
             data={masterTimeline}
             from={`${new Date().getFullYear() - PREVIOUS_YEARS_TO_SHOW}-01-02`}
             to={new Date()}
-            emptyColor="#eeeeee"
-            colors={[ '#ddeeeb', '#b0dfd8', '#77d5c5', '#5ed0bd', '#3bc9b1']}
+            emptyColor="#ebedf0"
+            // colors={[ '#ddeeeb', '#b0dfd8', '#77d5c5', '#5ed0bd', '#3bc9b1']} // Original
+            // colors={[ '#cbe0dd', '#a7d2cd', '#81c4bd', '#55b6ad', '#02a79e']} // Teal
+            // colors={[ '#b1a3d8', '#927fcd', '#705cc0', '#4a3bb4', '#021aa7']} // Blue
+            colors={[ '#9be9a8', '#40c463', '#30a14e', '#216e39']} // Github
             margin={{ top: 40, right: 40, bottom: 40, left: 40 }}
             yearSpacing={40}
             monthSpacing={10}

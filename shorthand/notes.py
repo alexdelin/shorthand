@@ -196,7 +196,7 @@ def _validate_internal_links(notes_directory: DirectoryPath,
 
 
 def deduplicate_links(links: list[Link]) -> list[Link]:
-    # Need to convert to a list of tuples to de-duplicate a
+    # Need to convert to a set of tuples to de-duplicate a
     # list of dictionaries
     unique_tuples = set([tuple(item.items()) for item in links])
     return [cast(Link, dict(tupleized)) for tupleized in unique_tuples]

@@ -22,7 +22,7 @@ from shorthand.elements.locations import _get_locations
 from shorthand.elements.record_sets import _get_record_sets, _get_record_set
 from shorthand.frontend.typeahead import _update_ngram_database, \
                                          _get_typeahead_suggestions
-from shorthand.types import InternalAbsoluteFilePath, InternalAbsolutePath, NotePath, Subdir
+from shorthand.types import InternalAbsoluteFilePath, InternalAbsolutePath, NoteLastModTime, NotePath, Subdir
 from shorthand.utils.archive import _get_note_archive
 from shorthand.utils.config import _get_notes_config, _write_config, \
                                    _modify_config
@@ -146,18 +146,24 @@ class ShorthandServer(object):
         return _get_note_with_last_mod_time(
             notes_directory=self.notes_directory, path=note_path)
 
-    def update_note(self, note_path, content):
+    def update_note(self, note_path, content, 
+                    starting_version_last_mod_time: Optional[NoteLastModTime] = None, 
+                    force_update: bool = False):
         if not self.is_note_path(note_path):
             raise ValueError('Only note files can be updated')
 
-        if self.track_edit_history:
+        update_result = _update_note(notes_directory=self.notes_directory,
+                                     file_path=note_path, content=content,
+                                     starting_version_last_mod_time=starting_version_last_mod_time,
+                                     force_update=force_update)
+
+        if self.track_edit_history and update_result['update_made']:
             _store_history_for_note_edit(notes_directory=self.notes_directory,
                                          note_path=note_path, new_content=content,
                                          find_path=self.find_path,
                                          patch_path=self.patch_path)
 
-        return _update_note(notes_directory=self.notes_directory,
-                            file_path=note_path, content=content)
+        return update_result
 
     def append_to_note(self, note_path, content, blank_lines=1):
         return _append_to_note(notes_directory=self.notes_directory,

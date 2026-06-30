@@ -5,7 +5,7 @@ import { useBeforeunload } from 'react-beforeunload';
 import { ShorthandMarkdown } from './ViewPage.styles';
 import { GetRenderedMarkdownResponse, GetNoteResponse } from '../types/api';
 import { SuspenseFallback } from '../components/SuspenseFallback';
-import { ReactCodeMirrorRef } from '@uiw/react-codemirror';
+import { EditorState, ReactCodeMirrorRef } from '@uiw/react-codemirror';
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
 import { languages } from '@codemirror/language-data';
 import { indentUnit } from '@codemirror/language'
@@ -26,7 +26,8 @@ import { latexPlugin, locationPlugin, todoPlugin,
 import { ComposePageWrapper, ComposeHeader, ComposeNoteWrapper,
          ComposeEditorWrapper, ComposePreviewWrapper,
          StyledFormGroup, SwitchLabel, PreviewBottomMarker,
-         StyledCodeMirror } from './ComposePage.styles';
+         StyledCodeMirror} from './ComposePage.styles';
+import { ConflictModal } from '../components/ConflictModal';
 
 const FILE_NAME_LENGTH_LIMIT = 15;
 
@@ -51,6 +52,9 @@ export default function ComposePage() {
   const editorRef = useRef<ReactCodeMirrorRef>(null);
   const [saveSnackbarOpen, setSaveSnackbarOpen] = useState(false);
   const [noChagesSnackbarOpen, setNoChangesSnackbarOpen] = useState(false);
+  const [lastModTime, setLastModTime] = useState('1900-01-01T00:00:00');
+  const [conflictModalOpen, setConflictModalOpen] = useState(false);
+  const [conflictDiff, setConflictDiff] = useState('');
 
   const queryClient = useQueryClient();
 
@@ -109,6 +113,7 @@ export default function ComposePage() {
     if (noteResponse?.content !== undefined && noteResponse.content !== editorText) {
       setSelectedTab(notePath);
       setEditorText(noteResponse.content);
+      setLastModTime(noteResponse.last_mod_time);
       setChangesSaved(true);
       // Record a view for the file being edited
       fetch(
@@ -129,7 +134,11 @@ export default function ComposePage() {
   // TODO - Prevent navigation via react-router
   //        if there are unsaved changes
 
-  function saveNote() {
+  function defaultSave() {
+    return saveNote(false);
+  }
+
+  function saveNote(force: boolean = false) {
 
     if (!editorRef || !editorRef.current || !editorRef.current.view) {
       return false
@@ -162,7 +171,7 @@ export default function ComposePage() {
       }
 
       fetch(
-        '/api/v1/note?path=' + notePath,
+        '/api/v1/note?path=' + notePath + '&starting_version_last_mod_time=' + lastModTime + '&force_update=' + force,
         {
           method: 'POST',
           body: stampedNoteContent
@@ -170,10 +179,14 @@ export default function ComposePage() {
       ).then(async res => {
         const saveResponse = await res.json();
         if (saveResponse.update_made === true) {
+          // Note was updated successfully
           queryClient.invalidateQueries(['note', { path: notePath }]);
           queryClient.invalidateQueries(['raw-note', { path: notePath }]);
+          setConflictModalOpen(false);
+          setConflictDiff('');
           setChangesSaved(true);
           showSaveSnackbar();
+          setLastModTime(saveResponse.new_last_mod_time);
           if (currentCursorPosition && contentGetsStamped) {
             console.log('setting cursor position to ' + currentCursorPosition);
             editorRef.current?.view?.dispatch({
@@ -183,6 +196,11 @@ export default function ComposePage() {
               },
             });
           }
+        } else {
+          // Note was not updated successfully - the version being edited was stale
+          console.warn('failed to update note');
+          setConflictDiff(saveResponse.incremental_diff);
+          setConflictModalOpen(true);
         }
       })
 
@@ -299,6 +317,10 @@ export default function ComposePage() {
     setNoChangesSnackbarOpen(true);
   };
 
+  const showConflictModal = () => {
+    setConflictModalOpen(true);
+  };
+
   const handleSaveSnackbarClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
       return;
@@ -313,9 +335,15 @@ export default function ComposePage() {
     setNoChangesSnackbarOpen(false);
   };
 
+  const hideConflictModal = () => {
+    setConflictModalOpen(false);
+  };
+
   if (renderedMarkdown === undefined) return <div>No note found</div>;
 
   if ((!selectedTab) || (openFiles && selectedTab && !openFiles.includes(selectedTab))) return <SuspenseFallback />;
+
+  console.log('Last Mod time is ' + lastModTime);
 
   return (
     <ComposePageWrapper>
@@ -354,7 +382,7 @@ export default function ComposePage() {
         <StyledFormGroup row={true}>
           <Button
             variant="text"
-            onClick={saveNote}
+            onClick={() => {saveNote(false)}}
           >
             <i style={{marginRight: '0.3rem'}} className='bi bi-floppy'></i>
             Save
@@ -423,6 +451,12 @@ export default function ComposePage() {
 
         </StyledFormGroup>
       </ComposeHeader>
+      <ConflictModal 
+        visible={conflictModalOpen} 
+        diff={conflictDiff} 
+        hide={hideConflictModal}
+        saveFunction={saveNote}
+      />
       <ComposeNoteWrapper>
         <ComposeEditorWrapper showPreview={showPreview}>
           <StyledCodeMirror
@@ -446,13 +480,14 @@ export default function ComposePage() {
                 ]
               }),
               EditorView.lineWrapping,
+              EditorState.allowMultipleSelections.of(true),
               EditorView.contentAttributes.of({ spellcheck: "true" }),
               indentUnit.of('    '),
               keymap.of([
                 {
                   key: 'Mod-s',
                   preventDefault: true,
-                  run: saveNote,
+                  run: defaultSave,
                 },
 
                 // TODO- These don't get picked up,
