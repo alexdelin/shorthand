@@ -65,7 +65,7 @@ function getDiffEl(diff: DiffInfo) {
         key={`diff-move-${diff.timestamp}`}
       >
         <TimelineContentRight>
-          Moved {diff.from_path}
+          Moved {diff.from_path} To {diff.to_path}
           <br />
           <Typography variant="body2" color='text.secondary'>{getDateTimeString(diff.timestamp)}</Typography>
         </TimelineContentRight>
@@ -89,7 +89,7 @@ function getDiffEl(diff: DiffInfo) {
         key={`diff-delete-${diff.timestamp}`}
       >
         <TimelineContentRight>
-          Note Deleted
+          Deleted {diff.note_path}
           <br />
           <Typography variant="body2" color='text.secondary'>{getDateTimeString(diff.timestamp)}</Typography>
         </TimelineContentRight>
@@ -176,7 +176,9 @@ export function MasterTimeline() {
       </MasterTimelineWrapper>
 
       {selectedDate && Boolean(visibleChanges.length) && <>
-        <span>Changes on {getDateString(selectedDate)}</span>
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <h3>Changes on {getDateString(selectedDate)}</h3>
+        </div>
         <Timeline position="left">
           {visibleChanges.map((diff) => {
             return getDiffEl(diff);
