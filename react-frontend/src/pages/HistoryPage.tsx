@@ -36,25 +36,25 @@ type EditTimelineEntry = {
 
 type NoteEditTimeline = EditTimelineEntry[]
 
-const TimelineContentLeft = styled(TimelineContent)`
+export const TimelineContentLeft = styled(TimelineContent)`
   display: flex;
   flex-direction: column;
   align-items: end;
   justify-content: center;`
 
-const TimelineContentRight = styled(TimelineOppositeContent)`
+export const TimelineContentRight = styled(TimelineOppositeContent)`
   display: flex;
   flex-direction: column;
   align-items: start;
   justify-content: center;`
 
-const TimelineDotForIcon = styled(TimelineDot)`
+export const TimelineDotForIcon = styled(TimelineDot)`
   width: 1.3rem;
   height: 1.3rem;
   justify-content: center;
   align-items: center;`
 
-const TimelineItem = styled(TimelineItemOriginal)`
+export const TimelineItem = styled(TimelineItemOriginal)`
   &.selected {
     background-color: #ccc;
     border: 1px solid;
