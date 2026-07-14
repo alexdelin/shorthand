@@ -317,10 +317,6 @@ export default function ComposePage() {
     setNoChangesSnackbarOpen(true);
   };
 
-  const showConflictModal = () => {
-    setConflictModalOpen(true);
-  };
-
   const handleSaveSnackbarClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
       return;

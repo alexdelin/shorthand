@@ -4,8 +4,8 @@ import { DiffInfo, GetMasterEditTimelineResponse } from "../types";
 import { useMemo, useState } from "react";
 import { ResponsiveCalendar } from "@nivo/calendar";
 import { getDateString, getDateTimeString } from "../utils/dates";
-import { Timeline, TimelineConnector, TimelineItem, TimelineSeparator } from "@mui/lab";
-import { TimelineContentLeft, TimelineContentRight, TimelineDotForIcon } from "../pages/HistoryPage";
+import { Timeline, TimelineConnector, TimelineContent, TimelineItem, timelineItemClasses, TimelineSeparator } from "@mui/lab";
+import { TimelineDotForIcon } from "../pages/HistoryPage";
 import { Typography } from "@mui/material";
 
 
@@ -23,11 +23,6 @@ function getDiffEl(diff: DiffInfo) {
       <TimelineItem
         key={`diff-create-${diff.timestamp}`}
       >
-        <TimelineContentRight>
-          Created {diff.note_path}
-          <br />
-          <Typography variant="body2" color='text.secondary'>{getDateTimeString(diff.timestamp)}</Typography>
-        </TimelineContentRight>
         <TimelineSeparator>
           <TimelineConnector />
           <TimelineDotForIcon color="success" variant="outlined">
@@ -35,7 +30,11 @@ function getDiffEl(diff: DiffInfo) {
           </TimelineDotForIcon>
           <TimelineConnector />
         </TimelineSeparator>
-        <TimelineContentLeft />
+        <TimelineContent>
+          Created {diff.note_path}
+          <br />
+          <Typography variant="body2" color='text.secondary'>{getDateTimeString(diff.timestamp)}</Typography>
+        </TimelineContent>
       </TimelineItem>
     );
   } else if (diff.diff_type === 'edit') {
@@ -43,11 +42,6 @@ function getDiffEl(diff: DiffInfo) {
       <TimelineItem
         key={`diff-edit-${diff.timestamp}`}
       >
-        <TimelineContentRight>
-          Edited {diff.note_path}
-          <br />
-          <Typography variant="body2" color='text.secondary'>{getDateTimeString(diff.timestamp)}</Typography>
-        </TimelineContentRight>
         <TimelineSeparator>
           <TimelineConnector />
           <TimelineDotForIcon color="primary" variant="outlined">
@@ -55,8 +49,11 @@ function getDiffEl(diff: DiffInfo) {
           </TimelineDotForIcon>
           <TimelineConnector />
         </TimelineSeparator>
-        <TimelineContentLeft>
-        </TimelineContentLeft>
+        <TimelineContent>
+          Edited {diff.note_path}
+          <br />
+          <Typography variant="body2" color='text.secondary'>{getDateTimeString(diff.timestamp)}</Typography>
+        </TimelineContent>
       </TimelineItem>
     );
   } else if (diff.diff_type === 'move') {
@@ -64,11 +61,6 @@ function getDiffEl(diff: DiffInfo) {
       <TimelineItem
         key={`diff-move-${diff.timestamp}`}
       >
-        <TimelineContentRight>
-          Moved {diff.from_path} To {diff.to_path}
-          <br />
-          <Typography variant="body2" color='text.secondary'>{getDateTimeString(diff.timestamp)}</Typography>
-        </TimelineContentRight>
         <TimelineSeparator>
           <TimelineConnector />
           <TimelineDotForIcon color="grey" variant="outlined">
@@ -79,8 +71,11 @@ function getDiffEl(diff: DiffInfo) {
           </TimelineDotForIcon>
           <TimelineConnector />
         </TimelineSeparator>
-        <TimelineContentLeft>
-        </TimelineContentLeft>
+        <TimelineContent>
+          Moved {diff.from_path} To {diff.to_path}
+          <br />
+          <Typography variant="body2" color='text.secondary'>{getDateTimeString(diff.timestamp)}</Typography>
+        </TimelineContent>
       </TimelineItem>
     );
   } else if (diff.diff_type === 'delete') {
@@ -88,11 +83,6 @@ function getDiffEl(diff: DiffInfo) {
       <TimelineItem
         key={`diff-delete-${diff.timestamp}`}
       >
-        <TimelineContentRight>
-          Deleted {diff.note_path}
-          <br />
-          <Typography variant="body2" color='text.secondary'>{getDateTimeString(diff.timestamp)}</Typography>
-        </TimelineContentRight>
         <TimelineSeparator>
           <TimelineConnector />
           <TimelineDotForIcon color="error" variant="outlined">
@@ -100,8 +90,11 @@ function getDiffEl(diff: DiffInfo) {
           </TimelineDotForIcon>
           <TimelineConnector />
         </TimelineSeparator>
-        <TimelineContentLeft>
-        </TimelineContentLeft>
+        <TimelineContent>
+          Deleted {diff.note_path}
+          <br />
+          <Typography variant="body2" color='text.secondary'>{getDateTimeString(diff.timestamp)}</Typography>
+        </TimelineContent>
       </TimelineItem>
     );
   } else {
@@ -144,6 +137,8 @@ export function MasterTimeline() {
       return [];
     }
 
+    if (!masterEditTimeline[selectedDate]) {return [];}
+
     const diffs = masterEditTimeline[selectedDate].diffs;
     return diffs;
 
@@ -175,11 +170,19 @@ export function MasterTimeline() {
         />
       </MasterTimelineWrapper>
 
-      {selectedDate && Boolean(visibleChanges.length) && <>
+      {selectedDate && visibleChanges && Boolean(visibleChanges.length) && <>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <h3>Changes on {getDateString(selectedDate)}</h3>
         </div>
-        <Timeline position="left">
+        <Timeline
+          // position="left"
+          sx={{
+            [`& .${timelineItemClasses.root}:before`]: {
+              flex: 0,
+              padding: 0,
+            },
+          }}
+        >
           {visibleChanges.map((diff) => {
             return getDiffEl(diff);
           })}

@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import hljs from 'highlight.js/lib/core';
 import hljsDiff from 'highlight.js/lib/languages/diff';
 import 'highlight.js/styles/atom-one-light.css';
-import { ReactCodeMirrorRef } from '@uiw/react-codemirror';
 
 hljs.registerLanguage('diff', hljsDiff);
 
