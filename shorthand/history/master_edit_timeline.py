@@ -41,7 +41,6 @@ def get_master_edit_timeline(notes_directory: DirectoryPath,
                   for line in output_lines
                   if line.strip()]
 
-    move_diff_keys = []
     all_diffs: List[NoteDiffInfo] = []
     for diff_file in diff_files:
         note_path = diff_file.split('/diffs/')[0].split(HISTORY_PATH)[1]

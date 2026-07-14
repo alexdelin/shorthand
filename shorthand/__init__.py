@@ -6,7 +6,7 @@ from shorthand.history.edit_timeline import get_edit_timeline
 from shorthand.frontend import clear_open_files, close_file, get_open_files, open_file
 from shorthand.notes import _get_note, _get_note_with_last_mod_time, _update_note, \
                             _validate_internal_links, _append_to_note, \
-                            _get_backlinks, _get_links
+                            _get_backlinks, _get_links, get_last_mod_time
 from shorthand.resources import _get_resource
 from shorthand.calendar import CalendarMode, _get_calendar
 from shorthand.history.master_edit_timeline import get_master_edit_timeline
@@ -152,16 +152,25 @@ class ShorthandServer(object):
         if not self.is_note_path(note_path):
             raise ValueError('Only note files can be updated')
 
-        update_result = _update_note(notes_directory=self.notes_directory,
-                                     file_path=note_path, content=content,
-                                     starting_version_last_mod_time=starting_version_last_mod_time,
-                                     force_update=force_update)
+        if self.track_edit_history:
+            if starting_version_last_mod_time and not force_update:
+                if starting_version_last_mod_time != get_last_mod_time(self.notes_directory, note_path):
+                    # The update is going to fail, so return the error response
+                    return _update_note(notes_directory=self.notes_directory,
+                                        file_path=note_path, content=content,
+                                        starting_version_last_mod_time=starting_version_last_mod_time,
+                                        force_update=force_update)
 
-        if self.track_edit_history and update_result['update_made']:
+            # This has to be run _before_ actually updating the note
             _store_history_for_note_edit(notes_directory=self.notes_directory,
                                          note_path=note_path, new_content=content,
                                          find_path=self.find_path,
                                          patch_path=self.patch_path)
+
+        update_result = _update_note(notes_directory=self.notes_directory,
+                                     file_path=note_path, content=content,
+                                     starting_version_last_mod_time=starting_version_last_mod_time,
+                                     force_update=force_update)
 
         return update_result
 

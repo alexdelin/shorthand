@@ -134,7 +134,9 @@ def _update_note(notes_directory: DirectoryPath, file_path: NotePath,
 
     stored_last_mod_time = get_last_mod_time(notes_directory, file_path)
 
-    if force_update or (not starting_version_last_mod_time) or (stored_last_mod_time == starting_version_last_mod_time):
+    if force_update \
+            or (not starting_version_last_mod_time) \
+            or (stored_last_mod_time == starting_version_last_mod_time):
 
         if force_update:
             log.warning(f'Forcing update to note {file_path}')
