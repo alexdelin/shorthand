@@ -2,7 +2,6 @@ import os
 from subprocess import Popen, PIPE
 from collections import OrderedDict
 import json
-import codecs
 import logging
 from typing import List
 
@@ -135,7 +134,7 @@ def _update_ngram_database(notes_directory: DirectoryPath) -> None:
         if not note_file:
             continue
 
-        with codecs.open(note_file, mode="r", encoding="utf-8") \
+        with open(note_file, mode="r", encoding="utf-8") \
                 as note_file_object:
             note_file_content = note_file_object.read()
 
@@ -205,7 +204,7 @@ def _update_ngram_database(notes_directory: DirectoryPath) -> None:
     unigrams_text_file_path = ngram_db_dir + '/unigrams.txt'
     with open(unigrams_json_file_path, 'w') as unigrams_json_file_object:
         json.dump(tokens['unigrams'], unigrams_json_file_object)
-    with codecs.open(unigrams_text_file_path, mode="w", encoding="utf-8") \
+    with open(unigrams_text_file_path, mode="w", encoding="utf-8") \
             as unigrams_text_file_object:
         for unigram, frequency in tokens['unigrams'].items():
             unigrams_text_file_object.write(unigram + '\n')
@@ -215,7 +214,7 @@ def _update_ngram_database(notes_directory: DirectoryPath) -> None:
     bigrams_text_file_path = ngram_db_dir + '/bigrams.txt'
     with open(bigrams_json_file_path, 'w') as bigrams_json_file_object:
         json.dump(tokens['bigrams'], bigrams_json_file_object)
-    with codecs.open(bigrams_text_file_path, mode="w", encoding="utf-8") \
+    with open(bigrams_text_file_path, mode="w", encoding="utf-8") \
             as bigrams_text_file_object:
         for bigram, frequency in tokens['bigrams'].items():
             bigrams_text_file_object.write(bigram + '\n')
@@ -225,7 +224,7 @@ def _update_ngram_database(notes_directory: DirectoryPath) -> None:
     trigrams_text_file_path = ngram_db_dir + '/trigrams.txt'
     with open(trigrams_json_file_path, 'w') as trigrams_json_file_object:
         json.dump(tokens['trigrams'], trigrams_json_file_object)
-    with codecs.open(trigrams_text_file_path, mode="w", encoding="utf-8") \
+    with open(trigrams_text_file_path, mode="w", encoding="utf-8") \
             as trigrams_text_file_object:
         for trigram, frequency in tokens['trigrams'].items():
             trigrams_text_file_object.write(trigram + '\n')

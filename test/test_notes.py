@@ -101,7 +101,7 @@ class TestNotesOperations(ShorthandTestCase):
                      file_path=test_path, content=test_content,
                      starting_version_last_mod_time='1990-01-01T00:00:00.000000',
                      force_update=False)
-        assert result['update_made'] == False
+        assert not result['update_made']
         assert result['incremental_diff']
         assert not result['new_last_mod_time']
         note_content = _get_note(self.notes_dir, test_path)
@@ -111,7 +111,7 @@ class TestNotesOperations(ShorthandTestCase):
                      file_path=test_path, content=test_content,
                      starting_version_last_mod_time='1990-01-01T00:00:00.000000',
                      force_update=True)
-        assert result['update_made'] == True
+        assert result['update_made']
         assert result['incremental_diff']
         assert result['new_last_mod_time']
         note_content = _get_note(self.notes_dir, test_path)

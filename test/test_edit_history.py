@@ -189,6 +189,23 @@ class TestEditHistory(ShorthandTestCase):
         assert 'Time: ' in note_diff
         assert '---' in note_diff
 
+    def test_storing_edit_diffs_server(self):
+        update_result = self.server.update_note(note_path='/todos.note', content='foo bar')
+        assert update_result['update_made']
+        
+        assert self.server.list_note_versions(note_path='/todos.note')
+        note_diffs = self.server.list_diffs_for_note('/todos.note')
+        assert len(note_diffs) == 1
+        assert note_diffs[0]['diff_type'] == 'edit'
+
+    def test_no_diffs_on_failed_updates(self):
+        # Test that no diffs are stored when a user tries to update a stale 
+        # note and the update fails
+        update_result = self.server.update_note(note_path='/todos.note', content='foo bar', starting_version_last_mod_time='1900-01-01T00:00:00')
+        assert not update_result['update_made']
+        assert not self.server.list_note_versions(note_path='/todos.note')
+        assert not self.server.list_diffs_for_note(note_path='/todos.note')
+
     def test_merging_edit_diffs(self):
         # Make 3 edits to a note in rapid succession
         self.server.update_note(note_path='/todos.note', content='foo bar')
