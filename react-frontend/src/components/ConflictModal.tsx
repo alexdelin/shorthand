@@ -28,23 +28,29 @@ export const ConflictModalBody = styled.div`
   border: 1px solid #333;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   padding: 2rem;
-  overflow: scroll;`
+  overflow: scroll;
+  border-radius: 4px;`
 
 export const DiffPreview = styled.pre`
   background-color: #eee;
   border: 1px solid black;
   padding: 2rem;
-  width: 80%;
+  min-width: 80%;
+  text-wrap: wrap;
 `
 
 export const ButtonGroup = styled.div`
   display: flex;
   flex-direction: row;
   width: 100%;
-  justify-content: space-evenly;
+  justify-content: end;
   margin-top: 2rem;
+
+  & button {
+    margin-left: 2rem;
+  }
 `
 
 interface ConflictModalProps {
@@ -64,14 +70,20 @@ export function ConflictModal(props: ConflictModalProps) {
   return (
     <ConflictModalOverlay visible={props.visible}>
       <ConflictModalBody>
-        <h2><i style={{ color: 'orange', marginRight: '0.5rem' }} className='bi bi-exclamation-triangle'></i>Failed to Update Note</h2>
+        <h2 style={{ alignSelf: 'center' }}>
+          <i style={{ color: 'orange', marginRight: '0.5rem' }} className='bi bi-exclamation-triangle' />
+          Failed to Update Note
+        </h2>
+
         The changes made could not be saved because the note has already been updated since it was opened for editing.
         <br />
         Forcing the update through will make the changes shown below:
         <DiffPreview>
           <code dangerouslySetInnerHTML={{__html: hljs.highlight(props.diff, { language: 'diff' }).value}} />
         </DiffPreview>
-        To force this update to be made, click Force Update below.
+        <span>
+          To force this update to be made, click Force Update below.
+        </span>
         <ButtonGroup>
           <Button variant='outlined' color='info' onClick={() => {props.hide()}}>Continue Editing</Button>
           <Button variant='contained' color='error' onClick={() => {doForceUpdate()}}>Force Update</Button>
